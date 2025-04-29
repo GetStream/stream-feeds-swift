@@ -1,0 +1,15 @@
+{
+  "originHash" : "bc43372683a3b6778edebff858d41b627564d06d49ffaea08e345377d14e0759",
+  "pins" : [
+    {
+      "identity" : "stream-core-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GetStream/stream-core-swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "06e2597c915ebb9c00a3c14ac2bb432462556aea"
+      }
+    }
+  ],
+  "version" : 3
+}
