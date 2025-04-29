@@ -1,0 +1,120 @@
+# OS X
+.DS_Store
+
+# Environment Variables
+.env
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+Package.resolved
+StreamVideo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+## Build generated
+build/
+DerivedData/
+*.xcframework
+stream-module-interface-analyser/
+public_interface_current.resolved
+public_interface_previous.resolved
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+## Other
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+## Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+# Package.pins
+.build/
+
+# CocoaPods
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+Pods/
+
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+Carthage/
+!Sample/Carthage/
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/#source-control
+
+!fastlane/.env
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/allurectl
+fastlane/xcresults
+fastlane/sonar
+fastlane/mint
+**/metrics/
+recordings
+*.coverage.txt
+vendor/bundle/
+.bundle/
+.swiftpm
+Example/Carthage/.env
+Example/Carthage/fastlane/report.xml
+Sample/Cocoapods/Podfile.lock
+reports/
+.scannerwork/
+push_payload.json
+sinatra.log
+derived_data/
+spm_cache/
+.buildcache
+buildcache
+App Thinning Size Report.txt
+app-thinning.plist
+*.dmg
+yeetd-normal.pkg
+
+# Stream Video Buddy
+video-buddy-server.log
+video-buddy-console.log
+video-buddy-session.json
+
+# Ignore Products folder
+Products/
+
+# Ignore Dependencies folder
+Dependencies/
+
+# Local file with test credentials
+Credentials.xcconfig
+
+# Cursor/VS Code Settings
+.vscode/settings.json
