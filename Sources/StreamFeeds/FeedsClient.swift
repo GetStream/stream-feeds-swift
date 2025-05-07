@@ -8,7 +8,7 @@
 import Foundation
 import StreamCore
 
-public class FeedsClient {
+public class FeedsClient: WSEventsSubscriber {
     
     public let apiKey: APIKey
     public let user: User
@@ -21,14 +21,15 @@ public class FeedsClient {
     
     private(set) var connectionRecoveryHandler: ConnectionRecoveryHandler?
     
+    private let eventsMiddleware = WSEventsMiddleware()
+    
     private(set) lazy var eventNotificationCenter: EventNotificationCenter = {
-        //TODO: handle this.
         let center = EventNotificationCenter()
-//        eventsMiddleware.add(subscriber: self)
-//        var middlewares: [EventMiddleware] = [
-//            eventsMiddleware
-//        ]
-//        center.add(middlewares: middlewares)
+        eventsMiddleware.add(subscriber: self)
+        var middlewares: [EventMiddleware] = [
+            eventsMiddleware
+        ]
+        center.add(middlewares: middlewares)
         return center
     }()
     
@@ -75,7 +76,17 @@ public class FeedsClient {
     }
     
     public func flatFeed(group: String, id: String) -> FlatFeed {
-        FlatFeed(group: group, id: id, apiClient: apiClient)
+        let feed = FlatFeed(group: group, id: id, apiClient: apiClient)
+        eventsMiddleware.add(subscriber: feed)
+        return feed
+    }
+    
+    public func follow(source: String, target: String) async throws -> FollowResponse {
+        try await apiClient.follow(followRequest: .init(source: source, target: target))
+    }
+    
+    func onEvent(_ event: any Event) {
+        print("======= \(event)")
     }
     
     // MARK: - private
@@ -260,7 +271,5 @@ extension FeedsClient: ConnectionStateDelegate {
     public func webSocketClient(
         _ client: WebSocketClient,
         didUpdateConnectionState state: WebSocketConnectionState
-    ) {
-        print("======= \(state)")
-    }
+    ) {}
 }

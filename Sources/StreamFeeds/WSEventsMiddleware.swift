@@ -1,0 +1,42 @@
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
+import Foundation
+import StreamCore
+
+final class WSEventsMiddleware: EventMiddleware {
+    
+    private var subscribers = NSHashTable<AnyObject>.weakObjects()
+
+    func handle(event: Event) -> Event? {
+        var feedsClient: FeedsClient?
+        for subscriber in subscribers.allObjects {
+            if let subscriber = subscriber as? FeedsClient {
+                feedsClient = subscriber
+            } else {
+                (subscriber as? WSEventsSubscriber)?.onEvent(event)
+            }
+        }
+        feedsClient?.onEvent(event)
+        
+        return event
+    }
+    
+    func add(subscriber: WSEventsSubscriber) {
+        subscribers.add(subscriber)
+    }
+    
+    func remove(subscriber: WSEventsSubscriber) {
+        subscribers.remove(subscriber)
+    }
+    
+    func removeAllSubscribers() {
+        subscribers.removeAllObjects()
+    }
+}
+
+protocol WSEventsSubscriber: AnyObject {
+    
+    func onEvent(_ event: Event)
+}

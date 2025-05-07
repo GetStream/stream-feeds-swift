@@ -5,7 +5,7 @@ private class WSEventMapping: Decodable {
     let type: String
 }
 
-public enum FeedsEvent: Codable, Hashable {
+public enum FeedsEvent: Codable, Hashable, Event {
     case typeActivityAddedEvent(ActivityAddedEvent)
     case typeReactionAddedEvent(ReactionAddedEvent)
     case typeReactionRemovedEvent(ReactionRemovedEvent)
