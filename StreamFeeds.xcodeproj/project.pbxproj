@@ -10,7 +10,7 @@
 		845494EB2DBA2E7C00211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		845495142DBA36A700211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8E632DCA45880030DD7D /* StreamCore */; };
-		84AA8ECC2DCB4CC50030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8ECB2DCB4CC50030DD7D /* StreamCore */; };
+		84AA908D2DCB62480030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA908C2DCB62480030DD7D /* StreamCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,13 +37,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		845494F22DBA2E7C00211413 /* Exceptions for "StreamFeeds" folder in "StreamFeeds" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			publicHeaders = (
-				StreamFeeds.h,
-			);
-			target = 845494E12DBA2E7C00211413 /* StreamFeeds */;
-		};
 		84AA8E662DCA48170030DD7D /* Exceptions for "DemoApp" folder in "DemoApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -51,17 +44,16 @@
 			);
 			target = 845495002DBA2F7100211413 /* DemoApp */;
 		};
+		84AA908A2DCB5DF00030DD7D /* Exceptions for "Sources" folder in "StreamFeeds" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				StreamFeeds/StreamFeeds.h,
+			);
+			target = 845494E12DBA2E7C00211413 /* StreamFeeds */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		845494E42DBA2E7C00211413 /* StreamFeeds */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				845494F22DBA2E7C00211413 /* Exceptions for "StreamFeeds" folder in "StreamFeeds" target */,
-			);
-			path = StreamFeeds;
-			sourceTree = "<group>";
-		};
 		845494EE2DBA2E7C00211413 /* StreamFeedsTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = StreamFeedsTests;
@@ -75,6 +67,14 @@
 			path = DemoApp;
 			sourceTree = "<group>";
 		};
+		84AA90152DCB5DEF0030DD7D /* Sources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				84AA908A2DCB5DF00030DD7D /* Exceptions for "Sources" folder in "StreamFeeds" target */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +83,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */,
-				84AA8ECC2DCB4CC50030DD7D /* StreamCore in Frameworks */,
+				84AA908D2DCB62480030DD7D /* StreamCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +109,7 @@
 		845494D82DBA2E7C00211413 = {
 			isa = PBXGroup;
 			children = (
-				845494FB2DBA2E9200211413 /* Sources */,
+				84AA90152DCB5DEF0030DD7D /* Sources */,
 				845494EE2DBA2E7C00211413 /* StreamFeedsTests */,
 				845495022DBA2F7100211413 /* DemoApp */,
 				845495132DBA36A700211413 /* Frameworks */,
@@ -125,14 +125,6 @@
 				845495012DBA2F7100211413 /* DemoApp.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		845494FB2DBA2E9200211413 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				845494E42DBA2E7C00211413 /* StreamFeeds */,
-			);
-			path = Sources;
 			sourceTree = "<group>";
 		};
 		845495132DBA36A700211413 /* Frameworks */ = {
@@ -169,12 +161,12 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				845494E42DBA2E7C00211413 /* StreamFeeds */,
+				84AA90152DCB5DEF0030DD7D /* Sources */,
 			);
 			name = StreamFeeds;
 			packageProductDependencies = (
 				84AA8E632DCA45880030DD7D /* StreamCore */,
-				84AA8ECB2DCB4CC50030DD7D /* StreamCore */,
+				84AA908C2DCB62480030DD7D /* StreamCore */,
 			);
 			productName = StreamFeeds;
 			productReference = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */;
@@ -258,7 +250,7 @@
 			mainGroup = 845494D82DBA2E7C00211413;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				84AA8ECA2DCB4CC50030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */,
+				84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 845494E32DBA2E7C00211413 /* Products */;
@@ -666,7 +658,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		84AA8ECA2DCB4CC50030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */ = {
+		84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
@@ -681,9 +673,9 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = StreamCore;
 		};
-		84AA8ECB2DCB4CC50030DD7D /* StreamCore */ = {
+		84AA908C2DCB62480030DD7D /* StreamCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 84AA8ECA2DCB4CC50030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */;
+			package = 84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */;
 			productName = StreamCore;
 		};
 /* End XCSwiftPackageProductDependency section */

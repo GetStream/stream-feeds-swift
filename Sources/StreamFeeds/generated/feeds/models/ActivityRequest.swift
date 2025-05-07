@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
         case followers
         case `private` = "private"
         case `public` = "public"
@@ -36,9 +36,9 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
     public var text: String?
     public var type: String
     public var userId: String?
-    public var visibility: String?
+    public var visibility: ActivityVisibility?
 
-    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, userId: String? = nil, visibility: String? = nil) {
+    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, userId: String? = nil, visibility: ActivityVisibility? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt

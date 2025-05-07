@@ -1,61 +1,6 @@
 import Foundation
 import StreamCore
 
-enum HTTPMethod: String {
-    case get = "GET"
-    case post = "POST"
-    case put = "PUT"
-    case delete = "DELETE"
-    case head = "HEAD"
-    case patch = "PATCH"
-    case options = "OPTIONS"
-    case trace = "TRACE"
-    case connect = "CONNECT"
-
-    init(stringValue: String) {
-        guard let method = HTTPMethod(rawValue: stringValue.uppercased()) else {
-            self = .get
-            return
-        }
-        self = method
-    }
-}
-
-struct Request {
-    var url: URL
-    var method: HTTPMethod
-    var body: Data? = nil
-    var queryParams: [URLQueryItem] = []
-    var headers: [String: String] = [:]
-
-    func urlRequest() throws -> URLRequest {
-        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-        var existingQueryItems = urlComponents.queryItems ?? []
-        existingQueryItems.append(contentsOf: queryParams)
-        urlComponents.queryItems = existingQueryItems
-        var urlRequest = URLRequest(url: urlComponents.url!)
-        for (k, v) in headers {
-            urlRequest.setValue(v, forHTTPHeaderField: k)
-        }
-        urlRequest.httpMethod = method.rawValue
-        urlRequest.httpBody = body
-        return urlRequest
-    }
-}
-
-protocol DefaultAPITransport: Sendable {
-    func execute(request: Request) async throws -> (Data, URLResponse)
-}
-
-protocol DefaultAPIClientMiddleware: Sendable {
-    func intercept(
-        _ request: Request,
-        next: (Request) async throws -> (Data, URLResponse)
-    ) async throws -> (Data, URLResponse)
-}
-
-struct EmptyResponse: Codable {}
-
 open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
     var transport: DefaultAPITransport
     var middlewares: [DefaultAPIClientMiddleware]

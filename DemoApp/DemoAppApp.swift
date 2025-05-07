@@ -25,12 +25,13 @@ struct DemoAppApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear() {
+                .onAppear {
+                    let feed = feedsClient.flatFeed(group: "user", id: "martin")
                     Task {
                         do {
-                            try await feedsClient.connect()
+                            try await feed.create(visibility: .public)
                         } catch {
-                            print("======= \(error)")
+                            print("============ \(error)")
                         }
                     }
                 }

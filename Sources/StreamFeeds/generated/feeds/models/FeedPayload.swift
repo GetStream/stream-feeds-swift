@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum FeedVisibility: String, Sendable, Codable, CaseIterable {
         case followers
         case `private` = "private"
         case `public` = "public"
@@ -27,9 +27,9 @@ public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Has
     public var id: String
     public var members: [FeedMemberPayload]?
     public var ownerId: String?
-    public var visibility: String?
+    public var visibility: FeedVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, groupId: String, id: String, members: [FeedMemberPayload]? = nil, ownerId: String? = nil, visibility: String? = nil) {
+    public init(custom: [String: RawJSON]? = nil, groupId: String, id: String, members: [FeedMemberPayload]? = nil, ownerId: String? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
         self.groupId = groupId
         self.id = id
