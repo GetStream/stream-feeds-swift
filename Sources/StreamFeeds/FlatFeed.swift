@@ -30,12 +30,11 @@ public class FlatFeed {
     ) async throws -> CreateFeedResponse {
         let request = CreateFeedRequest(
             custom: custom,
-            group: group,
-            id: id,
+            feedId: id,
             members: members,
             visibility: visibility
         )
-        let response = try await apiClient.createFeed(createFeedRequest: request)
+        let response = try await apiClient.createFeed(feedGroupId: group, createFeedRequest: request)
         state.update(from: response)
         return response
     }

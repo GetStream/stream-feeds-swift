@@ -23,39 +23,34 @@ public final class CreateFeedRequest: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public var custom: [String: RawJSON]?
-    public var group: String
-    public var id: String
+    public var feedId: String
     public var members: [FeedMemberPayload]?
     public var visibility: FeedVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, group: String, id: String, members: [FeedMemberPayload]? = nil, visibility: FeedVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, feedId: String, members: [FeedMemberPayload]? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
-        self.group = group
-        self.id = id
+        self.feedId = feedId
         self.members = members
         self.visibility = visibility
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case custom
-        case group
-        case id
+        case feedId = "feed_id"
         case members
         case visibility
     }
 
     public static func == (lhs: CreateFeedRequest, rhs: CreateFeedRequest) -> Bool {
         lhs.custom == rhs.custom &&
-            lhs.group == rhs.group &&
-            lhs.id == rhs.id &&
+            lhs.feedId == rhs.feedId &&
             lhs.members == rhs.members &&
             lhs.visibility == rhs.visibility
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(custom)
-        hasher.combine(group)
-        hasher.combine(id)
+        hasher.combine(feedId)
         hasher.combine(members)
         hasher.combine(visibility)
     }

@@ -23,16 +23,16 @@ public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Has
     }
 
     public var custom: [String: RawJSON]?
-    public var groupId: String
-    public var id: String
+    public var feedGroupId: String
+    public var feedId: String
     public var members: [FeedMemberPayload]?
     public var ownerId: String?
     public var visibility: FeedVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, groupId: String, id: String, members: [FeedMemberPayload]? = nil, ownerId: String? = nil, visibility: FeedVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, feedGroupId: String, feedId: String, members: [FeedMemberPayload]? = nil, ownerId: String? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
-        self.groupId = groupId
-        self.id = id
+        self.feedGroupId = feedGroupId
+        self.feedId = feedId
         self.members = members
         self.ownerId = ownerId
         self.visibility = visibility
@@ -40,8 +40,8 @@ public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Has
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case custom
-        case groupId = "group_id"
-        case id
+        case feedGroupId = "feed_group_id"
+        case feedId = "feed_id"
         case members
         case ownerId = "owner_id"
         case visibility
@@ -49,8 +49,8 @@ public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Has
 
     public static func == (lhs: FeedPayload, rhs: FeedPayload) -> Bool {
         lhs.custom == rhs.custom &&
-            lhs.groupId == rhs.groupId &&
-            lhs.id == rhs.id &&
+            lhs.feedGroupId == rhs.feedGroupId &&
+            lhs.feedId == rhs.feedId &&
             lhs.members == rhs.members &&
             lhs.ownerId == rhs.ownerId &&
             lhs.visibility == rhs.visibility
@@ -58,8 +58,8 @@ public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Has
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(custom)
-        hasher.combine(groupId)
-        hasher.combine(id)
+        hasher.combine(feedGroupId)
+        hasher.combine(feedId)
         hasher.combine(members)
         hasher.combine(ownerId)
         hasher.combine(visibility)

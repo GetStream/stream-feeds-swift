@@ -96,16 +96,29 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         return r
     }
 
-    open func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse {
+    open func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse {
         let path = "/feeds/v3/activities"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: upsertActivitiesRequest
+            request: addActivityRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpsertActivitiesResponse.self, from: $0)
+            try self.jsonDecoder.decode(AddActivityResponse.self, from: $0)
+        }
+    }
+
+    open func upsertActivities(createActivitiesBatchRequest: CreateActivitiesBatchRequest) async throws -> CreateActivitiesBatchResponse {
+        let path = "/feeds/v3/activities/batch"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: createActivitiesBatchRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(CreateActivitiesBatchResponse.self, from: $0)
         }
     }
 
@@ -217,8 +230,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func addBookmark(addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse {
-        let path = "/feeds/v3/activities/{activity_id}/bookmarks"
+    open func addBookmark(activityId: String, addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse {
+        var path = "/feeds/v3/activities/{activity_id}/bookmarks"
+
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -230,33 +247,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse {
-        let path = "/feeds/v3/activity"
+    open func addComment(activityId: String, addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse {
+        var path = "/feeds/v3/activities/{activity_id}/comments"
 
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: addActivityRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(AddActivityResponse.self, from: $0)
-        }
-    }
-
-    open func removeComment() async throws -> RemoveCommentResponse {
-        let path = "/feeds/v3/comments"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveCommentResponse.self, from: $0)
-        }
-    }
-
-    open func addComment(addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse {
-        let path = "/feeds/v3/comments"
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -268,16 +264,36 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updateComment(updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse {
-        let path = "/feeds/v3/comments"
+    open func removeActivityReaction(activityId: String) async throws -> RemoveActivityReactionResponse {
+        var path = "/feeds/v3/activities/{activity_id}/reactions"
+
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            httpMethod: "PUT",
-            request: updateCommentRequest
+            httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateCommentResponse.self, from: $0)
+            try self.jsonDecoder.decode(RemoveActivityReactionResponse.self, from: $0)
+        }
+    }
+
+    open func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse {
+        var path = "/feeds/v3/activities/{activity_id}/reactions"
+
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: addReactionRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(AddReactionResponse.self, from: $0)
         }
     }
 
@@ -294,8 +310,45 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func createFeed(createFeedRequest: CreateFeedRequest) async throws -> CreateFeedResponse {
-        let path = "/feeds/v3/feed"
+    open func removeComment(commentId: String) async throws -> RemoveCommentResponse {
+        var path = "/feeds/v3/comments/{comment_id}"
+
+        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
+        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(RemoveCommentResponse.self, from: $0)
+        }
+    }
+
+    open func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse {
+        var path = "/feeds/v3/comments/{comment_id}"
+
+        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
+        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateCommentRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateCommentResponse.self, from: $0)
+        }
+    }
+
+    open func createFeed(feedGroupId: String, createFeedRequest: CreateFeedRequest) async throws -> CreateFeedResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -307,8 +360,137 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func acceptFeedMember(acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse {
-        let path = "/feeds/v3/feed_members/accept"
+    open func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(RemoveFeedResponse.self, from: $0)
+        }
+    }
+
+    open func getFeed(feedGroupId: String, feedId: String) async throws -> GetFeedResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetFeedResponse.self, from: $0)
+        }
+    }
+
+    open func markActivity(feedGroupId: String, feedId: String, markActivityRequest: MarkActivityRequest) async throws -> Response {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/mark/batch"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: markActivityRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(Response.self, from: $0)
+        }
+    }
+
+    open func unpinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> UnpinActivityResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/{activity_id}/pin"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UnpinActivityResponse.self, from: $0)
+        }
+    }
+
+    open func pinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> PinActivityResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/{activity_id}/pin"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PinActivityResponse.self, from: $0)
+        }
+    }
+
+    open func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateFeedMembersRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(Response.self, from: $0)
+        }
+    }
+
+    open func acceptFeedMember(feedId: String, feedGroupId: String, acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members/accept"
+
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -320,8 +502,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func rejectFeedMember(rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse {
-        let path = "/feeds/v3/feed_members/reject"
+    open func rejectFeedMember(feedGroupId: String, feedId: String, rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members/reject"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -334,7 +523,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
     }
 
     open func createManyFeeds(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse {
-        let path = "/feeds/v3/feeds"
+        let path = "/feeds/v3/feeds/batch"
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -358,112 +547,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeFeed() async throws -> RemoveFeedResponse {
-        let path = "/feeds/v3/feeds/{feed_group}/{feed_id}"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveFeedResponse.self, from: $0)
-        }
-    }
-
-    open func getFeed(feedId: String) async throws -> GetFeedResponse {
-        var path = "/feeds/v3/feeds/{feed_group}/{feed_id}"
-
-        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
-        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(GetFeedResponse.self, from: $0)
-        }
-    }
-
-    open func markActivity(markActivityRequest: MarkActivityRequest) async throws -> Response {
-        let path = "/feeds/v3/feeds/{feed_group}/{feed_id}/mark_activity"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: markActivityRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(Response.self, from: $0)
-        }
-    }
-
-    open func updateFeedMembers(feedGroup: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response {
-        var path = "/feeds/v3/feeds/{feed_group}/{feed_id}/members"
-
-        let feedGroupPreEscape = "\(APIHelper.mapValueToPathItem(feedGroup))"
-        let feedGroupPostEscape = feedGroupPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group"), with: feedGroupPostEscape, options: .literal, range: nil)
-        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
-        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: updateFeedMembersRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(Response.self, from: $0)
-        }
-    }
-
-    open func unpinActivity(activityId: String) async throws -> UnpinActivityResponse {
-        var path = "/feeds/v3/feeds/{feed_group}/{feed_id}/pin_activity/{activity_id}"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UnpinActivityResponse.self, from: $0)
-        }
-    }
-
-    open func pinActivity(activityId: String) async throws -> PinActivityResponse {
-        var path = "/feeds/v3/feeds/{feed_group}/{feed_id}/pin_activity/{activity_id}"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(PinActivityResponse.self, from: $0)
-        }
-    }
-
-    open func follow(followRequest: FollowRequest) async throws -> FollowResponse {
-        let path = "/feeds/v3/follow"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: followRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FollowResponse.self, from: $0)
-        }
-    }
-
     open func getFollowSuggestions() async throws -> FollowSuggestionsResponse {
         let path = "/feeds/v3/follow_suggestions"
 
@@ -476,16 +559,29 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func followMany(followManyRequest: FollowManyRequest) async throws -> FollowManyResponse {
+    open func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse {
+        let path = "/feeds/v3/follows"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateFollowRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateFollowResponse.self, from: $0)
+        }
+    }
+
+    open func follow(followRequest: FollowRequest) async throws -> FollowResponse {
         let path = "/feeds/v3/follows"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: followManyRequest
+            request: followRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FollowManyResponse.self, from: $0)
+            try self.jsonDecoder.decode(FollowResponse.self, from: $0)
         }
     }
 
@@ -499,6 +595,19 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(AcceptFollowResponse.self, from: $0)
+        }
+    }
+
+    open func followMany(followManyRequest: FollowManyRequest) async throws -> FollowManyResponse {
+        let path = "/feeds/v3/follows/batch"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: followManyRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(FollowManyResponse.self, from: $0)
         }
     }
 
@@ -528,19 +637,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse {
-        let path = "/feeds/v3/follows/{id}"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PUT",
-            request: updateFollowRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateFollowResponse.self, from: $0)
-        }
-    }
-
     open func unfollow(source: String, target: String) async throws -> UnfollowResponse {
         var path = "/feeds/v3/follows/{source}/{target}"
 
@@ -559,35 +655,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             try self.jsonDecoder.decode(UnfollowResponse.self, from: $0)
         }
     }
-
-    open func removeActivityReaction() async throws -> RemoveActivityReactionResponse {
-        let path = "/feeds/v3/reactions"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveActivityReactionResponse.self, from: $0)
-        }
-    }
-
-    open func addReaction(addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse {
-        let path = "/feeds/v3/reactions"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: addReactionRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(AddReactionResponse.self, from: $0)
-        }
-    }
 }
 
 protocol DefaultAPIEndpoints {
-    func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse
+    func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse
+
+    func upsertActivities(createActivitiesBatchRequest: CreateActivitiesBatchRequest) async throws -> CreateActivitiesBatchResponse
 
     func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
@@ -603,57 +676,55 @@ protocol DefaultAPIEndpoints {
 
     func updateBookmark(activityId: String, updateBookmarkRequest: UpdateBookmarkRequest) async throws -> UpdateBookmarkResponse
 
-    func addBookmark(addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse
+    func addBookmark(activityId: String, addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse
 
-    func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse
+    func addComment(activityId: String, addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
 
-    func removeComment() async throws -> RemoveCommentResponse
+    func removeActivityReaction(activityId: String) async throws -> RemoveActivityReactionResponse
 
-    func addComment(addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
-
-    func updateComment(updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
+    func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
     func queryComments(queryCommentsRequest: QueryCommentsRequest) async throws -> QueryCommentsResponse
 
-    func createFeed(createFeedRequest: CreateFeedRequest) async throws -> CreateFeedResponse
+    func removeComment(commentId: String) async throws -> RemoveCommentResponse
 
-    func acceptFeedMember(acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse
+    func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
 
-    func rejectFeedMember(rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse
+    func createFeed(feedGroupId: String, createFeedRequest: CreateFeedRequest) async throws -> CreateFeedResponse
+
+    func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse
+
+    func getFeed(feedGroupId: String, feedId: String) async throws -> GetFeedResponse
+
+    func markActivity(feedGroupId: String, feedId: String, markActivityRequest: MarkActivityRequest) async throws -> Response
+
+    func unpinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> UnpinActivityResponse
+
+    func pinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> PinActivityResponse
+
+    func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response
+
+    func acceptFeedMember(feedId: String, feedGroupId: String, acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse
+
+    func rejectFeedMember(feedGroupId: String, feedId: String, rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse
 
     func createManyFeeds(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse
 
     func feedsQueryFeeds() async throws -> QueryFeedsResponse
 
-    func removeFeed() async throws -> RemoveFeedResponse
+    func getFollowSuggestions() async throws -> FollowSuggestionsResponse
 
-    func getFeed(feedId: String) async throws -> GetFeedResponse
-
-    func markActivity(markActivityRequest: MarkActivityRequest) async throws -> Response
-
-    func updateFeedMembers(feedGroup: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response
-
-    func unpinActivity(activityId: String) async throws -> UnpinActivityResponse
-
-    func pinActivity(activityId: String) async throws -> PinActivityResponse
+    func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
 
     func follow(followRequest: FollowRequest) async throws -> FollowResponse
 
-    func getFollowSuggestions() async throws -> FollowSuggestionsResponse
+    func acceptFollow(acceptFollowRequest: AcceptFollowRequest) async throws -> AcceptFollowResponse
 
     func followMany(followManyRequest: FollowManyRequest) async throws -> FollowManyResponse
-
-    func acceptFollow(acceptFollowRequest: AcceptFollowRequest) async throws -> AcceptFollowResponse
 
     func queryFollows(queryFollowsRequest: QueryFollowsRequest) async throws -> QueryFollowsResponse
 
     func rejectFollow(rejectFollowRequest: RejectFollowRequest) async throws -> RejectFollowResponse
 
-    func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
-
     func unfollow(source: String, target: String) async throws -> UnfollowResponse
-
-    func removeActivityReaction() async throws -> RemoveActivityReactionResponse
-
-    func addReaction(addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 }

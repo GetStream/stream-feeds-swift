@@ -20,26 +20,41 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
         }
     }
 
+    public var limit: Int?
     public var members: [FeedMemberPayload]?
+    public var next: String?
     public var operation: String
+    public var prev: String?
 
-    public init(members: [FeedMemberPayload]? = nil, operation: String) {
+    public init(limit: Int? = nil, members: [FeedMemberPayload]? = nil, next: String? = nil, operation: String, prev: String? = nil) {
+        self.limit = limit
         self.members = members
+        self.next = next
         self.operation = operation
+        self.prev = prev
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case limit
         case members
+        case next
         case operation
+        case prev
     }
 
     public static func == (lhs: UpdateFeedMembersRequest, rhs: UpdateFeedMembersRequest) -> Bool {
-        lhs.members == rhs.members &&
-            lhs.operation == rhs.operation
+        lhs.limit == rhs.limit &&
+            lhs.members == rhs.members &&
+            lhs.next == rhs.next &&
+            lhs.operation == rhs.operation &&
+            lhs.prev == rhs.prev
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(limit)
         hasher.combine(members)
+        hasher.combine(next)
         hasher.combine(operation)
+        hasher.combine(prev)
     }
 }
