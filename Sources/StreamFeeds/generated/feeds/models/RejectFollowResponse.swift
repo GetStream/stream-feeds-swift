@@ -1,0 +1,27 @@
+import Foundation
+import StreamCore
+
+public final class RejectFollowResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var duration: String
+    public var follow: Follow
+
+    public init(duration: String, follow: Follow) {
+        self.duration = duration
+        self.follow = follow
+    }
+
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case duration
+        case follow
+    }
+
+    public static func == (lhs: RejectFollowResponse, rhs: RejectFollowResponse) -> Bool {
+        lhs.duration == rhs.duration &&
+            lhs.follow == rhs.follow
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(duration)
+        hasher.combine(follow)
+    }
+}

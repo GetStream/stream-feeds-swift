@@ -6,16 +6,34 @@
 //
 
 import SwiftUI
+import StreamCore
 import StreamFeeds
 
 @main
 struct DemoAppApp: App {
     
-    let feed = Feed(id: "123")
+    @State var feedsClient = FeedsClient(
+        apiKey: .init("892s22ypvt6m"),
+        user: .init(id: "martin"),
+        token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFydGluIn0.-8mL49OqMdlvzXR_1IgYboVXXuXFc04r0EvYgko-X8I")
+    )
+    
+    init() {
+        LogConfig.level = .debug
+    }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear() {
+                    Task {
+                        do {
+                            try await feedsClient.connect()
+                        } catch {
+                            print("======= \(error)")
+                        }
+                    }
+                }
         }
     }
 }

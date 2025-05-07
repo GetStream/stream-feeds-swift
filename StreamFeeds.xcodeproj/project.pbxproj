@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		845494EB2DBA2E7C00211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		845495142DBA36A700211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
-		848897292DC103CC0082C5AF /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 848897282DC103CC0082C5AF /* StreamCore */; };
+		84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8E632DCA45880030DD7D /* StreamCore */; };
+		84AA8ECC2DCB4CC50030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8ECB2DCB4CC50030DD7D /* StreamCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,13 @@
 			);
 			target = 845494E12DBA2E7C00211413 /* StreamFeeds */;
 		};
+		84AA8E662DCA48170030DD7D /* Exceptions for "DemoApp" folder in "DemoApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 845495002DBA2F7100211413 /* DemoApp */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +69,9 @@
 		};
 		845495022DBA2F7100211413 /* DemoApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				84AA8E662DCA48170030DD7D /* Exceptions for "DemoApp" folder in "DemoApp" target */,
+			);
 			path = DemoApp;
 			sourceTree = "<group>";
 		};
@@ -71,7 +82,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				848897292DC103CC0082C5AF /* StreamCore in Frameworks */,
+				84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */,
+				84AA8ECC2DCB4CC50030DD7D /* StreamCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +173,8 @@
 			);
 			name = StreamFeeds;
 			packageProductDependencies = (
-				848897282DC103CC0082C5AF /* StreamCore */,
+				84AA8E632DCA45880030DD7D /* StreamCore */,
+				84AA8ECB2DCB4CC50030DD7D /* StreamCore */,
 			);
 			productName = StreamFeeds;
 			productReference = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */;
@@ -245,7 +258,7 @@
 			mainGroup = 845494D82DBA2E7C00211413;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				848897272DC103CC0082C5AF /* XCRemoteSwiftPackageReference "stream-core-swift" */,
+				84AA8ECA2DCB4CC50030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 845494E32DBA2E7C00211413 /* Products */;
@@ -560,6 +573,7 @@
 				DEVELOPMENT_TEAM = EHV7XZLAHA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DemoApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -590,6 +604,7 @@
 				DEVELOPMENT_TEAM = EHV7XZLAHA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DemoApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -651,7 +666,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		848897272DC103CC0082C5AF /* XCRemoteSwiftPackageReference "stream-core-swift" */ = {
+		84AA8ECA2DCB4CC50030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
@@ -662,9 +677,13 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		848897282DC103CC0082C5AF /* StreamCore */ = {
+		84AA8E632DCA45880030DD7D /* StreamCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 848897272DC103CC0082C5AF /* XCRemoteSwiftPackageReference "stream-core-swift" */;
+			productName = StreamCore;
+		};
+		84AA8ECB2DCB4CC50030DD7D /* StreamCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84AA8ECA2DCB4CC50030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */;
 			productName = StreamCore;
 		};
 /* End XCSwiftPackageProductDependency section */

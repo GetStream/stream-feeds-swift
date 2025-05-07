@@ -8,7 +8,7 @@
 import Foundation
 import StreamCore
 
-public struct Feed {
+public struct FeedTest {
     public let id: String
     
     public init(id: String) {

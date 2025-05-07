@@ -1,0 +1,82 @@
+import Foundation
+import StreamCore
+
+public final class Feed: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var createdAt: Date
+    public var custom: [String: RawJSON]?
+    public var deletedAt: Date?
+    public var fid: String
+    public var followerCount: Int
+    public var followingCount: Int
+    public var groupId: String
+    public var id: String
+    public var memberCount: Int
+    public var owner: UserResponse
+    public var pinCount: Int
+    public var updatedAt: Date
+    public var visibility: String?
+
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, fid: String, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, owner: UserResponse, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
+        self.createdAt = createdAt
+        self.custom = custom
+        self.deletedAt = deletedAt
+        self.fid = fid
+        self.followerCount = followerCount
+        self.followingCount = followingCount
+        self.groupId = groupId
+        self.id = id
+        self.memberCount = memberCount
+        self.owner = owner
+        self.pinCount = pinCount
+        self.updatedAt = updatedAt
+        self.visibility = visibility
+    }
+
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case createdAt = "created_at"
+        case custom
+        case deletedAt = "deleted_at"
+        case fid
+        case followerCount = "follower_count"
+        case followingCount = "following_count"
+        case groupId = "group_id"
+        case id
+        case memberCount = "member_count"
+        case owner
+        case pinCount = "pin_count"
+        case updatedAt = "updated_at"
+        case visibility
+    }
+
+    public static func == (lhs: Feed, rhs: Feed) -> Bool {
+        lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.deletedAt == rhs.deletedAt &&
+            lhs.fid == rhs.fid &&
+            lhs.followerCount == rhs.followerCount &&
+            lhs.followingCount == rhs.followingCount &&
+            lhs.groupId == rhs.groupId &&
+            lhs.id == rhs.id &&
+            lhs.memberCount == rhs.memberCount &&
+            lhs.owner == rhs.owner &&
+            lhs.pinCount == rhs.pinCount &&
+            lhs.updatedAt == rhs.updatedAt &&
+            lhs.visibility == rhs.visibility
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(createdAt)
+        hasher.combine(custom)
+        hasher.combine(deletedAt)
+        hasher.combine(fid)
+        hasher.combine(followerCount)
+        hasher.combine(followingCount)
+        hasher.combine(groupId)
+        hasher.combine(id)
+        hasher.combine(memberCount)
+        hasher.combine(owner)
+        hasher.combine(pinCount)
+        hasher.combine(updatedAt)
+        hasher.combine(visibility)
+    }
+}
