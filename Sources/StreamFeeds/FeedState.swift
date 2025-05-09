@@ -21,6 +21,11 @@ public class FeedState: ObservableObject {
     func update(from response: GetFeedResponse) {
         self.activities = response.activities
     }
+    
+    @MainActor
+    func update(from response: GetOrCreateFeedResponse) {
+        self.activities = response.activities
+    }
 }
 
 extension Activity: Identifiable {}

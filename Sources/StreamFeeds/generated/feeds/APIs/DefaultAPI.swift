@@ -398,6 +398,26 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: getOrCreateFeedRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetOrCreateFeedResponse.self, from: $0)
+        }
+    }
+
     open func markActivity(feedGroupId: String, feedId: String, markActivityRequest: MarkActivityRequest) async throws -> Response {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/mark/batch"
 
@@ -695,6 +715,8 @@ protocol DefaultAPIEndpoints {
     func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse
 
     func getFeed(feedGroupId: String, feedId: String) async throws -> GetFeedResponse
+
+    func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 
     func markActivity(feedGroupId: String, feedId: String, markActivityRequest: MarkActivityRequest) async throws -> Response
 

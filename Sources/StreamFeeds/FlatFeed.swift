@@ -53,6 +53,19 @@ public class FlatFeed: WSEventsSubscriber {
         return response
     }
     
+    public func getOrCreate(watch: Bool = false) async throws -> GetOrCreateFeedResponse {
+        let request = GetOrCreateFeedRequest(watch: watch) //TODO: add other stuff
+        let response = try await apiClient.getOrCreateFeed(
+            feedGroupId: group,
+            feedId: id,
+            getOrCreateFeedRequest: request
+        )
+        Task { @MainActor in
+            state.update(from: response)
+        }
+        return response
+    }
+    
     public func addActivity(text: String) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
             addActivityRequest: .init(fids: [fid], text: text, type: "activity.added")
