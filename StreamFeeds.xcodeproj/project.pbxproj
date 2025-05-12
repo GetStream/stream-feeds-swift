@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		845494EB2DBA2E7C00211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
-		845495142DBA36A700211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8E632DCA45880030DD7D /* StreamCore */; };
 		84AA908D2DCB62480030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA908C2DCB62480030DD7D /* StreamCore */; };
+		84AA92682DCE35170030DD7D /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
+		84AA92692DCE35170030DD7D /* StreamFeeds.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,20 @@
 			remoteInfo = StreamFeeds;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		84AA926A2DCE35170030DD7D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				84AA92692DCE35170030DD7D /* StreamFeeds.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		845494E22DBA2E7C00211413 /* StreamFeeds.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StreamFeeds.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,7 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				845495142DBA36A700211413 /* StreamFeeds.framework in Frameworks */,
+				84AA92682DCE35170030DD7D /* StreamFeeds.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +217,7 @@
 				845494FD2DBA2F7100211413 /* Sources */,
 				845494FE2DBA2F7100211413 /* Frameworks */,
 				845494FF2DBA2F7100211413 /* Resources */,
+				84AA926A2DCE35170030DD7D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

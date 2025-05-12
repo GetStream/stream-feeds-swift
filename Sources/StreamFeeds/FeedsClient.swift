@@ -76,7 +76,7 @@ public class FeedsClient: WSEventsSubscriber {
     }
     
     public func flatFeed(group: String, id: String) -> FlatFeed {
-        let feed = FlatFeed(group: group, id: id, apiClient: apiClient)
+        let feed = FlatFeed(group: group, id: id, user: user, apiClient: apiClient)
         eventsMiddleware.add(subscriber: feed)
         return feed
     }
@@ -85,9 +85,7 @@ public class FeedsClient: WSEventsSubscriber {
         try await apiClient.follow(followRequest: .init(source: source, target: target))
     }
     
-    func onEvent(_ event: any Event) {
-        print("======= \(event)")
-    }
+    func onEvent(_ event: any Event) {}
     
     // MARK: - private
     

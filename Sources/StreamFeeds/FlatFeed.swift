@@ -17,14 +17,17 @@ public class FlatFeed: WSEventsSubscriber {
         "\(group):\(id)"
     }
     
+    var user: User
+    
     private let apiClient: DefaultAPI
     
     public internal(set) var state = FeedState()
     
-    internal init(group: String, id: String, apiClient: DefaultAPI) {
+    internal init(group: String, id: String, user: User, apiClient: DefaultAPI) {
         self.apiClient = apiClient
         self.group = group
         self.id = id
+        self.user = user
     }
     
     public func create(
@@ -68,61 +71,54 @@ public class FlatFeed: WSEventsSubscriber {
     
     public func addActivity(text: String) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
-            addActivityRequest: .init(fids: [fid], text: text, type: "activity.added")
+            addActivityRequest: .init(fids: [fid], text: text, type: "post")
         )
-        Task { @MainActor in
-            state.activities.append(response.activity)
-        }
+        add(activity: response.activity)
         return response
     }
     
+    @discardableResult
+    public func addReaction(activityId: String, request: AddReactionRequest) async throws -> AddReactionResponse {
+        try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
+    }
+    
+    @discardableResult
+    public func removeReaction(activityId: String) async throws -> RemoveActivityReactionResponse {
+        try await apiClient.removeActivityReaction(activityId: activityId)
+    }
+    
     func onEvent(_ event: any Event) {
-        print("====== event: \(event)")
-        if let event = event as? FeedsEvent {
-            switch event {
-            case .typeActivityAddedEvent(let activityAddedEvent):
-                self.state.activities.append(activityAddedEvent.activity)
-                break
-            case .typeReactionAddedEvent(let reactionAddedEvent):
-                break
-            case .typeReactionRemovedEvent(let reactionRemovedEvent):
-                break
-            case .typeActivityRemovedEvent(let activityRemovedEvent):
-                break
-            case .typeActivityUpdatedEvent(let activityUpdatedEvent):
-                break
-            case .typeBookmarkAddedEvent(let bookmarkAddedEvent):
-                break
-            case .typeBookmarkRemovedEvent(let bookmarkRemovedEvent):
-                break
-            case .typeBookmarkUpdatedEvent(let bookmarkUpdatedEvent):
-                break
-            case .typeCommentAddedEvent(let commentAddedEvent):
-                break
-            case .typeCommentRemovedEvent(let commentRemovedEvent):
-                break
-            case .typeCommentUpdatedEvent(let commentUpdatedEvent):
-                break
-            case .typeFeedCreatedEvent(let feedCreatedEvent):
-                break
-            case .typeFeedRemovedEvent(let feedRemovedEvent):
-                break
-            case .typeFeedGroupChangedEvent(let feedGroupChangedEvent):
-                break
-            case .typeFeedGroupRemovedEvent(let feedGroupRemovedEvent):
-                break
-            case .typeFollowAddedEvent(let followAddedEvent):
-                break
-            case .typeFollowRemovedEvent(let followRemovedEvent):
-                break
-            case .typeFollowUpdatedEvent(let followUpdatedEvent):
-                break
-            case .typeConnectedEvent(let connectedEvent):
-                break
-            case .typeHealthCheckEvent(let healthCheckEvent):
-                break
-            case .typeConnectionErrorEvent(let connectionErrorEvent):
-                break
+        if let event = event as? ActivityAddedEvent {
+            add(activity: event.activity)
+        } else if let event = event as? ReactionAddedEvent {
+            let reaction = event.reaction
+            if let index = state.activities.firstIndex(where: { $0.id == reaction.activityId }) {
+                let activity = state.activities[index]
+                activity.latestReactions?.append(reaction)
+                var groups = activity.reactionGroups ?? [String: ReactionGroup]()
+                let existing = groups[reaction.type] ?? ReactionGroup(count: 0, firstReactionAt: .distantPast, lastReactionAt: .distantPast)
+                let group = ReactionGroup(
+                    count: existing.count + 1,
+                    firstReactionAt: existing.firstReactionAt,
+                    lastReactionAt: event.createdAt
+                )
+                groups[reaction.type] = group
+                if reaction.user.id == user.id {
+                    var ownReactions = activity.ownReactions ?? []
+                    ownReactions.append(reaction)
+                    activity.ownReactions = ownReactions
+                }
+                activity.reactionGroups = groups
+                state.activities[index] = activity
+            }
+        }
+    }
+    
+    private func add(activity: Activity) {
+        if !self.state.activities.map(\.id).contains(activity.id) {
+            Task { @MainActor in
+                //TODO: consider sorting
+                self.state.activities.insert(activity, at: 0)
             }
         }
     }
