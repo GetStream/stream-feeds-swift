@@ -343,23 +343,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func createFeed(feedGroupId: String, createFeedRequest: CreateFeedRequest) async throws -> CreateFeedResponse {
-        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds"
-
-        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
-        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: createFeedRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(CreateFeedResponse.self, from: $0)
-        }
-    }
-
     open func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
@@ -376,25 +359,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(RemoveFeedResponse.self, from: $0)
-        }
-    }
-
-    open func getFeed(feedGroupId: String, feedId: String) async throws -> GetFeedResponse {
-        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
-
-        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
-        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
-        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
-        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(GetFeedResponse.self, from: $0)
         }
     }
 
@@ -710,11 +674,7 @@ protocol DefaultAPIEndpoints {
 
     func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
 
-    func createFeed(feedGroupId: String, createFeedRequest: CreateFeedRequest) async throws -> CreateFeedResponse
-
     func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse
-
-    func getFeed(feedGroupId: String, feedId: String) async throws -> GetFeedResponse
 
     func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 

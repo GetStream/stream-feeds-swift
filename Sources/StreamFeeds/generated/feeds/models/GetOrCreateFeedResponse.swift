@@ -10,6 +10,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var followersPagination: PagerResponse?
     public var following: [Follow]?
     public var followingPagination: PagerResponse?
+    public var group: FeedGroup
     public var memberPagination: PagerResponse?
     public var members: [FeedMember]?
     public var next: String?
@@ -19,7 +20,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var pinnedActivities: [ActivityPin]?
     public var prev: String?
 
-    public init(activities: [Activity], aggregatedActivities: [AggregatedActivity]? = nil, duration: String, feed: Feed, followers: [Follow]? = nil, followersPagination: PagerResponse? = nil, following: [Follow]? = nil, followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMember]? = nil, next: String? = nil, notificationStatus: NotificationStatus? = nil, ownFeedFollow: Follow, ownFeedMembership: FeedMember, pinnedActivities: [ActivityPin]? = nil, prev: String? = nil) {
+    public init(activities: [Activity], aggregatedActivities: [AggregatedActivity]? = nil, duration: String, feed: Feed, followers: [Follow]? = nil, followersPagination: PagerResponse? = nil, following: [Follow]? = nil, followingPagination: PagerResponse? = nil, group: FeedGroup, memberPagination: PagerResponse? = nil, members: [FeedMember]? = nil, next: String? = nil, notificationStatus: NotificationStatus? = nil, ownFeedFollow: Follow, ownFeedMembership: FeedMember, pinnedActivities: [ActivityPin]? = nil, prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.duration = duration
@@ -28,6 +29,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         self.followersPagination = followersPagination
         self.following = following
         self.followingPagination = followingPagination
+        self.group = group
         self.memberPagination = memberPagination
         self.members = members
         self.next = next
@@ -47,6 +49,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         case followersPagination = "followers_pagination"
         case following
         case followingPagination = "following_pagination"
+        case group
         case memberPagination = "member_pagination"
         case members
         case next
@@ -66,6 +69,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
             lhs.followersPagination == rhs.followersPagination &&
             lhs.following == rhs.following &&
             lhs.followingPagination == rhs.followingPagination &&
+            lhs.group == rhs.group &&
             lhs.memberPagination == rhs.memberPagination &&
             lhs.members == rhs.members &&
             lhs.next == rhs.next &&
@@ -85,6 +89,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         hasher.combine(followersPagination)
         hasher.combine(following)
         hasher.combine(followingPagination)
+        hasher.combine(group)
         hasher.combine(memberPagination)
         hasher.combine(members)
         hasher.combine(next)

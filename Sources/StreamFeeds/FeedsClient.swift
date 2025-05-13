@@ -85,6 +85,10 @@ public class FeedsClient: WSEventsSubscriber {
         try await apiClient.follow(followRequest: .init(source: source, target: target))
     }
     
+    public func getFollowSuggestions() async throws -> FollowSuggestionsResponse {
+        try await apiClient.getFollowSuggestions()
+    }
+    
     func onEvent(_ event: any Event) {}
     
     // MARK: - private

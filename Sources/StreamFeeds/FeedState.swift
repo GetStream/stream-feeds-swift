@@ -13,16 +13,6 @@ public class FeedState: ObservableObject {
     @Published public var activities = [Activity]()
     
     @MainActor
-    func update(from response: CreateFeedResponse) {
-        //TODO: implement
-    }
-    
-    @MainActor
-    func update(from response: GetFeedResponse) {
-        self.activities = response.activities
-    }
-    
-    @MainActor
     func update(from response: GetOrCreateFeedResponse) {
         self.activities = response.activities
     }

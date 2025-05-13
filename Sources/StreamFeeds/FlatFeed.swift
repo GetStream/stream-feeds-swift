@@ -30,32 +30,7 @@ public class FlatFeed: WSEventsSubscriber {
         self.user = user
     }
     
-    public func create(
-        members: [FeedMemberPayload]? = nil,
-        visibility: CreateFeedRequest.FeedVisibility? = nil,
-        custom: [String: RawJSON]? = nil
-    ) async throws -> CreateFeedResponse {
-        let request = CreateFeedRequest(
-            custom: custom,
-            feedId: id,
-            members: members,
-            visibility: visibility
-        )
-        let response = try await apiClient.createFeed(feedGroupId: group, createFeedRequest: request)
-        Task { @MainActor in
-            state.update(from: response)
-        }
-        return response
-    }
-    
-    public func get() async throws -> GetFeedResponse {
-        let response = try await apiClient.getFeed(feedGroupId: group, feedId: id)
-        Task { @MainActor in
-            state.update(from: response)
-        }
-        return response
-    }
-    
+    @discardableResult
     public func getOrCreate(watch: Bool = false) async throws -> GetOrCreateFeedResponse {
         let request = GetOrCreateFeedRequest(watch: watch) //TODO: add other stuff
         let response = try await apiClient.getOrCreateFeed(
@@ -69,6 +44,7 @@ public class FlatFeed: WSEventsSubscriber {
         return response
     }
     
+    @discardableResult
     public func addActivity(text: String) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
             addActivityRequest: .init(fids: [fid], text: text, type: "post")
@@ -85,6 +61,11 @@ public class FlatFeed: WSEventsSubscriber {
     @discardableResult
     public func removeReaction(activityId: String) async throws -> RemoveActivityReactionResponse {
         try await apiClient.removeActivityReaction(activityId: activityId)
+    }
+    
+    @discardableResult
+    public func addComment(activityId: String, request: AddCommentRequest) async throws -> AddCommentResponse {
+        try await apiClient.addComment(activityId: activityId, addCommentRequest: request)
     }
     
     func onEvent(_ event: any Event) {
@@ -109,7 +90,23 @@ public class FlatFeed: WSEventsSubscriber {
                     activity.ownReactions = ownReactions
                 }
                 activity.reactionGroups = groups
-                state.activities[index] = activity
+                Task { @MainActor in
+                    state.activities[index] = activity
+                }
+            }
+        } else if let event = event as? CommentAddedEvent {
+            let comment = event.comment
+            if let index = state.activities.firstIndex(where: { $0.id == comment.activityId }) {
+                let activity = state.activities[index]
+                var comments = activity.comments ?? []
+                if !comments.contains(comment) {
+                    comments.append(comment)
+                    activity.comments = comments
+                    activity.commentCount += 1
+                    Task { @MainActor in
+                        state.activities[index] = activity
+                    }
+                }
             }
         }
     }

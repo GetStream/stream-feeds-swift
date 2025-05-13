@@ -16,7 +16,10 @@ struct FeedsView: View {
     @ObservedObject var state: FeedState
     
     @State var showAddActivity = false
+    @State var showAddComment = false
     @State var activityName = ""
+    @State var comment = ""
+    @State var followSuggestions = [Feed]()
     
     init(credentials: UserCredentials) {
         let feedsClient = FeedsClient(
@@ -25,7 +28,7 @@ struct FeedsView: View {
             token: credentials.token
         )
         self.feedsClient = feedsClient
-        let feed = feedsClient.flatFeed(group: "user", id: "martin")
+        let feed = feedsClient.flatFeed(group: "user", id: "martin1")
         self.feed = feed
         state = feed.state
         LogConfig.level = .debug
@@ -50,27 +53,67 @@ struct FeedsView: View {
                             .padding(.horizontal)
                             .padding(.vertical, 4)
                             
-                            HStack {
-                                Button {
-                                    Task {
-                                        do {
-                                            if activity.ownReactions == nil {
-                                                try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
-                                            } else {
-                                                try await feed.removeReaction(activityId: activity.id)
+                            HStack(spacing: 32) {
+                                HStack {
+                                    Button {
+                                        showAddComment = true
+                                    } label: {
+                                        Image(systemName: "message")
+                                    }
+                                    
+                                    Text("\(activity.commentCount)")
+                                }
+                                .alert("Add Comment", isPresented: $showAddComment) {
+                                    TextField("Insert comment", text: $comment)
+                                    Button("Cancel", role: .cancel) { }
+                                    Button("Add") {
+                                        Task {
+                                            do {
+                                                _ = try await feed.addComment(
+                                                    activityId: activity.id,
+                                                    request: .init(comment: comment)
+                                                )
+                                                comment = ""
+                                            } catch {
+                                                print("======= \(error)")
                                             }
-                                        } catch {
-                                            print("===== \(error)")
                                         }
                                     }
-                                } label: {
-                                    Image(systemName: activity.ownReactions != nil ? "heart.fill" : "heart")
+                                }
+
+                                HStack {
+                                    Button {
+                                        Task {
+                                            do {
+                                                if activity.ownReactions == nil {
+                                                    try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
+                                                } else {
+                                                    try await feed.removeReaction(activityId: activity.id)
+                                                }
+                                            } catch {
+                                                print("===== \(error)")
+                                            }
+                                        }
+                                    } label: {
+                                        Image(systemName: activity.ownReactions != nil ? "heart.fill" : "heart")
+                                    }
+                                    
+                                    Text("\(activity.reactionCount)")
                                 }
                                 
-                                Text("\(activity.reactionCount)")
+                                Spacer()
                             }
+                            .padding(.horizontal)
                             
                             Divider()
+                        }
+                    }
+                    
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(followSuggestions) { feed in
+                                FollowSuggestionView(owner: feed.owner)
+                            }
                         }
                     }
                 }
@@ -99,6 +142,8 @@ struct FeedsView: View {
             Task {
                 do {
                     let response = try await self.feed.getOrCreate(watch: true)
+                    let suggestionsResponse = try await self.feedsClient.getFollowSuggestions()
+                    followSuggestions = suggestionsResponse.suggestions
                 } catch {
                     print("====== \(error)")
                 }
@@ -151,5 +196,19 @@ extension UserResponse {
 extension Activity {
     var reactionCount: Int {
         reactionGroups?.values.compactMap(\.count).reduce(0, +) ?? 0
+    }
+}
+
+extension Feed: Identifiable {}
+
+struct FollowSuggestionView: View {
+    
+    let owner: UserResponse
+    
+    var body: some View {
+        VStack {
+            UserAvatar(url: owner.imageURL)
+            Text(owner.name ?? owner.id)
+        }
     }
 }
