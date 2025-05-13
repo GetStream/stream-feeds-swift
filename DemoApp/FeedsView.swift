@@ -20,6 +20,8 @@ struct FeedsView: View {
     @State var activityName = ""
     @State var comment = ""
     @State var followSuggestions = [Feed]()
+    @State var showActivityOptions = false
+    @State var addImage = false
     
     init(credentials: UserCredentials) {
         let feedsClient = FeedsClient(
@@ -40,18 +42,12 @@ struct FeedsView: View {
                 LazyVStack(spacing: 8) {
                     ForEach(state.activities) { activity in
                         VStack {
-                            HStack {
-                                UserAvatar(url: activity.user.imageURL)
-                                VStack(alignment: .leading) {
-                                    Text(activity.user.name ?? activity.user.id)
-                                        .font(.caption)
-                                        .bold()
-                                    Text(activity.text)
-                                }
-                                Spacer()
+                            if let parent = activity.parent {
+                                Text("\(activity.user.name ?? activity.user.id) reposted")
+                                ActivityView(user: parent.user, text: parent.text)
+                            } else {
+                                ActivityView(user: activity.user, text: activity.text)
                             }
-                            .padding(.horizontal)
-                            .padding(.vertical, 4)
                             
                             HStack(spacing: 32) {
                                 HStack {
@@ -101,6 +97,42 @@ struct FeedsView: View {
                                     Text("\(activity.reactionCount)")
                                 }
                                 
+                                HStack {
+                                    Button {
+                                        Task {
+                                            do {
+                                                try await feed.repost(activityId: activity.id, text: nil)
+                                            } catch {
+                                                print("===== \(error)")
+                                            }
+                                        }
+                                    } label: {
+                                        Image(systemName: "square.and.arrow.up")
+                                    }
+                                    
+                                    Text("\(activity.shareCount ?? 0)")
+                                }
+                                
+                                HStack {
+                                    Button {
+                                        Task {
+                                            do {
+                                                if activity.ownBookmarks == nil {
+                                                    try await feed.addBookmark(activityId: activity.id)
+                                                } else {
+                                                    try await feed.removeBookmark(activityId: activity.id)
+                                                }
+                                            } catch {
+                                                print("===== \(error)")
+                                            }
+                                        }
+                                    } label: {
+                                        Image(systemName: activity.ownBookmarks != nil ? "bookmark.fill" : "bookmark")
+                                    }
+                                    
+                                    Text("\(activity.bookmarkCount)")
+                                }
+                                
                                 Spacer()
                             }
                             .padding(.horizontal)
@@ -127,7 +159,7 @@ struct FeedsView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showAddActivity = true
+                        showActivityOptions = true
                     } label: {
                         Text("Add activity")
                     }
@@ -149,13 +181,30 @@ struct FeedsView: View {
                 }
             }
         }
+        .confirmationDialog("Add Activity", isPresented: $showActivityOptions) {
+            Button("With Image") {
+                showAddActivity = true
+                addImage = true
+            }
+            Button("Without Image") {
+                showAddActivity = true
+                addImage = false
+            }
+            Button("Cancel", role: .cancel) { }
+        }
         .alert("Add activity", isPresented: $showAddActivity) {
             TextField("Activity name", text: $activityName)
             Button("Cancel", role: .cancel) { }
             Button("Add") {
                 Task {
                     do {
-                        _ = try await feed.addActivity(text: activityName)
+                        var attachments = [ActivityAttachment]()
+                        if addImage {
+                            let url = "https://morethandigital.info/wp-content/uploads/2017/03/10-Top-Webseiten-für-gratis-lizenzfreie-Bilder-1024x682.jpeg"
+                            let attachment = ActivityAttachment(assetUrl: url, custom: nil, imageUrl: url, liveCallCid: nil, type: "image", url: url)
+                            attachments.append(attachment)
+                        }
+                        _ = try await feed.addActivity(text: activityName, attachments: attachments)
                         activityName = ""
                     } catch {
                         print("======= \(error)")
@@ -176,7 +225,7 @@ struct UserAvatar: View {
                 .resizable()
                 .scaledToFit()
         } placeholder: {
-            ProgressView()
+            Color(UIColor.secondarySystemBackground)
         }
         .frame(width: 36, height: 36)
         .clipShape(Circle())
@@ -210,5 +259,38 @@ struct FollowSuggestionView: View {
             UserAvatar(url: owner.imageURL)
             Text(owner.name ?? owner.id)
         }
+    }
+}
+
+struct ActivityView: View {
+    
+    let user: UserResponse
+    let text: String
+    var attachments: [ActivityAttachment]?
+    
+    
+    var body: some View {
+        HStack {
+            UserAvatar(url: user.imageURL)
+            VStack(alignment: .leading) {
+                Text(user.name ?? user.id)
+                    .font(.caption)
+                    .bold()
+                Text(text)
+                if let attachment = attachments?.first {
+                    AsyncImage(url: URL(string: attachment.url)) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                    } placeholder: {
+                        Color(UIColor.secondarySystemBackground)
+                    }
+                    .frame(height: 200)
+                }
+            }
+            Spacer()
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 4)
     }
 }

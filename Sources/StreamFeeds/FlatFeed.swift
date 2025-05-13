@@ -45,9 +45,18 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func addActivity(text: String) async throws -> AddActivityResponse {
+    public func addActivity(text: String, attachments: [ActivityAttachment] = []) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
-            addActivityRequest: .init(fids: [fid], text: text, type: "post")
+            addActivityRequest: .init(attachments: attachments, fids: [fid], text: text, type: "post")
+        )
+        add(activity: response.activity)
+        return response
+    }
+    
+    @discardableResult
+    public func repost(activityId: String, text: String?) async throws -> AddActivityResponse {
+        let response = try await apiClient.addActivity(
+            addActivityRequest: .init(fids: [fid], parentId: activityId, text: text, type: "post")
         )
         add(activity: response.activity)
         return response
@@ -66,6 +75,16 @@ public class FlatFeed: WSEventsSubscriber {
     @discardableResult
     public func addComment(activityId: String, request: AddCommentRequest) async throws -> AddCommentResponse {
         try await apiClient.addComment(activityId: activityId, addCommentRequest: request)
+    }
+    
+    @discardableResult
+    public func addBookmark(activityId: String) async throws -> AddBookmarkResponse {
+        try await apiClient.addBookmark(activityId: activityId, addBookmarkRequest: .init()) //TODO: folder stuff
+    }
+    
+    @discardableResult
+    public func removeBookmark(activityId: String) async throws -> RemoveBookmarkResponse {
+        try await apiClient.removeBookmark(activityId: activityId)
     }
     
     func onEvent(_ event: any Event) {
@@ -106,6 +125,37 @@ public class FlatFeed: WSEventsSubscriber {
                     Task { @MainActor in
                         state.activities[index] = activity
                     }
+                }
+            }
+        } else if let event = event as? BookmarkAddedEvent {
+            if let index = state.activities.firstIndex(where: { $0.id == event.activityId }), let user = event.user {
+                let activity = state.activities[index]
+                var ownBookmarks = activity.ownBookmarks ?? []
+                let bookmark = Bookmark(
+                    activityId: event.activityId,
+                    createdAt: event.createdAt,
+                    custom: event.custom,
+                    folder: .init(createdAt: Date(), id: "bookmarks", name: "Bookmarks", updatedAt: Date()),
+                    updatedAt: event.createdAt,
+                    user: user.toUserResponse()
+                )
+                ownBookmarks.append(bookmark)
+                activity.ownBookmarks = ownBookmarks
+                activity.bookmarkCount += 1
+                Task { @MainActor in
+                    state.activities[index] = activity
+                }
+            }
+        } else if let event = event as? BookmarkRemovedEvent {
+            if let index = state.activities.firstIndex(where: { $0.id == event.bookmark.activityId }) {
+                let activity = state.activities[index]
+                if var ownBookmarks = activity.ownBookmarks {
+                    ownBookmarks.removeAll()
+                    activity.ownBookmarks = ownBookmarks
+                }
+                activity.bookmarkCount = max(0, activity.bookmarkCount - 1)
+                Task { @MainActor in
+                    state.activities[index] = activity
                 }
             }
         }
