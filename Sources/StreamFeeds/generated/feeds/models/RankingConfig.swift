@@ -3,19 +3,18 @@ import StreamCore
 
 public final class RankingConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var decayFactor: Float?
-    public var defaults: [String: RawJSON]?
-    public var functions: [String: DecayFunctionConfig]?
+    public var defaults: [String: RawJSON]
+    public var functions: [String: DecayFunctionConfig]
     public var recencyWeight: Float?
-    public var score: String?
-    public var type: String
+    public var score: String
+    public var type: String?
 
-    public init(decayFactor: Float? = nil, defaults: [String: RawJSON]? = nil, functions: [String: DecayFunctionConfig]? = nil, recencyWeight: Float? = nil, score: String? = nil, type: String) {
+    public init(decayFactor: Float? = nil, defaults: [String: RawJSON], functions: [String: DecayFunctionConfig], recencyWeight: Float? = nil, score: String) {
         self.decayFactor = decayFactor
         self.defaults = defaults
         self.functions = functions
         self.recencyWeight = recencyWeight
         self.score = score
-        self.type = type
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {

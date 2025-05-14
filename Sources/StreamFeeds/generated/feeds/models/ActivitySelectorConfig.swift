@@ -6,14 +6,13 @@ public final class ActivitySelectorConfig: @unchecked Sendable, Codable, JSONEnc
     public var minPopularity: Int?
     public var tagFilterType: String?
     public var tags: [String]?
-    public var type: String
+    public var type: String?
 
-    public init(cutoffTime: Date, minPopularity: Int? = nil, tagFilterType: String? = nil, tags: [String]? = nil, type: String) {
+    public init(cutoffTime: Date, minPopularity: Int? = nil, tagFilterType: String? = nil, tags: [String]? = nil) {
         self.cutoffTime = cutoffTime
         self.minPopularity = minPopularity
         self.tagFilterType = tagFilterType
         self.tags = tags
-        self.type = type
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {

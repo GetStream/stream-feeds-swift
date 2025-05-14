@@ -2,6 +2,23 @@ import Foundation
 import StreamCore
 
 public final class StoriesConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public enum StoriesVisibility: String, Sendable, Codable, CaseIterable {
+        case hideForEveryone = "hide_for_everyone"
+        case visibleForAuthor = "visible_for_author"
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue)
+            {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var expirationBehaviour: String?
     public var skipWatched: Bool?
 

@@ -2,26 +2,28 @@ import Foundation
 import StreamCore
 
 public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activitySelectors: [ActivitySelectorConfig]?
+    public var activitySelectors: [ActivitySelectorConfig]
     public var aggregation: AggregationConfig?
+    public var appPK: Int
     public var createdAt: Date
-    public var custom: [String: RawJSON]?
-    public var defaultVisibility: String?
-    public var groupId: String
-    public var id: String
+    public var custom: [String: RawJSON]
+    public var defaultVisibility: String
+    public var deletedAt: Date?
+    public var iD: String
     public var notification: NotificationConfig?
     public var ranking: RankingConfig?
     public var stories: StoriesConfig?
     public var updatedAt: Date
 
-    public init(activitySelectors: [ActivitySelectorConfig]? = nil, aggregation: AggregationConfig? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, defaultVisibility: String? = nil, groupId: String, id: String, notification: NotificationConfig? = nil, ranking: RankingConfig? = nil, stories: StoriesConfig? = nil, updatedAt: Date) {
+    public init(activitySelectors: [ActivitySelectorConfig], aggregation: AggregationConfig? = nil, appPK: Int, createdAt: Date, custom: [String: RawJSON], defaultVisibility: String, deletedAt: Date? = nil, iD: String, notification: NotificationConfig? = nil, ranking: RankingConfig? = nil, stories: StoriesConfig? = nil, updatedAt: Date) {
         self.activitySelectors = activitySelectors
         self.aggregation = aggregation
+        self.appPK = appPK
         self.createdAt = createdAt
         self.custom = custom
         self.defaultVisibility = defaultVisibility
-        self.groupId = groupId
-        self.id = id
+        self.deletedAt = deletedAt
+        self.iD = iD
         self.notification = notification
         self.ranking = ranking
         self.stories = stories
@@ -29,27 +31,29 @@ public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hasha
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activitySelectors = "activity_selectors"
-        case aggregation
+        case activitySelectors = "ActivitySelectors"
+        case aggregation = "Aggregation"
+        case appPK = "AppPK"
         case createdAt = "created_at"
-        case custom
-        case defaultVisibility = "default_visibility"
-        case groupId = "group_id"
-        case id
-        case notification
-        case ranking
-        case stories
+        case custom = "Custom"
+        case defaultVisibility = "DefaultVisibility"
+        case deletedAt = "DeletedAt"
+        case iD = "ID"
+        case notification = "Notification"
+        case ranking = "Ranking"
+        case stories = "Stories"
         case updatedAt = "updated_at"
     }
 
     public static func == (lhs: FeedGroup, rhs: FeedGroup) -> Bool {
         lhs.activitySelectors == rhs.activitySelectors &&
             lhs.aggregation == rhs.aggregation &&
+            lhs.appPK == rhs.appPK &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.defaultVisibility == rhs.defaultVisibility &&
-            lhs.groupId == rhs.groupId &&
-            lhs.id == rhs.id &&
+            lhs.deletedAt == rhs.deletedAt &&
+            lhs.iD == rhs.iD &&
             lhs.notification == rhs.notification &&
             lhs.ranking == rhs.ranking &&
             lhs.stories == rhs.stories &&
@@ -59,11 +63,12 @@ public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hasha
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activitySelectors)
         hasher.combine(aggregation)
+        hasher.combine(appPK)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(defaultVisibility)
-        hasher.combine(groupId)
-        hasher.combine(id)
+        hasher.combine(deletedAt)
+        hasher.combine(iD)
         hasher.combine(notification)
         hasher.combine(ranking)
         hasher.combine(stories)

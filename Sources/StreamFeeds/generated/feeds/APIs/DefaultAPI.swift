@@ -343,7 +343,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse {
+    open func removeFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> RemoveFeedResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -352,9 +352,14 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
         let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
+
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -483,6 +488,26 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(AcceptFeedMemberResponse.self, from: $0)
+        }
+    }
+
+    open func queryFeedMembers(feedGroupId: String, feedId: String, queryFeedMembersRequest: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members/query"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: queryFeedMembersRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(QueryFeedMembersResponse.self, from: $0)
         }
     }
 
@@ -674,7 +699,7 @@ protocol DefaultAPIEndpoints {
 
     func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
 
-    func removeFeed(feedGroupId: String, feedId: String) async throws -> RemoveFeedResponse
+    func removeFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> RemoveFeedResponse
 
     func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 
@@ -687,6 +712,8 @@ protocol DefaultAPIEndpoints {
     func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response
 
     func acceptFeedMember(feedId: String, feedGroupId: String, acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse
+
+    func queryFeedMembers(feedGroupId: String, feedId: String, queryFeedMembersRequest: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse
 
     func rejectFeedMember(feedGroupId: String, feedId: String, rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse
 

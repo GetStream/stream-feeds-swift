@@ -2,10 +2,10 @@ import Foundation
 import StreamCore
 
 public final class NotificationConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var trackRead: Bool
-    public var trackSeen: Bool
+    public var trackRead: Bool?
+    public var trackSeen: Bool?
 
-    public init(trackRead: Bool, trackSeen: Bool) {
+    public init(trackRead: Bool? = nil, trackSeen: Bool? = nil) {
         self.trackRead = trackRead
         self.trackSeen = trackSeen
     }

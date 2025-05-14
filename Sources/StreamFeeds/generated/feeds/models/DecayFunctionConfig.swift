@@ -2,14 +2,14 @@ import Foundation
 import StreamCore
 
 public final class DecayFunctionConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var base: String?
-    public var decay: String?
-    public var direction: String?
-    public var offset: String?
-    public var origin: String?
-    public var scale: String?
+    public var base: String
+    public var decay: String
+    public var direction: String
+    public var offset: String
+    public var origin: String
+    public var scale: String
 
-    public init(base: String? = nil, decay: String? = nil, direction: String? = nil, offset: String? = nil, origin: String? = nil, scale: String? = nil) {
+    public init(base: String, decay: String, direction: String, offset: String, origin: String, scale: String) {
         self.base = base
         self.decay = decay
         self.direction = direction

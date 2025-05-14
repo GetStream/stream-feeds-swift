@@ -2,9 +2,9 @@ import Foundation
 import StreamCore
 
 public final class AggregationConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var format: String
+    public var format: String?
 
-    public init(format: String) {
+    public init(format: String? = nil) {
         self.format = format
     }
 
