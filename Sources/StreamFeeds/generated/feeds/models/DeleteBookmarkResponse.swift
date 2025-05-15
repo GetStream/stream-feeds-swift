@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class RemoveBookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteBookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var bookmark: Bookmark
     public var duration: String
 
@@ -15,7 +15,7 @@ public final class RemoveBookmarkResponse: @unchecked Sendable, Codable, JSONEnc
         case duration
     }
 
-    public static func == (lhs: RemoveBookmarkResponse, rhs: RemoveBookmarkResponse) -> Bool {
+    public static func == (lhs: DeleteBookmarkResponse, rhs: DeleteBookmarkResponse) -> Bool {
         lhs.bookmark == rhs.bookmark &&
             lhs.duration == rhs.duration
     }

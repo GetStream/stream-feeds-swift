@@ -1,12 +1,12 @@
 import Foundation
 import StreamCore
 
-public final class FeedRemovedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "feed.removed"
+    public var type: String = "activity.deleted"
     public var user: UserResponseCommonFields?
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
@@ -26,7 +26,7 @@ public final class FeedRemovedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case user
     }
 
-    public static func == (lhs: FeedRemovedEvent, rhs: FeedRemovedEvent) -> Bool {
+    public static func == (lhs: ActivityDeletedEvent, rhs: ActivityDeletedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&

@@ -7,20 +7,22 @@ private class WSEventMapping: Decodable {
 
 public enum FeedsEvent: Codable, Hashable, Event {
     case typeActivityAddedEvent(ActivityAddedEvent)
-    case typeReactionAddedEvent(ReactionAddedEvent)
-    case typeReactionRemovedEvent(ReactionRemovedEvent)
-    case typeActivityRemovedEvent(ActivityRemovedEvent)
+    case typeActivityDeletedEvent(ActivityDeletedEvent)
+    case typeActivityReactionAddedEvent(ActivityReactionAddedEvent)
+    case typeActivityReactionDeletedEvent(ActivityReactionDeletedEvent)
+    case typeActivityRemovedFromFeedEvent(ActivityRemovedFromFeedEvent)
     case typeActivityUpdatedEvent(ActivityUpdatedEvent)
     case typeBookmarkAddedEvent(BookmarkAddedEvent)
-    case typeBookmarkRemovedEvent(BookmarkRemovedEvent)
+    case typeBookmarkDeletedEvent(BookmarkDeletedEvent)
     case typeBookmarkUpdatedEvent(BookmarkUpdatedEvent)
     case typeCommentAddedEvent(CommentAddedEvent)
     case typeCommentRemovedEvent(CommentRemovedEvent)
     case typeCommentUpdatedEvent(CommentUpdatedEvent)
     case typeFeedCreatedEvent(FeedCreatedEvent)
-    case typeFeedRemovedEvent(FeedRemovedEvent)
+    case typeFeedDeletedEvent(FeedDeletedEvent)
+    case typeFeedUpdatedEvent(FeedUpdatedEvent)
     case typeFeedGroupChangedEvent(FeedGroupChangedEvent)
-    case typeFeedGroupRemovedEvent(FeedGroupRemovedEvent)
+    case typeFeedGroupDeletedEvent(FeedGroupDeletedEvent)
     case typeFollowAddedEvent(FollowAddedEvent)
     case typeFollowRemovedEvent(FollowRemovedEvent)
     case typeFollowUpdatedEvent(FollowUpdatedEvent)
@@ -32,17 +34,19 @@ public enum FeedsEvent: Codable, Hashable, Event {
         switch self {
         case let .typeActivityAddedEvent(value):
             return value.type
-        case let .typeReactionAddedEvent(value):
+        case let .typeActivityDeletedEvent(value):
             return value.type
-        case let .typeReactionRemovedEvent(value):
+        case let .typeActivityReactionAddedEvent(value):
             return value.type
-        case let .typeActivityRemovedEvent(value):
+        case let .typeActivityReactionDeletedEvent(value):
+            return value.type
+        case let .typeActivityRemovedFromFeedEvent(value):
             return value.type
         case let .typeActivityUpdatedEvent(value):
             return value.type
         case let .typeBookmarkAddedEvent(value):
             return value.type
-        case let .typeBookmarkRemovedEvent(value):
+        case let .typeBookmarkDeletedEvent(value):
             return value.type
         case let .typeBookmarkUpdatedEvent(value):
             return value.type
@@ -54,11 +58,13 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value.type
         case let .typeFeedCreatedEvent(value):
             return value.type
-        case let .typeFeedRemovedEvent(value):
+        case let .typeFeedDeletedEvent(value):
+            return value.type
+        case let .typeFeedUpdatedEvent(value):
             return value.type
         case let .typeFeedGroupChangedEvent(value):
             return value.type
-        case let .typeFeedGroupRemovedEvent(value):
+        case let .typeFeedGroupDeletedEvent(value):
             return value.type
         case let .typeFollowAddedEvent(value):
             return value.type
@@ -79,17 +85,19 @@ public enum FeedsEvent: Codable, Hashable, Event {
         switch self {
         case let .typeActivityAddedEvent(value):
             return value
-        case let .typeReactionAddedEvent(value):
+        case let .typeActivityDeletedEvent(value):
             return value
-        case let .typeReactionRemovedEvent(value):
+        case let .typeActivityReactionAddedEvent(value):
             return value
-        case let .typeActivityRemovedEvent(value):
+        case let .typeActivityReactionDeletedEvent(value):
+            return value
+        case let .typeActivityRemovedFromFeedEvent(value):
             return value
         case let .typeActivityUpdatedEvent(value):
             return value
         case let .typeBookmarkAddedEvent(value):
             return value
-        case let .typeBookmarkRemovedEvent(value):
+        case let .typeBookmarkDeletedEvent(value):
             return value
         case let .typeBookmarkUpdatedEvent(value):
             return value
@@ -101,11 +109,13 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value
         case let .typeFeedCreatedEvent(value):
             return value
-        case let .typeFeedRemovedEvent(value):
+        case let .typeFeedDeletedEvent(value):
+            return value
+        case let .typeFeedUpdatedEvent(value):
             return value
         case let .typeFeedGroupChangedEvent(value):
             return value
-        case let .typeFeedGroupRemovedEvent(value):
+        case let .typeFeedGroupDeletedEvent(value):
             return value
         case let .typeFollowAddedEvent(value):
             return value
@@ -119,6 +129,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value
         case let .typeConnectionErrorEvent(value):
             return value
+
         }
     }
 
@@ -127,17 +138,19 @@ public enum FeedsEvent: Codable, Hashable, Event {
         switch self {
         case let .typeActivityAddedEvent(value):
             try container.encode(value)
-        case let .typeReactionAddedEvent(value):
+        case let .typeActivityDeletedEvent(value):
             try container.encode(value)
-        case let .typeReactionRemovedEvent(value):
+        case let .typeActivityReactionAddedEvent(value):
             try container.encode(value)
-        case let .typeActivityRemovedEvent(value):
+        case let .typeActivityReactionDeletedEvent(value):
+            try container.encode(value)
+        case let .typeActivityRemovedFromFeedEvent(value):
             try container.encode(value)
         case let .typeActivityUpdatedEvent(value):
             try container.encode(value)
         case let .typeBookmarkAddedEvent(value):
             try container.encode(value)
-        case let .typeBookmarkRemovedEvent(value):
+        case let .typeBookmarkDeletedEvent(value):
             try container.encode(value)
         case let .typeBookmarkUpdatedEvent(value):
             try container.encode(value)
@@ -149,11 +162,13 @@ public enum FeedsEvent: Codable, Hashable, Event {
             try container.encode(value)
         case let .typeFeedCreatedEvent(value):
             try container.encode(value)
-        case let .typeFeedRemovedEvent(value):
+        case let .typeFeedDeletedEvent(value):
+            try container.encode(value)
+        case let .typeFeedUpdatedEvent(value):
             try container.encode(value)
         case let .typeFeedGroupChangedEvent(value):
             try container.encode(value)
-        case let .typeFeedGroupRemovedEvent(value):
+        case let .typeFeedGroupDeletedEvent(value):
             try container.encode(value)
         case let .typeFollowAddedEvent(value):
             try container.encode(value)
@@ -176,24 +191,27 @@ public enum FeedsEvent: Codable, Hashable, Event {
         if dto.type == "activity.added" {
             let value = try container.decode(ActivityAddedEvent.self)
             self = .typeActivityAddedEvent(value)
+        } else if dto.type == "activity.deleted" {
+            let value = try container.decode(ActivityDeletedEvent.self)
+            self = .typeActivityDeletedEvent(value)
         } else if dto.type == "activity.reaction.added" {
-            let value = try container.decode(ReactionAddedEvent.self)
-            self = .typeReactionAddedEvent(value)
-        } else if dto.type == "activity.reaction.removed" {
-            let value = try container.decode(ReactionRemovedEvent.self)
-            self = .typeReactionRemovedEvent(value)
-        } else if dto.type == "activity.removed" {
-            let value = try container.decode(ActivityRemovedEvent.self)
-            self = .typeActivityRemovedEvent(value)
+            let value = try container.decode(ActivityReactionAddedEvent.self)
+            self = .typeActivityReactionAddedEvent(value)
+        } else if dto.type == "activity.reaction.deleted" {
+            let value = try container.decode(ActivityReactionDeletedEvent.self)
+            self = .typeActivityReactionDeletedEvent(value)
+        } else if dto.type == "activity.removed_from_feed" {
+            let value = try container.decode(ActivityRemovedFromFeedEvent.self)
+            self = .typeActivityRemovedFromFeedEvent(value)
         } else if dto.type == "activity.updated" {
             let value = try container.decode(ActivityUpdatedEvent.self)
             self = .typeActivityUpdatedEvent(value)
         } else if dto.type == "bookmark.added" {
             let value = try container.decode(BookmarkAddedEvent.self)
             self = .typeBookmarkAddedEvent(value)
-        } else if dto.type == "bookmark.removed" {
-            let value = try container.decode(BookmarkRemovedEvent.self)
-            self = .typeBookmarkRemovedEvent(value)
+        } else if dto.type == "bookmark.deleted" {
+            let value = try container.decode(BookmarkDeletedEvent.self)
+            self = .typeBookmarkDeletedEvent(value)
         } else if dto.type == "bookmark.updated" {
             let value = try container.decode(BookmarkUpdatedEvent.self)
             self = .typeBookmarkUpdatedEvent(value)
@@ -209,15 +227,18 @@ public enum FeedsEvent: Codable, Hashable, Event {
         } else if dto.type == "feed.created" {
             let value = try container.decode(FeedCreatedEvent.self)
             self = .typeFeedCreatedEvent(value)
-        } else if dto.type == "feed.removed" {
-            let value = try container.decode(FeedRemovedEvent.self)
-            self = .typeFeedRemovedEvent(value)
+        } else if dto.type == "feed.deleted" {
+            let value = try container.decode(FeedDeletedEvent.self)
+            self = .typeFeedDeletedEvent(value)
+        } else if dto.type == "feed.updated" {
+            let value = try container.decode(FeedUpdatedEvent.self)
+            self = .typeFeedUpdatedEvent(value)
         } else if dto.type == "feed_group.changed" {
             let value = try container.decode(FeedGroupChangedEvent.self)
             self = .typeFeedGroupChangedEvent(value)
-        } else if dto.type == "feed_group.removed" {
-            let value = try container.decode(FeedGroupRemovedEvent.self)
-            self = .typeFeedGroupRemovedEvent(value)
+        } else if dto.type == "feed_group.deleted" {
+            let value = try container.decode(FeedGroupDeletedEvent.self)
+            self = .typeFeedGroupDeletedEvent(value)
         } else if dto.type == "follow.added" {
             let value = try container.decode(FollowAddedEvent.self)
             self = .typeFollowAddedEvent(value)

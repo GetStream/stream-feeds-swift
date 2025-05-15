@@ -68,8 +68,8 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func removeReaction(activityId: String) async throws -> RemoveActivityReactionResponse {
-        try await apiClient.removeActivityReaction(activityId: activityId)
+    public func removeReaction(activityId: String) async throws -> DeleteActivityReactionResponse {
+        try await apiClient.deleteActivityReaction(activityId: activityId)
     }
     
     @discardableResult
@@ -83,14 +83,14 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func removeBookmark(activityId: String) async throws -> RemoveBookmarkResponse {
-        try await apiClient.removeBookmark(activityId: activityId)
+    public func removeBookmark(activityId: String) async throws -> DeleteBookmarkResponse {
+        try await apiClient.deleteBookmark(activityId: activityId)
     }
     
     func onEvent(_ event: any Event) {
         if let event = event as? ActivityAddedEvent {
             add(activity: event.activity)
-        } else if let event = event as? ReactionAddedEvent {
+        } else if let event = event as? ActivityReactionAddedEvent {
             let reaction = event.reaction
             if let index = state.activities.firstIndex(where: { $0.id == reaction.activityId }) {
                 let activity = state.activities[index]
@@ -146,7 +146,7 @@ public class FlatFeed: WSEventsSubscriber {
                     state.activities[index] = activity
                 }
             }
-        } else if let event = event as? BookmarkRemovedEvent {
+        } else if let event = event as? BookmarkDeletedEvent {
             if let index = state.activities.firstIndex(where: { $0.id == event.bookmark.activityId }) {
                 let activity = state.activities[index]
                 if var ownBookmarks = activity.ownBookmarks {

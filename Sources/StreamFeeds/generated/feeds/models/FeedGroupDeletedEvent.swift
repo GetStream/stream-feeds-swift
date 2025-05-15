@@ -1,51 +1,46 @@
 import Foundation
 import StreamCore
 
-public final class ReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
-    public var reaction: ActivityReaction
+    public var groupId: String
     public var receivedAt: Date?
-    public var type: String = "activity.reaction.added"
-    public var user: UserResponseCommonFields?
+    public var type: String = "feed_group.deleted"
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReaction, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], fid: String, groupId: String, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
-        self.reaction = reaction
+        self.groupId = groupId
         self.receivedAt = receivedAt
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
         case fid
-        case reaction
+        case groupId = "group_id"
         case receivedAt = "received_at"
         case type
-        case user
     }
 
-    public static func == (lhs: ReactionAddedEvent, rhs: ReactionAddedEvent) -> Bool {
+    public static func == (lhs: FeedGroupDeletedEvent, rhs: FeedGroupDeletedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&
-            lhs.reaction == rhs.reaction &&
+            lhs.groupId == rhs.groupId &&
             lhs.receivedAt == rhs.receivedAt &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(fid)
-        hasher.combine(reaction)
+        hasher.combine(groupId)
         hasher.combine(receivedAt)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

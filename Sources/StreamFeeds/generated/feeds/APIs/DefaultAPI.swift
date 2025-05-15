@@ -148,19 +148,24 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeActivity(activityId: String) async throws -> RemoveActivityResponse {
+    open func deleteActivity(activityId: String, hardDelete: Bool?) async throws -> DeleteActivityResponse {
         var path = "/feeds/v3/activities/{activity_id}"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
         let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
+
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveActivityResponse.self, from: $0)
+            try self.jsonDecoder.decode(DeleteActivityResponse.self, from: $0)
         }
     }
 
@@ -197,7 +202,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeBookmark(activityId: String) async throws -> RemoveBookmarkResponse {
+    open func deleteBookmark(activityId: String) async throws -> DeleteBookmarkResponse {
         var path = "/feeds/v3/activities/{activity_id}/bookmarks"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
@@ -209,7 +214,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveBookmarkResponse.self, from: $0)
+            try self.jsonDecoder.decode(DeleteBookmarkResponse.self, from: $0)
         }
     }
 
@@ -264,7 +269,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeActivityReaction(activityId: String) async throws -> RemoveActivityReactionResponse {
+    open func deleteActivityReaction(activityId: String) async throws -> DeleteActivityReactionResponse {
         var path = "/feeds/v3/activities/{activity_id}/reactions"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
@@ -276,7 +281,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveActivityReactionResponse.self, from: $0)
+            try self.jsonDecoder.decode(DeleteActivityReactionResponse.self, from: $0)
         }
     }
 
@@ -343,7 +348,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> RemoveFeedResponse {
+    open func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -363,7 +368,27 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveFeedResponse.self, from: $0)
+            try self.jsonDecoder.decode(DeleteFeedResponse.self, from: $0)
+        }
+    }
+
+    open func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateFeedRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateFeedResponse.self, from: $0)
         }
     }
 
@@ -675,13 +700,13 @@ protocol DefaultAPIEndpoints {
 
     func removeActivities(removeActivitiesRequest: RemoveActivitiesRequest) async throws -> RemoveActivitiesResponse
 
-    func removeActivity(activityId: String) async throws -> RemoveActivityResponse
+    func deleteActivity(activityId: String, hardDelete: Bool?) async throws -> DeleteActivityResponse
 
     func getActivity(activityId: String) async throws -> GetActivityResponse
 
     func updateActivityPartial(activityId: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
 
-    func removeBookmark(activityId: String) async throws -> RemoveBookmarkResponse
+    func deleteBookmark(activityId: String) async throws -> DeleteBookmarkResponse
 
     func updateBookmark(activityId: String, updateBookmarkRequest: UpdateBookmarkRequest) async throws -> UpdateBookmarkResponse
 
@@ -689,7 +714,7 @@ protocol DefaultAPIEndpoints {
 
     func addComment(activityId: String, addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
 
-    func removeActivityReaction(activityId: String) async throws -> RemoveActivityReactionResponse
+    func deleteActivityReaction(activityId: String) async throws -> DeleteActivityReactionResponse
 
     func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
@@ -699,7 +724,9 @@ protocol DefaultAPIEndpoints {
 
     func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
 
-    func removeFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> RemoveFeedResponse
+    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse
+
+    func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse
 
     func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 

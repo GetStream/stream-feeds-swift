@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class RemoveActivityReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteActivityReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activityId: String
     public var duration: String
     public var type: String
@@ -21,7 +21,7 @@ public final class RemoveActivityReactionResponse: @unchecked Sendable, Codable,
         case userId = "user_id"
     }
 
-    public static func == (lhs: RemoveActivityReactionResponse, rhs: RemoveActivityReactionResponse) -> Bool {
+    public static func == (lhs: DeleteActivityReactionResponse, rhs: DeleteActivityReactionResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.duration == rhs.duration &&
             lhs.type == rhs.type &&

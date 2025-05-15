@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class RemoveActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
 
     public init(duration: String) {
@@ -12,7 +12,7 @@ public final class RemoveActivityResponse: @unchecked Sendable, Codable, JSONEnc
         case duration
     }
 
-    public static func == (lhs: RemoveActivityResponse, rhs: RemoveActivityResponse) -> Bool {
+    public static func == (lhs: DeleteFeedResponse, rhs: DeleteFeedResponse) -> Bool {
         lhs.duration == rhs.duration
     }
 
