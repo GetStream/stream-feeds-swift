@@ -2,37 +2,37 @@ import Foundation
 import StreamCore
 
 public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var attachments: [ActivityAttachment]?
+    public var attachments: [ActivityAttachment]
     public var bookmarkCount: Int
     public var commentCount: Int
-    public var comments: [Comment]?
+    public var comments: [Comment]
     public var createdAt: Date
-    public var currentFeed: Feed?
-    public var custom: [String: RawJSON]?
+    public var currentFeed: String
+    public var custom: [String: RawJSON]
     public var deletedAt: Date?
     public var editedAt: Date?
     public var expiresAt: Date?
     public var feeds: [String]
-    public var filterTags: [String]?
+    public var filterTags: [String]
     public var id: String
-    public var interestTags: [String]?
-    public var latestReactions: [ActivityReaction]?
+    public var interestTags: [String]
+    public var latestReactions: [ActivityReaction]
     public var location: ActivityLocation?
-    public var mentionedUsers: [UserResponse]?
-    public var ownBookmarks: [Bookmark]?
-    public var ownReactions: [ActivityReaction]?
+    public var mentionedUsers: [UserResponse]
+    public var ownBookmarks: [Bookmark]
+    public var ownReactions: [ActivityReaction]
     public var popularity: Int?
-    public var reactionGroups: [String: ReactionGroup]?
+    public var reactionGroups: [String: ReactionGroup]
     public var score: Float?
-    public var searchData: [String: RawJSON]?
-    public var shareCount: Int?
-    public var text: String
+    public var searchData: [String: RawJSON]
+    public var shareCount: Int
+    public var text: String?
     public var type: String
     public var updatedAt: Date
     public var user: UserResponse
     public var visibility: String
 
-    public init(attachments: [ActivityAttachment]? = nil, bookmarkCount: Int, commentCount: Int, comments: [Comment]? = nil, createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String]? = nil, id: String, interestTags: [String]? = nil, latestReactions: [ActivityReaction]? = nil, location: ActivityLocation? = nil, mentionedUsers: [UserResponse]? = nil, ownBookmarks: [Bookmark]? = nil, ownReactions: [ActivityReaction]? = nil, popularity: Int? = nil, reactionGroups: [String: ReactionGroup]? = nil, score: Float? = nil, searchData: [String: RawJSON]? = nil, shareCount: Int? = nil, text: String, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
+    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: String, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], popularity: Int? = nil, reactionGroups: [String: ReactionGroup], score: Float? = nil, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount

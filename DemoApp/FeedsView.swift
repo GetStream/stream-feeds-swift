@@ -44,12 +44,14 @@ struct FeedsView: View {
                         VStack {
                             if let parent = activity.parent {
                                 Text("\(activity.user.name ?? activity.user.id) reposted")
-                                ActivityView(user: parent.user, text: parent.text)
+                                ActivityView(user: parent.user, text: parent.text ?? "", attachments: parent.attachments)
                             } else {
-                                ActivityView(user: activity.user, text: activity.text)
+                                ActivityView(user: activity.user, text: activity.text ?? "", attachments: activity.attachments)
                             }
                             
                             HStack(spacing: 32) {
+                                Spacer()
+                                
                                 HStack {
                                     Button {
                                         showAddComment = true
@@ -81,7 +83,7 @@ struct FeedsView: View {
                                     Button {
                                         Task {
                                             do {
-                                                if activity.ownReactions == nil {
+                                                if activity.ownReactions.isEmpty {
                                                     try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
                                                 } else {
                                                     try await feed.removeReaction(activityId: activity.id)
@@ -91,7 +93,7 @@ struct FeedsView: View {
                                             }
                                         }
                                     } label: {
-                                        Image(systemName: activity.ownReactions != nil ? "heart.fill" : "heart")
+                                        Image(systemName: !activity.ownReactions.isEmpty ? "heart.fill" : "heart")
                                     }
                                     
                                     Text("\(activity.reactionCount)")
@@ -110,14 +112,14 @@ struct FeedsView: View {
                                         Image(systemName: "square.and.arrow.up")
                                     }
                                     
-                                    Text("\(activity.shareCount ?? 0)")
+                                    Text("\(activity.shareCount)")
                                 }
                                 
                                 HStack {
                                     Button {
                                         Task {
                                             do {
-                                                if activity.ownBookmarks == nil {
+                                                if activity.ownBookmarks.isEmpty {
                                                     try await feed.addBookmark(activityId: activity.id)
                                                 } else {
                                                     try await feed.removeBookmark(activityId: activity.id)
@@ -127,7 +129,7 @@ struct FeedsView: View {
                                             }
                                         }
                                     } label: {
-                                        Image(systemName: activity.ownBookmarks != nil ? "bookmark.fill" : "bookmark")
+                                        Image(systemName: !activity.ownBookmarks.isEmpty ? "bookmark.fill" : "bookmark")
                                     }
                                     
                                     Text("\(activity.bookmarkCount)")
@@ -135,7 +137,6 @@ struct FeedsView: View {
                                 
                                 Spacer()
                             }
-                            .padding(.horizontal)
                             
                             Divider()
                         }
@@ -244,7 +245,7 @@ extension UserResponse {
 
 extension Activity {
     var reactionCount: Int {
-        reactionGroups?.values.compactMap(\.count).reduce(0, +) ?? 0
+        reactionGroups.values.compactMap(\.count).reduce(0, +)
     }
 }
 
@@ -270,7 +271,7 @@ struct ActivityView: View {
     
     
     var body: some View {
-        HStack {
+        HStack(alignment: .top) {
             UserAvatar(url: user.imageURL)
             VStack(alignment: .leading) {
                 Text(user.name ?? user.id)
@@ -286,6 +287,7 @@ struct ActivityView: View {
                         Color(UIColor.secondarySystemBackground)
                     }
                     .frame(height: 200)
+                    .cornerRadius(16)
                 }
             }
             Spacer()

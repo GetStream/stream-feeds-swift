@@ -94,8 +94,8 @@ public class FlatFeed: WSEventsSubscriber {
             let reaction = event.reaction
             if let index = state.activities.firstIndex(where: { $0.id == reaction.activityId }) {
                 let activity = state.activities[index]
-                activity.latestReactions?.append(reaction)
-                var groups = activity.reactionGroups ?? [String: ReactionGroup]()
+                activity.latestReactions.append(reaction)
+                var groups = activity.reactionGroups
                 let existing = groups[reaction.type] ?? ReactionGroup(count: 0, firstReactionAt: .distantPast, lastReactionAt: .distantPast)
                 let group = ReactionGroup(
                     count: existing.count + 1,
@@ -104,7 +104,7 @@ public class FlatFeed: WSEventsSubscriber {
                 )
                 groups[reaction.type] = group
                 if reaction.user.id == user.id {
-                    var ownReactions = activity.ownReactions ?? []
+                    var ownReactions = activity.ownReactions
                     ownReactions.append(reaction)
                     activity.ownReactions = ownReactions
                 }
@@ -117,7 +117,7 @@ public class FlatFeed: WSEventsSubscriber {
             let comment = event.comment
             if let index = state.activities.firstIndex(where: { $0.id == comment.activityId }) {
                 let activity = state.activities[index]
-                var comments = activity.comments ?? []
+                var comments = activity.comments
                 if !comments.contains(comment) {
                     comments.append(comment)
                     activity.comments = comments
@@ -130,7 +130,7 @@ public class FlatFeed: WSEventsSubscriber {
         } else if let event = event as? BookmarkAddedEvent {
             if let index = state.activities.firstIndex(where: { $0.id == event.activityId }), let user = event.user {
                 let activity = state.activities[index]
-                var ownBookmarks = activity.ownBookmarks ?? []
+                var ownBookmarks = activity.ownBookmarks
                 let bookmark = Bookmark(
                     activityId: event.activityId,
                     createdAt: event.createdAt,
@@ -149,10 +149,9 @@ public class FlatFeed: WSEventsSubscriber {
         } else if let event = event as? BookmarkDeletedEvent {
             if let index = state.activities.firstIndex(where: { $0.id == event.bookmark.activityId }) {
                 let activity = state.activities[index]
-                if var ownBookmarks = activity.ownBookmarks {
-                    ownBookmarks.removeAll()
-                    activity.ownBookmarks = ownBookmarks
-                }
+                var ownBookmarks = activity.ownBookmarks
+                ownBookmarks.removeAll()
+                activity.ownBookmarks = ownBookmarks
                 activity.bookmarkCount = max(0, activity.bookmarkCount - 1)
                 Task { @MainActor in
                     state.activities[index] = activity
