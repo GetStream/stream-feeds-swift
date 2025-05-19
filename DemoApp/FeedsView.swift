@@ -22,6 +22,8 @@ struct FeedsView: View {
     @State var followSuggestions = [Feed]()
     @State var showActivityOptions = false
     @State var addImage = false
+    @State var activityToUpdate: Activity?
+    @State var updatedActivityText = ""
     
     init(credentials: UserCredentials) {
         let feedsClient = FeedsClient(
@@ -44,9 +46,27 @@ struct FeedsView: View {
                         VStack {
                             if let parent = activity.parent {
                                 Text("\(activity.user.name ?? activity.user.id) reposted")
-                                ActivityView(user: parent.user, text: parent.text ?? "", attachments: parent.attachments)
+                                ActivityView(
+                                    user: parent.user,
+                                    text: parent.text ?? "",
+                                    attachments: parent.attachments,
+                                    activity: activity,
+                                    onUpdate: { activity, text in
+                                        activityToUpdate = activity
+                                        updatedActivityText = text
+                                    }
+                                )
                             } else {
-                                ActivityView(user: activity.user, text: activity.text ?? "", attachments: activity.attachments)
+                                ActivityView(
+                                    user: activity.user,
+                                    text: activity.text ?? "",
+                                    attachments: activity.attachments,
+                                    activity: activity,
+                                    onUpdate: { activity, text in
+                                        activityToUpdate = activity
+                                        updatedActivityText = text
+                                    }
+                                )
                             }
                             
                             HStack(spacing: 32) {
@@ -205,10 +225,34 @@ struct FeedsView: View {
                             let attachment = ActivityAttachment(assetUrl: url, custom: nil, imageUrl: url, liveCallCid: nil, type: "image", url: url)
                             attachments.append(attachment)
                         }
-                        _ = try await feed.addActivity(text: activityName, attachments: attachments)
+                        _ = try await feed.addActivity(fids: [feed.fid], text: activityName, attachments: attachments)
                         activityName = ""
                     } catch {
                         print("======= \(error)")
+                    }
+                }
+            }
+        }
+        .alert("Update activity", isPresented: .init(
+            get: { activityToUpdate != nil },
+            set: { if !$0 { activityToUpdate = nil } }
+        )) {
+            TextField("Activity text", text: $updatedActivityText)
+            Button("Cancel", role: .cancel) {
+                activityToUpdate = nil
+            }
+            Button("Update") {
+                if let activity = activityToUpdate {
+                    Task {
+                        do {                            
+                            _ = try await feed.updateActivity(
+                                id: activity.id,
+                                request: .init(attachments: activity.attachments, text: updatedActivityText)
+                            )
+                            activityToUpdate = nil
+                        } catch {
+                            print("======= \(error)")
+                        }
                     }
                 }
             }
@@ -268,7 +312,8 @@ struct ActivityView: View {
     let user: UserResponse
     let text: String
     var attachments: [ActivityAttachment]?
-    
+    var activity: Activity
+    var onUpdate: (Activity, String) -> Void
     
     var body: some View {
         HStack(alignment: .top) {
@@ -294,5 +339,12 @@ struct ActivityView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 4)
+        .contextMenu {
+            Button {
+                onUpdate(activity, text)
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ public class FlatFeed: WSEventsSubscriber {
     public let group: String
     public let id: String
     
-    var fid: String {
+    public var fid: String {
         "\(group):\(id)"
     }
     
@@ -45,10 +45,17 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func addActivity(text: String, attachments: [ActivityAttachment] = []) async throws -> AddActivityResponse {
+    public func addActivity(fids: [String], text: String, attachments: [ActivityAttachment] = []) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
-            addActivityRequest: .init(attachments: attachments, fids: [fid], text: text, type: "post")
+            addActivityRequest: .init(attachments: attachments, fids: fids, text: text, type: "post")
         )
+        add(activity: response.activity)
+        return response
+    }
+    
+    @discardableResult
+    public func updateActivity(id: String, request: UpdateActivityRequest) async throws -> UpdateActivityResponse {
+        let response = try await apiClient.updateActivity(activityId: id, updateActivityRequest: request)
         add(activity: response.activity)
         return response
     }
@@ -111,6 +118,12 @@ public class FlatFeed: WSEventsSubscriber {
                 activity.reactionGroups = groups
                 Task { @MainActor in
                     state.activities[index] = activity
+                }
+            }
+        } else if let event = event as? ActivityUpdatedEvent {
+            if let index = state.activities.firstIndex(where: { $0.id == event.activity.id }) {
+                Task { @MainActor in
+                    state.activities[index] = event.activity
                 }
             }
         } else if let event = event as? CommentAddedEvent {

@@ -202,6 +202,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func updateActivity(activityId: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse {
+        var path = "/feeds/v3/activities/{activity_id}"
+
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PUT",
+            request: updateActivityRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateActivityResponse.self, from: $0)
+        }
+    }
+
     open func deleteBookmark(activityId: String) async throws -> DeleteBookmarkResponse {
         var path = "/feeds/v3/activities/{activity_id}/bookmarks"
 
@@ -705,6 +722,8 @@ protocol DefaultAPIEndpoints {
     func getActivity(activityId: String) async throws -> GetActivityResponse
 
     func updateActivityPartial(activityId: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
+
+    func updateActivity(activityId: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse
 
     func deleteBookmark(activityId: String) async throws -> DeleteBookmarkResponse
 

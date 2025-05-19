@@ -2,26 +2,6 @@ import Foundation
 import StreamCore
 
 public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
-        case followers
-        case `private` = "private"
-        case `public` = "public"
-        case restricted = "restricted"
-        case visible = "visible"
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     public var attachments: [ActivityAttachment]?
     public var custom: [String: RawJSON]?
     public var expiresAt: String?
@@ -35,10 +15,9 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
     public var searchData: [String: RawJSON]?
     public var text: String?
     public var type: String
-    public var userId: String?
-    public var visibility: ActivityVisibility?
+    public var visibility: String?
 
-    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, userId: String? = nil, visibility: ActivityVisibility? = nil) {
+    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -52,7 +31,6 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         self.searchData = searchData
         self.text = text
         self.type = type
-        self.userId = userId
         self.visibility = visibility
     }
 
@@ -70,7 +48,6 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         case searchData = "search_data"
         case text
         case type
-        case userId = "user_id"
         case visibility
     }
 
@@ -88,7 +65,6 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
             lhs.searchData == rhs.searchData &&
             lhs.text == rhs.text &&
             lhs.type == rhs.type &&
-            lhs.userId == rhs.userId &&
             lhs.visibility == rhs.visibility
     }
 
@@ -106,7 +82,6 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         hasher.combine(searchData)
         hasher.combine(text)
         hasher.combine(type)
-        hasher.combine(userId)
         hasher.combine(visibility)
     }
 }

@@ -2,6 +2,7 @@ import Foundation
 import StreamCore
 
 public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+    public var activity: Activity
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
@@ -9,7 +10,8 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "activity.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: Activity, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+        self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
@@ -18,6 +20,7 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case activity
         case createdAt = "created_at"
         case custom
         case fid
@@ -27,7 +30,8 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
     }
 
     public static func == (lhs: ActivityDeletedEvent, rhs: ActivityDeletedEvent) -> Bool {
-        lhs.createdAt == rhs.createdAt &&
+        lhs.activity == rhs.activity &&
+            lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -36,6 +40,7 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(activity)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(fid)

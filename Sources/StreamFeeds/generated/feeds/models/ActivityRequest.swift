@@ -35,10 +35,9 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
     public var searchData: [String: RawJSON]?
     public var text: String?
     public var type: String
-    public var userId: String?
     public var visibility: ActivityVisibility?
 
-    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, userId: String? = nil, visibility: ActivityVisibility? = nil) {
+    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -52,7 +51,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         self.searchData = searchData
         self.text = text
         self.type = type
-        self.userId = userId
         self.visibility = visibility
     }
 
@@ -70,7 +68,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         case searchData = "search_data"
         case text
         case type
-        case userId = "user_id"
         case visibility
     }
 
@@ -88,7 +85,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
             lhs.searchData == rhs.searchData &&
             lhs.text == rhs.text &&
             lhs.type == rhs.type &&
-            lhs.userId == rhs.userId &&
             lhs.visibility == rhs.visibility
     }
 
@@ -106,7 +102,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(searchData)
         hasher.combine(text)
         hasher.combine(type)
-        hasher.combine(userId)
         hasher.combine(visibility)
     }
 }
