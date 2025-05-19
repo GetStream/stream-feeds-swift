@@ -9,6 +9,7 @@
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 Package.resolved
 StreamFeeds.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+StreamFeeds.xcodeproj/project.xcworkspace/xcuserdata
 
 ## Build generated
 build/
