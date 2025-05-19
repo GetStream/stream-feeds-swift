@@ -61,6 +61,13 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
+    public func deleteActivity(id: String, hardDelete: Bool? = nil) async throws -> DeleteActivityResponse {
+        let response = try await apiClient.deleteActivity(activityId: id, hardDelete: hardDelete)
+        removeActivity(id: id)
+        return response
+    }
+    
+    @discardableResult
     public func repost(activityId: String, text: String?) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
             addActivityRequest: .init(fids: [fid], parentId: activityId, text: text, type: "post")
@@ -170,6 +177,8 @@ public class FlatFeed: WSEventsSubscriber {
                     state.activities[index] = activity
                 }
             }
+        } else if let event = event as? ActivityDeletedEvent {
+            removeActivity(id: event.activity.id)
         }
     }
     
@@ -179,6 +188,12 @@ public class FlatFeed: WSEventsSubscriber {
                 //TODO: consider sorting
                 self.state.activities.insert(activity, at: 0)
             }
+        }
+    }
+    
+    private func removeActivity(id: String) {
+        Task { @MainActor in
+            self.state.activities.removeAll(where: { $0.id == id })
         }
     }
 }

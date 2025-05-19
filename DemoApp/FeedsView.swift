@@ -24,6 +24,7 @@ struct FeedsView: View {
     @State var addImage = false
     @State var activityToUpdate: Activity?
     @State var updatedActivityText = ""
+    @State var activityToDelete: Activity?
     
     init(credentials: UserCredentials) {
         let feedsClient = FeedsClient(
@@ -54,6 +55,9 @@ struct FeedsView: View {
                                     onUpdate: { activity, text in
                                         activityToUpdate = activity
                                         updatedActivityText = text
+                                    },
+                                    onDelete: { activity in
+                                        activityToDelete = activity
                                     }
                                 )
                             } else {
@@ -65,6 +69,9 @@ struct FeedsView: View {
                                     onUpdate: { activity, text in
                                         activityToUpdate = activity
                                         updatedActivityText = text
+                                    },
+                                    onDelete: { activity in
+                                        activityToDelete = activity
                                     }
                                 )
                             }
@@ -257,6 +264,27 @@ struct FeedsView: View {
                 }
             }
         }
+        .alert("Delete Activity", isPresented: .init(
+            get: { activityToDelete != nil },
+            set: { if !$0 { activityToDelete = nil } }
+        )) {
+            Text("Are you sure you want to delete this activity?")
+            Button("Cancel", role: .cancel) {
+                activityToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                if let activity = activityToDelete {
+                    Task {
+                        do {
+                            _ = try await feed.deleteActivity(id: activity.id)
+                            activityToDelete = nil
+                        } catch {
+                            print("======= \(error)")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -314,6 +342,7 @@ struct ActivityView: View {
     var attachments: [ActivityAttachment]?
     var activity: Activity
     var onUpdate: (Activity, String) -> Void
+    var onDelete: (Activity) -> Void
     
     var body: some View {
         HStack(alignment: .top) {
@@ -344,6 +373,12 @@ struct ActivityView: View {
                 onUpdate(activity, text)
             } label: {
                 Label("Edit", systemImage: "pencil")
+            }
+            
+            Button(role: .destructive) {
+                onDelete(activity)
+            } label: {
+                Label("Delete", systemImage: "trash")
             }
         }
     }
