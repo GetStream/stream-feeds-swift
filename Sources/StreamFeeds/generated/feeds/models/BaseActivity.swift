@@ -7,7 +7,7 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var commentCount: Int
     public var comments: [Comment]
     public var createdAt: Date
-    public var currentFeed: String
+    public var currentFeed: Feed?
     public var custom: [String: RawJSON]
     public var deletedAt: Date?
     public var editedAt: Date?
@@ -32,7 +32,7 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var user: UserResponse
     public var visibility: String
 
-    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: String, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], popularity: Int? = nil, reactionGroups: [String: ReactionGroup], score: Float? = nil, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
+    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], popularity: Int? = nil, reactionGroups: [String: ReactionGroup], score: Float? = nil, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount

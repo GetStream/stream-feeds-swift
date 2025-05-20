@@ -31,8 +31,7 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func getOrCreate(watch: Bool = false) async throws -> GetOrCreateFeedResponse {
-        let request = GetOrCreateFeedRequest(watch: watch) //TODO: add other stuff
+    public func getOrCreate(request: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse {
         let response = try await apiClient.getOrCreateFeed(
             feedGroupId: group,
             feedId: id,

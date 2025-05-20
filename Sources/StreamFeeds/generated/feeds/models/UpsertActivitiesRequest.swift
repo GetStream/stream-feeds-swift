@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class CreateActivitiesBatchRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpsertActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activities: [ActivityRequest]
 
     public init(activities: [ActivityRequest]) {
@@ -12,7 +12,7 @@ public final class CreateActivitiesBatchRequest: @unchecked Sendable, Codable, J
         case activities
     }
 
-    public static func == (lhs: CreateActivitiesBatchRequest, rhs: CreateActivitiesBatchRequest) -> Bool {
+    public static func == (lhs: UpsertActivitiesRequest, rhs: UpsertActivitiesRequest) -> Bool {
         lhs.activities == rhs.activities
     }
 

@@ -109,16 +109,16 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func upsertActivities(createActivitiesBatchRequest: CreateActivitiesBatchRequest) async throws -> CreateActivitiesBatchResponse {
+    open func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse {
         let path = "/feeds/v3/activities/batch"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: createActivitiesBatchRequest
+            request: upsertActivitiesRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(CreateActivitiesBatchResponse.self, from: $0)
+            try self.jsonDecoder.decode(UpsertActivitiesResponse.self, from: $0)
         }
     }
 
@@ -389,26 +389,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse {
-        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
-
-        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
-        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
-        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
-        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PATCH",
-            request: updateFeedRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateFeedResponse.self, from: $0)
-        }
-    }
-
     open func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
@@ -426,6 +406,26 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(GetOrCreateFeedResponse.self, from: $0)
+        }
+    }
+
+    open func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PUT",
+            request: updateFeedRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateFeedResponse.self, from: $0)
         }
     }
 
@@ -711,7 +711,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
 protocol DefaultAPIEndpoints {
     func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse
 
-    func upsertActivities(createActivitiesBatchRequest: CreateActivitiesBatchRequest) async throws -> CreateActivitiesBatchResponse
+    func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse
 
     func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
@@ -745,9 +745,9 @@ protocol DefaultAPIEndpoints {
 
     func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse
 
-    func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse
-
     func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
+
+    func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse
 
     func markActivity(feedGroupId: String, feedId: String, markActivityRequest: MarkActivityRequest) async throws -> Response
 

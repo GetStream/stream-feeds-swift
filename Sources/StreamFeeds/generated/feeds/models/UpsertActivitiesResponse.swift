@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class CreateActivitiesBatchResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpsertActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activities: [Activity]
     public var duration: String
 
@@ -15,7 +15,7 @@ public final class CreateActivitiesBatchResponse: @unchecked Sendable, Codable, 
         case duration
     }
 
-    public static func == (lhs: CreateActivitiesBatchResponse, rhs: CreateActivitiesBatchResponse) -> Bool {
+    public static func == (lhs: UpsertActivitiesResponse, rhs: UpsertActivitiesResponse) -> Bool {
         lhs.activities == rhs.activities &&
             lhs.duration == rhs.duration
     }

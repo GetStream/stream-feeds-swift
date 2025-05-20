@@ -11,6 +11,8 @@ import StreamFeeds
 
 struct ProfileView: View {
     
+    @AppStorage("userId") var userId: String = ""
+    
     let feed: FlatFeed
     @ObservedObject var state: FeedState
     
@@ -48,7 +50,7 @@ struct ProfileView: View {
                         .font(.headline)
                     ForEach(state.followers) { follow in
                         HStack {
-                            Text(follow.targetFeed.owner.name ?? follow.targetFeed.owner.id)
+                            Text(follow.sourceFeed.owner.name ?? follow.sourceFeed.owner.id)
                             Spacer()
                             Button {
                                 Task {
@@ -94,6 +96,7 @@ struct ProfileView: View {
     var whoToFollow: [UserCredentials] {
         UserCredentials.builtIn.filter { credentials in
             !state.following.map(\.targetFeed.owner.id).contains(credentials.id)
+                && credentials.user.id != userId
         }
     }
 }

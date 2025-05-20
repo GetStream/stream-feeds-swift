@@ -206,7 +206,9 @@ struct FeedsView: View {
         .onAppear {
             Task {
                 do {
-                    let response = try await self.feed.getOrCreate(watch: true)
+                    let response = try await self.feed.getOrCreate(
+                        request: .init(followerPagination: .init(limit: 10), followingPagination: .init(limit: 10), watch: true)
+                    )
                     let suggestionsResponse = try await self.feedsClient.getFollowSuggestions()
                     followSuggestions = suggestionsResponse.suggestions
                 } catch {
