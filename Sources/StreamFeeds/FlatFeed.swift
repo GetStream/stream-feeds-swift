@@ -101,6 +101,22 @@ public class FlatFeed: WSEventsSubscriber {
         try await apiClient.deleteBookmark(activityId: activityId)
     }
     
+    // MARK: - Follows
+    
+    @discardableResult
+    public func follow(request: FollowRequest) async throws -> FollowResponse {
+        let response = try await apiClient.follow(followRequest: request)
+        await state.addFollowInfo(from: response.follow)
+        return response
+    }
+    
+    @discardableResult
+    public func unfollow(sourceFid: String? = nil, targetFid: String) async throws -> UnfollowResponse {
+        let response = try await apiClient.unfollow(source: sourceFid ?? self.fid, target: targetFid)
+        await state.removeFollowInfo(fid: targetFid)
+        return response
+    }
+    
     func onEvent(_ event: any Event) {
         if let event = event as? ActivityAddedEvent {
             add(activity: event.activity)
@@ -179,6 +195,26 @@ public class FlatFeed: WSEventsSubscriber {
             }
         } else if let event = event as? ActivityDeletedEvent {
             removeActivity(id: event.activity.id)
+        } else if let event = event as? FollowAddedEvent, event.fid == fid {
+            Task { @MainActor in
+                if event.follow.sourceFid == fid {
+                    if !self.state.following.contains(event.follow) {
+                        self.state.following.append(event.follow)
+                    }
+                } else {
+                    if !self.state.followers.contains(event.follow) {
+                        self.state.followers.append(event.follow)
+                    }
+                }
+            }
+        } else if let event = event as? FollowRemovedEvent, event.fid == fid {
+            Task { @MainActor in
+                if event.follow.sourceFid == fid {
+                    self.state.following.removeAll(where: { $0.sourceFid == event.follow.sourceFid })
+                } else {
+                    self.state.followers.removeAll(where: { $0.targetFid == event.follow.targetFid })
+                }
+            }
         }
     }
     

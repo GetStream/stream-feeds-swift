@@ -27,16 +27,35 @@ struct LoginView: View {
                 Text("Login as Tommaso")
             }
             .padding()
+            
+            Button {
+                onUserSelected(.thierry)
+            } label: {
+                Text("Login as Thierry")
+            }
+            .padding()
+            
+            Button {
+                onUserSelected(.marcelo)
+            } label: {
+                Text("Login as Marcelo")
+            }
+            .padding()
         }
     }
 }
 
-struct UserCredentials {
+struct UserCredentials: Identifiable {
     let user: User
     let token: UserToken
+    var id: String {
+        user.id
+    }
 }
 
 extension UserCredentials {
+    static let builtIn: [UserCredentials] = [.martin, .tommaso, .thierry, .marcelo]
+    
     static let martin = UserCredentials(
         user: .init(id: "martin", name: "Martin", imageURL: URL(string: "https://getstream.io/static/2796a305dd07651fcceb4721a94f4505/802d2/martin-mitrevski.webp")),
         token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFydGluIn0.-8mL49OqMdlvzXR_1IgYboVXXuXFc04r0EvYgko-X8I")
@@ -47,9 +66,27 @@ extension UserCredentials {
         token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidG9tbWFzbyJ9.XYEEVyW_j_K9Nzh4yaRmlV8Dd2APrGi_KieLcmNhQgs")
     )
     
+    static let thierry = UserCredentials(
+        user: .init(id: "thierry", name: "Thierry", imageURL: URL(string: "https://getstream.io/static/237f45f28690696ad8fff92726f45106/c59de/thierry.webp")),
+        token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGhpZXJyeSJ9.RKhJvQYxpu0jk-6ijt4Pkp4wDexLhTUdBDB56qodQ6Q")
+    )
+    
+    static let marcelo = UserCredentials(
+        user: .init(id: "marcelo", name: "Marcelo", imageURL: URL(string: "https://getstream.io/static/aaf5fb17dcfd0a3dd885f62bd21b325a/802d2/marcelo-pires.webp")),
+        token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFyY2VsbyJ9.lM_lJBxac1KHaEaDWYLP7Sr4r1u3xsry3CclTeihrYE")
+    )
+    
+    var fid: String {
+        "user:\(id)"
+    }
+    
     static func credentials(for id: String) -> UserCredentials {
         if id == "martin" {
             return .martin
+        } else if id == "thierry" {
+            return .thierry
+        } else if id == "marcelo" {
+            return .marcelo
         } else {
             return .tommaso
         }

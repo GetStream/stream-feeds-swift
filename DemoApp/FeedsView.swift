@@ -25,6 +25,7 @@ struct FeedsView: View {
     @State var activityToUpdate: Activity?
     @State var updatedActivityText = ""
     @State var activityToDelete: Activity?
+    @State var profileShown = false
     
     init(credentials: UserCredentials) {
         let feedsClient = FeedsClient(
@@ -33,7 +34,7 @@ struct FeedsView: View {
             token: credentials.token
         )
         self.feedsClient = feedsClient
-        let feed = feedsClient.flatFeed(group: "user", id: "martin1")
+        let feed = feedsClient.flatFeed(group: "user", id: credentials.user.id)
         self.feed = feed
         state = feed.state
         LogConfig.level = .debug
@@ -178,6 +179,7 @@ struct FeedsView: View {
                     }
                 }
             }
+            .modifier(AddButtonModifier(addItemShown: $showActivityOptions, buttonShown: true))
             .padding(.top)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
@@ -187,9 +189,9 @@ struct FeedsView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showActivityOptions = true
+                        profileShown = true
                     } label: {
-                        Text("Add activity")
+                        Image(systemName: "person")
                     }
                 }
                 
@@ -198,6 +200,9 @@ struct FeedsView: View {
                 }
             })
         }
+        .sheet(isPresented: $profileShown, content: {
+            ProfileView(feed: feed)
+        })
         .onAppear {
             Task {
                 do {
@@ -381,5 +386,43 @@ struct ActivityView: View {
                 Label("Delete", systemImage: "trash")
             }
         }
+    }
+}
+
+struct AddButtonModifier: ViewModifier {
+    
+    @Binding var addItemShown: Bool
+    var buttonShown: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button {
+                            withAnimation {
+                                addItemShown = true
+                            }
+                        } label: {
+                            AddButtonView()
+                        }
+                        .padding()
+                    }
+                }
+                .opacity(buttonShown ? 1 : 0)
+                .transition(.identity)
+            )
+    }
+}
+
+struct AddButtonView: View {
+    var body: some View {
+        Image(systemName: "plus")
+            .padding(.all, 24)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .clipShape(Circle())
     }
 }
