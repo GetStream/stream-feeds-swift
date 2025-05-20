@@ -14,10 +14,14 @@ struct ProfileView: View {
     @AppStorage("userId") var userId: String = ""
     
     let feed: FlatFeed
+    let feedsClient: FeedsClient
     @ObservedObject var state: FeedState
     
-    init(feed: FlatFeed) {
+    @State var followSuggestions = [Feed]()
+    
+    init(feed: FlatFeed, feedsClient: FeedsClient) {
         self.feed = feed
+        self.feedsClient = feedsClient
         self.state = feed.state
     }
     
@@ -70,19 +74,16 @@ struct ProfileView: View {
                     
                     Text("Who to follow")
                         .font(.headline)
-                    ForEach(whoToFollow) { credentials in
-                        HStack {
-                            Text(credentials.user.name)
-                            Spacer()
-                            Button {
-                                Task {
-                                    try await feed.follow(request: .init(source: feed.fid, target: credentials.fid))
-                                }
-                            } label: {
-                                Text("Follow")
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 24) {
+                            ForEach(followSuggestions) { suggestion in
+                                FollowSuggestionView(
+                                    owner: suggestion.owner,
+                                    feed: feed,
+                                    targetFeed: suggestion
+                                )
                             }
                         }
-                        .padding(.horizontal)
                     }
                     
                     Divider()
@@ -90,15 +91,37 @@ struct ProfileView: View {
                 .padding()
             }
             .navigationTitle("Profile")
-        }
-    }
-    
-    var whoToFollow: [UserCredentials] {
-        UserCredentials.builtIn.filter { credentials in
-            !state.following.map(\.targetFeed.owner.id).contains(credentials.id)
-                && credentials.user.id != userId
+            .onAppear {
+                Task {
+                    let suggestionsResponse = try await self.feedsClient.getFollowSuggestions(
+                        feedGroupId: "user", limit: 10
+                    )
+                    followSuggestions = suggestionsResponse.suggestions
+                }
+            }
         }
     }
 }
 
 extension Follow: Identifiable {}
+
+struct FollowSuggestionView: View {
+    
+    let owner: UserResponse
+    let feed: FlatFeed
+    let targetFeed: Feed
+    
+    var body: some View {
+        VStack {
+            UserAvatar(url: owner.imageURL)
+            Text(owner.name ?? owner.id)
+            Button {
+                Task {
+                    try await feed.follow(request: .init(source: feed.fid, target: targetFeed.fid))
+                }
+            } label: {
+                Text("Follow")
+            }
+        }
+    }
+}

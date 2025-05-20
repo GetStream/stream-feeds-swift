@@ -22,9 +22,9 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var ownBookmarks: [Bookmark]
     public var ownReactions: [ActivityReaction]
     public var parent: BaseActivity?
-    public var popularity: Int?
+    public var popularity: Int
     public var reactionGroups: [String: ReactionGroup]
-    public var score: Float?
+    public var score: Float
     public var searchData: [String: RawJSON]
     public var shareCount: Int
     public var text: String?
@@ -33,7 +33,7 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var user: UserResponse
     public var visibility: String
 
-    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int? = nil, reactionGroups: [String: ReactionGroup], score: Float? = nil, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
+    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount

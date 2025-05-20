@@ -19,7 +19,6 @@ struct FeedsView: View {
     @State var showAddComment = false
     @State var activityName = ""
     @State var comment = ""
-    @State var followSuggestions = [Feed]()
     @State var showActivityOptions = false
     @State var addImage = false
     @State var activityToUpdate: Activity?
@@ -169,14 +168,6 @@ struct FeedsView: View {
                             Divider()
                         }
                     }
-                    
-                    ScrollView(.horizontal) {
-                        HStack {
-                            ForEach(followSuggestions) { feed in
-                                FollowSuggestionView(owner: feed.owner)
-                            }
-                        }
-                    }
                 }
             }
             .modifier(AddButtonModifier(addItemShown: $showActivityOptions, buttonShown: true))
@@ -201,7 +192,7 @@ struct FeedsView: View {
             })
         }
         .sheet(isPresented: $profileShown, content: {
-            ProfileView(feed: feed)
+            ProfileView(feed: feed, feedsClient: feedsClient)
         })
         .onAppear {
             Task {
@@ -209,8 +200,6 @@ struct FeedsView: View {
                     let response = try await self.feed.getOrCreate(
                         request: .init(followerPagination: .init(limit: 10), followingPagination: .init(limit: 10), watch: true)
                     )
-                    let suggestionsResponse = try await self.feedsClient.getFollowSuggestions()
-                    followSuggestions = suggestionsResponse.suggestions
                 } catch {
                     print("====== \(error)")
                 }
@@ -329,18 +318,6 @@ extension Activity {
 }
 
 extension Feed: Identifiable {}
-
-struct FollowSuggestionView: View {
-    
-    let owner: UserResponse
-    
-    var body: some View {
-        VStack {
-            UserAvatar(url: owner.imageURL)
-            Text(owner.name ?? owner.id)
-        }
-    }
-}
 
 struct ActivityView: View {
     

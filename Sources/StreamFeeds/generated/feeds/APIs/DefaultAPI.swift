@@ -573,6 +573,27 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse {
+        var path = "/feeds/v3/feed_groups/{feed_group_id}/follow_suggestions"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetFollowSuggestionsResponse.self, from: $0)
+        }
+    }
+
     open func createManyFeeds(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse {
         let path = "/feeds/v3/feeds/batch"
 
@@ -595,18 +616,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryFeedsResponse.self, from: $0)
-        }
-    }
-
-    open func getFollowSuggestions() async throws -> FollowSuggestionsResponse {
-        let path = "/feeds/v3/follow_suggestions"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FollowSuggestionsResponse.self, from: $0)
         }
     }
 
@@ -763,11 +772,11 @@ protocol DefaultAPIEndpoints {
 
     func rejectFeedMember(feedGroupId: String, feedId: String, rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse
 
+    func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
+
     func createManyFeeds(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse
 
     func feedsQueryFeeds() async throws -> QueryFeedsResponse
-
-    func getFollowSuggestions() async throws -> FollowSuggestionsResponse
 
     func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
 

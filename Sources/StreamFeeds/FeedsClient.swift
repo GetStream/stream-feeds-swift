@@ -85,8 +85,8 @@ public class FeedsClient: WSEventsSubscriber {
         try await apiClient.follow(followRequest: .init(source: source, target: target))
     }
     
-    public func getFollowSuggestions() async throws -> FollowSuggestionsResponse {
-        try await apiClient.getFollowSuggestions()
+    public func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse {
+        try await apiClient.getFollowSuggestions(feedGroupId: feedGroupId, limit: limit)
     }
     
     func onEvent(_ event: any Event) {}
