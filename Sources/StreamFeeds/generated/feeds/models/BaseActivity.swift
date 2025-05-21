@@ -5,7 +5,7 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
     public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
         case `private` = "private"
         case `public` = "public"
-        case tagTagName = "tag:<tag_name>"
+        case tag = "tag"
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
@@ -20,7 +20,7 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
         }
     }
 
-    public var attachments: [ActivityAttachment]
+    public var attachments: [Attachment]
     public var bookmarkCount: Int
     public var commentCount: Int
     public var comments: [Comment]
@@ -49,8 +49,9 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var updatedAt: Date
     public var user: UserResponse
     public var visibility: ActivityVisibility
+    public var visibilityTag: String?
 
-    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -80,6 +81,7 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
         self.updatedAt = updatedAt
         self.user = user
         self.visibility = visibility
+        self.visibilityTag = visibilityTag
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -112,6 +114,7 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
         case updatedAt = "updated_at"
         case user
         case visibility
+        case visibilityTag = "visibility_tag"
     }
 
     public static func == (lhs: BaseActivity, rhs: BaseActivity) -> Bool {
@@ -143,7 +146,8 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
             lhs.type == rhs.type &&
             lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user &&
-            lhs.visibility == rhs.visibility
+            lhs.visibility == rhs.visibility &&
+            lhs.visibilityTag == rhs.visibilityTag
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -176,5 +180,6 @@ public final class BaseActivity: @unchecked Sendable, Codable, JSONEncodable, Ha
         hasher.combine(updatedAt)
         hasher.combine(user)
         hasher.combine(visibility)
+        hasher.combine(visibilityTag)
     }
 }

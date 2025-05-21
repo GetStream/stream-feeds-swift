@@ -269,23 +269,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func addComment(activityId: String, addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse {
-        var path = "/feeds/v3/activities/{activity_id}/comments"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: addCommentRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(AddCommentResponse.self, from: $0)
-        }
-    }
-
     open func deleteActivityReaction(activityId: String) async throws -> DeleteActivityReactionResponse {
         var path = "/feeds/v3/activities/{activity_id}/reactions"
 
@@ -319,6 +302,56 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse {
+        let path = "/feeds/v3/comments"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "object_id": (wrappedValue: objectId.encodeToJSON(), isExplode: true),
+            "object_type": (wrappedValue: objectType.encodeToJSON(), isExplode: true),
+            "depth": (wrappedValue: depth?.encodeToJSON(), isExplode: true),
+            "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
+            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
+            "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
+            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetCommentsResponse.self, from: $0)
+        }
+    }
+
+    open func addComment(addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse {
+        let path = "/feeds/v3/comments"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: addCommentRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(AddCommentResponse.self, from: $0)
+        }
+    }
+
+    open func addCommentsBatch(addCommentsBatchRequest: AddCommentsBatchRequest) async throws -> AddCommentsBatchResponse {
+        let path = "/feeds/v3/comments/batch"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: addCommentsBatchRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(AddCommentsBatchResponse.self, from: $0)
+        }
+    }
+
     open func queryComments(queryCommentsRequest: QueryCommentsRequest) async throws -> QueryCommentsResponse {
         let path = "/feeds/v3/comments/query"
 
@@ -332,7 +365,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeComment(commentId: String) async throws -> RemoveCommentResponse {
+    open func deleteComment(commentId: String) async throws -> DeleteCommentResponse {
         var path = "/feeds/v3/comments/{comment_id}"
 
         let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
@@ -344,7 +377,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveCommentResponse.self, from: $0)
+            try self.jsonDecoder.decode(DeleteCommentResponse.self, from: $0)
+        }
+    }
+
+    open func getComment(commentId: String) async throws -> GetCommentResponse {
+        var path = "/feeds/v3/comments/{comment_id}"
+
+        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
+        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetCommentResponse.self, from: $0)
         }
     }
 
@@ -362,6 +411,65 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(UpdateCommentResponse.self, from: $0)
+        }
+    }
+
+    open func removeCommentReaction(commentId: String) async throws -> RemoveCommentReactionResponse {
+        var path = "/feeds/v3/comments/{comment_id}/reactions"
+
+        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
+        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(RemoveCommentReactionResponse.self, from: $0)
+        }
+    }
+
+    open func addCommentReaction(commentId: String, addCommentReactionRequest: AddCommentReactionRequest) async throws -> AddCommentReactionResponse {
+        var path = "/feeds/v3/comments/{comment_id}/reactions"
+
+        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
+        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: addCommentReactionRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(AddCommentReactionResponse.self, from: $0)
+        }
+    }
+
+    open func getCommentReplies(commentId: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse {
+        var path = "/feeds/v3/comments/{comment_id}/replies"
+
+        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
+        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "depth": (wrappedValue: depth?.encodeToJSON(), isExplode: true),
+            "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
+            "replies_limit": (wrappedValue: repliesLimit?.encodeToJSON(), isExplode: true),
+            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
+            "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
+            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetCommentRepliesResponse.self, from: $0)
         }
     }
 
@@ -740,17 +848,29 @@ protocol DefaultAPIEndpoints {
 
     func addBookmark(activityId: String, addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse
 
-    func addComment(activityId: String, addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
-
     func deleteActivityReaction(activityId: String) async throws -> DeleteActivityReactionResponse
 
     func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
+    func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse
+
+    func addComment(addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
+
+    func addCommentsBatch(addCommentsBatchRequest: AddCommentsBatchRequest) async throws -> AddCommentsBatchResponse
+
     func queryComments(queryCommentsRequest: QueryCommentsRequest) async throws -> QueryCommentsResponse
 
-    func removeComment(commentId: String) async throws -> RemoveCommentResponse
+    func deleteComment(commentId: String) async throws -> DeleteCommentResponse
+
+    func getComment(commentId: String) async throws -> GetCommentResponse
 
     func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
+
+    func removeCommentReaction(commentId: String) async throws -> RemoveCommentReactionResponse
+
+    func addCommentReaction(commentId: String, addCommentReactionRequest: AddCommentReactionRequest) async throws -> AddCommentReactionResponse
+
+    func getCommentReplies(commentId: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
 
     func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse
 

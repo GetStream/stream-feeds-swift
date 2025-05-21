@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class Comment: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ThreadedComment: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var attachments: [Attachment]?
     public var createdAt: Date
     public var custom: [String: RawJSON]?
@@ -9,17 +9,19 @@ public final class Comment: @unchecked Sendable, Codable, JSONEncodable, Hashabl
     public var id: String
     public var latestReactions: [ActivityReaction]?
     public var mentionedUserIds: [String]?
+    public var meta: RepliesMeta?
     public var objectId: String
     public var objectType: String
     public var parentId: String?
     public var reactionCount: Int
     public var reactionGroups: [String: ReactionGroup]?
+    public var replies: [ThreadedComment]?
     public var replyCount: Int
     public var text: String?
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, id: String, latestReactions: [ActivityReaction]? = nil, mentionedUserIds: [String]? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroup]? = nil, replyCount: Int, text: String? = nil, updatedAt: Date, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, id: String, latestReactions: [ActivityReaction]? = nil, mentionedUserIds: [String]? = nil, meta: RepliesMeta? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroup]? = nil, replies: [ThreadedComment]? = nil, replyCount: Int, text: String? = nil, updatedAt: Date, user: UserResponse) {
         self.attachments = attachments
         self.createdAt = createdAt
         self.custom = custom
@@ -27,11 +29,13 @@ public final class Comment: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         self.id = id
         self.latestReactions = latestReactions
         self.mentionedUserIds = mentionedUserIds
+        self.meta = meta
         self.objectId = objectId
         self.objectType = objectType
         self.parentId = parentId
         self.reactionCount = reactionCount
         self.reactionGroups = reactionGroups
+        self.replies = replies
         self.replyCount = replyCount
         self.text = text
         self.updatedAt = updatedAt
@@ -46,18 +50,20 @@ public final class Comment: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         case id
         case latestReactions = "latest_reactions"
         case mentionedUserIds = "mentioned_user_ids"
+        case meta
         case objectId = "object_id"
         case objectType = "object_type"
         case parentId = "parent_id"
         case reactionCount = "reaction_count"
         case reactionGroups = "reaction_groups"
+        case replies
         case replyCount = "reply_count"
         case text
         case updatedAt = "updated_at"
         case user
     }
 
-    public static func == (lhs: Comment, rhs: Comment) -> Bool {
+    public static func == (lhs: ThreadedComment, rhs: ThreadedComment) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
@@ -65,11 +71,13 @@ public final class Comment: @unchecked Sendable, Codable, JSONEncodable, Hashabl
             lhs.id == rhs.id &&
             lhs.latestReactions == rhs.latestReactions &&
             lhs.mentionedUserIds == rhs.mentionedUserIds &&
+            lhs.meta == rhs.meta &&
             lhs.objectId == rhs.objectId &&
             lhs.objectType == rhs.objectType &&
             lhs.parentId == rhs.parentId &&
             lhs.reactionCount == rhs.reactionCount &&
             lhs.reactionGroups == rhs.reactionGroups &&
+            lhs.replies == rhs.replies &&
             lhs.replyCount == rhs.replyCount &&
             lhs.text == rhs.text &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -84,11 +92,13 @@ public final class Comment: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         hasher.combine(id)
         hasher.combine(latestReactions)
         hasher.combine(mentionedUserIds)
+        hasher.combine(meta)
         hasher.combine(objectId)
         hasher.combine(objectType)
         hasher.combine(parentId)
         hasher.combine(reactionCount)
         hasher.combine(reactionGroups)
+        hasher.combine(replies)
         hasher.combine(replyCount)
         hasher.combine(text)
         hasher.combine(updatedAt)

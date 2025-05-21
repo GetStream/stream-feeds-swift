@@ -3,11 +3,9 @@ import StreamCore
 
 public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
-        case followers
         case `private` = "private"
         case `public` = "public"
-        case restricted = "restricted"
-        case visible = "visible"
+        case tag = "tag"
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
@@ -22,7 +20,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         }
     }
 
-    public var attachments: [ActivityAttachment]?
+    public var attachments: [Attachment]?
     public var custom: [String: RawJSON]?
     public var expiresAt: String?
     public var fids: [String]
@@ -36,8 +34,9 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
     public var text: String?
     public var type: String
     public var visibility: ActivityVisibility?
+    public var visibilityTag: String?
 
-    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -52,6 +51,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         self.text = text
         self.type = type
         self.visibility = visibility
+        self.visibilityTag = visibilityTag
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -69,6 +69,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         case text
         case type
         case visibility
+        case visibilityTag = "visibility_tag"
     }
 
     public static func == (lhs: ActivityRequest, rhs: ActivityRequest) -> Bool {
@@ -85,7 +86,8 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
             lhs.searchData == rhs.searchData &&
             lhs.text == rhs.text &&
             lhs.type == rhs.type &&
-            lhs.visibility == rhs.visibility
+            lhs.visibility == rhs.visibility &&
+            lhs.visibilityTag == rhs.visibilityTag
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -103,5 +105,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(text)
         hasher.combine(type)
         hasher.combine(visibility)
+        hasher.combine(visibilityTag)
     }
 }

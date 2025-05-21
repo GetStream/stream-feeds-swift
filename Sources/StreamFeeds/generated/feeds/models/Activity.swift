@@ -2,7 +2,25 @@ import Foundation
 import StreamCore
 
 public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var attachments: [ActivityAttachment]
+    public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
+        case `private` = "private"
+        case `public` = "public"
+        case tag = "tag"
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue)
+            {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
+    public var attachments: [Attachment]
     public var bookmarkCount: Int
     public var commentCount: Int
     public var comments: [Comment]
@@ -31,9 +49,10 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var type: String
     public var updatedAt: Date
     public var user: UserResponse
-    public var visibility: String
+    public var visibility: ActivityVisibility
+    public var visibilityTag: String?
 
-    public init(attachments: [ActivityAttachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -64,6 +83,7 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         self.updatedAt = updatedAt
         self.user = user
         self.visibility = visibility
+        self.visibilityTag = visibilityTag
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -97,6 +117,7 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         case updatedAt = "updated_at"
         case user
         case visibility
+        case visibilityTag = "visibility_tag"
     }
 
     public static func == (lhs: Activity, rhs: Activity) -> Bool {
@@ -129,7 +150,8 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
             lhs.type == rhs.type &&
             lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user &&
-            lhs.visibility == rhs.visibility
+            lhs.visibility == rhs.visibility &&
+            lhs.visibilityTag == rhs.visibilityTag
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -163,5 +185,6 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         hasher.combine(updatedAt)
         hasher.combine(user)
         hasher.combine(visibility)
+        hasher.combine(visibilityTag)
     }
 }

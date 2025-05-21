@@ -27,9 +27,9 @@ public final class FeedPayload: @unchecked Sendable, Codable, JSONEncodable, Has
     public var feedId: String
     public var members: [FeedMemberPayload]?
     public var ownerId: String?
-    public var visibility: FeedVisibility?
+    public var visibility: String?
 
-    public init(custom: [String: RawJSON]? = nil, feedGroupId: String, feedId: String, members: [FeedMemberPayload]? = nil, ownerId: String? = nil, visibility: FeedVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, feedGroupId: String, feedId: String, members: [FeedMemberPayload]? = nil, ownerId: String? = nil, visibility: String? = nil) {
         self.custom = custom
         self.feedGroupId = feedGroupId
         self.feedId = feedId

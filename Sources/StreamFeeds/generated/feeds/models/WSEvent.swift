@@ -5,7 +5,7 @@ private class WSEventMapping: Decodable {
     let type: String
 }
 
-public enum FeedsEvent: Codable, Hashable, Event {
+public enum WSEvent: Codable, Hashable {
     case typeActivityAddedEvent(ActivityAddedEvent)
     case typeActivityDeletedEvent(ActivityDeletedEvent)
     case typeActivityReactionAddedEvent(ActivityReactionAddedEvent)
@@ -28,10 +28,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
     case typeFollowAddedEvent(FollowAddedEvent)
     case typeFollowRemovedEvent(FollowRemovedEvent)
     case typeFollowUpdatedEvent(FollowUpdatedEvent)
-    case typeConnectedEvent(ConnectedEvent)
-    case typeHealthCheckEvent(HealthCheckEvent)
-    case typeConnectionErrorEvent(ConnectionErrorEvent)
-    
+
     public var type: String {
         switch self {
         case let .typeActivityAddedEvent(value):
@@ -77,12 +74,6 @@ public enum FeedsEvent: Codable, Hashable, Event {
         case let .typeFollowRemovedEvent(value):
             return value.type
         case let .typeFollowUpdatedEvent(value):
-            return value.type
-        case let .typeConnectedEvent(value):
-            return value.type
-        case let .typeHealthCheckEvent(value):
-            return value.type
-        case let .typeConnectionErrorEvent(value):
             return value.type
         }
     }
@@ -133,13 +124,6 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value
         case let .typeFollowUpdatedEvent(value):
             return value
-        case let .typeConnectedEvent(value):
-            return value
-        case let .typeHealthCheckEvent(value):
-            return value
-        case let .typeConnectionErrorEvent(value):
-            return value
-
         }
     }
 
@@ -189,12 +173,6 @@ public enum FeedsEvent: Codable, Hashable, Event {
         case let .typeFollowRemovedEvent(value):
             try container.encode(value)
         case let .typeFollowUpdatedEvent(value):
-            try container.encode(value)
-        case let .typeConnectedEvent(value):
-            try container.encode(value)
-        case let .typeHealthCheckEvent(value):
-            try container.encode(value)
-        case let .typeConnectionErrorEvent(value):
             try container.encode(value)
         }
     }
@@ -268,17 +246,8 @@ public enum FeedsEvent: Codable, Hashable, Event {
         } else if dto.type == "follow.updated" {
             let value = try container.decode(FollowUpdatedEvent.self)
             self = .typeFollowUpdatedEvent(value)
-        } else if dto.type == "connection.ok" {
-            let value = try container.decode(ConnectedEvent.self)
-            self = .typeConnectedEvent(value)
-        } else if dto.type == "health.check" {
-            let value = try container.decode(HealthCheckEvent.self)
-            self = .typeHealthCheckEvent(value)
-        } else if dto.type == "connection.error" {
-            let value = try container.decode(ConnectionErrorEvent.self)
-            self = .typeConnectionErrorEvent(value)
         } else {
-            throw DecodingError.typeMismatch(Self.Type.self, .init(codingPath: decoder.codingPath, debugDescription: "Unable to decode instance of WSClientEvent"))
+            throw DecodingError.typeMismatch(Self.Type.self, .init(codingPath: decoder.codingPath, debugDescription: "Unable to decode instance of WSEvent"))
         }
     }
 }

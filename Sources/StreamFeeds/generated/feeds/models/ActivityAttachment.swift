@@ -2,46 +2,45 @@ import Foundation
 import StreamCore
 
 public final class ActivityAttachment: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var assetUrl: String?
+    public var assetURL: String?
     public var custom: [String: RawJSON]?
-    public var imageUrl: String?
-    public var liveCallCid: String?
-    public var type: String
-    public var url: String
+    public var imageURL: String?
+    public var liveCallCID: String?
+    public var type: String?
+    public var uRL: String?
 
-    public init(assetUrl: String? = nil, custom: [String: RawJSON]? = nil, imageUrl: String? = nil, liveCallCid: String? = nil, type: String, url: String) {
-        self.assetUrl = assetUrl
+    public init(assetURL: String? = nil, custom: [String: RawJSON]? = nil, imageURL: String? = nil, liveCallCID: String? = nil, uRL: String? = nil) {
+        self.assetURL = assetURL
         self.custom = custom
-        self.imageUrl = imageUrl
-        self.liveCallCid = liveCallCid
-        self.type = type
-        self.url = url
+        self.imageURL = imageURL
+        self.liveCallCID = liveCallCID
+        self.uRL = uRL
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case assetUrl = "asset_url"
-        case custom
-        case imageUrl = "image_url"
-        case liveCallCid = "live_call_cid"
-        case type
-        case url
+        case assetURL = "AssetURL"
+        case custom = "Custom"
+        case imageURL = "ImageURL"
+        case liveCallCID = "LiveCallCID"
+        case type = "Type"
+        case uRL = "URL"
     }
 
     public static func == (lhs: ActivityAttachment, rhs: ActivityAttachment) -> Bool {
-        lhs.assetUrl == rhs.assetUrl &&
+        lhs.assetURL == rhs.assetURL &&
             lhs.custom == rhs.custom &&
-            lhs.imageUrl == rhs.imageUrl &&
-            lhs.liveCallCid == rhs.liveCallCid &&
+            lhs.imageURL == rhs.imageURL &&
+            lhs.liveCallCID == rhs.liveCallCID &&
             lhs.type == rhs.type &&
-            lhs.url == rhs.url
+            lhs.uRL == rhs.uRL
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(assetUrl)
+        hasher.combine(assetURL)
         hasher.combine(custom)
-        hasher.combine(imageUrl)
-        hasher.combine(liveCallCid)
+        hasher.combine(imageURL)
+        hasher.combine(liveCallCID)
         hasher.combine(type)
-        hasher.combine(url)
+        hasher.combine(uRL)
     }
 }

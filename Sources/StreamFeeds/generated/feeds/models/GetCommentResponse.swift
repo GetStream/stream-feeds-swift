@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class RemoveCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var comment: Comment
     public var duration: String
 
@@ -15,7 +15,7 @@ public final class RemoveCommentResponse: @unchecked Sendable, Codable, JSONEnco
         case duration
     }
 
-    public static func == (lhs: RemoveCommentResponse, rhs: RemoveCommentResponse) -> Bool {
+    public static func == (lhs: GetCommentResponse, rhs: GetCommentResponse) -> Bool {
         lhs.comment == rhs.comment &&
             lhs.duration == rhs.duration
     }

@@ -95,8 +95,7 @@ struct FeedsView: View {
                                         Task {
                                             do {
                                                 _ = try await feed.addComment(
-                                                    activityId: activity.id,
-                                                    request: .init(comment: comment)
+                                                    request: .init(comment: comment, objectId: activity.id, objectType: "activity")
                                                 )
                                                 comment = ""
                                             } catch {
@@ -222,10 +221,10 @@ struct FeedsView: View {
             Button("Add") {
                 Task {
                     do {
-                        var attachments = [ActivityAttachment]()
+                        var attachments = [Attachment]()
                         if addImage {
                             let url = "https://morethandigital.info/wp-content/uploads/2017/03/10-Top-Webseiten-für-gratis-lizenzfreie-Bilder-1024x682.jpeg"
-                            let attachment = ActivityAttachment(assetUrl: url, custom: nil, imageUrl: url, liveCallCid: nil, type: "image", url: url)
+                            let attachment = Attachment(assetUrl: url, custom: nil, imageUrl: url, liveCallCid: nil, type: "image", url: url)
                             attachments.append(attachment)
                         }
                         _ = try await feed.addActivity(fids: [feed.fid], text: activityName, attachments: attachments)
@@ -323,7 +322,7 @@ struct ActivityView: View {
     
     let user: UserResponse
     let text: String
-    var attachments: [ActivityAttachment]?
+    var attachments: [Attachment]?
     var activity: Activity
     var onUpdate: (Activity, String) -> Void
     var onDelete: (Activity) -> Void

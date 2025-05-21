@@ -44,7 +44,7 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func addActivity(fids: [String], text: String, attachments: [ActivityAttachment] = []) async throws -> AddActivityResponse {
+    public func addActivity(fids: [String], text: String, attachments: [Attachment] = []) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
             addActivityRequest: .init(attachments: attachments, fids: fids, text: text, type: "post")
         )
@@ -86,8 +86,8 @@ public class FlatFeed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func addComment(activityId: String, request: AddCommentRequest) async throws -> AddCommentResponse {
-        try await apiClient.addComment(activityId: activityId, addCommentRequest: request)
+    public func addComment(request: AddCommentRequest) async throws -> AddCommentResponse {
+        try await apiClient.addComment(addCommentRequest: request)
     }
     
     @discardableResult
@@ -164,7 +164,7 @@ public class FlatFeed: WSEventsSubscriber {
             }
         } else if let event = event as? CommentAddedEvent {
             let comment = event.comment
-            if let index = state.activities.firstIndex(where: { $0.id == comment.activityId }) {
+            if let index = state.activities.firstIndex(where: { $0.id == comment.parentId }) {
                 let activity = state.activities[index]
                 var comments = activity.comments
                 if !comments.contains(comment) {

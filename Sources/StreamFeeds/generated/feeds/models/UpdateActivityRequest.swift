@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var attachments: [ActivityAttachment]?
+    public var attachments: [Attachment]?
     public var custom: [String: RawJSON]?
     public var expiresAt: Date?
     public var filterTags: [String]?
@@ -11,7 +11,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     public var text: String?
     public var visibility: String?
 
-    public init(attachments: [ActivityAttachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, text: String? = nil, visibility: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, text: String? = nil, visibility: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
