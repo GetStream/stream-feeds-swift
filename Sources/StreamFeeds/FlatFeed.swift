@@ -116,6 +116,20 @@ public class FlatFeed: WSEventsSubscriber {
         return response
     }
     
+    @discardableResult
+    public func acceptFollow(request: AcceptFollowRequest) async throws -> AcceptFollowResponse {
+        let response = try await apiClient.acceptFollow(acceptFollowRequest: request)
+        await state.removeFollowRequest(sourceFid: request.sourceFid, targetFid: request.targetFid)
+        return response
+    }
+    
+    @discardableResult
+    public func rejectFollow(request: RejectFollowRequest) async throws -> RejectFollowResponse {
+        let response = try await apiClient.rejectFollow(rejectFollowRequest: request)
+        await state.removeFollowRequest(sourceFid: request.sourceFid, targetFid: request.targetFid)
+        return response
+    }
+    
     func onEvent(_ event: any Event) {
         if let event = event as? ActivityAddedEvent {
             add(activity: event.activity)
@@ -195,16 +209,27 @@ public class FlatFeed: WSEventsSubscriber {
         } else if let event = event as? ActivityDeletedEvent {
             removeActivity(id: event.activity.id)
         } else if let event = event as? FollowAddedEvent, event.fid == fid {
-            Task { @MainActor in
-                if event.follow.sourceFid == fid {
-                    if !self.state.following.contains(event.follow) {
-                        self.state.following.append(event.follow)
-                    }
-                } else {
-                    if !self.state.followers.contains(event.follow) {
-                        self.state.followers.append(event.follow)
+            if !event.follow.request {
+                Task { @MainActor in
+                    if event.follow.sourceFid == fid {
+                        if !self.state.following.contains(event.follow) {
+                            self.state.following.append(event.follow)
+                        }
+                    } else {
+                        if !self.state.followers.contains(event.follow) {
+                            self.state.followers.append(event.follow)
+                        }
                     }
                 }
+            } else {
+                Task { @MainActor in
+                    if event.follow.sourceFid != fid {
+                        if !self.state.followRequests.contains(event.follow) {
+                            self.state.followRequests.append(event.follow)
+                        }
+                    }
+                }
+
             }
         } else if let event = event as? FollowRemovedEvent, event.fid == fid {
             Task { @MainActor in
@@ -212,6 +237,12 @@ public class FlatFeed: WSEventsSubscriber {
                     self.state.following.removeAll(where: { $0.sourceFid == event.follow.sourceFid })
                 } else {
                     self.state.followers.removeAll(where: { $0.targetFid == event.follow.targetFid })
+                }
+            }
+        } else if let event = event as? FollowUpdatedEvent, event.fid == fid {
+            if event.follow.targetFid == fid, event.follow.requestAcceptedAt != nil {
+                if !self.state.followers.contains(event.follow) {
+                    self.state.followers.append(event.follow)
                 }
             }
         }

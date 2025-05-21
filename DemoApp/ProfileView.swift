@@ -29,6 +29,38 @@ struct ProfileView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    Text("Follow Requests")
+                        .font(.headline)
+                    VStack {
+                        ForEach(feed.state.followRequests) { request in
+                            HStack {
+                                Text(request.sourceFeed.owner.name ?? request.sourceFeed.owner.id)
+                                Spacer()
+                                Button {
+                                    Task {
+                                        try await feed.acceptFollow(
+                                            request: .init(sourceFid: request.sourceFid, targetFid: request.targetFid)
+                                        )
+                                    }
+                                } label: {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                }
+                                
+                                Button {
+                                    Task {
+                                        try await feed.rejectFollow(
+                                            request: .init(sourceFid: request.sourceFid, targetFid: request.targetFid)
+                                        )
+                                    }
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        }
+                    }
+                    
                     Text("Following")
                         .font(.headline)
                     ForEach(state.following) { follow in
@@ -121,6 +153,14 @@ struct FollowSuggestionView: View {
                 }
             } label: {
                 Text("Follow")
+            }
+            
+            Button {
+                Task {
+                    try await feed.follow(request: .init(request: true, source: feed.fid, target: targetFeed.fid))
+                }
+            } label: {
+                Text("Request to follow")
             }
         }
     }
