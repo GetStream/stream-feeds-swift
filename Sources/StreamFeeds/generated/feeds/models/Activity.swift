@@ -49,10 +49,10 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var type: String
     public var updatedAt: Date
     public var user: UserResponse
-    public var visibility: ActivityVisibility
+    public var visibility: String
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount

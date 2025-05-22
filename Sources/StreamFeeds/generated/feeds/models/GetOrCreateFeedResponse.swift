@@ -14,12 +14,12 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var members: [FeedMember]
     public var next: String?
     public var notificationStatus: NotificationStatus?
-    public var ownFeedFollow: Follow?
-    public var ownFeedMembership: FeedMember?
+    public var ownFollows: [Follow]?
+    public var ownMembership: FeedMember?
     public var pinnedActivities: [ActivityPin]
     public var prev: String?
 
-    public init(activities: [Activity], aggregatedActivities: [AggregatedActivity], duration: String, feed: Feed, followers: [Follow], followersPagination: PagerResponse? = nil, following: [Follow], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMember], next: String? = nil, notificationStatus: NotificationStatus? = nil, ownFeedFollow: Follow? = nil, ownFeedMembership: FeedMember? = nil, pinnedActivities: [ActivityPin], prev: String? = nil) {
+    public init(activities: [Activity], aggregatedActivities: [AggregatedActivity], duration: String, feed: Feed, followers: [Follow], followersPagination: PagerResponse? = nil, following: [Follow], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMember], next: String? = nil, notificationStatus: NotificationStatus? = nil, ownFollows: [Follow]? = nil, ownMembership: FeedMember? = nil, pinnedActivities: [ActivityPin], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.duration = duration
@@ -32,8 +32,8 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         self.members = members
         self.next = next
         self.notificationStatus = notificationStatus
-        self.ownFeedFollow = ownFeedFollow
-        self.ownFeedMembership = ownFeedMembership
+        self.ownFollows = ownFollows
+        self.ownMembership = ownMembership
         self.pinnedActivities = pinnedActivities
         self.prev = prev
     }
@@ -51,8 +51,8 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         case members
         case next
         case notificationStatus = "notification_status"
-        case ownFeedFollow = "own_feed_follow"
-        case ownFeedMembership = "own_feed_membership"
+        case ownFollows = "own_follows"
+        case ownMembership = "own_membership"
         case pinnedActivities = "pinned_activities"
         case prev
     }
@@ -70,8 +70,8 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
             lhs.members == rhs.members &&
             lhs.next == rhs.next &&
             lhs.notificationStatus == rhs.notificationStatus &&
-            lhs.ownFeedFollow == rhs.ownFeedFollow &&
-            lhs.ownFeedMembership == rhs.ownFeedMembership &&
+            lhs.ownFollows == rhs.ownFollows &&
+            lhs.ownMembership == rhs.ownMembership &&
             lhs.pinnedActivities == rhs.pinnedActivities &&
             lhs.prev == rhs.prev
     }
@@ -89,8 +89,8 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         hasher.combine(members)
         hasher.combine(next)
         hasher.combine(notificationStatus)
-        hasher.combine(ownFeedFollow)
-        hasher.combine(ownFeedMembership)
+        hasher.combine(ownFollows)
+        hasher.combine(ownMembership)
         hasher.combine(pinnedActivities)
         hasher.combine(prev)
     }
