@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class ActivityRemovedFromFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var activity: Activity
+    public var activity: ActivityResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
@@ -10,7 +10,7 @@ public final class ActivityRemovedFromFeedEvent: @unchecked Sendable, Event, Cod
     public var type: String = "activity.removed_from_feed"
     public var user: UserResponseCommonFields?
 
-    public init(activity: Activity, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom

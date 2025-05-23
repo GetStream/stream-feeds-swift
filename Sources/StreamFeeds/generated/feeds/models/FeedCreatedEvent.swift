@@ -4,14 +4,14 @@ import StreamCore
 public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feed: Feed
+    public var feed: FeedResponse
     public var fid: String
-    public var members: [FeedMember]
+    public var members: [FeedMemberResponse]
     public var receivedAt: Date?
     public var type: String = "feed.created"
     public var user: UserResponseCommonFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: Feed, fid: String, members: [FeedMember], receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed

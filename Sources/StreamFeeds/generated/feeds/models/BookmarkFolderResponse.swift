@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkFolder: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BookmarkFolderResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var id: String
@@ -24,7 +24,7 @@ public final class BookmarkFolder: @unchecked Sendable, Codable, JSONEncodable, 
         case updatedAt = "updated_at"
     }
 
-    public static func == (lhs: BookmarkFolder, rhs: BookmarkFolder) -> Bool {
+    public static func == (lhs: BookmarkFolderResponse, rhs: BookmarkFolderResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&

@@ -5,12 +5,12 @@ public final class FollowAddedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
-    public var follow: Follow
+    public var follow: FollowResponse
     public var receivedAt: Date?
     public var type: String = "follow.added"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: Follow, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid

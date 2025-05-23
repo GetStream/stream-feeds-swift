@@ -2,9 +2,9 @@ import Foundation
 import StreamCore
 
 public final class CreateManyFeedsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var feeds: [FeedPayload]
+    public var feeds: [FeedRequest]
 
-    public init(feeds: [FeedPayload]) {
+    public init(feeds: [FeedRequest]) {
         self.feeds = feeds
     }
 

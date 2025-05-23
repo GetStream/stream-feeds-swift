@@ -2,10 +2,10 @@ import Foundation
 import StreamCore
 
 public final class UpdateCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var comment: Comment
+    public var comment: CommentResponse
     public var duration: String
 
-    public init(comment: Comment, duration: String) {
+    public init(comment: CommentResponse, duration: String) {
         self.comment = comment
         self.duration = duration
     }

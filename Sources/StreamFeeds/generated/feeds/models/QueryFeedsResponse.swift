@@ -3,10 +3,10 @@ import StreamCore
 
 public final class QueryFeedsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var feeds: [Feed]
+    public var feeds: [FeedResponse]
     public var pager: PagerResponse
 
-    public init(duration: String, feeds: [Feed], pager: PagerResponse) {
+    public init(duration: String, feeds: [FeedResponse], pager: PagerResponse) {
         self.duration = duration
         self.feeds = feeds
         self.pager = pager

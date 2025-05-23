@@ -2,10 +2,10 @@ import Foundation
 import StreamCore
 
 public final class AddCommentsBatchResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var comments: [Comment]
+    public var comments: [CommentResponse]
     public var duration: String
 
-    public init(comments: [Comment], duration: String) {
+    public init(comments: [CommentResponse], duration: String) {
         self.comments = comments
         self.duration = duration
     }

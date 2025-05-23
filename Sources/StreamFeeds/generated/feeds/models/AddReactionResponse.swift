@@ -3,9 +3,9 @@ import StreamCore
 
 public final class AddReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var reaction: ActivityReaction
+    public var reaction: ActivityReactionResponse
 
-    public init(duration: String, reaction: ActivityReaction) {
+    public init(duration: String, reaction: ActivityReactionResponse) {
         self.duration = duration
         self.reaction = reaction
     }

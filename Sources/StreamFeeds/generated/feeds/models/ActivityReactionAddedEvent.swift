@@ -5,12 +5,12 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
-    public var reaction: ActivityReaction
+    public var reaction: ActivityReactionResponse
     public var receivedAt: Date?
     public var type: String = "activity.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReaction, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid

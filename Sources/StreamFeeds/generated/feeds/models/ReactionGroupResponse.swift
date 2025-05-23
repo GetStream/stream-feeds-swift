@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class ReactionGroup: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ReactionGroupResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var count: Int
     public var firstReactionAt: Date
     public var lastReactionAt: Date
@@ -18,7 +18,7 @@ public final class ReactionGroup: @unchecked Sendable, Codable, JSONEncodable, H
         case lastReactionAt = "last_reaction_at"
     }
 
-    public static func == (lhs: ReactionGroup, rhs: ReactionGroup) -> Bool {
+    public static func == (lhs: ReactionGroupResponse, rhs: ReactionGroupResponse) -> Bool {
         lhs.count == rhs.count &&
             lhs.firstReactionAt == rhs.firstReactionAt &&
             lhs.lastReactionAt == rhs.lastReactionAt

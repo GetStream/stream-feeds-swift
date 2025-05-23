@@ -1,27 +1,27 @@
 import Foundation
 import StreamCore
 
-public final class ThreadedComment: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var attachments: [Attachment]?
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var deletedAt: Date?
     public var id: String
-    public var latestReactions: [ActivityReaction]?
+    public var latestReactions: [ActivityReactionResponse]
     public var mentionedUserIds: [String]?
     public var meta: RepliesMeta?
     public var objectId: String
     public var objectType: String
     public var parentId: String?
     public var reactionCount: Int
-    public var reactionGroups: [String: ReactionGroup]?
-    public var replies: [ThreadedComment]?
+    public var reactionGroups: [String: ReactionGroupResponse]?
+    public var replies: [ThreadedCommentResponse]?
     public var replyCount: Int
     public var text: String?
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, id: String, latestReactions: [ActivityReaction]? = nil, mentionedUserIds: [String]? = nil, meta: RepliesMeta? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroup]? = nil, replies: [ThreadedComment]? = nil, replyCount: Int, text: String? = nil, updatedAt: Date, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, id: String, latestReactions: [ActivityReactionResponse], mentionedUserIds: [String]? = nil, meta: RepliesMeta? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, text: String? = nil, updatedAt: Date, user: UserResponse) {
         self.attachments = attachments
         self.createdAt = createdAt
         self.custom = custom
@@ -48,7 +48,7 @@ public final class ThreadedComment: @unchecked Sendable, Codable, JSONEncodable,
         case custom
         case deletedAt = "deleted_at"
         case id
-        case latestReactions = "latest_reactions"
+        case latestReactions = "LatestReactions"
         case mentionedUserIds = "mentioned_user_ids"
         case meta
         case objectId = "object_id"
@@ -63,7 +63,7 @@ public final class ThreadedComment: @unchecked Sendable, Codable, JSONEncodable,
         case user
     }
 
-    public static func == (lhs: ThreadedComment, rhs: ThreadedComment) -> Bool {
+    public static func == (lhs: ThreadedCommentResponse, rhs: ThreadedCommentResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

@@ -2,12 +2,12 @@ import Foundation
 import StreamCore
 
 public final class QueryActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activities: [Activity]
+    public var activities: [ActivityResponse]
     public var duration: String
     public var next: String?
     public var prev: String?
 
-    public init(activities: [Activity], duration: String, next: String? = nil, prev: String? = nil) {
+    public init(activities: [ActivityResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.activities = activities
         self.duration = duration
         self.next = next

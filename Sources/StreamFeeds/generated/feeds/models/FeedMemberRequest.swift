@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedMemberPayload: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedMemberRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var custom: [String: RawJSON]?
     public var request: Bool?
     public var role: String?
@@ -21,7 +21,7 @@ public final class FeedMemberPayload: @unchecked Sendable, Codable, JSONEncodabl
         case userId = "user_id"
     }
 
-    public static func == (lhs: FeedMemberPayload, rhs: FeedMemberPayload) -> Bool {
+    public static func == (lhs: FeedMemberRequest, rhs: FeedMemberRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.request == rhs.request &&
             lhs.role == rhs.role &&

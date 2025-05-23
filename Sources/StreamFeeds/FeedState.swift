@@ -10,10 +10,10 @@ import Foundation
 
 public class FeedState: ObservableObject {
     
-    @Published public var activities = [Activity]()
-    @Published public var followers = [Follow]()
-    @Published public var following = [Follow]()
-    @Published public var followRequests = [Follow]()
+    @Published public var activities = [ActivityResponse]()
+    @Published public var followers = [FollowResponse]()
+    @Published public var following = [FollowResponse]()
+    @Published public var followRequests = [FollowResponse]()
     
     @MainActor
     func update(from response: GetOrCreateFeedResponse) {
@@ -26,7 +26,7 @@ public class FeedState: ObservableObject {
     }
     
     @MainActor
-    func addFollowInfo(from follow: Follow) {
+    func addFollowInfo(from follow: FollowResponse) {
         if !following.contains(follow) {
             following.append(follow)
         }
@@ -43,4 +43,4 @@ public class FeedState: ObservableObject {
     }
 }
 
-extension Activity: Identifiable {}
+extension ActivityResponse: Identifiable {}

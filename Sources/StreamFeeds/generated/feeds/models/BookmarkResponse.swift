@@ -1,17 +1,19 @@
 import Foundation
 import StreamCore
 
-public final class ActivityPin: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activityId: String
     public var createdAt: Date
-    public var feed: String
+    public var custom: [String: RawJSON]?
+    public var folder: BookmarkFolderResponse
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(activityId: String, createdAt: Date, feed: String, updatedAt: Date, user: UserResponse) {
+    public init(activityId: String, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse, updatedAt: Date, user: UserResponse) {
         self.activityId = activityId
         self.createdAt = createdAt
-        self.feed = feed
+        self.custom = custom
+        self.folder = folder
         self.updatedAt = updatedAt
         self.user = user
     }
@@ -19,15 +21,17 @@ public final class ActivityPin: @unchecked Sendable, Codable, JSONEncodable, Has
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case activityId = "activity_id"
         case createdAt = "created_at"
-        case feed
+        case custom
+        case folder
         case updatedAt = "updated_at"
         case user
     }
 
-    public static func == (lhs: ActivityPin, rhs: ActivityPin) -> Bool {
+    public static func == (lhs: BookmarkResponse, rhs: BookmarkResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.createdAt == rhs.createdAt &&
-            lhs.feed == rhs.feed &&
+            lhs.custom == rhs.custom &&
+            lhs.folder == rhs.folder &&
             lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user
     }
@@ -35,7 +39,8 @@ public final class ActivityPin: @unchecked Sendable, Codable, JSONEncodable, Has
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activityId)
         hasher.combine(createdAt)
-        hasher.combine(feed)
+        hasher.combine(custom)
+        hasher.combine(folder)
         hasher.combine(updatedAt)
         hasher.combine(user)
     }

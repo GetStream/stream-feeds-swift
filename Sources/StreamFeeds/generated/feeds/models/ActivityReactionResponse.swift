@@ -1,19 +1,19 @@
 import Foundation
 import StreamCore
 
-public final class Bookmark: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ActivityReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activityId: String
     public var createdAt: Date
     public var custom: [String: RawJSON]?
-    public var folder: BookmarkFolder
+    public var type: String
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(activityId: String, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolder, updatedAt: Date, user: UserResponse) {
+    public init(activityId: String, createdAt: Date, custom: [String: RawJSON]? = nil, type: String, updatedAt: Date, user: UserResponse) {
         self.activityId = activityId
         self.createdAt = createdAt
         self.custom = custom
-        self.folder = folder
+        self.type = type
         self.updatedAt = updatedAt
         self.user = user
     }
@@ -22,16 +22,16 @@ public final class Bookmark: @unchecked Sendable, Codable, JSONEncodable, Hashab
         case activityId = "activity_id"
         case createdAt = "created_at"
         case custom
-        case folder
+        case type
         case updatedAt = "updated_at"
         case user
     }
 
-    public static func == (lhs: Bookmark, rhs: Bookmark) -> Bool {
+    public static func == (lhs: ActivityReactionResponse, rhs: ActivityReactionResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
-            lhs.folder == rhs.folder &&
+            lhs.type == rhs.type &&
             lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user
     }
@@ -40,7 +40,7 @@ public final class Bookmark: @unchecked Sendable, Codable, JSONEncodable, Hashab
         hasher.combine(activityId)
         hasher.combine(createdAt)
         hasher.combine(custom)
-        hasher.combine(folder)
+        hasher.combine(type)
         hasher.combine(updatedAt)
         hasher.combine(user)
     }

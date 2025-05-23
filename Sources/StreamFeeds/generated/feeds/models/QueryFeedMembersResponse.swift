@@ -3,10 +3,10 @@ import StreamCore
 
 public final class QueryFeedMembersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var members: [FeedMember]
+    public var members: [FeedMemberResponse]
     public var pagination: PagerResponse
 
-    public init(duration: String, members: [FeedMember], pagination: PagerResponse) {
+    public init(duration: String, members: [FeedMemberResponse], pagination: PagerResponse) {
         self.duration = duration
         self.members = members
         self.pagination = pagination

@@ -6,12 +6,12 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
-    public var reaction: ActivityReaction
+    public var reaction: ActivityReactionResponse
     public var receivedAt: Date?
     public var type: String = "comment.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(commentId: String, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReaction, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(commentId: String, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.commentId = commentId
         self.createdAt = createdAt
         self.custom = custom

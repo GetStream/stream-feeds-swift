@@ -17,7 +17,7 @@ struct ProfileView: View {
     let feedsClient: FeedsClient
     @ObservedObject var state: FeedState
     
-    @State var followSuggestions = [Feed]()
+    @State var followSuggestions = [FeedResponse]()
     
     init(feed: FlatFeed, feedsClient: FeedsClient) {
         self.feed = feed
@@ -34,7 +34,7 @@ struct ProfileView: View {
                     VStack {
                         ForEach(feed.state.followRequests) { request in
                             HStack {
-                                Text(request.sourceFeed.owner.name ?? request.sourceFeed.owner.id)
+                                Text(request.sourceFeed.createdBy.name ?? request.sourceFeed.createdBy.id)
                                 Spacer()
                                 Button {
                                     Task {
@@ -65,7 +65,7 @@ struct ProfileView: View {
                         .font(.headline)
                     ForEach(state.following) { follow in
                         HStack {
-                            Text(follow.targetFeed.owner.name ?? follow.targetFeed.owner.id)
+                            Text(follow.targetFeed.createdBy.name ?? follow.targetFeed.createdBy.id)
                             Spacer()
                             Button {
                                 Task {
@@ -86,7 +86,7 @@ struct ProfileView: View {
                         .font(.headline)
                     ForEach(state.followers) { follow in
                         HStack {
-                            Text(follow.sourceFeed.owner.name ?? follow.sourceFeed.owner.id)
+                            Text(follow.sourceFeed.createdBy.name ?? follow.sourceFeed.createdBy.id)
                             Spacer()
                             Button {
                                 Task {
@@ -110,7 +110,7 @@ struct ProfileView: View {
                         HStack(spacing: 24) {
                             ForEach(followSuggestions) { suggestion in
                                 FollowSuggestionView(
-                                    owner: suggestion.owner,
+                                    owner: suggestion.createdBy,
                                     feed: feed,
                                     targetFeed: suggestion
                                 )
@@ -135,13 +135,13 @@ struct ProfileView: View {
     }
 }
 
-extension Follow: Identifiable {}
+extension FollowResponse: Identifiable {}
 
 struct FollowSuggestionView: View {
     
     let owner: UserResponse
     let feed: FlatFeed
-    let targetFeed: Feed
+    let targetFeed: FeedResponse
     
     var body: some View {
         VStack {

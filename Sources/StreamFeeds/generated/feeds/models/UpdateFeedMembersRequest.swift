@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum Operation: String, Sendable, Codable, CaseIterable {
         case add
         case remove
         case set
@@ -21,12 +21,12 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
     }
 
     public var limit: Int?
-    public var members: [FeedMemberPayload]?
+    public var members: [FeedMemberRequest]?
     public var next: String?
-    public var operation: String
+    public var operation: Operation
     public var prev: String?
 
-    public init(limit: Int? = nil, members: [FeedMemberPayload]? = nil, next: String? = nil, operation: String, prev: String? = nil) {
+    public init(limit: Int? = nil, members: [FeedMemberRequest]? = nil, next: String? = nil, operation: Operation, prev: String? = nil) {
         self.limit = limit
         self.members = members
         self.next = next

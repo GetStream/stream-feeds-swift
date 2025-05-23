@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var bookmark: Bookmark
+    public var bookmark: BookmarkResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
@@ -10,7 +10,7 @@ public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "bookmark.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(bookmark: Bookmark, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(bookmark: BookmarkResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.bookmark = bookmark
         self.createdAt = createdAt
         self.custom = custom

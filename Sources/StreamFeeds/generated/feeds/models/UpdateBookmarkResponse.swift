@@ -2,10 +2,10 @@ import Foundation
 import StreamCore
 
 public final class UpdateBookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var bookmark: Bookmark
+    public var bookmark: BookmarkResponse
     public var duration: String
 
-    public init(bookmark: Bookmark, duration: String) {
+    public init(bookmark: BookmarkResponse, duration: String) {
         self.bookmark = bookmark
         self.duration = duration
     }

@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class NotificationStatus: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var lastSeenAt: Date?
     public var readActivities: [String]?
     public var unread: Int
@@ -21,7 +21,7 @@ public final class NotificationStatus: @unchecked Sendable, Codable, JSONEncodab
         case unseen
     }
 
-    public static func == (lhs: NotificationStatus, rhs: NotificationStatus) -> Bool {
+    public static func == (lhs: NotificationStatusResponse, rhs: NotificationStatusResponse) -> Bool {
         lhs.lastSeenAt == rhs.lastSeenAt &&
             lhs.readActivities == rhs.readActivities &&
             lhs.unread == rhs.unread &&

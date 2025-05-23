@@ -122,6 +122,19 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func removeActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
+        let path = "/feeds/v3/activities/delete"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: deleteActivitiesRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteActivitiesResponse.self, from: $0)
+        }
+    }
+
     open func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse {
         let path = "/feeds/v3/activities/query"
 
@@ -132,19 +145,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryActivitiesResponse.self, from: $0)
-        }
-    }
-
-    open func removeActivities(removeActivitiesRequest: RemoveActivitiesRequest) async throws -> RemoveActivitiesResponse {
-        let path = "/feeds/v3/activities/remove"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: removeActivitiesRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RemoveActivitiesResponse.self, from: $0)
         }
     }
 
@@ -302,7 +302,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse {
+    open func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse {
         let path = "/feeds/v3/comments"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
@@ -310,6 +310,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             "object_type": (wrappedValue: objectType.encodeToJSON(), isExplode: true),
             "depth": (wrappedValue: depth?.encodeToJSON(), isExplode: true),
             "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
+            "replies_limit": (wrappedValue: repliesLimit?.encodeToJSON(), isExplode: true),
             "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
             "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
             "next": (wrappedValue: next?.encodeToJSON(), isExplode: true),
@@ -702,7 +703,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func createManyFeeds(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse {
+    open func createFeedsBatch(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse {
         let path = "/feeds/v3/feeds/batch"
 
         let urlRequest = try makeRequest(
@@ -740,16 +741,16 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func follow(followRequest: FollowRequest) async throws -> FollowResponse {
+    open func follow(singleFollowRequest: SingleFollowRequest) async throws -> SingleFollowResponse {
         let path = "/feeds/v3/follows"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: followRequest
+            request: singleFollowRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FollowResponse.self, from: $0)
+            try self.jsonDecoder.decode(SingleFollowResponse.self, from: $0)
         }
     }
 
@@ -766,16 +767,16 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func followMany(followManyRequest: FollowManyRequest) async throws -> FollowManyResponse {
+    open func followBatch(followBatchRequest: FollowBatchRequest) async throws -> FollowBatchResponse {
         let path = "/feeds/v3/follows/batch"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: followManyRequest
+            request: followBatchRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FollowManyResponse.self, from: $0)
+            try self.jsonDecoder.decode(FollowBatchResponse.self, from: $0)
         }
     }
 
@@ -830,9 +831,9 @@ protocol DefaultAPIEndpoints {
 
     func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse
 
-    func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
+    func removeActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse
 
-    func removeActivities(removeActivitiesRequest: RemoveActivitiesRequest) async throws -> RemoveActivitiesResponse
+    func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
     func deleteActivity(activityId: String, hardDelete: Bool?) async throws -> DeleteActivityResponse
 
@@ -852,7 +853,7 @@ protocol DefaultAPIEndpoints {
 
     func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
-    func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse
+    func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse
 
     func addComment(addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
 
@@ -894,17 +895,17 @@ protocol DefaultAPIEndpoints {
 
     func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
 
-    func createManyFeeds(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse
+    func createFeedsBatch(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse
 
     func feedsQueryFeeds() async throws -> QueryFeedsResponse
 
     func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
 
-    func follow(followRequest: FollowRequest) async throws -> FollowResponse
+    func follow(singleFollowRequest: SingleFollowRequest) async throws -> SingleFollowResponse
 
     func acceptFollow(acceptFollowRequest: AcceptFollowRequest) async throws -> AcceptFollowResponse
 
-    func followMany(followManyRequest: FollowManyRequest) async throws -> FollowManyResponse
+    func followBatch(followBatchRequest: FollowBatchRequest) async throws -> FollowBatchResponse
 
     func queryFollows(queryFollowsRequest: QueryFollowsRequest) async throws -> QueryFollowsResponse
 

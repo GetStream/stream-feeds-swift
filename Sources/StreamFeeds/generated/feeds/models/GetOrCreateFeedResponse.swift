@@ -2,24 +2,24 @@ import Foundation
 import StreamCore
 
 public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activities: [Activity]
-    public var aggregatedActivities: [AggregatedActivity]
+    public var activities: [ActivityResponse]
+    public var aggregatedActivities: [AggregatedActivityResponse]
     public var duration: String
-    public var feed: Feed
-    public var followers: [Follow]
+    public var feed: FeedResponse
+    public var followers: [FollowResponse]
     public var followersPagination: PagerResponse?
-    public var following: [Follow]
+    public var following: [FollowResponse]
     public var followingPagination: PagerResponse?
     public var memberPagination: PagerResponse?
-    public var members: [FeedMember]
+    public var members: [FeedMemberResponse]
     public var next: String?
-    public var notificationStatus: NotificationStatus?
-    public var ownFollows: [Follow]?
-    public var ownMembership: FeedMember?
-    public var pinnedActivities: [ActivityPin]
+    public var notificationStatus: NotificationStatusResponse?
+    public var ownFollows: [FollowResponse]?
+    public var ownMembership: FeedMemberResponse?
+    public var pinnedActivities: [ActivityPinResponse]
     public var prev: String?
 
-    public init(activities: [Activity], aggregatedActivities: [AggregatedActivity], duration: String, feed: Feed, followers: [Follow], followersPagination: PagerResponse? = nil, following: [Follow], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMember], next: String? = nil, notificationStatus: NotificationStatus? = nil, ownFollows: [Follow]? = nil, ownMembership: FeedMember? = nil, pinnedActivities: [ActivityPin], prev: String? = nil) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.duration = duration

@@ -1,11 +1,11 @@
 import Foundation
 import StreamCore
 
-public final class FollowManyResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FollowBatchResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var follows: [Follow]
+    public var follows: [FollowResponse]
 
-    public init(duration: String, follows: [Follow]) {
+    public init(duration: String, follows: [FollowResponse]) {
         self.duration = duration
         self.follows = follows
     }
@@ -15,7 +15,7 @@ public final class FollowManyResponse: @unchecked Sendable, Codable, JSONEncodab
         case follows
     }
 
-    public static func == (lhs: FollowManyResponse, rhs: FollowManyResponse) -> Bool {
+    public static func == (lhs: FollowBatchResponse, rhs: FollowBatchResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.follows == rhs.follows
     }

@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class FollowPayload: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class SingleFollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var custom: [String: RawJSON]?
     public var pushPreference: String?
     public var request: Bool?
@@ -24,7 +24,7 @@ public final class FollowPayload: @unchecked Sendable, Codable, JSONEncodable, H
         case target
     }
 
-    public static func == (lhs: FollowPayload, rhs: FollowPayload) -> Bool {
+    public static func == (lhs: SingleFollowRequest, rhs: SingleFollowRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.pushPreference == rhs.pushPreference &&
             lhs.request == rhs.request &&

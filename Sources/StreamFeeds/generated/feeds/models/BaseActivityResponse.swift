@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
         case `private` = "private"
         case `public` = "public"
@@ -23,9 +23,9 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var attachments: [Attachment]
     public var bookmarkCount: Int
     public var commentCount: Int
-    public var comments: [Comment]
+    public var comments: [CommentResponse]
     public var createdAt: Date
-    public var currentFeed: Feed?
+    public var currentFeed: FeedResponse?
     public var custom: [String: RawJSON]
     public var deletedAt: Date?
     public var editedAt: Date?
@@ -34,14 +34,13 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var filterTags: [String]
     public var id: String
     public var interestTags: [String]
-    public var latestReactions: [ActivityReaction]
+    public var latestReactions: [ActivityReactionResponse]
     public var location: ActivityLocation?
     public var mentionedUsers: [UserResponse]
-    public var ownBookmarks: [Bookmark]
-    public var ownReactions: [ActivityReaction]
-    public var parent: BaseActivity?
+    public var ownBookmarks: [BookmarkResponse]
+    public var ownReactions: [ActivityReactionResponse]
     public var popularity: Int
-    public var reactionGroups: [String: ReactionGroup]
+    public var reactionGroups: [String: ReactionGroupResponse]
     public var score: Float
     public var searchData: [String: RawJSON]
     public var shareCount: Int
@@ -49,10 +48,10 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public var type: String
     public var updatedAt: Date
     public var user: UserResponse
-    public var visibility: String
+    public var visibility: ActivityVisibility
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [Comment], createdAt: Date, currentFeed: Feed? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReaction], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [Bookmark], ownReactions: [ActivityReaction], parent: BaseActivity? = nil, popularity: Int, reactionGroups: [String: ReactionGroup], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [BookmarkResponse], ownReactions: [ActivityReactionResponse], popularity: Int, reactionGroups: [String: ReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -72,7 +71,6 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         self.mentionedUsers = mentionedUsers
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
-        self.parent = parent
         self.popularity = popularity
         self.reactionGroups = reactionGroups
         self.score = score
@@ -106,7 +104,6 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         case mentionedUsers = "mentioned_users"
         case ownBookmarks = "own_bookmarks"
         case ownReactions = "own_reactions"
-        case parent
         case popularity
         case reactionGroups = "reaction_groups"
         case score
@@ -120,7 +117,7 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         case visibilityTag = "visibility_tag"
     }
 
-    public static func == (lhs: Activity, rhs: Activity) -> Bool {
+    public static func == (lhs: BaseActivityResponse, rhs: BaseActivityResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.bookmarkCount == rhs.bookmarkCount &&
             lhs.commentCount == rhs.commentCount &&
@@ -140,7 +137,6 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
             lhs.mentionedUsers == rhs.mentionedUsers &&
             lhs.ownBookmarks == rhs.ownBookmarks &&
             lhs.ownReactions == rhs.ownReactions &&
-            lhs.parent == rhs.parent &&
             lhs.popularity == rhs.popularity &&
             lhs.reactionGroups == rhs.reactionGroups &&
             lhs.score == rhs.score &&
@@ -174,7 +170,6 @@ public final class Activity: @unchecked Sendable, Codable, JSONEncodable, Hashab
         hasher.combine(mentionedUsers)
         hasher.combine(ownBookmarks)
         hasher.combine(ownReactions)
-        hasher.combine(parent)
         hasher.combine(popularity)
         hasher.combine(reactionGroups)
         hasher.combine(score)

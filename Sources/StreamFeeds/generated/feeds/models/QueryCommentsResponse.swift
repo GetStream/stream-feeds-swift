@@ -2,12 +2,12 @@ import Foundation
 import StreamCore
 
 public final class QueryCommentsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var comments: [Comment]
+    public var comments: [CommentResponse]
     public var duration: String
     public var next: String?
     public var prev: String?
 
-    public init(comments: [Comment], duration: String, next: String? = nil, prev: String? = nil) {
+    public init(comments: [CommentResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.comments = comments
         self.duration = duration
         self.next = next

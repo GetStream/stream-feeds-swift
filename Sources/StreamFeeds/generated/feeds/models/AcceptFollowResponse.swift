@@ -3,9 +3,9 @@ import StreamCore
 
 public final class AcceptFollowResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var follow: Follow
+    public var follow: FollowResponse
 
-    public init(duration: String, follow: Follow) {
+    public init(duration: String, follow: FollowResponse) {
         self.duration = duration
         self.follow = follow
     }

@@ -4,9 +4,9 @@ import StreamCore
 public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var commentId: String
     public var duration: String
-    public var reaction: ActivityReaction
+    public var reaction: ActivityReactionResponse
 
-    public init(commentId: String, duration: String, reaction: ActivityReaction) {
+    public init(commentId: String, duration: String, reaction: ActivityReactionResponse) {
         self.commentId = commentId
         self.duration = duration
         self.reaction = reaction

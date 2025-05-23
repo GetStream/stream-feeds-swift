@@ -1,19 +1,17 @@
 import Foundation
 import StreamCore
 
-public final class ActivityReaction: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activityId: String
     public var createdAt: Date
-    public var custom: [String: RawJSON]?
-    public var type: String
+    public var feed: String
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(activityId: String, createdAt: Date, custom: [String: RawJSON]? = nil, type: String, updatedAt: Date, user: UserResponse) {
+    public init(activityId: String, createdAt: Date, feed: String, updatedAt: Date, user: UserResponse) {
         self.activityId = activityId
         self.createdAt = createdAt
-        self.custom = custom
-        self.type = type
+        self.feed = feed
         self.updatedAt = updatedAt
         self.user = user
     }
@@ -21,17 +19,15 @@ public final class ActivityReaction: @unchecked Sendable, Codable, JSONEncodable
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case activityId = "activity_id"
         case createdAt = "created_at"
-        case custom
-        case type
+        case feed
         case updatedAt = "updated_at"
         case user
     }
 
-    public static func == (lhs: ActivityReaction, rhs: ActivityReaction) -> Bool {
+    public static func == (lhs: ActivityPinResponse, rhs: ActivityPinResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.createdAt == rhs.createdAt &&
-            lhs.custom == rhs.custom &&
-            lhs.type == rhs.type &&
+            lhs.feed == rhs.feed &&
             lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user
     }
@@ -39,8 +35,7 @@ public final class ActivityReaction: @unchecked Sendable, Codable, JSONEncodable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activityId)
         hasher.combine(createdAt)
-        hasher.combine(custom)
-        hasher.combine(type)
+        hasher.combine(feed)
         hasher.combine(updatedAt)
         hasher.combine(user)
     }

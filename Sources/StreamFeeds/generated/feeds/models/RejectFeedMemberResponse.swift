@@ -3,9 +3,9 @@ import StreamCore
 
 public final class RejectFeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var feedMember: FeedMember
+    public var feedMember: FeedMemberResponse
 
-    public init(duration: String, feedMember: FeedMember) {
+    public init(duration: String, feedMember: FeedMemberResponse) {
         self.duration = duration
         self.feedMember = feedMember
     }

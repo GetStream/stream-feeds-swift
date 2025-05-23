@@ -3,9 +3,9 @@ import StreamCore
 
 public final class CreateManyFeedsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var feeds: [Feed]
+    public var feeds: [FeedResponse]
 
-    public init(duration: String, feeds: [Feed]) {
+    public init(duration: String, feeds: [FeedResponse]) {
         self.duration = duration
         self.feeds = feeds
     }

@@ -2,10 +2,10 @@ import Foundation
 import StreamCore
 
 public final class UpsertActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activities: [Activity]
+    public var activities: [ActivityResponse]
     public var duration: String
 
-    public init(activities: [Activity], duration: String) {
+    public init(activities: [ActivityResponse], duration: String) {
         self.activities = activities
         self.duration = duration
     }

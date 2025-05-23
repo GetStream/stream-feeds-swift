@@ -21,9 +21,9 @@ struct FeedsView: View {
     @State var comment = ""
     @State var showActivityOptions = false
     @State var addImage = false
-    @State var activityToUpdate: Activity?
+    @State var activityToUpdate: ActivityResponse?
     @State var updatedActivityText = ""
-    @State var activityToDelete: Activity?
+    @State var activityToDelete: ActivityResponse?
     @State var profileShown = false
     
     init(credentials: UserCredentials) {
@@ -310,22 +310,22 @@ extension UserResponse {
     }
 }
 
-extension Activity {
+extension ActivityResponse {
     var reactionCount: Int {
         reactionGroups.values.compactMap(\.count).reduce(0, +)
     }
 }
 
-extension Feed: Identifiable {}
+extension FeedResponse: Identifiable {}
 
 struct ActivityView: View {
     
     let user: UserResponse
     let text: String
     var attachments: [Attachment]?
-    var activity: Activity
-    var onUpdate: (Activity, String) -> Void
-    var onDelete: (Activity) -> Void
+    var activity: ActivityResponse
+    var onUpdate: (ActivityResponse, String) -> Void
+    var onDelete: (ActivityResponse) -> Void
     
     var body: some View {
         HStack(alignment: .top) {

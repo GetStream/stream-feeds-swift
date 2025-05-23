@@ -23,10 +23,10 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
     }
 
     public var custom: [String: RawJSON]?
-    public var members: [FeedMemberPayload]?
-    public var visibility: String?
+    public var members: [FeedMemberRequest]?
+    public var visibility: FeedVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, members: [FeedMemberPayload]? = nil, visibility: String? = nil) {
+    public init(custom: [String: RawJSON]? = nil, members: [FeedMemberRequest]? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
         self.members = members
         self.visibility = visibility

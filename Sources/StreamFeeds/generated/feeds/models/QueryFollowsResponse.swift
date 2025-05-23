@@ -3,11 +3,11 @@ import StreamCore
 
 public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var follows: [Follow]
+    public var follows: [FollowResponse]
     public var next: String?
     public var prev: String?
 
-    public init(duration: String, follows: [Follow], next: String? = nil, prev: String? = nil) {
+    public init(duration: String, follows: [FollowResponse], next: String? = nil, prev: String? = nil) {
         self.duration = duration
         self.follows = follows
         self.next = next

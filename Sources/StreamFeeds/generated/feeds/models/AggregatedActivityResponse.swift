@@ -1,8 +1,8 @@
 import Foundation
 import StreamCore
 
-public final class AggregatedActivity: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activities: [Activity]
+public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var activities: [ActivityResponse]
     public var activityCount: Int
     public var createdAt: Date
     public var group: String
@@ -10,7 +10,7 @@ public final class AggregatedActivity: @unchecked Sendable, Codable, JSONEncodab
     public var updatedAt: Date
     public var userCount: Int
 
-    public init(activities: [Activity], activityCount: Int, createdAt: Date, group: String, score: Float, updatedAt: Date, userCount: Int) {
+    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, score: Float, updatedAt: Date, userCount: Int) {
         self.activities = activities
         self.activityCount = activityCount
         self.createdAt = createdAt
@@ -30,7 +30,7 @@ public final class AggregatedActivity: @unchecked Sendable, Codable, JSONEncodab
         case userCount = "user_count"
     }
 
-    public static func == (lhs: AggregatedActivity, rhs: AggregatedActivity) -> Bool {
+    public static func == (lhs: AggregatedActivityResponse, rhs: AggregatedActivityResponse) -> Bool {
         lhs.activities == rhs.activities &&
             lhs.activityCount == rhs.activityCount &&
             lhs.createdAt == rhs.createdAt &&

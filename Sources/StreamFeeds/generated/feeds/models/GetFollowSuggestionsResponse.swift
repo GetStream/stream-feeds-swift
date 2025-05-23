@@ -3,9 +3,9 @@ import StreamCore
 
 public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var suggestions: [Feed]
+    public var suggestions: [FeedResponse]
 
-    public init(duration: String, suggestions: [Feed]) {
+    public init(duration: String, suggestions: [FeedResponse]) {
         self.duration = duration
         self.suggestions = suggestions
     }

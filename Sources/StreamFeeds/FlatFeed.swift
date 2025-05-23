@@ -103,8 +103,8 @@ public class FlatFeed: WSEventsSubscriber {
     // MARK: - Follows
     
     @discardableResult
-    public func follow(request: FollowRequest) async throws -> FollowResponse {
-        let response = try await apiClient.follow(followRequest: request)
+    public func follow(request: SingleFollowRequest) async throws -> SingleFollowResponse {
+        let response = try await apiClient.follow(singleFollowRequest: request)
         await state.addFollowInfo(from: response.follow)
         return response
     }
@@ -139,8 +139,8 @@ public class FlatFeed: WSEventsSubscriber {
                 let activity = state.activities[index]
                 activity.latestReactions.append(reaction)
                 var groups = activity.reactionGroups
-                let existing = groups[reaction.type] ?? ReactionGroup(count: 0, firstReactionAt: .distantPast, lastReactionAt: .distantPast)
-                let group = ReactionGroup(
+                let existing = groups[reaction.type] ?? ReactionGroupResponse(count: 0, firstReactionAt: .distantPast, lastReactionAt: .distantPast)
+                let group = ReactionGroupResponse(
                     count: existing.count + 1,
                     firstReactionAt: existing.firstReactionAt,
                     lastReactionAt: event.createdAt
@@ -180,7 +180,7 @@ public class FlatFeed: WSEventsSubscriber {
             if let index = state.activities.firstIndex(where: { $0.id == event.activityId }), let user = event.user {
                 let activity = state.activities[index]
                 var ownBookmarks = activity.ownBookmarks
-                let bookmark = Bookmark(
+                let bookmark = BookmarkResponse(
                     activityId: event.activityId,
                     createdAt: event.createdAt,
                     custom: event.custom,
@@ -248,7 +248,7 @@ public class FlatFeed: WSEventsSubscriber {
         }
     }
     
-    private func add(activity: Activity) {
+    private func add(activity: ActivityResponse) {
         if !self.state.activities.map(\.id).contains(activity.id) {
             Task { @MainActor in
                 //TODO: consider sorting

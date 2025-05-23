@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class RemoveActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activityIds: [String]
     public var hardDelete: Bool?
 
@@ -15,7 +15,7 @@ public final class RemoveActivitiesRequest: @unchecked Sendable, Codable, JSONEn
         case hardDelete = "hard_delete"
     }
 
-    public static func == (lhs: RemoveActivitiesRequest, rhs: RemoveActivitiesRequest) -> Bool {
+    public static func == (lhs: DeleteActivitiesRequest, rhs: DeleteActivitiesRequest) -> Bool {
         lhs.activityIds == rhs.activityIds &&
             lhs.hardDelete == rhs.hardDelete
     }

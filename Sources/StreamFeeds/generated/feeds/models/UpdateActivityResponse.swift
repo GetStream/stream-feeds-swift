@@ -2,10 +2,10 @@ import Foundation
 import StreamCore
 
 public final class UpdateActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activity: Activity
+    public var activity: ActivityResponse
     public var duration: String
 
-    public init(activity: Activity, duration: String) {
+    public init(activity: ActivityResponse, duration: String) {
         self.activity = activity
         self.duration = duration
     }
