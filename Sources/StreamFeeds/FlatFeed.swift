@@ -164,7 +164,7 @@ public class FlatFeed: WSEventsSubscriber {
             }
         } else if let event = event as? CommentAddedEvent {
             let comment = event.comment
-            if let index = state.activities.firstIndex(where: { $0.id == comment.parentId }) {
+            if let index = state.activities.firstIndex(where: { $0.id == comment.objectId }) {
                 let activity = state.activities[index]
                 var comments = activity.comments
                 if !comments.contains(comment) {
