@@ -13,13 +13,13 @@ struct ProfileView: View {
     
     @AppStorage("userId") var userId: String = ""
     
-    let feed: FlatFeed
+    let feed: Feed
     let feedsClient: FeedsClient
     @ObservedObject var state: FeedState
     
     @State var followSuggestions = [FeedResponse]()
     
-    init(feed: FlatFeed, feedsClient: FeedsClient) {
+    init(feed: Feed, feedsClient: FeedsClient) {
         self.feed = feed
         self.feedsClient = feedsClient
         self.state = feed.state
@@ -140,7 +140,7 @@ extension FollowResponse: Identifiable {}
 struct FollowSuggestionView: View {
     
     let owner: UserResponse
-    let feed: FlatFeed
+    let feed: Feed
     let targetFeed: FeedResponse
     
     var body: some View {

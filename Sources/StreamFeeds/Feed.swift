@@ -8,7 +8,7 @@
 import Foundation
 import StreamCore
 
-public class FlatFeed: WSEventsSubscriber {
+public class Feed: WSEventsSubscriber {
     
     public let group: String
     public let id: String

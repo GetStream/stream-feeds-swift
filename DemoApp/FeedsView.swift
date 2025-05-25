@@ -12,11 +12,11 @@ import StreamFeeds
 struct FeedsView: View {
     
     @State var feedsClient: FeedsClient
-    @State var feed: FlatFeed
+    @State var feed: Feed
     @ObservedObject var state: FeedState
     
     @State var showAddActivity = false
-    @State var showAddComment = false
+    @State var commentsActivity: ActivityResponse?
     @State var activityName = ""
     @State var comment = ""
     @State var showActivityOptions = false
@@ -33,8 +33,8 @@ struct FeedsView: View {
             token: credentials.token
         )
         self.feedsClient = feedsClient
-        let feed = feedsClient.flatFeed(group: "user", id: credentials.user.id)
-        self.feed = feed
+        let feed = feedsClient.feed(group: "user", id: credentials.user.id)
+        _feed = State(initialValue: feed)
         state = feed.state
         LogConfig.level = .debug
     }
@@ -81,28 +81,16 @@ struct FeedsView: View {
                                 
                                 HStack {
                                     Button {
-                                        showAddComment = true
+                                        commentsActivity = activity
                                     } label: {
                                         Image(systemName: "message")
                                     }
                                     
                                     Text("\(activity.commentCount)")
                                 }
-                                .alert("Add Comment", isPresented: $showAddComment) {
-                                    TextField("Insert comment", text: $comment)
-                                    Button("Cancel", role: .cancel) { }
-                                    Button("Add") {
-                                        Task {
-                                            do {
-                                                _ = try await feed.addComment(
-                                                    request: .init(comment: comment, objectId: activity.id, objectType: "activity")
-                                                )
-                                                comment = ""
-                                            } catch {
-                                                print("======= \(error)")
-                                            }
-                                        }
-                                    }
+                                .sheet(item: $commentsActivity) { activity in
+                                    CommentsView(activityId: activity.id, feedsClient: feedsClient)
+                                        .modifier(PresentationDetentModifier())
                                 }
 
                                 HStack {
@@ -402,5 +390,16 @@ struct AddButtonView: View {
             .background(Color.blue)
             .foregroundColor(.white)
             .clipShape(Circle())
+    }
+}
+
+struct PresentationDetentModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content.presentationDetents([.medium])
+        } else {
+            content
+        }
     }
 }

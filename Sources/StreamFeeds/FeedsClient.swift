@@ -75,10 +75,16 @@ public class FeedsClient: WSEventsSubscriber {
         initialConnectIfRequired(apiKey: apiKey.apiKeyString)
     }
     
-    public func flatFeed(group: String, id: String) -> FlatFeed {
-        let feed = FlatFeed(group: group, id: id, user: user, apiClient: apiClient)
+    public func feed(group: String, id: String) -> Feed {
+        let feed = Feed(group: group, id: id, user: user, apiClient: apiClient)
         eventsMiddleware.add(subscriber: feed)
         return feed
+    }
+    
+    public func activity(id: String) -> Activity {
+        let activity = Activity(id: id, apiClient: apiClient)
+        eventsMiddleware.add(subscriber: activity)
+        return activity
     }
     
     public func follow(source: String, target: String) async throws -> SingleFollowResponse {
