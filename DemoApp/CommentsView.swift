@@ -53,67 +53,41 @@ struct CommentsView: View {
                                 }
                             }
                         )
-
-                        HStack {
-                            Button {
-                                Task {
-                                    if !comment.containsUserReaction(with: userId) {
-                                        try await activity.addCommentReaction(commentId: comment.id, request: .init(type: "heart"))
-                                    } else {
-                                        try await activity.removeCommentReaction(commentId: comment.id)
-                                    }
-                                }
-                            } label: {
-                                Text(!comment.containsUserReaction(with: userId) ? "Like" : "Unlike")
-                            }
-                            
-                            Button {
-                                withAnimation {
-                                    expandedCommentRepliesId = comment.id
-                                    addCommentRepliesShown = true
-                                }
-                            } label: {
-                                Text("Reply")
-                            }
-                            
-                            Spacer()
-                            
-                            if comment.replyCount > 0 {
-                                Button {
-                                    withAnimation {
-                                        if expandedCommentRepliesId == comment.id {
-                                            expandedCommentRepliesId = nil
-                                        } else {
-                                            expandedCommentRepliesId = comment.id
-                                        }
-                                    }
-                                } label: {
-                                    Text("Replies (\(comment.replyCount))")
-                                }
-
-                            }
-                            
-                            Image(systemName: comment.containsUserReaction(with: userId) ? "heart.fill" : "heart")
-                            Text("\(comment.reactionGroups?["heart"]?.count ?? 0)")
-                        }
-                        .padding(.leading)
+                        
+                        ActivityActionsView(
+                            comment: comment,
+                            activity: activity,
+                            userId: userId,
+                            expandedCommentRepliesId: $expandedCommentRepliesId,
+                            addCommentRepliesShown: $addCommentRepliesShown
+                        )
                         
                         if comment.id == expandedCommentRepliesId, let replies = comment.replies {
                             ForEach(replies) { reply in
-                                CommentView(
-                                    user: reply.user,
-                                    text: reply.text ?? "",
-                                    onEdit: {
-                                        editCommentId = reply.id
-                                        editCommentShown = true
-                                        self.comment = reply.text ?? ""
-                                    },
-                                    onDelete: {
-                                        Task {
-                                            try await activity.deleteComment(commentId: reply.id)
+                                VStack {
+                                    CommentView(
+                                        user: reply.user,
+                                        text: reply.text ?? "",
+                                        onEdit: {
+                                            editCommentId = reply.id
+                                            editCommentShown = true
+                                            self.comment = reply.text ?? ""
+                                        },
+                                        onDelete: {
+                                            Task {
+                                                try await activity.deleteComment(commentId: reply.id)
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                    
+                                    ActivityActionsView(
+                                        comment: reply,
+                                        activity: activity,
+                                        userId: userId,
+                                        expandedCommentRepliesId: $expandedCommentRepliesId,
+                                        addCommentRepliesShown: $addCommentRepliesShown
+                                    )
+                                }
                                 .padding(.leading, 40)
                             }
                         }
@@ -234,5 +208,61 @@ struct CommentView: View {
                 Label("Delete", systemImage: "trash")
             }
         }
+    }
+}
+
+struct ActivityActionsView: View {
+    
+    var comment: ThreadedCommentResponse
+    var activity: Activity
+    var userId: String
+    
+    @Binding var expandedCommentRepliesId: String?
+    @Binding var addCommentRepliesShown: Bool
+    
+    var body: some View {
+        HStack {
+            Button {
+                Task {
+                    if !comment.containsUserReaction(with: userId) {
+                        try await activity.addCommentReaction(commentId: comment.id, request: .init(type: "heart"))
+                    } else {
+                        try await activity.removeCommentReaction(commentId: comment.id)
+                    }
+                }
+            } label: {
+                Text(!comment.containsUserReaction(with: userId) ? "Like" : "Unlike")
+            }
+            
+            Button {
+                withAnimation {
+                    expandedCommentRepliesId = comment.id
+                    addCommentRepliesShown = true
+                }
+            } label: {
+                Text("Reply")
+            }
+            
+            Spacer()
+            
+            if comment.replyCount > 0 {
+                Button {
+                    withAnimation {
+                        if expandedCommentRepliesId == comment.id {
+                            expandedCommentRepliesId = nil
+                        } else {
+                            expandedCommentRepliesId = comment.id
+                        }
+                    }
+                } label: {
+                    Text("Replies (\(comment.replyCount))")
+                }
+
+            }
+            
+            Image(systemName: comment.containsUserReaction(with: userId) ? "heart.fill" : "heart")
+            Text("\(comment.reactionGroups?["heart"]?.count ?? 0)")
+        }
+        .padding(.leading)
     }
 }
