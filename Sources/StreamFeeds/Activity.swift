@@ -23,7 +23,7 @@ public class Activity: WSEventsSubscriber {
     public func queryComments(request: QueryCommentsRequest) async throws -> QueryCommentsResponse {
         let response = try await self.apiClient.queryComments(queryCommentsRequest: request)
         Task { @MainActor in
-            state.comments = response.comments
+            state.comments = response.comments.map(\.toThreadedComment)
         }
         return response
     }
@@ -63,7 +63,7 @@ public class Activity: WSEventsSubscriber {
     @discardableResult
     public func addCommentsBatch(request: AddCommentsBatchRequest) async throws -> AddCommentsBatchResponse {
         let response = try await self.apiClient.addCommentsBatch(addCommentsBatchRequest: request)
-        state.comments.append(contentsOf: response.comments)
+        state.comments.append(contentsOf: response.comments.map(\.toThreadedComment))
         return response
     }
     
@@ -79,7 +79,7 @@ public class Activity: WSEventsSubscriber {
     public func getComment(commentId: String) async throws -> GetCommentResponse {
         let response = try await self.apiClient.getComment(commentId: commentId)
         if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
-            state.comments[index] = response.comment
+            state.comments[index] = response.comment.toThreadedComment
         }
         return response
     }
@@ -88,7 +88,9 @@ public class Activity: WSEventsSubscriber {
     public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> UpdateCommentResponse {
         let response = try await self.apiClient.updateComment(commentId: commentId, updateCommentRequest: request)
         if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
-            state.comments[index] = response.comment
+            Task { @MainActor in
+                state.comments[index] = response.comment.toThreadedComment
+            }
         }
         return response
     }
@@ -134,7 +136,6 @@ public class Activity: WSEventsSubscriber {
         Task { @MainActor in
             if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
                 state.comments[index].replyCount = response.comments.count
-                state.commentReplies[commentId] = response.comments
             }
         }
         return response
@@ -162,11 +163,32 @@ public class Activity: WSEventsSubscriber {
         } else if let event = event as? CommentAddedEvent {
             if let parentCommentId = event.comment.parentId {
                 if let index = state.comments.firstIndex(where: { $0.id == parentCommentId }) {
-                    var commentReplies = state.commentReplies[parentCommentId] ?? []
-                    //TODO: fix this.
+                    let comment = state.comments[index]
+                    var replies = comment.replies ?? []
+                    replies.append(event.comment.toThreadedComment)
+                    comment.replies = replies
+                    Task { @MainActor in
+                        state.comments[index] = comment
+                    }
                 }
             } else {
-                add(comment: event.comment)
+                add(comment: event.comment.toThreadedComment)
+            }
+        } else if let event = event as? CommentDeletedEvent {
+            if let parentCommentId = event.comment.parentId {
+                if let index = state.comments.firstIndex(where: { $0.id == parentCommentId }) {
+                    let comment = state.comments[index]
+                    var replies = comment.replies ?? []
+                    replies.removeAll(where: { $0.id == event.comment.id })
+                    comment.replies = replies
+                    Task { @MainActor in
+                        state.comments[index] = comment
+                    }
+                }
+            } else {
+                Task { @MainActor in
+                    state.comments.removeAll { $0.id == event.comment.id }
+                }
             }
         } else if let event = event as? CommentReactionRemovedEvent {
             if let index = state.comments.firstIndex(where: { $0.id == event.commentId }) {
@@ -174,12 +196,32 @@ public class Activity: WSEventsSubscriber {
                 comment.latestReactions.removeAll(where: { $0.user.id == event.userId })
                 state.comments[index] = comment
             }
+        } else if let event = event as? CommentUpdatedEvent {
+            if let parentCommentId = event.comment.parentId {
+                if let index = state.comments.firstIndex(where: { $0.id == parentCommentId }) {
+                    let comment = state.comments[index]
+                    var replies = comment.replies ?? []
+                    if let replyIndex = replies.firstIndex(where: { $0.id == event.comment.id }) {
+                        replies[replyIndex] = event.comment.toThreadedComment
+                        comment.replies = replies
+                        Task { @MainActor in
+                            state.comments[index] = comment
+                        }
+                    }
+                }
+            } else {
+                Task { @MainActor in
+                    if let index = state.comments.firstIndex(where: { $0.id == event.comment.id }) {
+                        state.comments[index] = event.comment.toThreadedComment
+                    }
+                }
+            }
         }
     }
     
     // MARK: - private
     
-    private func add(comment: CommentResponse) {
+    private func add(comment: ThreadedCommentResponse) {
         Task { @MainActor in
             if !self.state.comments.map(\.id).contains(comment.id) {
                 //TODO: consider sorting

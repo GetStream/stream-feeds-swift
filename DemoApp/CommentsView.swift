@@ -14,19 +14,20 @@ struct CommentsView: View {
     let userId: String
     
     @State var expandedCommentRepliesId: String?
-    @State var commentReplies = [ThreadedCommentResponse]()
     
     @State var activity: Activity
     @StateObject var state: ActivityState
     
     @State var addCommentShown = false
     @State var addCommentRepliesShown = false
+    @State var editCommentShown = false
+    @State var editCommentId: String?
     @State var comment = ""
     
     init(activityId: String, feedsClient: FeedsClient) {
         self.activityId = activityId
         let activity = feedsClient.activity(id: activityId)
-        self.activity = activity
+        _activity = State(initialValue: activity)
         _state = StateObject(wrappedValue: activity.state)
         self.userId = feedsClient.user.id
     }
@@ -42,7 +43,9 @@ struct CommentsView: View {
                             user: comment.user,
                             text: comment.text ?? "",
                             onEdit: {
-                                
+                                editCommentId = comment.id
+                                editCommentShown = true
+                                self.comment = comment.text ?? ""
                             },
                             onDelete: {
                                 Task {
@@ -82,9 +85,6 @@ struct CommentsView: View {
                                             expandedCommentRepliesId = nil
                                         } else {
                                             expandedCommentRepliesId = comment.id
-                                            Task {
-                                                self.commentReplies = try await activity.getCommentReplies(commentId: comment.id).comments
-                                            }
                                         }
                                     }
                                 } label: {
@@ -98,13 +98,15 @@ struct CommentsView: View {
                         }
                         .padding(.leading)
                         
-                        if comment.id == expandedCommentRepliesId {
-                            ForEach(commentReplies) { reply in
+                        if comment.id == expandedCommentRepliesId, let replies = comment.replies {
+                            ForEach(replies) { reply in
                                 CommentView(
                                     user: reply.user,
                                     text: reply.text ?? "",
                                     onEdit: {
-                                        
+                                        editCommentId = reply.id
+                                        editCommentShown = true
+                                        self.comment = reply.text ?? ""
                                     },
                                     onDelete: {
                                         Task {
@@ -123,9 +125,6 @@ struct CommentsView: View {
             .padding()
             .frame(maxWidth: .infinity)
         }
-        .onChange(of: expandedCommentRepliesId, perform: { value in
-            commentReplies.removeAll()
-        })
         .modifier(AddButtonModifier(addItemShown: $addCommentShown, buttonShown: true))
         .alert("Add Comment", isPresented: $addCommentShown) {
             TextField("Insert comment", text: $comment)
@@ -164,23 +163,42 @@ struct CommentsView: View {
                 }
             }
         }
+        .alert("Edit comment", isPresented: $editCommentShown) {
+            TextField("Edit comment", text: $comment)
+            Button("Cancel", role: .cancel) { }
+            Button("Edit") {
+                Task {
+                    do {
+                        if let commentId = editCommentId {
+                            try await activity.updateComment(
+                                commentId: commentId,
+                                request: .init(comment: comment)
+                            )
+                        }
+                        editCommentId = nil
+                        comment = ""
+                    } catch {
+                        print("======= \(error)")
+                    }
+                }
+            }
+        }
         .onAppear {
             Task {
-                try await activity.getComments(objectId: activityId, objectType: "activity", depth: 1)
+                try await activity.getComments(objectId: activityId, objectType: "activity", depth: 2)
             }
         }
     }
 }
 
-extension CommentResponse: Identifiable {
-    
+extension CommentResponse: Identifiable {}
+
+extension ThreadedCommentResponse: Identifiable {
     //TODO: maybe expose own reactions.
     func containsUserReaction(with id: String) -> Bool {
         latestReactions.map(\.user.id).contains(id)
     }
 }
-
-extension ThreadedCommentResponse: Identifiable {}
 
 struct CommentView: View {
     
@@ -203,6 +221,7 @@ struct CommentView: View {
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(16)
         .contextMenu {
+            //TODO: permissions / capabilities
             Button {
                 onEdit()
             } label: {

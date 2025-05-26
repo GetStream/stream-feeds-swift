@@ -176,6 +176,19 @@ public class Feed: WSEventsSubscriber {
                     }
                 }
             }
+        } else if let event = event as? CommentDeletedEvent {
+            let comment = event.comment
+            if let index = state.activities.firstIndex(where: { $0.id == comment.objectId }) {
+                let activity = state.activities[index]
+                activity.comments.removeAll(where: { $0.id == comment.id })
+                activity.commentCount -= 1
+                if activity.commentCount < 0 {
+                    activity.commentCount = 0
+                }
+                Task { @MainActor in
+                    state.activities[index] = activity
+                }
+            }
         } else if let event = event as? BookmarkAddedEvent {
             if let index = state.activities.firstIndex(where: { $0.id == event.activityId }), let user = event.user {
                 let activity = state.activities[index]

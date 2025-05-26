@@ -13,7 +13,7 @@ struct FeedsView: View {
     
     @State var feedsClient: FeedsClient
     @State var feed: Feed
-    @ObservedObject var state: FeedState
+    @StateObject var state: FeedState
     
     @State var showAddActivity = false
     @State var commentsActivity: ActivityResponse?
@@ -35,7 +35,7 @@ struct FeedsView: View {
         self.feedsClient = feedsClient
         let feed = feedsClient.feed(group: "user", id: credentials.user.id)
         _feed = State(initialValue: feed)
-        state = feed.state
+        _state = StateObject(wrappedValue: feed.state)
         LogConfig.level = .debug
     }
     
@@ -87,10 +87,6 @@ struct FeedsView: View {
                                     }
                                     
                                     Text("\(activity.commentCount)")
-                                }
-                                .sheet(item: $commentsActivity) { activity in
-                                    CommentsView(activityId: activity.id, feedsClient: feedsClient)
-                                        .modifier(PresentationDetentModifier())
                                 }
 
                                 HStack {
@@ -181,6 +177,10 @@ struct FeedsView: View {
         .sheet(isPresented: $profileShown, content: {
             ProfileView(feed: feed, feedsClient: feedsClient)
         })
+        .sheet(item: $commentsActivity) { activity in
+            CommentsView(activityId: activity.id, feedsClient: feedsClient)
+                .modifier(PresentationDetentModifier())
+        }
         .onAppear {
             Task {
                 do {
