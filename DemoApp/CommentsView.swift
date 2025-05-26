@@ -38,7 +38,18 @@ struct CommentsView: View {
                     .font(.headline)
                 ForEach(state.comments) { comment in
                     VStack {
-                        CommentView(user: comment.user, text: comment.text ?? "")
+                        CommentView(
+                            user: comment.user,
+                            text: comment.text ?? "",
+                            onEdit: {
+                                
+                            },
+                            onDelete: {
+                                Task {
+                                    try await activity.deleteComment(commentId: comment.id)
+                                }
+                            }
+                        )
 
                         HStack {
                             Button {
@@ -54,8 +65,10 @@ struct CommentsView: View {
                             }
                             
                             Button {
-                                expandedCommentRepliesId = comment.id
-                                addCommentRepliesShown = true
+                                withAnimation {
+                                    expandedCommentRepliesId = comment.id
+                                    addCommentRepliesShown = true
+                                }
                             } label: {
                                 Text("Reply")
                             }
@@ -64,9 +77,15 @@ struct CommentsView: View {
                             
                             if comment.replyCount > 0 {
                                 Button {
-                                    expandedCommentRepliesId = comment.id
-                                    Task {
-                                        self.commentReplies = try await activity.getCommentReplies(commentId: comment.id).comments
+                                    withAnimation {
+                                        if expandedCommentRepliesId == comment.id {
+                                            expandedCommentRepliesId = nil
+                                        } else {
+                                            expandedCommentRepliesId = comment.id
+                                            Task {
+                                                self.commentReplies = try await activity.getCommentReplies(commentId: comment.id).comments
+                                            }
+                                        }
                                     }
                                 } label: {
                                     Text("Replies (\(comment.replyCount))")
@@ -81,8 +100,19 @@ struct CommentsView: View {
                         
                         if comment.id == expandedCommentRepliesId {
                             ForEach(commentReplies) { reply in
-                                CommentView(user: reply.user, text: reply.text ?? "")
-                                    .padding(.leading, 40)
+                                CommentView(
+                                    user: reply.user,
+                                    text: reply.text ?? "",
+                                    onEdit: {
+                                        
+                                    },
+                                    onDelete: {
+                                        Task {
+                                            try await activity.deleteComment(commentId: reply.id)
+                                        }
+                                    }
+                                )
+                                .padding(.leading, 40)
                             }
                         }
                     }
@@ -136,7 +166,7 @@ struct CommentsView: View {
         }
         .onAppear {
             Task {
-                try await activity.getComments(objectId: activityId, objectType: "activity")
+                try await activity.getComments(objectId: activityId, objectType: "activity", depth: 1)
             }
         }
     }
@@ -156,6 +186,8 @@ struct CommentView: View {
     
     var user: UserResponse
     var text: String
+    var onEdit: () -> ()
+    var onDelete: () -> ()
     
     var body: some View {
         HStack {
@@ -170,5 +202,18 @@ struct CommentView: View {
         .padding()
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(16)
+        .contextMenu {
+            Button {
+                onEdit()
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 }

@@ -57,7 +57,6 @@ public class Activity: WSEventsSubscriber {
     @discardableResult
     public func addComment(request: AddCommentRequest) async throws -> AddCommentResponse {
         let response = try await self.apiClient.addComment(addCommentRequest: request)
-        add(comment: response.comment)
         return response
     }
     
@@ -71,7 +70,9 @@ public class Activity: WSEventsSubscriber {
     @discardableResult
     public func deleteComment(commentId: String) async throws -> DeleteCommentResponse {
         let response = try await self.apiClient.deleteComment(commentId: commentId)
-        state.comments.removeAll { $0.id == commentId }
+        Task { @MainActor in
+            state.comments.removeAll { $0.id == commentId }
+        }
         return response
     }
     
@@ -130,8 +131,11 @@ public class Activity: WSEventsSubscriber {
             prev: prev,
             next: next
         )
-        if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
-            state.comments[index].replyCount = response.comments.count
+        Task { @MainActor in
+            if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
+                state.comments[index].replyCount = response.comments.count
+                state.commentReplies[commentId] = response.comments
+            }
         }
         return response
     }
@@ -155,8 +159,15 @@ public class Activity: WSEventsSubscriber {
                     state.comments[index] = comment
                 }
             }
-        } else if let event = event as? CommentAddedEvent, event.comment.parentId == nil {
-            add(comment: event.comment)
+        } else if let event = event as? CommentAddedEvent {
+            if let parentCommentId = event.comment.parentId {
+                if let index = state.comments.firstIndex(where: { $0.id == parentCommentId }) {
+                    var commentReplies = state.commentReplies[parentCommentId] ?? []
+                    //TODO: fix this.
+                }
+            } else {
+                add(comment: event.comment)
+            }
         } else if let event = event as? CommentReactionRemovedEvent {
             if let index = state.comments.firstIndex(where: { $0.id == event.commentId }) {
                 let comment = state.comments[index]
