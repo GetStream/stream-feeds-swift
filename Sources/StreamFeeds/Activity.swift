@@ -100,7 +100,7 @@ public class Activity: WSEventsSubscriber {
         let response = try await self.apiClient.removeCommentReaction(commentId: commentId)
         if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
             state.comments[index].reactionCount -= 1
-            state.comments[index].latestReactions.removeAll(where: { $0.activityId == commentId })
+            state.comments[index].latestReactions?.removeAll(where: { $0.activityId == commentId })
         }
         return response
     }
@@ -110,7 +110,9 @@ public class Activity: WSEventsSubscriber {
         let response = try await self.apiClient.addCommentReaction(commentId: commentId, addCommentReactionRequest: request)
         if let index = state.comments.firstIndex(where: { $0.id == commentId }) {
             state.comments[index].reactionCount += 1
-            state.comments[index].latestReactions.append(response.reaction)
+            var latestReactions = state.comments[index].latestReactions ?? []
+            latestReactions.append(response.reaction)
+            state.comments[index].latestReactions = latestReactions
         }
         return response
     }
@@ -145,7 +147,9 @@ public class Activity: WSEventsSubscriber {
         if let event = event as? CommentReactionAddedEvent {
             if let index = state.comments.firstIndex(where: { $0.id == event.commentId }) {
                 let comment = state.comments[index]
-                comment.latestReactions.append(event.reaction)
+                var latestReactions = comment.latestReactions ?? []
+                latestReactions.append(event.reaction)
+                comment.latestReactions = latestReactions
                 let reactionGroup = comment.reactionGroups?[event.reaction.type]
                 var count = reactionGroup?.count ?? 0
                 count += 1
@@ -193,7 +197,7 @@ public class Activity: WSEventsSubscriber {
         } else if let event = event as? CommentReactionRemovedEvent {
             if let index = state.comments.firstIndex(where: { $0.id == event.commentId }) {
                 let comment = state.comments[index]
-                comment.latestReactions.removeAll(where: { $0.user.id == event.userId })
+                comment.latestReactions?.removeAll(where: { $0.user.id == event.userId })
                 state.comments[index] = comment
             }
         } else if let event = event as? CommentUpdatedEvent {

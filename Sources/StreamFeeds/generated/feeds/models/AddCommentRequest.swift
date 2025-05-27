@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var attachment: [Attachment]?
+    public var attachments: [Attachment]?
     public var comment: String
     public var custom: [String: RawJSON]?
     public var mentionedUserIds: [String]?
@@ -10,8 +10,8 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     public var objectType: String
     public var parentId: String?
 
-    public init(attachment: [Attachment]? = nil, comment: String, custom: [String: RawJSON]? = nil, mentionedUserIds: [String]? = nil, objectId: String, objectType: String, parentId: String? = nil) {
-        self.attachment = attachment
+    public init(attachments: [Attachment]? = nil, comment: String, custom: [String: RawJSON]? = nil, mentionedUserIds: [String]? = nil, objectId: String, objectType: String, parentId: String? = nil) {
+        self.attachments = attachments
         self.comment = comment
         self.custom = custom
         self.mentionedUserIds = mentionedUserIds
@@ -21,7 +21,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachment
+        case attachments
         case comment
         case custom
         case mentionedUserIds = "mentioned_user_ids"
@@ -31,7 +31,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public static func == (lhs: AddCommentRequest, rhs: AddCommentRequest) -> Bool {
-        lhs.attachment == rhs.attachment &&
+        lhs.attachments == rhs.attachments &&
             lhs.comment == rhs.comment &&
             lhs.custom == rhs.custom &&
             lhs.mentionedUserIds == rhs.mentionedUserIds &&
@@ -41,7 +41,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(attachment)
+        hasher.combine(attachments)
         hasher.combine(comment)
         hasher.combine(custom)
         hasher.combine(mentionedUserIds)

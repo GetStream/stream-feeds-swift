@@ -12,9 +12,11 @@ extension CommentResponse {
     var toThreadedComment: ThreadedCommentResponse {
         ThreadedCommentResponse(
             attachments: attachments,
+            confidenceScore: confidenceScore,
             createdAt: createdAt,
             custom: custom,
             deletedAt: deletedAt,
+            downvoteCount: downvoteCount,
             id: id,
             latestReactions: latestReactions,
             mentionedUserIds: mentionedUserIds,
@@ -26,8 +28,11 @@ extension CommentResponse {
             reactionGroups: reactionGroups,
             replies: nil,
             replyCount: replyCount,
+            score: score,
+            status: status,
             text: text,
             updatedAt: updatedAt,
+            upvoteCount: upvoteCount,
             user: user
         )
     }

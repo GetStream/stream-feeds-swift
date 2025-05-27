@@ -212,7 +212,7 @@ struct FeedsView: View {
                         var attachments = [Attachment]()
                         if addImage {
                             let url = "https://morethandigital.info/wp-content/uploads/2017/03/10-Top-Webseiten-für-gratis-lizenzfreie-Bilder-1024x682.jpeg"
-                            let attachment = Attachment(assetUrl: url, custom: nil, imageUrl: url, liveCallCid: nil, type: "image", url: url)
+                            let attachment = Attachment(assetUrl: url, custom: [:], imageUrl: url)
                             attachments.append(attachment)
                         }
                         _ = try await feed.addActivity(fids: [feed.fid], text: activityName, attachments: attachments)
@@ -323,8 +323,8 @@ struct ActivityView: View {
                     .font(.caption)
                     .bold()
                 Text(text)
-                if let attachment = attachments?.first {
-                    AsyncImage(url: URL(string: attachment.url)) { image in
+                if let attachment = attachments?.first, let url = attachment.imageUrl {
+                    AsyncImage(url: URL(string: url)) { image in
                         image
                             .resizable()
                             .scaledToFit()

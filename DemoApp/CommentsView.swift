@@ -170,7 +170,7 @@ extension CommentResponse: Identifiable {}
 extension ThreadedCommentResponse: Identifiable {
     //TODO: maybe expose own reactions.
     func containsUserReaction(with id: String) -> Bool {
-        latestReactions.map(\.user.id).contains(id)
+        latestReactions?.map(\.user.id).contains(id) == true
     }
 }
 
