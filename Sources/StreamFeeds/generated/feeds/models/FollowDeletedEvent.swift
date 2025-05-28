@@ -1,22 +1,20 @@
 import Foundation
 import StreamCore
 
-public final class FollowAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+public final class FollowDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
     public var follow: FollowResponse
     public var receivedAt: Date?
-    public var type: String = "follow.added"
-    public var user: UserResponseCommonFields?
+    public var type: String = "follow.deleted"
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
         self.follow = follow
         self.receivedAt = receivedAt
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -26,17 +24,15 @@ public final class FollowAddedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case follow
         case receivedAt = "received_at"
         case type
-        case user
     }
 
-    public static func == (lhs: FollowAddedEvent, rhs: FollowAddedEvent) -> Bool {
+    public static func == (lhs: FollowDeletedEvent, rhs: FollowDeletedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&
             lhs.follow == rhs.follow &&
             lhs.receivedAt == rhs.receivedAt &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -46,6 +42,5 @@ public final class FollowAddedEvent: @unchecked Sendable, Event, Codable, JSONEn
         hasher.combine(follow)
         hasher.combine(receivedAt)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

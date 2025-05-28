@@ -25,8 +25,8 @@ public enum FeedsEvent: Codable, Hashable, Event {
     case typeFeedUpdatedEvent(FeedUpdatedEvent)
     case typeFeedGroupChangedEvent(FeedGroupChangedEvent)
     case typeFeedGroupDeletedEvent(FeedGroupDeletedEvent)
-    case typeFollowAddedEvent(FollowAddedEvent)
-    case typeFollowRemovedEvent(FollowRemovedEvent)
+    case typeFollowCreatedEvent(FollowCreatedEvent)
+    case typeFollowDeletedEvent(FollowDeletedEvent)
     case typeFollowUpdatedEvent(FollowUpdatedEvent)
     case typeConnectedEvent(ConnectedEvent)
     case typeHealthCheckEvent(HealthCheckEvent)
@@ -72,9 +72,9 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value.type
         case let .typeFeedGroupDeletedEvent(value):
             return value.type
-        case let .typeFollowAddedEvent(value):
+        case let .typeFollowCreatedEvent(value):
             return value.type
-        case let .typeFollowRemovedEvent(value):
+        case let .typeFollowDeletedEvent(value):
             return value.type
         case let .typeFollowUpdatedEvent(value):
             return value.type
@@ -127,9 +127,9 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value
         case let .typeFeedGroupDeletedEvent(value):
             return value
-        case let .typeFollowAddedEvent(value):
+        case let .typeFollowCreatedEvent(value):
             return value
-        case let .typeFollowRemovedEvent(value):
+        case let .typeFollowDeletedEvent(value):
             return value
         case let .typeFollowUpdatedEvent(value):
             return value
@@ -184,9 +184,9 @@ public enum FeedsEvent: Codable, Hashable, Event {
             try container.encode(value)
         case let .typeFeedGroupDeletedEvent(value):
             try container.encode(value)
-        case let .typeFollowAddedEvent(value):
+        case let .typeFollowCreatedEvent(value):
             try container.encode(value)
-        case let .typeFollowRemovedEvent(value):
+        case let .typeFollowDeletedEvent(value):
             try container.encode(value)
         case let .typeFollowUpdatedEvent(value):
             try container.encode(value)
@@ -259,12 +259,12 @@ public enum FeedsEvent: Codable, Hashable, Event {
         } else if dto.type == "feed_group.deleted" {
             let value = try container.decode(FeedGroupDeletedEvent.self)
             self = .typeFeedGroupDeletedEvent(value)
-        } else if dto.type == "follow.added" {
-            let value = try container.decode(FollowAddedEvent.self)
-            self = .typeFollowAddedEvent(value)
-        } else if dto.type == "follow.removed" {
-            let value = try container.decode(FollowRemovedEvent.self)
-            self = .typeFollowRemovedEvent(value)
+        } else if dto.type == "follow.created" {
+            let value = try container.decode(FollowCreatedEvent.self)
+            self = .typeFollowCreatedEvent(value)
+        } else if dto.type == "follow.deleted" {
+            let value = try container.decode(FollowDeletedEvent.self)
+            self = .typeFollowDeletedEvent(value)
         } else if dto.type == "follow.updated" {
             let value = try container.decode(FollowUpdatedEvent.self)
             self = .typeFollowUpdatedEvent(value)

@@ -40,10 +40,10 @@ public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable, 
         case requestAcceptedAt = "request_accepted_at"
         case requestRejectedAt = "request_rejected_at"
         case role
-        case sourceFeed = "SourceFeed"
+        case sourceFeed = "source_feed"
         case sourceFid = "source_fid"
         case status
-        case targetFeed = "TargetFeed"
+        case targetFeed = "target_feed"
         case targetFid = "target_fid"
         case updatedAt = "updated_at"
     }

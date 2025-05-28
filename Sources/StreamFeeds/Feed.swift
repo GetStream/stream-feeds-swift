@@ -221,7 +221,7 @@ public class Feed: WSEventsSubscriber {
             }
         } else if let event = event as? ActivityDeletedEvent {
             removeActivity(id: event.activity.id)
-        } else if let event = event as? FollowAddedEvent, event.fid == fid {
+        } else if let event = event as? FollowCreatedEvent, event.fid == fid {
             if !event.follow.request {
                 Task { @MainActor in
                     if event.follow.sourceFid == fid {
@@ -244,7 +244,7 @@ public class Feed: WSEventsSubscriber {
                 }
 
             }
-        } else if let event = event as? FollowRemovedEvent, event.fid == fid {
+        } else if let event = event as? FollowDeletedEvent, event.fid == fid {
             Task { @MainActor in
                 if event.follow.sourceFid == fid {
                     self.state.following.removeAll(where: { $0.sourceFid == event.follow.sourceFid })

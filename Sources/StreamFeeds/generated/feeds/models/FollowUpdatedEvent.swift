@@ -8,15 +8,13 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
     public var follow: FollowResponse
     public var receivedAt: Date?
     public var type: String = "follow.updated"
-    public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
         self.follow = follow
         self.receivedAt = receivedAt
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -26,7 +24,6 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
         case follow
         case receivedAt = "received_at"
         case type
-        case user
     }
 
     public static func == (lhs: FollowUpdatedEvent, rhs: FollowUpdatedEvent) -> Bool {
@@ -35,8 +32,7 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
             lhs.fid == rhs.fid &&
             lhs.follow == rhs.follow &&
             lhs.receivedAt == rhs.receivedAt &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -46,6 +42,5 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
         hasher.combine(follow)
         hasher.combine(receivedAt)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }
