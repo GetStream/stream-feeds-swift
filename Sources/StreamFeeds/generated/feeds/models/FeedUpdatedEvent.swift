@@ -8,9 +8,9 @@ public final class FeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var fid: String
     public var receivedAt: Date?
     public var type: String = "feed.updated"
-    public var user: UserResponseCommonFields
+    public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed
