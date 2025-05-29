@@ -130,6 +130,13 @@ public class Feed: WSEventsSubscriber {
         return response
     }
     
+    // MARK: - Mark Activities
+    
+    @discardableResult
+    public func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws -> Response {
+        try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
+    }
+    
     func onEvent(_ event: any Event) {
         if let event = event as? ActivityAddedEvent {
             add(activity: event.activity)
