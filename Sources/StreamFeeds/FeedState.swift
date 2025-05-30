@@ -14,7 +14,8 @@ public class FeedState: ObservableObject {
     @Published public var followers = [FollowResponse]()
     @Published public var following = [FollowResponse]()
     @Published public var followRequests = [FollowResponse]()
-    
+    @Published public var members = [FeedMemberResponse]()
+
     @MainActor
     func update(from response: GetOrCreateFeedResponse) {
         self.activities = response.activities
@@ -23,6 +24,7 @@ public class FeedState: ObservableObject {
         self.followRequests = response.followers.filter {
             $0.request == true && ($0.requestAcceptedAt == nil && $0.requestRejectedAt == nil)
         }
+        self.members = response.members
     }
     
     @MainActor

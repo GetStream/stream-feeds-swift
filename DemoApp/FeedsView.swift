@@ -185,7 +185,13 @@ struct FeedsView: View {
             Task {
                 do {
                     let response = try await self.feed.getOrCreate(
-                        request: .init(followerPagination: .init(limit: 10), followingPagination: .init(limit: 10), watch: true)
+                        request: .init(
+                            data: .init(members: [.init(userId: feedsClient.user.id)], visibility: .public),
+                            followerPagination: .init(limit: 10),
+                            followingPagination: .init(limit: 10),
+                            memberPagination: .init(limit: 10),
+                            watch: true
+                        )
                     )
                 } catch {
                     print("====== \(error)")

@@ -44,6 +44,19 @@ public class Feed: WSEventsSubscriber {
     }
     
     @discardableResult
+    public func updateFeed(request: UpdateFeedRequest) async throws -> UpdateFeedResponse {
+        let response = try await apiClient.updateFeed(feedGroupId: group, feedId: id, updateFeedRequest: request)
+        return response
+    }
+    
+    @discardableResult
+    public func deleteFeed(hardDelete: Bool? = false) async throws -> DeleteFeedResponse {
+        try await apiClient.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete)
+    }
+    
+    // MARK: - Activities
+    
+    @discardableResult
     public func addActivity(fids: [String], text: String, attachments: [Attachment] = []) async throws -> AddActivityResponse {
         let response = try await apiClient.addActivity(
             addActivityRequest: .init(attachments: attachments, fids: fids, text: text, type: "post")
@@ -75,6 +88,8 @@ public class Feed: WSEventsSubscriber {
         return response
     }
     
+    // MARK: - Reactions
+    
     @discardableResult
     public func addReaction(activityId: String, request: AddReactionRequest) async throws -> AddReactionResponse {
         try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
@@ -85,11 +100,8 @@ public class Feed: WSEventsSubscriber {
         try await apiClient.deleteActivityReaction(activityId: activityId)
     }
     
-    @discardableResult
-    public func addComment(request: AddCommentRequest) async throws -> AddCommentResponse {
-        try await apiClient.addComment(addCommentRequest: request)
-    }
-    
+    // MARK: - Bookmarks
+        
     @discardableResult
     public func addBookmark(activityId: String) async throws -> AddBookmarkResponse {
         try await apiClient.addBookmark(activityId: activityId, addBookmarkRequest: .init()) //TODO: folder stuff
@@ -133,9 +145,33 @@ public class Feed: WSEventsSubscriber {
     // MARK: - Mark Activities
     
     @discardableResult
-    public func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws -> Response {
-        try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
+    public func markActivity(request: MarkActivityRequest) async throws -> Response {
+        try await apiClient.markActivity(feedGroupId: group, feedId: id, markActivityRequest: request)
     }
+    
+    // MARK: - Feed Members
+    
+    @discardableResult
+    public func updateFeedMembers(updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response {
+        try await apiClient.updateFeedMembers(feedGroupId: group, feedId: id, updateFeedMembersRequest: updateFeedMembersRequest)
+    }
+
+    @discardableResult
+    public func acceptFeedMember(acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse {
+        try await apiClient.acceptFeedMember(feedId: id, feedGroupId: group, acceptFeedMemberRequest: acceptFeedMemberRequest)
+    }
+
+    @discardableResult
+    public func queryFeedMembers(queryFeedMembersRequest: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
+        try await apiClient.queryFeedMembers(feedGroupId: group, feedId: id, queryFeedMembersRequest: queryFeedMembersRequest)
+    }
+
+    @discardableResult
+    public func rejectFeedMember(rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse {
+        try await apiClient.rejectFeedMember(feedGroupId: group, feedId: id, rejectFeedMemberRequest: rejectFeedMemberRequest)
+    }
+
+    // MARK: - Event handling
     
     func onEvent(_ event: any Event) {
         if let event = event as? ActivityAddedEvent {

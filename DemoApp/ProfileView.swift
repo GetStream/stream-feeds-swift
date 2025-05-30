@@ -29,6 +29,13 @@ struct ProfileView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    Text("Feed members")
+                        .font(.headline)
+                    VStack {
+                        ForEach(feed.state.members) { member in
+                            Text(member.user.name ?? member.user.id)
+                        }
+                    }
                     Text("Follow Requests")
                         .font(.headline)
                     VStack {
@@ -136,6 +143,7 @@ struct ProfileView: View {
 }
 
 extension FollowResponse: Identifiable {}
+extension FeedMemberResponse: Identifiable {}
 
 struct FollowSuggestionView: View {
     

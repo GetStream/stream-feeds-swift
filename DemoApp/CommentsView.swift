@@ -14,6 +14,7 @@ struct CommentsView: View {
     let userId: String
     
     @State var expandedCommentRepliesId: String?
+    @State var nestedCommentRepliesId: String?
     
     @State var activity: Activity
     @StateObject var state: ActivityState
@@ -59,7 +60,8 @@ struct CommentsView: View {
                             activity: activity,
                             userId: userId,
                             expandedCommentRepliesId: $expandedCommentRepliesId,
-                            addCommentRepliesShown: $addCommentRepliesShown
+                            addCommentRepliesShown: $addCommentRepliesShown,
+                            containsUserReaction: comment.containsUserReaction(with: userId)
                         )
                         
                         if comment.id == expandedCommentRepliesId, let replies = comment.replies {
@@ -84,9 +86,41 @@ struct CommentsView: View {
                                         comment: reply,
                                         activity: activity,
                                         userId: userId,
-                                        expandedCommentRepliesId: $expandedCommentRepliesId,
-                                        addCommentRepliesShown: $addCommentRepliesShown
+                                        expandedCommentRepliesId: $nestedCommentRepliesId,
+                                        addCommentRepliesShown: $addCommentRepliesShown,
+                                        containsUserReaction: reply.containsUserReaction(with: userId)
                                     )
+                                    
+                                    if reply.id == nestedCommentRepliesId, let nestedReplies = reply.replies {
+                                        ForEach(nestedReplies) { nested in
+                                            VStack {
+                                                CommentView(
+                                                    user: nested.user,
+                                                    text: nested.text ?? "",
+                                                    onEdit: {
+                                                        editCommentId = nested.id
+                                                        editCommentShown = true
+                                                        self.comment = nested.text ?? ""
+                                                    },
+                                                    onDelete: {
+                                                        Task {
+                                                            try await activity.deleteComment(commentId: nested.id)
+                                                        }
+                                                    }
+                                                )
+                                                
+                                                ActivityActionsView(
+                                                    comment: nested,
+                                                    activity: activity,
+                                                    userId: userId,
+                                                    expandedCommentRepliesId: $nestedCommentRepliesId,
+                                                    addCommentRepliesShown: $addCommentRepliesShown,
+                                                    containsUserReaction: nested.containsUserReaction(with: userId)
+                                                )
+                                            }
+                                            .padding(.leading, 40)
+                                        }
+                                    }
                                 }
                                 .padding(.leading, 40)
                             }
@@ -99,6 +133,11 @@ struct CommentsView: View {
             .padding()
             .frame(maxWidth: .infinity)
         }
+        .onChange(of: expandedCommentRepliesId, perform: { value in
+            if expandedCommentRepliesId == nil {
+                nestedCommentRepliesId = nil
+            }
+        })
         .modifier(AddButtonModifier(addItemShown: $addCommentShown, buttonShown: true))
         .alert("Add Comment", isPresented: $addCommentShown) {
             TextField("Insert comment", text: $comment)
@@ -127,7 +166,7 @@ struct CommentsView: View {
                                 comment: comment,
                                 objectId: activityId,
                                 objectType: "activity",
-                                parentId: expandedCommentRepliesId
+                                parentId: nestedCommentRepliesId ?? expandedCommentRepliesId
                             )
                         )
                         comment = ""
@@ -216,22 +255,22 @@ struct ActivityActionsView: View {
     var comment: ThreadedCommentResponse
     var activity: Activity
     var userId: String
-    
     @Binding var expandedCommentRepliesId: String?
     @Binding var addCommentRepliesShown: Bool
+    var containsUserReaction: Bool
     
     var body: some View {
         HStack {
             Button {
                 Task {
-                    if !comment.containsUserReaction(with: userId) {
+                    if !containsUserReaction {
                         try await activity.addCommentReaction(commentId: comment.id, request: .init(type: "heart"))
                     } else {
                         try await activity.removeCommentReaction(commentId: comment.id)
                     }
                 }
             } label: {
-                Text(!comment.containsUserReaction(with: userId) ? "Like" : "Unlike")
+                Text(!containsUserReaction ? "Like" : "Unlike")
             }
             
             Button {
@@ -260,7 +299,7 @@ struct ActivityActionsView: View {
 
             }
             
-            Image(systemName: comment.containsUserReaction(with: userId) ? "heart.fill" : "heart")
+            Image(systemName: containsUserReaction ? "heart.fill" : "heart")
             Text("\(comment.reactionGroups?["heart"]?.count ?? 0)")
         }
         .padding(.leading)
