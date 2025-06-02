@@ -265,9 +265,9 @@ public class Feed: WSEventsSubscriber {
         } else if let event = event as? ActivityDeletedEvent {
             removeActivity(id: event.activity.id)
         } else if let event = event as? FollowCreatedEvent, event.fid == fid {
-            if !event.follow.request {
+            if event.follow.status == .accepted {
                 Task { @MainActor in
-                    if event.follow.sourceFid == fid {
+                    if event.follow.sourceFeed.fid == fid {
                         if !self.state.following.contains(event.follow) {
                             self.state.following.append(event.follow)
                         }
@@ -279,7 +279,7 @@ public class Feed: WSEventsSubscriber {
                 }
             } else {
                 Task { @MainActor in
-                    if event.follow.sourceFid != fid {
+                    if event.follow.sourceFeed.fid != fid {
                         if !self.state.followRequests.contains(event.follow) {
                             self.state.followRequests.append(event.follow)
                         }
@@ -289,14 +289,14 @@ public class Feed: WSEventsSubscriber {
             }
         } else if let event = event as? FollowDeletedEvent, event.fid == fid {
             Task { @MainActor in
-                if event.follow.sourceFid == fid {
-                    self.state.following.removeAll(where: { $0.sourceFid == event.follow.sourceFid })
+                if event.follow.sourceFeed.fid == fid {
+                    self.state.following.removeAll(where: { $0.sourceFeed.fid == event.follow.sourceFeed.fid })
                 } else {
-                    self.state.followers.removeAll(where: { $0.targetFid == event.follow.targetFid })
+                    self.state.followers.removeAll(where: { $0.targetFeed.fid == event.follow.targetFeed.fid })
                 }
             }
         } else if let event = event as? FollowUpdatedEvent, event.fid == fid {
-            if event.follow.targetFid == fid, event.follow.requestAcceptedAt != nil {
+            if event.follow.targetFeed.fid == fid, event.follow.requestAcceptedAt != nil {
                 if !self.state.followers.contains(event.follow) {
                     self.state.followers.append(event.follow)
                 }

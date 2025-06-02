@@ -4,9 +4,9 @@ import StreamCore
 public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public enum FeedVisibility: String, Sendable, Codable, CaseIterable {
         case followers
+        case members
         case `private` = "private"
         case `public` = "public"
-        case restricted = "restricted"
         case visible = "visible"
         case unknown = "_unknown"
 

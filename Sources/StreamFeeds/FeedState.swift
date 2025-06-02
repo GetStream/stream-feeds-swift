@@ -19,10 +19,10 @@ public class FeedState: ObservableObject {
     @MainActor
     func update(from response: GetOrCreateFeedResponse) {
         self.activities = response.activities
-        self.followers = response.followers.filter { $0.request == false || $0.requestAcceptedAt != nil }
+        self.followers = response.followers.filter { $0.status == .accepted || $0.requestAcceptedAt != nil }
         self.following = response.following
         self.followRequests = response.followers.filter {
-            $0.request == true && ($0.requestAcceptedAt == nil && $0.requestRejectedAt == nil)
+            $0.status == .pending
         }
         self.members = response.members
     }
@@ -36,12 +36,12 @@ public class FeedState: ObservableObject {
     
     @MainActor
     func removeFollowInfo(fid: String) {
-        following.removeAll(where: { $0.targetFid == fid })
+        following.removeAll(where: { $0.targetFeed.fid == fid })
     }
     
     @MainActor
     func removeFollowRequest(sourceFid: String, targetFid: String) {
-        followRequests.removeAll(where: { $0.sourceFid == sourceFid && $0.targetFid == targetFid })
+        followRequests.removeAll(where: { $0.sourceFeed.fid == sourceFid && $0.targetFeed.fid == targetFid })
     }
 }
 

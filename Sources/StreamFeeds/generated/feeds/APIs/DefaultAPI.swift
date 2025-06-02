@@ -703,25 +703,26 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func createFeedsBatch(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse {
+    open func createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest) async throws -> CreateFeedsBatchResponse {
         let path = "/feeds/v3/feeds/batch"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: createManyFeedsRequest
+            request: createFeedsBatchRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(CreateManyFeedsResponse.self, from: $0)
+            try self.jsonDecoder.decode(CreateFeedsBatchResponse.self, from: $0)
         }
     }
 
-    open func feedsQueryFeeds() async throws -> QueryFeedsResponse {
+    open func feedsQueryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse {
         let path = "/feeds/v3/feeds/query"
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            httpMethod: "GET"
+            httpMethod: "POST",
+            request: queryFeedsRequest
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryFeedsResponse.self, from: $0)
@@ -895,9 +896,9 @@ protocol DefaultAPIEndpoints {
 
     func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
 
-    func createFeedsBatch(createManyFeedsRequest: CreateManyFeedsRequest) async throws -> CreateManyFeedsResponse
+    func createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest) async throws -> CreateFeedsBatchResponse
 
-    func feedsQueryFeeds() async throws -> QueryFeedsResponse
+    func feedsQueryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse
 
     func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
 

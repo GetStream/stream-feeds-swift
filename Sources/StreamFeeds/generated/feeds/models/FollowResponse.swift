@@ -2,81 +2,84 @@ import Foundation
 import StreamCore
 
 public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public enum FollowStatus: String, Sendable, Codable, CaseIterable {
+        case accepted
+        case pending
+        case rejected
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue)
+            {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var createdAt: Date
     public var custom: [String: RawJSON]?
+    public var followerRole: String
     public var pushPreference: String
-    public var request: Bool
     public var requestAcceptedAt: Date?
     public var requestRejectedAt: Date?
-    public var role: String?
     public var sourceFeed: FeedResponse
-    public var sourceFid: String
-    public var status: String
+    public var status: FollowStatus
     public var targetFeed: FeedResponse
-    public var targetFid: String
     public var updatedAt: Date
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, pushPreference: String, request: Bool, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, role: String? = nil, sourceFeed: FeedResponse, sourceFid: String, status: String, targetFeed: FeedResponse, targetFid: String, updatedAt: Date) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, followerRole: String, pushPreference: String, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, sourceFeed: FeedResponse, status: FollowStatus, targetFeed: FeedResponse, updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
+        self.followerRole = followerRole
         self.pushPreference = pushPreference
-        self.request = request
         self.requestAcceptedAt = requestAcceptedAt
         self.requestRejectedAt = requestRejectedAt
-        self.role = role
         self.sourceFeed = sourceFeed
-        self.sourceFid = sourceFid
         self.status = status
         self.targetFeed = targetFeed
-        self.targetFid = targetFid
         self.updatedAt = updatedAt
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
+        case followerRole = "follower_role"
         case pushPreference = "push_preference"
-        case request
         case requestAcceptedAt = "request_accepted_at"
         case requestRejectedAt = "request_rejected_at"
-        case role
         case sourceFeed = "source_feed"
-        case sourceFid = "source_fid"
         case status
         case targetFeed = "target_feed"
-        case targetFid = "target_fid"
         case updatedAt = "updated_at"
     }
 
     public static func == (lhs: FollowResponse, rhs: FollowResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
+            lhs.followerRole == rhs.followerRole &&
             lhs.pushPreference == rhs.pushPreference &&
-            lhs.request == rhs.request &&
             lhs.requestAcceptedAt == rhs.requestAcceptedAt &&
             lhs.requestRejectedAt == rhs.requestRejectedAt &&
-            lhs.role == rhs.role &&
             lhs.sourceFeed == rhs.sourceFeed &&
-            lhs.sourceFid == rhs.sourceFid &&
             lhs.status == rhs.status &&
             lhs.targetFeed == rhs.targetFeed &&
-            lhs.targetFid == rhs.targetFid &&
             lhs.updatedAt == rhs.updatedAt
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
+        hasher.combine(followerRole)
         hasher.combine(pushPreference)
-        hasher.combine(request)
         hasher.combine(requestAcceptedAt)
         hasher.combine(requestRejectedAt)
-        hasher.combine(role)
         hasher.combine(sourceFeed)
-        hasher.combine(sourceFid)
         hasher.combine(status)
         hasher.combine(targetFeed)
-        hasher.combine(targetFid)
         hasher.combine(updatedAt)
     }
 }

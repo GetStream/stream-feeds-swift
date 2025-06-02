@@ -37,6 +37,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
     public var latestReactions: [ActivityReactionResponse]
     public var location: ActivityLocation?
     public var mentionedUsers: [UserResponse]
+    public var moderation: ModerationV2Response?
     public var ownBookmarks: [BookmarkResponse]
     public var ownReactions: [ActivityReactionResponse]
     public var popularity: Int
@@ -51,7 +52,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
     public var visibility: ActivityVisibility
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], ownBookmarks: [BookmarkResponse], ownReactions: [ActivityReactionResponse], popularity: Int, reactionGroups: [String: ReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [ActivityReactionResponse], popularity: Int, reactionGroups: [String: ReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -69,6 +70,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
         self.latestReactions = latestReactions
         self.location = location
         self.mentionedUsers = mentionedUsers
+        self.moderation = moderation
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
         self.popularity = popularity
@@ -102,6 +104,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
         case latestReactions = "latest_reactions"
         case location
         case mentionedUsers = "mentioned_users"
+        case moderation
         case ownBookmarks = "own_bookmarks"
         case ownReactions = "own_reactions"
         case popularity
@@ -135,6 +138,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
             lhs.latestReactions == rhs.latestReactions &&
             lhs.location == rhs.location &&
             lhs.mentionedUsers == rhs.mentionedUsers &&
+            lhs.moderation == rhs.moderation &&
             lhs.ownBookmarks == rhs.ownBookmarks &&
             lhs.ownReactions == rhs.ownReactions &&
             lhs.popularity == rhs.popularity &&
@@ -168,6 +172,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
         hasher.combine(latestReactions)
         hasher.combine(location)
         hasher.combine(mentionedUsers)
+        hasher.combine(moderation)
         hasher.combine(ownBookmarks)
         hasher.combine(ownReactions)
         hasher.combine(popularity)

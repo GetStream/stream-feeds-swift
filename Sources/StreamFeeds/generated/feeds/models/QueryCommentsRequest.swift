@@ -6,9 +6,9 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
     public var limit: Int?
     public var next: String?
     public var prev: String?
-    public var sort: [SortParamRequest]?
+    public var sort: String?
 
-    public init(filter: [String: RawJSON], limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
+    public init(filter: [String: RawJSON], limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: String? = nil) {
         self.filter = filter
         self.limit = limit
         self.next = next

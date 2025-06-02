@@ -1,7 +1,7 @@
 import Foundation
 import StreamCore
 
-public final class CreateManyFeedsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class CreateFeedsBatchRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var feeds: [FeedRequest]
 
     public init(feeds: [FeedRequest]) {
@@ -12,7 +12,7 @@ public final class CreateManyFeedsRequest: @unchecked Sendable, Codable, JSONEnc
         case feeds
     }
 
-    public static func == (lhs: CreateManyFeedsRequest, rhs: CreateManyFeedsRequest) -> Bool {
+    public static func == (lhs: CreateFeedsBatchRequest, rhs: CreateFeedsBatchRequest) -> Bool {
         lhs.feeds == rhs.feeds
     }
 

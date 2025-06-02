@@ -46,7 +46,7 @@ struct ProfileView: View {
                                 Button {
                                     Task {
                                         try await feed.acceptFollow(
-                                            request: .init(sourceFid: request.sourceFid, targetFid: request.targetFid)
+                                            request: .init(sourceFid: request.sourceFeed.fid, targetFid: request.targetFeed.fid)
                                         )
                                     }
                                 } label: {
@@ -57,7 +57,7 @@ struct ProfileView: View {
                                 Button {
                                     Task {
                                         try await feed.rejectFollow(
-                                            request: .init(sourceFid: request.sourceFid, targetFid: request.targetFid)
+                                            request: .init(sourceFid: request.sourceFeed.fid, targetFid: request.targetFeed.fid)
                                         )
                                     }
                                 } label: {
@@ -76,7 +76,7 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(targetFid: follow.targetFid)
+                                    try await feed.unfollow(targetFid: follow.targetFeed.fid)
                                 }
                             } label: {
                                 Text("Unfollow")
@@ -97,7 +97,7 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(sourceFid: follow.sourceFid, targetFid: follow.targetFid)
+                                    try await feed.unfollow(sourceFid: follow.sourceFeed.fid, targetFid: follow.targetFeed.fid)
                                 }
                             } label: {
                                 Text("Remove Follower")
@@ -165,7 +165,8 @@ struct FollowSuggestionView: View {
             
             Button {
                 Task {
-                    try await feed.follow(request: .init(request: true, source: feed.fid, target: targetFeed.fid))
+                    //TODO: check how request to follow will work.
+                    try await feed.follow(request: .init(source: feed.fid, target: targetFeed.fid))
                 }
             } label: {
                 Text("Request to follow")
