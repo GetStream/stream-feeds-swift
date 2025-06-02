@@ -23,6 +23,8 @@ public class FeedsClient: WSEventsSubscriber {
     
     private let eventsMiddleware = WSEventsMiddleware()
     
+    public var userAuth: UserAuth?
+    
     private(set) lazy var eventNotificationCenter: EventNotificationCenter = {
         let center = EventNotificationCenter()
         eventsMiddleware.add(subscriber: self)
@@ -66,6 +68,7 @@ public class FeedsClient: WSEventsSubscriber {
                 }
                 return await self.loadConnectionId()
             }
+            self.userAuth = userAuth
             apiClient.middlewares.append(userAuth)
         } else {
             let anonymousAuth = AnonymousAuth(token: token.rawValue)

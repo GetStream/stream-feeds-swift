@@ -198,17 +198,14 @@ struct FeedsView: View {
                 }
             }
         }
-        .confirmationDialog("Add Activity", isPresented: $showActivityOptions) {
-            Button("With Image") {
-                showAddActivity = true
-                addImage = true
+        .sheet(isPresented: $showActivityOptions, content: {
+            if #available(iOS 16.0, *) {
+                ActivityComposerView(feed: feed, feedsClient: feedsClient)
+                    .presentationDetents([.medium])
+            } else {
+                ActivityComposerView(feed: feed, feedsClient: feedsClient)
             }
-            Button("Without Image") {
-                showAddActivity = true
-                addImage = false
-            }
-            Button("Cancel", role: .cancel) { }
-        }
+        })
         .alert("Add activity", isPresented: $showAddActivity) {
             TextField("Activity name", text: $activityName)
             Button("Cancel", role: .cancel) { }
