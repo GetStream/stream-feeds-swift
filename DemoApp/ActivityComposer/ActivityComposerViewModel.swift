@@ -101,7 +101,7 @@ import Photos
                 let attachmentFile = try AttachmentFile(url: localFileURL)
                 let activityAttachment = ChatMessageAttachment<Data>(
                     //TODO: fix this!!!
-                    id: AttachmentId(fid: "messaging:39D40B26-A", activityId: UUID().uuidString, index: 0),
+                    id: AttachmentId(fid: channelId, activityId: UUID().uuidString, index: 0),
                     type: attachment.type,
                     payload: .init(),
                     downloadingState: nil,
