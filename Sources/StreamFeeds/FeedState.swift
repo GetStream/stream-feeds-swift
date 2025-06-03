@@ -15,6 +15,7 @@ public class FeedState: ObservableObject {
     @Published public var following = [FollowResponse]()
     @Published public var followRequests = [FollowResponse]()
     @Published public var members = [FeedMemberResponse]()
+    @Published public var ownCapabilities = [OwnCapability]()
 
     @MainActor
     func update(from response: GetOrCreateFeedResponse) {
@@ -25,6 +26,7 @@ public class FeedState: ObservableObject {
             $0.status == .pending
         }
         self.members = response.members
+        self.ownCapabilities = response.capabilities?.compactMap { OwnCapability(rawValue: $0) } ?? []
     }
     
     @MainActor
