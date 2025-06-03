@@ -85,7 +85,7 @@ public struct EmptyResponse: Decodable {}
 /// Our backend currently expects a body (not `nil`), even if it's empty.
 struct EmptyBody: Codable, Equatable {}
 
-let channelId = "messaging/39D40B26-A"
+let channelId = "messaging/D07BCF33-C"
 
 extension Endpoint {
     static func uploadAttachment(with fid: String, type: AttachmentType) -> Endpoint<FileUploadPayload> {
