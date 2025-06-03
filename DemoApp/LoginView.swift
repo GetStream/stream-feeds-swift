@@ -14,33 +14,14 @@ struct LoginView: View {
     
     var body: some View {
         VStack {
-            Button {
-                onUserSelected(.martin)
-            } label: {
-                Text("Login as Martin")
+            ForEach(UserCredentials.builtIn) { credentials in
+                Button {
+                    onUserSelected(credentials)
+                } label: {
+                    Text("Login as \(credentials.user.name)")
+                }
+                .padding()
             }
-            .padding()
-            
-            Button {
-                onUserSelected(.tommaso)
-            } label: {
-                Text("Login as Tommaso")
-            }
-            .padding()
-            
-            Button {
-                onUserSelected(.thierry)
-            } label: {
-                Text("Login as Thierry")
-            }
-            .padding()
-            
-            Button {
-                onUserSelected(.marcelo)
-            } label: {
-                Text("Login as Marcelo")
-            }
-            .padding()
         }
     }
 }
@@ -54,7 +35,7 @@ struct UserCredentials: Identifiable {
 }
 
 extension UserCredentials {
-    static let builtIn: [UserCredentials] = [.martin, .tommaso, .thierry, .marcelo]
+    static let builtIn: [UserCredentials] = [.martin, .tommaso, .thierry, .marcelo, .toomas]
     
     static let martin = UserCredentials(
         user: .init(id: "martin", name: "Martin", imageURL: URL(string: "https://getstream.io/static/2796a305dd07651fcceb4721a94f4505/802d2/martin-mitrevski.webp")),
@@ -76,19 +57,22 @@ extension UserCredentials {
         token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFyY2VsbyJ9.lM_lJBxac1KHaEaDWYLP7Sr4r1u3xsry3CclTeihrYE")
     )
     
+    static let toomas = UserCredentials(
+        user: .init(id: "toomas", name: "Toomas"),
+        token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidG9vbWFzIn0.c0YPLh9Q8l_mvgaTVEh9_w_qJW3m_C_dXL2DonlH6n0")
+    )
+    
     var fid: String {
         "user:\(id)"
     }
     
     static func credentials(for id: String) -> UserCredentials {
-        if id == "martin" {
-            return .martin
-        } else if id == "thierry" {
-            return .thierry
-        } else if id == "marcelo" {
-            return .marcelo
-        } else {
-            return .tommaso
+        switch id {
+        case "martin": return .martin
+        case "thierry": return .thierry
+        case "marcelo": return .marcelo
+        case "toomas": return .toomas
+        default: return .tommaso
         }
     }
 }
