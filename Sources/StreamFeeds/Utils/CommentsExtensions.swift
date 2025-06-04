@@ -13,14 +13,16 @@ extension CommentResponse {
         ThreadedCommentResponse(
             attachments: attachments,
             confidenceScore: confidenceScore,
+            controversyScore: controversyScore,
             createdAt: createdAt,
             custom: custom,
             deletedAt: deletedAt,
             downvoteCount: downvoteCount,
             id: id,
             latestReactions: latestReactions,
-            mentionedUserIds: mentionedUserIds,
-            meta: nil, //TODO: what's this?
+            mentionedUsers: mentionedUsers,
+            meta: nil,
+            moderation: moderation,
             objectId: objectId,
             objectType: objectType,
             parentId: parentId,

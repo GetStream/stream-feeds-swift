@@ -1,51 +1,51 @@
 import Foundation
 import StreamCore
 
-public final class CommentReactionRemovedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var commentId: String
+public final class CommentReactionDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+    public var comment: CommentResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
+    public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
-    public var type: String = "comment.reaction.removed"
-    public var userId: String
+    public var type: String = "comment.reaction.deleted"
 
-    public init(commentId: String, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, userId: String) {
-        self.commentId = commentId
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil) {
+        self.comment = comment
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
+        self.reaction = reaction
         self.receivedAt = receivedAt
-        self.userId = userId
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case commentId = "comment_id"
+        case comment
         case createdAt = "created_at"
         case custom
         case fid
+        case reaction
         case receivedAt = "received_at"
         case type
-        case userId = "user_id"
     }
 
-    public static func == (lhs: CommentReactionRemovedEvent, rhs: CommentReactionRemovedEvent) -> Bool {
-        lhs.commentId == rhs.commentId &&
+    public static func == (lhs: CommentReactionDeletedEvent, rhs: CommentReactionDeletedEvent) -> Bool {
+        lhs.comment == rhs.comment &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&
+            lhs.reaction == rhs.reaction &&
             lhs.receivedAt == rhs.receivedAt &&
-            lhs.type == rhs.type &&
-            lhs.userId == rhs.userId
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(commentId)
+        hasher.combine(comment)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(fid)
+        hasher.combine(reaction)
         hasher.combine(receivedAt)
         hasher.combine(type)
-        hasher.combine(userId)
     }
 }

@@ -2,24 +2,6 @@ import Foundation
 import StreamCore
 
 public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
-        case `private` = "private"
-        case `public` = "public"
-        case tag = "tag"
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     public var attachments: [Attachment]
     public var bookmarkCount: Int
     public var commentCount: Int
@@ -34,12 +16,13 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
     public var filterTags: [String]
     public var id: String
     public var interestTags: [String]
-    public var latestReactions: [ActivityReactionResponse]
+    public var latestReactions: [FeedsReactionResponse]
     public var location: ActivityLocation?
     public var mentionedUsers: [UserResponse]
     public var moderation: ModerationV2Response?
     public var ownBookmarks: [BookmarkResponse]
-    public var ownReactions: [ActivityReactionResponse]
+    public var ownReactions: [FeedsReactionResponse]
+    public var poll: PollResponseData?
     public var popularity: Int
     public var reactionGroups: [String: ReactionGroupResponse]
     public var score: Float
@@ -49,10 +32,10 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
     public var type: String
     public var updatedAt: Date
     public var user: UserResponse
-    public var visibility: ActivityVisibility
+    public var visibility: String
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [ActivityReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [ActivityReactionResponse], popularity: Int, reactionGroups: [String: ReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], poll: PollResponseData? = nil, popularity: Int, reactionGroups: [String: ReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -73,6 +56,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
         self.moderation = moderation
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
+        self.poll = poll
         self.popularity = popularity
         self.reactionGroups = reactionGroups
         self.score = score
@@ -107,6 +91,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
         case moderation
         case ownBookmarks = "own_bookmarks"
         case ownReactions = "own_reactions"
+        case poll
         case popularity
         case reactionGroups = "reaction_groups"
         case score
@@ -141,6 +126,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
             lhs.moderation == rhs.moderation &&
             lhs.ownBookmarks == rhs.ownBookmarks &&
             lhs.ownReactions == rhs.ownReactions &&
+            lhs.poll == rhs.poll &&
             lhs.popularity == rhs.popularity &&
             lhs.reactionGroups == rhs.reactionGroups &&
             lhs.score == rhs.score &&
@@ -175,6 +161,7 @@ public final class BaseActivityResponse: @unchecked Sendable, Codable, JSONEncod
         hasher.combine(moderation)
         hasher.combine(ownBookmarks)
         hasher.combine(ownReactions)
+        hasher.combine(poll)
         hasher.combine(popularity)
         hasher.combine(reactionGroups)
         hasher.combine(score)

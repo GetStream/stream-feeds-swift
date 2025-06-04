@@ -10,9 +10,10 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var deletedAt: Date?
     public var downvoteCount: Int
     public var id: String
-    public var latestReactions: [ActivityReactionResponse]?
-    public var mentionedUserIds: [String]?
+    public var latestReactions: [FeedsReactionResponse]?
+    public var mentionedUsers: [UserResponse]
     public var meta: RepliesMeta?
+    public var moderation: ModerationV2Response?
     public var objectId: String
     public var objectType: String
     public var parentId: String?
@@ -27,7 +28,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var upvoteCount: Int
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [ActivityReactionResponse]? = nil, mentionedUserIds: [String]? = nil, meta: RepliesMeta? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
@@ -37,8 +38,9 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         self.downvoteCount = downvoteCount
         self.id = id
         self.latestReactions = latestReactions
-        self.mentionedUserIds = mentionedUserIds
+        self.mentionedUsers = mentionedUsers
         self.meta = meta
+        self.moderation = moderation
         self.objectId = objectId
         self.objectType = objectType
         self.parentId = parentId
@@ -64,8 +66,9 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         case downvoteCount = "downvote_count"
         case id
         case latestReactions = "latest_reactions"
-        case mentionedUserIds = "mentioned_user_ids"
+        case mentionedUsers = "mentioned_users"
         case meta
+        case moderation
         case objectId = "object_id"
         case objectType = "object_type"
         case parentId = "parent_id"
@@ -91,8 +94,9 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
             lhs.downvoteCount == rhs.downvoteCount &&
             lhs.id == rhs.id &&
             lhs.latestReactions == rhs.latestReactions &&
-            lhs.mentionedUserIds == rhs.mentionedUserIds &&
+            lhs.mentionedUsers == rhs.mentionedUsers &&
             lhs.meta == rhs.meta &&
+            lhs.moderation == rhs.moderation &&
             lhs.objectId == rhs.objectId &&
             lhs.objectType == rhs.objectType &&
             lhs.parentId == rhs.parentId &&
@@ -118,8 +122,9 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         hasher.combine(downvoteCount)
         hasher.combine(id)
         hasher.combine(latestReactions)
-        hasher.combine(mentionedUserIds)
+        hasher.combine(mentionedUsers)
         hasher.combine(meta)
+        hasher.combine(moderation)
         hasher.combine(objectId)
         hasher.combine(objectType)
         hasher.combine(parentId)

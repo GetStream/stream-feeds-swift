@@ -2,15 +2,17 @@ import Foundation
 import StreamCore
 
 public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+    public var activity: ActivityResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
-    public var reaction: ActivityReactionResponse
+    public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
     public var type: String = "activity.reaction.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+        self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
@@ -20,6 +22,7 @@ public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Cod
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case activity
         case createdAt = "created_at"
         case custom
         case fid
@@ -30,7 +33,8 @@ public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Cod
     }
 
     public static func == (lhs: ActivityReactionDeletedEvent, rhs: ActivityReactionDeletedEvent) -> Bool {
-        lhs.createdAt == rhs.createdAt &&
+        lhs.activity == rhs.activity &&
+            lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&
             lhs.reaction == rhs.reaction &&
@@ -40,6 +44,7 @@ public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Cod
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(activity)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(fid)

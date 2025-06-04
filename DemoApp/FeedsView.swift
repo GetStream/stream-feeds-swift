@@ -96,7 +96,7 @@ struct FeedsView: View {
                                                 if activity.ownReactions.isEmpty {
                                                     try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
                                                 } else {
-                                                    try await feed.removeReaction(activityId: activity.id)
+                                                    try await feed.removeReaction(activityId: activity.id, type: "heart")
                                                 }
                                             } catch {
                                                 print("===== \(error)")

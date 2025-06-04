@@ -96,8 +96,8 @@ public class Feed: WSEventsSubscriber {
     }
     
     @discardableResult
-    public func removeReaction(activityId: String) async throws -> DeleteActivityReactionResponse {
-        try await apiClient.deleteActivityReaction(activityId: activityId)
+    public func removeReaction(activityId: String, type: String) async throws -> DeleteActivityReactionResponse {
+        try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
     }
     
     // MARK: - Bookmarks

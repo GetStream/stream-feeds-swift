@@ -2,17 +2,17 @@ import Foundation
 import StreamCore
 
 public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var commentId: String
+    public var comment: CommentResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var fid: String
-    public var reaction: ActivityReactionResponse
+    public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
     public var type: String = "comment.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(commentId: String, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: ActivityReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
-        self.commentId = commentId
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+        self.comment = comment
         self.createdAt = createdAt
         self.custom = custom
         self.fid = fid
@@ -22,7 +22,7 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case commentId = "comment_id"
+        case comment
         case createdAt = "created_at"
         case custom
         case fid
@@ -33,7 +33,7 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     }
 
     public static func == (lhs: CommentReactionAddedEvent, rhs: CommentReactionAddedEvent) -> Bool {
-        lhs.commentId == rhs.commentId &&
+        lhs.comment == rhs.comment &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.fid == rhs.fid &&
@@ -44,7 +44,7 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(commentId)
+        hasher.combine(comment)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(fid)

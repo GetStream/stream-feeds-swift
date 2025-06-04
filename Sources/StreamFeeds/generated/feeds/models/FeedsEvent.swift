@@ -18,7 +18,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
     case typeCommentAddedEvent(CommentAddedEvent)
     case typeCommentDeletedEvent(CommentDeletedEvent)
     case typeCommentReactionAddedEvent(CommentReactionAddedEvent)
-    case typeCommentReactionRemovedEvent(CommentReactionRemovedEvent)
+    case typeCommentReactionRemovedEvent(CommentReactionDeletedEvent)
     case typeCommentUpdatedEvent(CommentUpdatedEvent)
     case typeFeedCreatedEvent(FeedCreatedEvent)
     case typeFeedDeletedEvent(FeedDeletedEvent)
@@ -238,8 +238,8 @@ public enum FeedsEvent: Codable, Hashable, Event {
         } else if dto.type == "comment.reaction.added" {
             let value = try container.decode(CommentReactionAddedEvent.self)
             self = .typeCommentReactionAddedEvent(value)
-        } else if dto.type == "comment.reaction.removed" {
-            let value = try container.decode(CommentReactionRemovedEvent.self)
+        } else if dto.type == "comment.reaction.deleted" {
+            let value = try container.decode(CommentReactionDeletedEvent.self)
             self = .typeCommentReactionRemovedEvent(value)
         } else if dto.type == "comment.updated" {
             let value = try container.decode(CommentUpdatedEvent.self)
