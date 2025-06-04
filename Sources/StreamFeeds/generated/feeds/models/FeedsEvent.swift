@@ -5,7 +5,7 @@ private class WSEventMapping: Decodable {
     let type: String
 }
 
-public enum FeedsEvent: Codable, Hashable, Event {
+public enum FeedsEvent: Codable, Hashable {
     case typeActivityAddedEvent(ActivityAddedEvent)
     case typeActivityDeletedEvent(ActivityDeletedEvent)
     case typeActivityReactionAddedEvent(ActivityReactionAddedEvent)
@@ -18,7 +18,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
     case typeCommentAddedEvent(CommentAddedEvent)
     case typeCommentDeletedEvent(CommentDeletedEvent)
     case typeCommentReactionAddedEvent(CommentReactionAddedEvent)
-    case typeCommentReactionRemovedEvent(CommentReactionDeletedEvent)
+    case typeCommentReactionDeletedEvent(CommentReactionDeletedEvent)
     case typeCommentUpdatedEvent(CommentUpdatedEvent)
     case typeFeedCreatedEvent(FeedCreatedEvent)
     case typeFeedDeletedEvent(FeedDeletedEvent)
@@ -28,10 +28,13 @@ public enum FeedsEvent: Codable, Hashable, Event {
     case typeFollowCreatedEvent(FollowCreatedEvent)
     case typeFollowDeletedEvent(FollowDeletedEvent)
     case typeFollowUpdatedEvent(FollowUpdatedEvent)
+    case typePollClosedEvent(PollClosedEvent)
+    case typePollDeletedEvent(PollDeletedEvent)
+    case typePollUpdatedEvent(PollUpdatedEvent)
     case typeConnectedEvent(ConnectedEvent)
     case typeHealthCheckEvent(HealthCheckEvent)
     case typeConnectionErrorEvent(ConnectionErrorEvent)
-    
+
     public var type: String {
         switch self {
         case let .typeActivityAddedEvent(value):
@@ -58,7 +61,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value.type
         case let .typeCommentReactionAddedEvent(value):
             return value.type
-        case let .typeCommentReactionRemovedEvent(value):
+        case let .typeCommentReactionDeletedEvent(value):
             return value.type
         case let .typeCommentUpdatedEvent(value):
             return value.type
@@ -77,6 +80,12 @@ public enum FeedsEvent: Codable, Hashable, Event {
         case let .typeFollowDeletedEvent(value):
             return value.type
         case let .typeFollowUpdatedEvent(value):
+            return value.type
+        case let .typePollClosedEvent(value):
+            return value.type
+        case let .typePollDeletedEvent(value):
+            return value.type
+        case let .typePollUpdatedEvent(value):
             return value.type
         case let .typeConnectedEvent(value):
             return value.type
@@ -113,7 +122,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value
         case let .typeCommentReactionAddedEvent(value):
             return value
-        case let .typeCommentReactionRemovedEvent(value):
+        case let .typeCommentReactionDeletedEvent(value):
             return value
         case let .typeCommentUpdatedEvent(value):
             return value
@@ -133,13 +142,18 @@ public enum FeedsEvent: Codable, Hashable, Event {
             return value
         case let .typeFollowUpdatedEvent(value):
             return value
+        case let .typePollClosedEvent(value):
+            return value
+        case let .typePollDeletedEvent(value):
+            return value
+        case let .typePollUpdatedEvent(value):
+            return value
         case let .typeConnectedEvent(value):
             return value
         case let .typeHealthCheckEvent(value):
             return value
         case let .typeConnectionErrorEvent(value):
             return value
-
         }
     }
 
@@ -170,7 +184,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
             try container.encode(value)
         case let .typeCommentReactionAddedEvent(value):
             try container.encode(value)
-        case let .typeCommentReactionRemovedEvent(value):
+        case let .typeCommentReactionDeletedEvent(value):
             try container.encode(value)
         case let .typeCommentUpdatedEvent(value):
             try container.encode(value)
@@ -189,6 +203,12 @@ public enum FeedsEvent: Codable, Hashable, Event {
         case let .typeFollowDeletedEvent(value):
             try container.encode(value)
         case let .typeFollowUpdatedEvent(value):
+            try container.encode(value)
+        case let .typePollClosedEvent(value):
+            try container.encode(value)
+        case let .typePollDeletedEvent(value):
+            try container.encode(value)
+        case let .typePollUpdatedEvent(value):
             try container.encode(value)
         case let .typeConnectedEvent(value):
             try container.encode(value)
@@ -240,7 +260,7 @@ public enum FeedsEvent: Codable, Hashable, Event {
             self = .typeCommentReactionAddedEvent(value)
         } else if dto.type == "comment.reaction.deleted" {
             let value = try container.decode(CommentReactionDeletedEvent.self)
-            self = .typeCommentReactionRemovedEvent(value)
+            self = .typeCommentReactionDeletedEvent(value)
         } else if dto.type == "comment.updated" {
             let value = try container.decode(CommentUpdatedEvent.self)
             self = .typeCommentUpdatedEvent(value)
@@ -268,6 +288,15 @@ public enum FeedsEvent: Codable, Hashable, Event {
         } else if dto.type == "follow.updated" {
             let value = try container.decode(FollowUpdatedEvent.self)
             self = .typeFollowUpdatedEvent(value)
+        } else if dto.type == "poll.closed" {
+            let value = try container.decode(PollClosedEvent.self)
+            self = .typePollClosedEvent(value)
+        } else if dto.type == "poll.deleted" {
+            let value = try container.decode(PollDeletedEvent.self)
+            self = .typePollDeletedEvent(value)
+        } else if dto.type == "poll.updated" {
+            let value = try container.decode(PollUpdatedEvent.self)
+            self = .typePollUpdatedEvent(value)
         } else if dto.type == "connection.ok" {
             let value = try container.decode(ConnectedEvent.self)
             self = .typeConnectedEvent(value)

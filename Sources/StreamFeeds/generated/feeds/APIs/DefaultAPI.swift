@@ -912,6 +912,214 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             try self.jsonDecoder.decode(UnfollowResponse.self, from: $0)
         }
     }
+
+    open func createPoll(createPollRequest: CreatePollRequest) async throws -> PollResponse {
+        let path = "/feeds/v3/polls"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: createPollRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollResponse.self, from: $0)
+        }
+    }
+
+    open func updatePoll(updatePollRequest: UpdatePollRequest) async throws -> PollResponse {
+        let path = "/feeds/v3/polls"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PUT",
+            request: updatePollRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollResponse.self, from: $0)
+        }
+    }
+
+    open func queryPolls(userId: String?, queryPollsRequest: QueryPollsRequest) async throws -> QueryPollsResponse {
+        let path = "/feeds/v3/polls/query"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "POST",
+            request: queryPollsRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(QueryPollsResponse.self, from: $0)
+        }
+    }
+
+    open func deletePoll(pollId: String, userId: String?) async throws -> Response {
+        var path = "/feeds/v3/polls/{poll_id}"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(Response.self, from: $0)
+        }
+    }
+
+    open func getPoll(pollId: String, userId: String?) async throws -> PollResponse {
+        var path = "/feeds/v3/polls/{poll_id}"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollResponse.self, from: $0)
+        }
+    }
+
+    open func updatePollPartial(pollId: String, updatePollPartialRequest: UpdatePollPartialRequest) async throws -> PollResponse {
+        var path = "/feeds/v3/polls/{poll_id}"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updatePollPartialRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollResponse.self, from: $0)
+        }
+    }
+
+    open func createPollOption(pollId: String, createPollOptionRequest: CreatePollOptionRequest) async throws -> PollOptionResponse {
+        var path = "/feeds/v3/polls/{poll_id}/options"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: createPollOptionRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollOptionResponse.self, from: $0)
+        }
+    }
+
+    open func updatePollOption(pollId: String, updatePollOptionRequest: UpdatePollOptionRequest) async throws -> PollOptionResponse {
+        var path = "/feeds/v3/polls/{poll_id}/options"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PUT",
+            request: updatePollOptionRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollOptionResponse.self, from: $0)
+        }
+    }
+
+    open func deletePollOption(pollId: String, optionId: String, userId: String?) async throws -> Response {
+        var path = "/feeds/v3/polls/{poll_id}/options/{option_id}"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+        let optionIdPreEscape = "\(APIHelper.mapValueToPathItem(optionId))"
+        let optionIdPostEscape = optionIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "option_id"), with: optionIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(Response.self, from: $0)
+        }
+    }
+
+    open func getPollOption(pollId: String, optionId: String, userId: String?) async throws -> PollOptionResponse {
+        var path = "/feeds/v3/polls/{poll_id}/options/{option_id}"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+        let optionIdPreEscape = "\(APIHelper.mapValueToPathItem(optionId))"
+        let optionIdPostEscape = optionIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "option_id"), with: optionIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollOptionResponse.self, from: $0)
+        }
+    }
+
+    open func queryPollVotes(pollId: String, userId: String?, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse {
+        var path = "/feeds/v3/polls/{poll_id}/votes"
+
+        let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
+        let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "POST",
+            request: queryPollVotesRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(PollVotesResponse.self, from: $0)
+        }
+    }
 }
 
 protocol DefaultAPIEndpoints {
@@ -1008,4 +1216,26 @@ protocol DefaultAPIEndpoints {
     func rejectFollow(rejectFollowRequest: RejectFollowRequest) async throws -> RejectFollowResponse
 
     func unfollow(source: String, target: String) async throws -> UnfollowResponse
+
+    func createPoll(createPollRequest: CreatePollRequest) async throws -> PollResponse
+
+    func updatePoll(updatePollRequest: UpdatePollRequest) async throws -> PollResponse
+
+    func queryPolls(userId: String?, queryPollsRequest: QueryPollsRequest) async throws -> QueryPollsResponse
+
+    func deletePoll(pollId: String, userId: String?) async throws -> Response
+
+    func getPoll(pollId: String, userId: String?) async throws -> PollResponse
+
+    func updatePollPartial(pollId: String, updatePollPartialRequest: UpdatePollPartialRequest) async throws -> PollResponse
+
+    func createPollOption(pollId: String, createPollOptionRequest: CreatePollOptionRequest) async throws -> PollOptionResponse
+
+    func updatePollOption(pollId: String, updatePollOptionRequest: UpdatePollOptionRequest) async throws -> PollOptionResponse
+
+    func deletePollOption(pollId: String, optionId: String, userId: String?) async throws -> Response
+
+    func getPollOption(pollId: String, optionId: String, userId: String?) async throws -> PollOptionResponse
+
+    func queryPollVotes(pollId: String, userId: String?, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse
 }
