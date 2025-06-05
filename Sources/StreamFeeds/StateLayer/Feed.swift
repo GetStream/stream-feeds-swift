@@ -143,22 +143,22 @@ public final class Feed {
     
     // MARK: - Members
     
-    func queryFeedMembers(request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
+    public func queryFeedMembers(request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
         try await repository.queryFeedMembers(feedGroupId: group, feedId: id, request: request)
     }
 
-    func updateFeedMembers(request: UpdateFeedMembersRequest) async throws {
+    public func updateFeedMembers(request: UpdateFeedMembersRequest) async throws {
         try await repository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
     }
 
-    func acceptFeedMember(feedId: String, feedGroupId: String, request: AcceptFeedMemberRequest) async throws -> FeedMemberInfo {
-        let response = try await repository.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId, request: request)
+    public func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
+        let response = try await repository.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId)
         // TODO: update state
         return response
     }
     
-    func rejectFeedMember(request: RejectFeedMemberRequest) async throws -> FeedMemberInfo {
-        try await repository.rejectFeedMember(feedGroupId: group, feedId: id, request: request)
+    public func rejectFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
+        try await repository.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId)
         // TODO: update state
     }
     

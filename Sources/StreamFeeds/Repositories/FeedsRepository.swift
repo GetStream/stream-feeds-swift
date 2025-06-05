@@ -103,18 +103,18 @@ final class FeedsRepository {
         _ = try await apiClient.updateFeedMembers(feedGroupId: feedGroupId, feedId: feedId, updateFeedMembersRequest: request)
     }
     
-    func acceptFeedMember(feedId: String, feedGroupId: String, request: AcceptFeedMemberRequest) async throws -> FeedMemberInfo {
-        let response = try await apiClient.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId, acceptFeedMemberRequest: request)
-        return FeedMemberInfo(from: response.feedMember)
+    func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
+        let response = try await apiClient.acceptFeedMemberInvite(feedId: feedId, feedGroupId: feedGroupId)
+        return FeedMemberInfo(from: response.member)
     }
     
     func queryFeedMembers(feedGroupId: String, feedId: String, request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
         try await apiClient.queryFeedMembers(feedGroupId: feedGroupId, feedId: feedId, queryFeedMembersRequest: request)
     }
     
-    func rejectFeedMember(feedGroupId: String, feedId: String, request: RejectFeedMemberRequest) async throws -> FeedMemberInfo {
-        let response = try await apiClient.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId, rejectFeedMemberRequest: request)
-        return FeedMemberInfo(from: response.feedMember)
+    func rejectFeedMember(feedGroupId: String, feedId: String) async throws -> FeedMemberInfo {
+        let response = try await apiClient.rejectFeedMemberInvite(feedGroupId: feedGroupId, feedId: feedId)
+        return FeedMemberInfo(from: response.member)
     }
     
     // MARK: - Reactions

@@ -689,7 +689,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response {
+    open func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> UpdateFeedMembersResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -705,11 +705,11 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             request: updateFeedMembersRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(Response.self, from: $0)
+            try self.jsonDecoder.decode(UpdateFeedMembersResponse.self, from: $0)
         }
     }
 
-    open func acceptFeedMember(feedId: String, feedGroupId: String, acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse {
+    open func acceptFeedMemberInvite(feedId: String, feedGroupId: String) async throws -> AcceptFeedMemberInviteResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members/accept"
 
         let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
@@ -721,11 +721,10 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            httpMethod: "POST",
-            request: acceptFeedMemberRequest
+            httpMethod: "POST"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(AcceptFeedMemberResponse.self, from: $0)
+            try self.jsonDecoder.decode(AcceptFeedMemberInviteResponse.self, from: $0)
         }
     }
 
@@ -749,7 +748,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func rejectFeedMember(feedGroupId: String, feedId: String, rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse {
+    open func rejectFeedMemberInvite(feedGroupId: String, feedId: String) async throws -> RejectFeedMemberInviteResponse {
         var path = "/feeds/v3/feed_groups/{feed_group_id}/feeds/{feed_id}/members/reject"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -761,11 +760,10 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            httpMethod: "POST",
-            request: rejectFeedMemberRequest
+            httpMethod: "POST"
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(RejectFeedMemberResponse.self, from: $0)
+            try self.jsonDecoder.decode(RejectFeedMemberInviteResponse.self, from: $0)
         }
     }
 
@@ -1189,13 +1187,13 @@ protocol DefaultAPIEndpoints {
 
     func pinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> PinActivityResponse
 
-    func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> Response
+    func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> UpdateFeedMembersResponse
 
-    func acceptFeedMember(feedId: String, feedGroupId: String, acceptFeedMemberRequest: AcceptFeedMemberRequest) async throws -> AcceptFeedMemberResponse
+    func acceptFeedMemberInvite(feedId: String, feedGroupId: String) async throws -> AcceptFeedMemberInviteResponse
 
     func queryFeedMembers(feedGroupId: String, feedId: String, queryFeedMembersRequest: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse
 
-    func rejectFeedMember(feedGroupId: String, feedId: String, rejectFeedMemberRequest: RejectFeedMemberRequest) async throws -> RejectFeedMemberResponse
+    func rejectFeedMemberInvite(feedGroupId: String, feedId: String) async throws -> RejectFeedMemberInviteResponse
 
     func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
 

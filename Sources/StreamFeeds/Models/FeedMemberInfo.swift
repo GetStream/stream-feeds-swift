@@ -8,7 +8,6 @@ import StreamCore
 public struct FeedMemberInfo: Sendable {
     public let createdAt: Date
     public let custom: [String: RawJSON]?
-    public let request: Bool?
     public let requestAcceptedAt: Date?
     public let requestRejectedAt: Date?
     public let role: String
@@ -19,9 +18,8 @@ public struct FeedMemberInfo: Sendable {
     init(from response: FeedMemberResponse) {
         self.createdAt = response.createdAt
         self.custom = response.custom
-        self.request = response.request
-        self.requestAcceptedAt = response.requestAcceptedAt
-        self.requestRejectedAt = response.requestRejectedAt
+        self.requestAcceptedAt = response.inviteAcceptedAt
+        self.requestRejectedAt = response.inviteRejectedAt
         self.role = response.role
         self.status = response.status
         self.updatedAt = response.updatedAt

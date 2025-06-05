@@ -30,13 +30,14 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
     public var location: ActivityLocation?
     public var mentionedUserIds: [String]?
     public var parentId: String?
+    public var pollId: String?
     public var searchData: [String: RawJSON]?
     public var text: String?
     public var type: String
     public var visibility: ActivityVisibility?
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -47,6 +48,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         self.location = location
         self.mentionedUserIds = mentionedUserIds
         self.parentId = parentId
+        self.pollId = pollId
         self.searchData = searchData
         self.text = text
         self.type = type
@@ -65,6 +67,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         case location
         case mentionedUserIds = "mentioned_user_ids"
         case parentId = "parent_id"
+        case pollId = "poll_id"
         case searchData = "search_data"
         case text
         case type
@@ -83,6 +86,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
             lhs.location == rhs.location &&
             lhs.mentionedUserIds == rhs.mentionedUserIds &&
             lhs.parentId == rhs.parentId &&
+            lhs.pollId == rhs.pollId &&
             lhs.searchData == rhs.searchData &&
             lhs.text == rhs.text &&
             lhs.type == rhs.type &&
@@ -101,6 +105,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(location)
         hasher.combine(mentionedUserIds)
         hasher.combine(parentId)
+        hasher.combine(pollId)
         hasher.combine(searchData)
         hasher.combine(text)
         hasher.combine(type)

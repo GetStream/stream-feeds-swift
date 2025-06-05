@@ -4,20 +4,18 @@ import StreamCore
 public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]?
-    public var request: Bool?
-    public var requestAcceptedAt: Date?
-    public var requestRejectedAt: Date?
+    public var inviteAcceptedAt: Date?
+    public var inviteRejectedAt: Date?
     public var role: String
     public var status: String
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, request: Bool? = nil, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, role: String, status: String, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, role: String, status: String, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
-        self.request = request
-        self.requestAcceptedAt = requestAcceptedAt
-        self.requestRejectedAt = requestRejectedAt
+        self.inviteAcceptedAt = inviteAcceptedAt
+        self.inviteRejectedAt = inviteRejectedAt
         self.role = role
         self.status = status
         self.updatedAt = updatedAt
@@ -27,9 +25,8 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
-        case request
-        case requestAcceptedAt = "request_accepted_at"
-        case requestRejectedAt = "request_rejected_at"
+        case inviteAcceptedAt = "invite_accepted_at"
+        case inviteRejectedAt = "invite_rejected_at"
         case role
         case status
         case updatedAt = "updated_at"
@@ -39,9 +36,8 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
     public static func == (lhs: FeedMemberResponse, rhs: FeedMemberResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
-            lhs.request == rhs.request &&
-            lhs.requestAcceptedAt == rhs.requestAcceptedAt &&
-            lhs.requestRejectedAt == rhs.requestRejectedAt &&
+            lhs.inviteAcceptedAt == rhs.inviteAcceptedAt &&
+            lhs.inviteRejectedAt == rhs.inviteRejectedAt &&
             lhs.role == rhs.role &&
             lhs.status == rhs.status &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -51,9 +47,8 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
-        hasher.combine(request)
-        hasher.combine(requestAcceptedAt)
-        hasher.combine(requestRejectedAt)
+        hasher.combine(inviteAcceptedAt)
+        hasher.combine(inviteRejectedAt)
         hasher.combine(role)
         hasher.combine(status)
         hasher.combine(updatedAt)

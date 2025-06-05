@@ -3,9 +3,9 @@ import StreamCore
 
 public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public enum Operation: String, Sendable, Codable, CaseIterable {
-        case add
         case remove
         case set
+        case upsert
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
