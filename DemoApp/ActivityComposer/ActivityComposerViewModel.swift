@@ -15,6 +15,7 @@ import Photos
     @Published public private(set) var imageAssets: PHFetchResult<PHAsset>?
     @Published public private(set) var addedAssets = [AddedAsset]()
     @Published public var text = ""
+    @Published var createPollShown = false
     
     let attachmentsUploader: StreamAttachmentUploader
     let feed: Feed
@@ -117,7 +118,9 @@ import Photos
                 )
             }
         }
-        _ = try await feed.addActivity(fids: [feed.fid], text: text, attachments: uploadedAttachments)
+        _ = try await feed.addActivity(
+            request: .init(attachments: uploadedAttachments, fids: [feed.fid], text: text, type: "activity")
+        )
         text = ""
         addedAssets = []
     }

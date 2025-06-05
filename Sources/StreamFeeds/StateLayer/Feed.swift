@@ -61,9 +61,9 @@ public final class Feed {
     // MARK: - Activities
     
     @discardableResult
-    public func addActivity(fids: [String], text: String, attachments: [Attachment] = []) async throws -> ActivityInfo {
+    public func addActivity(request: AddActivityRequest) async throws -> ActivityInfo {
         let activity = try await repository.addActivity(
-            request: .init(attachments: attachments, fids: fids, text: text, type: "post")
+            request: request
         )
         await state.changeHandlers.activityAdded(activity)
         return activity
@@ -174,5 +174,16 @@ public final class Feed {
     @discardableResult
     public func deleteReaction(activityId: String, type: String) async throws -> ActivityReactionInfo {
         try await repository.deleteReaction(activityId: activityId, type: type)
+    }
+    
+    // MARK: - Polls
+    
+    @discardableResult
+    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollResponse {
+        let response = try await repository.apiClient.createPoll(createPollRequest: request)
+        _ = try await repository.addActivity(
+            request: .init(fids: [fid], pollId: response.poll.id, type: activityType)
+        )
+        return response
     }
 }

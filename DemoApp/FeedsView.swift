@@ -218,7 +218,11 @@ struct FeedsView: View {
                             let attachment = Attachment(assetUrl: url, custom: [:], imageUrl: url)
                             attachments.append(attachment)
                         }
-                        _ = try await feed.addActivity(fids: [feed.fid], text: activityName, attachments: attachments)
+                        _ = try await feed.addActivity(
+                            request: .init(
+                                attachments: attachments, fids: [feed.fid], text: activityName, type: "activity"
+                            )
+                        )
                         activityName = ""
                     } catch {
                         print("======= \(error)")

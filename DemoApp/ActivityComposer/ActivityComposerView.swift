@@ -39,6 +39,18 @@ struct ActivityComposerView: View {
                 }
             }
             .padding()
+            
+            Button {
+                viewModel.createPollShown = true
+            } label: {
+                Text("Create Poll")
+            }
+            .sheet(isPresented: $viewModel.createPollShown) {
+                CreatePollView(feed: viewModel.feed) {
+                    dismiss()
+                }
+            }
+            
             if let assets = viewModel.imageAssets {
                 PhotoAttachmentPickerView(
                     assets: PHFetchResultCollection(fetchResult: assets),
