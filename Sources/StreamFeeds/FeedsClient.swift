@@ -22,6 +22,7 @@ public class FeedsClient: WSEventsSubscriber {
     private(set) var connectionRecoveryHandler: ConnectionRecoveryHandler?
     
     private let eventsMiddleware = WSEventsMiddleware()
+    private let feedsRepository: FeedsRepository
     
     public var userAuth: UserAuth?
     
@@ -59,6 +60,7 @@ public class FeedsClient: WSEventsSubscriber {
             transport: apiTransport,
             middlewares: [defaultParams]
         )
+        feedsRepository = FeedsRepository(apiClient: apiClient)
         if user.type != .anonymous {
             let userAuth = UserAuth { [weak self] in
                 self?.token.rawValue ?? ""
@@ -79,9 +81,7 @@ public class FeedsClient: WSEventsSubscriber {
     }
     
     public func feed(group: String, id: String) -> Feed {
-        let feed = Feed(group: group, id: id, user: user, apiClient: apiClient)
-        eventsMiddleware.add(subscriber: feed)
-        return feed
+        Feed(group: group, id: id, user: user, repository: feedsRepository, events: eventsMiddleware)
     }
     
     public func activity(id: String) -> Activity {

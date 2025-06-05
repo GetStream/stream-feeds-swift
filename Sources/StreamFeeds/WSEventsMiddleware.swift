@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-final class WSEventsMiddleware: EventMiddleware {
+final class WSEventsMiddleware: EventMiddleware, WSEventsSubscribing {
     
     private var subscribers = NSHashTable<AnyObject>.weakObjects()
 
@@ -34,6 +34,10 @@ final class WSEventsMiddleware: EventMiddleware {
     func removeAllSubscribers() {
         subscribers.removeAllObjects()
     }
+}
+
+protocol WSEventsSubscribing {
+    func add(subscriber: WSEventsSubscriber)
 }
 
 protocol WSEventsSubscriber: AnyObject {

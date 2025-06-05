@@ -16,14 +16,14 @@ struct FeedsView: View {
     @StateObject var state: FeedState
     
     @State var showAddActivity = false
-    @State var commentsActivity: ActivityResponse?
+    @State var commentsActivity: ActivityInfo?
     @State var activityName = ""
     @State var comment = ""
     @State var showActivityOptions = false
     @State var addImage = false
-    @State var activityToUpdate: ActivityResponse?
+    @State var activityToUpdate: ActivityInfo?
     @State var updatedActivityText = ""
-    @State var activityToDelete: ActivityResponse?
+    @State var activityToDelete: ActivityInfo?
     @State var profileShown = false
     
     init(credentials: UserCredentials) {
@@ -96,7 +96,7 @@ struct FeedsView: View {
                                                 if activity.ownReactions.isEmpty {
                                                     try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
                                                 } else {
-                                                    try await feed.removeReaction(activityId: activity.id, type: "heart")
+                                                    try await feed.deleteReaction(activityId: activity.id, type: "heart")
                                                 }
                                             } catch {
                                                 print("===== \(error)")
@@ -132,7 +132,7 @@ struct FeedsView: View {
                                                 if activity.ownBookmarks.isEmpty {
                                                     try await feed.addBookmark(activityId: activity.id)
                                                 } else {
-                                                    try await feed.removeBookmark(activityId: activity.id)
+                                                    try await feed.deleteBookmark(activityId: activity.id)
                                                 }
                                             } catch {
                                                 print("===== \(error)")
@@ -184,7 +184,7 @@ struct FeedsView: View {
         .onAppear {
             Task {
                 do {
-                    let response = try await self.feed.getOrCreate(
+                    try await self.feed.getOrCreate(
                         request: .init(
                             data: .init(members: [.init(userId: feedsClient.user.id)], visibility: .public),
                             followerPagination: .init(limit: 10),
@@ -301,12 +301,6 @@ extension UserResponse {
     }
 }
 
-extension ActivityResponse {
-    var reactionCount: Int {
-        reactionGroups.values.compactMap(\.count).reduce(0, +)
-    }
-}
-
 extension FeedResponse: Identifiable {}
 
 struct ActivityView: View {
@@ -314,9 +308,9 @@ struct ActivityView: View {
     let user: UserResponse
     let text: String
     var attachments: [Attachment]?
-    var activity: ActivityResponse
-    var onUpdate: (ActivityResponse, String) -> Void
-    var onDelete: (ActivityResponse) -> Void
+    var activity: ActivityInfo
+    var onUpdate: (ActivityInfo, String) -> Void
+    var onDelete: (ActivityInfo) -> Void
     
     var body: some View {
         HStack(alignment: .top) {

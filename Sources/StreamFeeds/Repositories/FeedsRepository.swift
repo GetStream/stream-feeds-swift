@@ -1,0 +1,142 @@
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
+import Foundation
+
+/// A repository for managing feeds.
+///
+/// Action methods make API requests and transform API responses to local models.
+final class FeedsRepository {
+    let apiClient: DefaultAPI
+    
+    init(apiClient: DefaultAPI) {
+        self.apiClient = apiClient
+    }
+    
+    // MARK: - Creating or Getting the State of the Feed
+    
+    func getOrCreateFeed(feedGroupId: String, feedId: String, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
+        let response = try await apiClient.getOrCreateFeed(
+            feedGroupId: feedGroupId,
+            feedId: feedId,
+            getOrCreateFeedRequest: request
+        )
+        let rawFollowers = response.followers.map(FollowInfo.init(from:))
+        return GetOrCreateInfo(
+            activities: response.activities.map(ActivityInfo.init(from:)),
+            followers: rawFollowers.filter { $0.isFollower(of: feedId) },
+            following: response.following.map(FollowInfo.init(from:)).filter { $0.isFollowing(feedId: feedId) },
+            followRequests: rawFollowers.filter(\.isFollowRequest),
+            members: response.members,
+            ownCapabilities: response.capabilities?.compactMap(OwnCapability.init(rawValue:)) ?? []
+        )
+    }
+    
+    // MARK: - Managing the Feed
+    
+    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool) async throws {
+        _ = try await apiClient.deleteFeed(feedGroupId: feedGroupId, feedId: feedId, hardDelete: hardDelete)
+    }
+    
+    func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedResponse {
+        // TODO: FeedResponse to model
+        try await apiClient.updateFeed(feedGroupId: feedGroupId, feedId: feedId, updateFeedRequest: request).feed
+    }
+    
+    // MARK: - Activities
+    
+    func addActivity(request: AddActivityRequest) async throws -> ActivityInfo {
+        let response = try await apiClient.addActivity(addActivityRequest: request)
+        return ActivityInfo(from: response.activity)
+    }
+        
+    func deleteActivity(activityId: String, hardDelete: Bool) async throws {
+        _ = try await apiClient.deleteActivity(activityId: activityId, hardDelete: hardDelete)
+    }
+
+    func updateActivity(activityId: String, request: UpdateActivityRequest) async throws -> ActivityInfo {
+        let response = try await apiClient.updateActivity(activityId: activityId, updateActivityRequest: request)
+        return ActivityInfo(from: response.activity)
+    }
+    
+    func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
+        _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
+    }
+    
+    // MARK: - Bookmarks
+    
+    func addBookmark(activityId: String) async throws -> BookmarkInfo {
+        let response = try await apiClient.addBookmark(activityId: activityId, addBookmarkRequest: .init())
+        return BookmarkInfo(from: response.bookmark)
+    }
+    
+    func deleteBookmark(activityId: String) async throws -> BookmarkInfo {
+        let response = try await apiClient.deleteBookmark(activityId: activityId)
+        return BookmarkInfo(from: response.bookmark)
+    }
+    
+    // MARK: - Follows
+    
+    func follow(request: SingleFollowRequest) async throws -> FollowInfo {
+        let response = try await apiClient.follow(singleFollowRequest: request)
+        return FollowInfo(from: response.follow)
+    }
+    
+    func unfollow(source: String, target: String) async throws {
+        _ = try await apiClient.unfollow(source: source, target: target)
+    }
+    
+    func acceptFollow(request: AcceptFollowRequest) async throws -> FollowInfo {
+        let response = try await apiClient.acceptFollow(acceptFollowRequest: request)
+        return FollowInfo(from: response.follow)
+    }
+    
+    func rejectFollow(request: RejectFollowRequest) async throws -> FollowInfo {
+        let response = try await apiClient.rejectFollow(rejectFollowRequest: request)
+        return FollowInfo(from: response.follow)
+    }
+    
+    // MARK: - Members
+    
+    func updateFeedMembers(feedGroupId: String, feedId: String, request: UpdateFeedMembersRequest) async throws {
+        _ = try await apiClient.updateFeedMembers(feedGroupId: feedGroupId, feedId: feedId, updateFeedMembersRequest: request)
+    }
+    
+    func acceptFeedMember(feedId: String, feedGroupId: String, request: AcceptFeedMemberRequest) async throws -> FeedMemberInfo {
+        let response = try await apiClient.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId, acceptFeedMemberRequest: request)
+        return FeedMemberInfo(from: response.feedMember)
+    }
+    
+    func queryFeedMembers(feedGroupId: String, feedId: String, request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
+        try await apiClient.queryFeedMembers(feedGroupId: feedGroupId, feedId: feedId, queryFeedMembersRequest: request)
+    }
+    
+    func rejectFeedMember(feedGroupId: String, feedId: String, request: RejectFeedMemberRequest) async throws -> FeedMemberInfo {
+        let response = try await apiClient.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId, rejectFeedMemberRequest: request)
+        return FeedMemberInfo(from: response.feedMember)
+    }
+    
+    // MARK: - Reactions
+    
+    func addReaction(activityId: String, request: AddReactionRequest) async throws -> ActivityReactionInfo {
+        let response = try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
+        return ActivityReactionInfo(from: response.reaction)
+    }
+    
+    func deleteReaction(activityId: String, type: String) async throws -> ActivityReactionInfo {
+        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
+        return ActivityReactionInfo(from: response.reaction)
+    }
+}
+
+extension FeedsRepository {
+    struct GetOrCreateInfo {
+        let activities: [ActivityInfo]
+        let followers: [FollowInfo]
+        let following: [FollowInfo]
+        let followRequests: [FollowInfo]
+        let members: [FeedMemberResponse]
+        let ownCapabilities: [OwnCapability]
+    }
+}
