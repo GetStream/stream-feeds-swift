@@ -34,6 +34,9 @@ public enum FeedsEvent: Codable, Hashable {
     case typePollClosedEvent(PollClosedEvent)
     case typePollDeletedEvent(PollDeletedEvent)
     case typePollUpdatedEvent(PollUpdatedEvent)
+    case typePollVoteCastedEvent(PollVoteCastedEvent)
+    case typePollVoteChangedEvent(PollVoteChangedEvent)
+    case typePollVoteRemovedEvent(PollVoteRemovedEvent)
     case typeConnectedEvent(ConnectedEvent)
     case typeHealthCheckEvent(HealthCheckEvent)
     case typeConnectionErrorEvent(ConnectionErrorEvent)
@@ -95,6 +98,12 @@ public enum FeedsEvent: Codable, Hashable {
         case let .typePollDeletedEvent(value):
             return value.type
         case let .typePollUpdatedEvent(value):
+            return value.type
+        case let .typePollVoteCastedEvent(value):
+            return value.type
+        case let .typePollVoteChangedEvent(value):
+            return value.type
+        case let .typePollVoteRemovedEvent(value):
             return value.type
         case let .typeConnectedEvent(value):
             return value.type
@@ -163,6 +172,12 @@ public enum FeedsEvent: Codable, Hashable {
             return value
         case let .typePollUpdatedEvent(value):
             return value
+        case let .typePollVoteCastedEvent(value):
+            return value
+        case let .typePollVoteChangedEvent(value):
+            return value
+        case let .typePollVoteRemovedEvent(value):
+            return value
         case let .typeConnectedEvent(value):
             return value
         case let .typeHealthCheckEvent(value):
@@ -230,6 +245,12 @@ public enum FeedsEvent: Codable, Hashable {
         case let .typePollDeletedEvent(value):
             try container.encode(value)
         case let .typePollUpdatedEvent(value):
+            try container.encode(value)
+        case let .typePollVoteCastedEvent(value):
+            try container.encode(value)
+        case let .typePollVoteChangedEvent(value):
+            try container.encode(value)
+        case let .typePollVoteRemovedEvent(value):
             try container.encode(value)
         case let .typeConnectedEvent(value):
             try container.encode(value)
@@ -327,6 +348,15 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "poll.updated" {
             let value = try container.decode(PollUpdatedEvent.self)
             self = .typePollUpdatedEvent(value)
+        } else if dto.type == "poll.vote_casted" {
+            let value = try container.decode(PollVoteCastedEvent.self)
+            self = .typePollVoteCastedEvent(value)
+        } else if dto.type == "poll.vote_changed" {
+            let value = try container.decode(PollVoteChangedEvent.self)
+            self = .typePollVoteChangedEvent(value)
+        } else if dto.type == "poll.vote_removed" {
+            let value = try container.decode(PollVoteRemovedEvent.self)
+            self = .typePollVoteRemovedEvent(value)
         } else if dto.type == "connection.ok" {
             let value = try container.decode(ConnectedEvent.self)
             self = .typeConnectedEvent(value)
