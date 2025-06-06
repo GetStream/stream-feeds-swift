@@ -15,7 +15,7 @@ public struct CommentInfo: Identifiable, Sendable {
     public let downvoteCount: Int
     public let id: String
     public let latestReactions: [ActivityReactionInfo]?
-    public let mentionedUsers: [UserResponse]
+    public let mentionedUsers: [UserInfo]
     public let objectId: String
     public let objectType: String
     public let parentId: String?
@@ -27,7 +27,7 @@ public struct CommentInfo: Identifiable, Sendable {
     public let text: String?
     public let updatedAt: Date
     public let upvoteCount: Int
-    public let user: UserResponse
+    public let user: UserInfo
     
     init(from response: CommentResponse) {
         self.attachments = response.attachments
@@ -39,7 +39,7 @@ public struct CommentInfo: Identifiable, Sendable {
         self.downvoteCount = response.downvoteCount
         self.id = response.id
         self.latestReactions = response.latestReactions?.map(ActivityReactionInfo.init(from:))
-        self.mentionedUsers = response.mentionedUsers
+        self.mentionedUsers = response.mentionedUsers.map(UserInfo.init(from:))
         self.objectId = response.objectId
         self.objectType = response.objectType
         self.parentId = response.parentId
@@ -51,6 +51,6 @@ public struct CommentInfo: Identifiable, Sendable {
         self.text = response.text
         self.updatedAt = response.updatedAt
         self.upvoteCount = response.upvoteCount
-        self.user = response.user
+        self.user = UserInfo(from: response.user)
     }
 } 

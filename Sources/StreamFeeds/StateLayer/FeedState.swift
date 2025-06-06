@@ -1,8 +1,5 @@
 //
-//  FeedState.swift
-//  StreamFeeds
-//
-//  Created by Martin Mitrevski on 7.5.25.
+// Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
 import Combine
@@ -21,6 +18,7 @@ import Foundation
     public let feedId: String
     
     @Published public internal(set) var activities = [ActivityInfo]()
+    @Published public internal(set) var feed: FeedInfo?
     @Published public internal(set) var followers = [FollowInfo]()
     @Published public internal(set) var following = [FollowInfo]()
     @Published public internal(set) var followRequests = [FollowInfo]()
@@ -39,6 +37,7 @@ extension FeedState {
         let bookmarkDeleted: @MainActor (BookmarkInfo) -> Void
         let commentAdded: @MainActor (CommentInfo) -> Void
         let commentDeleted: @MainActor (CommentInfo) -> Void
+        let feedUpdated: @MainActor (FeedInfo) -> Void
         let followAdded: @MainActor (FollowInfo) -> Void
         let followDeleted: @MainActor (FollowInfo) -> Void
         let followUpdated: @MainActor (FollowInfo) -> Void
@@ -48,13 +47,13 @@ extension FeedState {
     private func makeChangeHandlers() -> ChangeHandlers {
         return ChangeHandlers(
             activityAdded: { [weak self] activity in
-                self?.activities.insert(byId: activity)
+                self?.activities.sortedInsert(activity, using: ActivityInfo.defaultSorting)
             },
             activityDeleted: { [weak self] activity in
-                self?.activities.removeAll(where: { $0.id == activity.id })
+                self?.activities.sortedRemove(activity, using: ActivityInfo.defaultSorting)
             },
             activityUpdated: { [weak self] activity in
-                self?.activities.insert(byId: activity)
+                self?.activities.sortedInsert(activity, using: ActivityInfo.defaultSorting)
             },
             bookmarkAdded: { [weak self] bookmark in
                 self?.updateActivity(with: bookmark.activityId) { activity in
@@ -75,6 +74,9 @@ extension FeedState {
                 self?.updateActivity(with: comment.objectId) { activity in
                     activity.deleteComment(comment)
                 }
+            },
+            feedUpdated: { [weak self] feed in
+                self?.feed = feed
             },
             followAdded: { [weak self] follow in
                 self?.addFollow(follow)
@@ -128,6 +130,7 @@ extension FeedState {
     
     func update(with data: FeedsRepository.GetOrCreateInfo) {
         activities = data.activities
+        feed = data.feed
         followers = data.followers
         following = data.following
         followRequests = data.followRequests

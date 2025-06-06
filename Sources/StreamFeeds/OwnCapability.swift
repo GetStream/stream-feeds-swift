@@ -1,8 +1,5 @@
 //
-//  OwnCapability.swift
-//  StreamFeeds
-//
-//  Created by Martin Mitrevski on 3.6.25.
+// Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
 import Foundation

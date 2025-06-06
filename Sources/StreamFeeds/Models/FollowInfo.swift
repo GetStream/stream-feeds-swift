@@ -14,9 +14,9 @@ public struct FollowInfo: Sendable {
     public let pushPreference: String
     public let requestAcceptedAt: Date?
     public let requestRejectedAt: Date?
-    public let sourceFeed: FeedResponse
+    public let sourceFeed: FeedInfo
     public let status: FollowStatus
-    public let targetFeed: FeedResponse
+    public let targetFeed: FeedInfo
     public let updatedAt: Date
     
     init(from response: FollowResponse) {
@@ -26,9 +26,9 @@ public struct FollowInfo: Sendable {
         self.pushPreference = response.pushPreference
         self.requestAcceptedAt = response.requestAcceptedAt
         self.requestRejectedAt = response.requestRejectedAt
-        self.sourceFeed = response.sourceFeed
+        self.sourceFeed = FeedInfo(from: response.sourceFeed)
         self.status = response.status
-        self.targetFeed = response.targetFeed
+        self.targetFeed = FeedInfo(from: response.targetFeed)
         self.updatedAt = response.updatedAt
     }
     

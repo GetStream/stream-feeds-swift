@@ -11,7 +11,7 @@ public struct ActivityReactionInfo: Sendable {
     public let custom: [String: RawJSON]?
     public let type: String
     public let updatedAt: Date
-    public let user: UserResponse
+    public let user: UserInfo
     
     init(from response: FeedsReactionResponse) {
         self.activityId = response.activityId
@@ -19,7 +19,7 @@ public struct ActivityReactionInfo: Sendable {
         self.custom = response.custom
         self.type = response.type
         self.updatedAt = response.updatedAt
-        self.user = response.user
+        self.user = UserInfo(from: response.user)
     }
 }
 

@@ -11,7 +11,7 @@ public struct ActivityInfo: Identifiable, Sendable {
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentInfo]
     public let createdAt: Date
-    public let currentFeed: FeedResponse?
+    public let currentFeed: FeedInfo?
     public let custom: [String: RawJSON]
     public let deletedAt: Date?
     public let editedAt: Date?
@@ -22,11 +22,11 @@ public struct ActivityInfo: Identifiable, Sendable {
     public let interestTags: [String]
     public private(set) var latestReactions: [ActivityReactionInfo]
     public let location: ActivityLocation?
-    public let mentionedUsers: [UserResponse]
+    public let mentionedUsers: [UserInfo]
     public let moderation: ModerationV2Response?
     public private(set) var ownBookmarks: [BookmarkInfo]
     public private(set) var ownReactions: [ActivityReactionInfo]
-    public let parent: BaseActivityResponse?
+    public var parent: ActivityInfo? { _parent?.value as? ActivityInfo }
     public let poll: PollResponseData?
     public let popularity: Int
     public private(set) var reactionGroups: [String: ReactionGroupInfo]
@@ -36,21 +36,26 @@ public struct ActivityInfo: Identifiable, Sendable {
     public let text: String?
     public let type: String
     public let updatedAt: Date
-    public let user: UserResponse
+    public let user: UserInfo
     public let visibility: String
     public let visibilityTag: String?
     
-    // Additional computed
+    // Additional
+    public var reactionCount: Int {
+        reactionGroups.values.reduce(0) { $0 + $1.count }
+    }
     
-    public let reactionCount: Int
+    private let _parent: BoxedAny?
     
+    /// Creates a new instance of `ActivityInfo` from a `ActivityResponse`.
+    /// - Parameter response: The response object containing the activity data.
     init(from response: ActivityResponse) {
         self.attachments = response.attachments
         self.bookmarkCount = response.bookmarkCount
         self.commentCount = response.commentCount
-        self.comments = response.comments.map(CommentInfo.init(from:))
+        self.comments = response.comments.map { CommentInfo(from: $0) }
         self.createdAt = response.createdAt
-        self.currentFeed = response.currentFeed
+        self.currentFeed = response.currentFeed.map { FeedInfo(from: $0) }
         self.custom = response.custom
         self.deletedAt = response.deletedAt
         self.editedAt = response.editedAt
@@ -59,28 +64,63 @@ public struct ActivityInfo: Identifiable, Sendable {
         self.filterTags = response.filterTags
         self.id = response.id
         self.interestTags = response.interestTags
-        self.latestReactions = response.latestReactions.map(ActivityReactionInfo.init(from:))
+        self.latestReactions = response.latestReactions.map { ActivityReactionInfo(from: $0) }
         self.location = response.location
-        self.mentionedUsers = response.mentionedUsers
+        self.mentionedUsers = response.mentionedUsers.map { UserInfo(from: $0) }
         self.moderation = response.moderation
-        self.ownBookmarks = response.ownBookmarks.map(BookmarkInfo.init(from:))
-        self.ownReactions = response.ownReactions.map(ActivityReactionInfo.init(from:))
-        self.parent = response.parent
+        self.ownBookmarks = response.ownBookmarks.map { BookmarkInfo(from: $0) }
+        self.ownReactions = response.ownReactions.map { ActivityReactionInfo(from: $0) }
+        self._parent = BoxedAny(response.parent)
         self.poll = response.poll
         self.popularity = response.popularity
-        self.reactionGroups = response.reactionGroups.mapValues(ReactionGroupInfo.init(from:))
+        self.reactionGroups = response.reactionGroups.mapValues { ReactionGroupInfo(from: $0) }
         self.score = response.score
         self.searchData = response.searchData
         self.shareCount = response.shareCount
         self.text = response.text
         self.type = response.type
         self.updatedAt = response.updatedAt
-        self.user = response.user
+        self.user = UserInfo(from: response.user)
         self.visibility = response.visibility
         self.visibilityTag = response.visibilityTag
-        
-        // Additional
-        self.reactionCount = reactionGroups.values.compactMap(\.count).reduce(0, +)
+    }
+    
+    /// Creates a new instance of `ActivityInfo` from a `BaseActivityResponse`.
+    /// - Parameter response: The base response object containing the activity data.
+    init(from response: BaseActivityResponse) {
+        self.attachments = response.attachments
+        self.bookmarkCount = response.bookmarkCount
+        self.commentCount = response.commentCount
+        self.comments = response.comments.map { CommentInfo(from: $0) }
+        self.createdAt = response.createdAt
+        self.currentFeed = response.currentFeed.map { FeedInfo(from: $0) }
+        self.custom = response.custom
+        self.deletedAt = response.deletedAt
+        self.editedAt = response.editedAt
+        self.expiresAt = response.expiresAt
+        self.feeds = response.feeds
+        self.filterTags = response.filterTags
+        self.id = response.id
+        self.interestTags = response.interestTags
+        self.latestReactions = response.latestReactions.map { ActivityReactionInfo(from: $0) }
+        self.location = response.location
+        self.mentionedUsers = response.mentionedUsers.map { UserInfo(from: $0) }
+        self.moderation = response.moderation
+        self.ownBookmarks = response.ownBookmarks.map { BookmarkInfo(from: $0) }
+        self.ownReactions = response.ownReactions.map { ActivityReactionInfo(from: $0) }
+        self._parent = nil // BaseActivityResponse doesn't have a parent
+        self.poll = response.poll
+        self.popularity = response.popularity
+        self.reactionGroups = response.reactionGroups.mapValues { ReactionGroupInfo(from: $0) }
+        self.score = response.score
+        self.searchData = response.searchData
+        self.shareCount = response.shareCount
+        self.text = response.text
+        self.type = response.type
+        self.updatedAt = response.updatedAt
+        self.user = UserInfo(from: response.user)
+        self.visibility = response.visibility
+        self.visibilityTag = response.visibilityTag
     }
 }
 
@@ -118,4 +158,10 @@ extension ActivityInfo {
         reactionGroup.increment(with: reaction.createdAt)
         reactionGroups[reaction.type] = reactionGroup
     }
+}
+
+// MARK: - Sorting
+
+extension ActivityInfo {
+    static let defaultSorting: (ActivityInfo, ActivityInfo) -> Bool = { $0.createdAt > $1.createdAt }
 }

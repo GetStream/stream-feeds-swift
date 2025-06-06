@@ -1,0 +1,26 @@
+{
+  "configurations" : [
+    {
+      "id" : "7D3F5E4E-CDC8-488D-B641-8F9C77E7F69B",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "language" : "en",
+    "region" : "US"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:StreamFeeds.xcodeproj",
+        "identifier" : "845494E92DBA2E7C00211413",
+        "name" : "StreamFeedsTests"
+      }
+    }
+  ],
+  "version" : 1
+}

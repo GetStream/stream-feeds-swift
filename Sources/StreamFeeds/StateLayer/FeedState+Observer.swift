@@ -52,6 +52,9 @@ extension FeedState {
                 case let event as CommentDeletedEvent:
                     guard event.fid == feedId else { return }
                     await handlers.commentDeleted(CommentInfo(from: event.comment))
+                case let event as FeedUpdatedEvent:
+                    guard event.fid == feedId else { return }
+                    await handlers.feedUpdated(FeedInfo(from: event.feed))
                 case let event as FollowCreatedEvent:
                     guard event.fid == feedId else { return }
                     await handlers.followAdded(FollowInfo(from: event.follow))

@@ -24,7 +24,8 @@ final class FeedsRepository {
         )
         let rawFollowers = response.followers.map(FollowInfo.init(from:))
         return GetOrCreateInfo(
-            activities: response.activities.map(ActivityInfo.init(from:)),
+            activities: response.activities.map(ActivityInfo.init(from:)).sorted(by: ActivityInfo.defaultSorting),
+            feed: FeedInfo(from: response.feed),
             followers: rawFollowers.filter { $0.isFollower(of: feedId) },
             following: response.following.map(FollowInfo.init(from:)).filter { $0.isFollowing(feedId: feedId) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
@@ -39,9 +40,9 @@ final class FeedsRepository {
         _ = try await apiClient.deleteFeed(feedGroupId: feedGroupId, feedId: feedId, hardDelete: hardDelete)
     }
     
-    func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedResponse {
-        // TODO: FeedResponse to model
-        try await apiClient.updateFeed(feedGroupId: feedGroupId, feedId: feedId, updateFeedRequest: request).feed
+    func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedInfo {
+        let response = try await apiClient.updateFeed(feedGroupId: feedGroupId, feedId: feedId, updateFeedRequest: request)
+        return FeedInfo(from: response.feed)
     }
     
     // MARK: - Activities
@@ -133,6 +134,7 @@ final class FeedsRepository {
 extension FeedsRepository {
     struct GetOrCreateInfo {
         let activities: [ActivityInfo]
+        let feed: FeedInfo
         let followers: [FollowInfo]
         let following: [FollowInfo]
         let followRequests: [FollowInfo]
