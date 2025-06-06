@@ -30,7 +30,7 @@ final class FeedsRepository {
             following: response.following.map(FollowInfo.init(from:)).filter { $0.isFollowing(feedId: feedId) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
             members: response.members,
-            ownCapabilities: response.capabilities?.compactMap(OwnCapability.init(rawValue:)) ?? []
+            ownCapabilities: response.ownCapabilities ?? []
         )
     }
     
@@ -139,6 +139,6 @@ extension FeedsRepository {
         let following: [FollowInfo]
         let followRequests: [FollowInfo]
         let members: [FeedMemberResponse]
-        let ownCapabilities: [OwnCapability]
+        let ownCapabilities: [FeedOwnCapability]
     }
 }

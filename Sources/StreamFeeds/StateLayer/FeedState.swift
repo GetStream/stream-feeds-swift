@@ -23,7 +23,7 @@ import Foundation
     @Published public internal(set) var following = [FollowInfo]()
     @Published public internal(set) var followRequests = [FollowInfo]()
     @Published public internal(set) var members = [FeedMemberResponse]()
-    @Published public internal(set) var ownCapabilities = [OwnCapability]()
+    @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
 }
 
 // MARK: - Updating the State
