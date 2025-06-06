@@ -17,7 +17,7 @@ struct ProfileView: View {
     let feedsClient: FeedsClient
     @ObservedObject var state: FeedState
     
-    @State var followSuggestions = [FeedResponse]()
+    @State var followSuggestions = [FeedInfo]()
     
     init(feed: Feed, feedsClient: FeedsClient) {
         self.feed = feed
@@ -135,21 +135,20 @@ struct ProfileView: View {
                     let suggestionsResponse = try await self.feedsClient.getFollowSuggestions(
                         feedGroupId: "user", limit: 10
                     )
-                    followSuggestions = suggestionsResponse.suggestions
+                    followSuggestions = suggestionsResponse
                 }
             }
         }
     }
 }
 
-extension FollowResponse: Identifiable {}
 extension FeedMemberResponse: Identifiable {}
 
 struct FollowSuggestionView: View {
     
-    let owner: UserResponse
+    let owner: UserInfo
     let feed: Feed
-    let targetFeed: FeedResponse
+    let targetFeed: FeedInfo
     
     var body: some View {
         VStack {

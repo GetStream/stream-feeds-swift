@@ -13,7 +13,7 @@ public struct FeedMemberInfo: Sendable {
     public let role: String
     public let status: String
     public let updatedAt: Date
-    public let user: UserResponse
+    public let user: UserInfo
     
     init(from response: FeedMemberResponse) {
         self.createdAt = response.createdAt
@@ -23,6 +23,6 @@ public struct FeedMemberInfo: Sendable {
         self.role = response.role
         self.status = response.status
         self.updatedAt = response.updatedAt
-        self.user = response.user
+        self.user = UserInfo(from: response.user)
     }
 } 

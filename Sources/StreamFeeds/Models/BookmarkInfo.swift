@@ -11,7 +11,7 @@ public struct BookmarkInfo: Sendable {
     public let custom: [String: RawJSON]?
     public let folder: BookmarkFolderResponse
     public let updatedAt: Date
-    public let user: UserResponse
+    public let user: UserInfo
     
     init(from response: BookmarkResponse) {
         self.activityId = response.activityId
@@ -19,7 +19,7 @@ public struct BookmarkInfo: Sendable {
         self.custom = response.custom
         self.folder = response.folder
         self.updatedAt = response.updatedAt
-        self.user = response.user
+        self.user = UserInfo(from: response.user)
     }
 }
 

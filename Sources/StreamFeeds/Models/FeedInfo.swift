@@ -7,7 +7,7 @@ import StreamCore
 
 public struct FeedInfo: Identifiable, Sendable {
     public let createdAt: Date
-    public let createdBy: UserResponse
+    public let createdBy: UserInfo
     public let custom: [String: RawJSON]?
     public let deletedAt: Date?
     public let fid: String
@@ -22,7 +22,7 @@ public struct FeedInfo: Identifiable, Sendable {
     
     init(from response: FeedResponse) {
         self.createdAt = response.createdAt
-        self.createdBy = response.createdBy
+        self.createdBy = UserInfo(from: response.createdBy)
         self.custom = response.custom
         self.deletedAt = response.deletedAt
         self.fid = response.fid

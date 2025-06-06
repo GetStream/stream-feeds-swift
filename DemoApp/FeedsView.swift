@@ -295,21 +295,9 @@ struct UserAvatar: View {
     }
 }
 
-extension UserResponse {
-    var imageURL: URL? {
-        if let image {
-            return URL(string: image)
-        } else {
-            return nil
-        }
-    }
-}
-
-extension FeedResponse: Identifiable {}
-
 struct ActivityView: View {
     
-    let user: UserResponse
+    let user: UserInfo
     let text: String
     var attachments: [Attachment]?
     var activity: ActivityInfo
