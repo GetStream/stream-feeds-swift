@@ -50,8 +50,10 @@ public final class Feed {
     }
     
     @discardableResult
-    public func updateFeed(request: UpdateFeedRequest) async throws -> FeedResponse {
-        try await repository.updateFeed(feedGroupId: group, feedId: id, request: request)
+    public func updateFeed(request: UpdateFeedRequest) async throws -> FeedInfo {
+        let feed = try await repository.updateFeed(feedGroupId: group, feedId: id, request: request)
+        await state.changeHandlers.feedUpdated(feed)
+        return feed
     }
     
     public func deleteFeed(hardDelete: Bool = false) async throws {

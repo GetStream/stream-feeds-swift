@@ -11,7 +11,7 @@ public struct ActivityInfo: Identifiable, Sendable {
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentInfo]
     public let createdAt: Date
-    public let currentFeed: FeedResponse?
+    public let currentFeed: FeedInfo?
     public let custom: [String: RawJSON]
     public let deletedAt: Date?
     public let editedAt: Date?
@@ -52,7 +52,7 @@ public struct ActivityInfo: Identifiable, Sendable {
         self.commentCount = response.commentCount
         self.comments = response.comments.map(CommentInfo.init(from:))
         self.createdAt = response.createdAt
-        self.currentFeed = response.currentFeed
+        self.currentFeed = response.currentFeed.flatMap(FeedInfo.init(from:))
         self.custom = response.custom
         self.deletedAt = response.deletedAt
         self.editedAt = response.editedAt
