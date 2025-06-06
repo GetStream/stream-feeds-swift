@@ -3,31 +3,28 @@
 //
 
 import Combine
-import StreamChat
+import StreamFeeds
 import SwiftUI
 
-class PollOptionAllVotesViewModel: ObservableObject, PollVoteListControllerDelegate {
+class PollOptionAllVotesViewModel: ObservableObject {
     
-    let poll: Poll
-    let option: PollOption
-    let controller: PollVoteListController
+    let poll: PollResponseData
+    let option: PollOptionResponseData
+    let activity: Activity
+    let feedsClient: FeedsClient
     
-    @Published var pollVotes = [PollVote]()
+    @Published var pollVotes = [PollVoteResponseData]()
     @Published var errorShown = false
     
     private var cancellables = Set<AnyCancellable>()
     private(set) var animateChanges = false
     private var loadingVotes = false
         
-    init(poll: Poll, option: PollOption) {
+    init(poll: PollResponseData, option: PollOptionResponseData, activity: Activity, feedsClient: FeedsClient) {
         self.poll = poll
         self.option = option
-        let query = PollVoteListQuery(
-            pollId: poll.id,
-            optionId: option.id
-        )
-        controller = InjectedValues[\.chatClient].pollVoteListController(query: query)
-        controller.delegate = self
+        self.activity = activity
+        self.feedsClient = feedsClient
         refresh()
         
         // No animation for initial load
@@ -39,48 +36,43 @@ class PollOptionAllVotesViewModel: ObservableObject, PollVoteListControllerDeleg
     }
     
     func refresh() {
-        controller.synchronize { [weak self] error in
-            guard let self else { return }
-            self.pollVotes = Array(self.controller.votes)
-            if self.pollVotes.isEmpty {
-                self.loadVotes()
-            }
-            if error != nil {
+        Task { @MainActor in
+            do {
+                let response = try await activity.queryPollVotes(
+                    pollId: poll.id,
+                    userId: feedsClient.user.id,
+                    queryPollVotesRequest: .init(
+                        filter: ["poll_id": .string(poll.id), "option_id": .string(option.id)]
+                    )
+                )
+                self.pollVotes = response.votes
+                if self.pollVotes.isEmpty {
+                    self.loadVotes()
+                }
+            } catch {
                 self.errorShown = true
             }
         }
     }
     
-    func onAppear(vote: PollVote) {
+    func onAppear(vote: PollVoteResponseData) {
         guard !loadingVotes,
               let index = pollVotes.firstIndex(where: { $0 == vote }),
               index > pollVotes.count - 10 else { return }
         
         loadVotes()
     }
-
-    func controller(
-        _ controller: PollVoteListController,
-        didChangeVotes changes: [ListChange<PollVote>]
-    ) {
-        if animateChanges {
-            withAnimation {
-                self.pollVotes = Array(self.controller.votes)
-            }
-        } else {
-            pollVotes = Array(controller.votes)
-        }
-    }
     
+    //TODO: implement pagination
     private func loadVotes() {
-        loadingVotes = true
-
-        controller.loadMoreVotes { [weak self] error in
-            guard let self else { return }
-            self.loadingVotes = false
-            if error != nil {
-                self.errorShown = true
-            }
-        }
+//        loadingVotes = true
+//
+//        controller.loadMoreVotes { [weak self] error in
+//            guard let self else { return }
+//            self.loadingVotes = false
+//            if error != nil {
+//                self.errorShown = true
+//            }
+//        }
     }
 }

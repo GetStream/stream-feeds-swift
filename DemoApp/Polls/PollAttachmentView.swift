@@ -121,9 +121,9 @@ public struct PollAttachmentView: View {
             } label: {
                 Text("View results")
             }
-//            .fullScreenCover(isPresented: $viewModel.pollResultsShown) {
-//                PollResultsView(viewModel: viewModel, factory: factory)
-//            }
+            .fullScreenCover(isPresented: $viewModel.pollResultsShown) {
+                PollResultsView(viewModel: viewModel)
+            }
             
             if viewModel.showEndVoteButton {
                 Button {

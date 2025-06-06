@@ -27,6 +27,14 @@ extension UserResponse {
             updatedAt: updatedAt
         )
     }
+    
+    public var imageURL: URL? {
+        if let image {
+            return URL(string: image)
+        } else {
+            return nil
+        }
+    }
 }
 
 extension UserResponseCommonFields {

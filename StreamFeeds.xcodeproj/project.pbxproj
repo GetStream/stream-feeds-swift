@@ -59,9 +59,6 @@
 				Polls/PollAllOptionsView.swift,
 				Polls/PollCommentsView.swift,
 				Polls/PollCommentsViewModel.swift,
-				Polls/PollOptionAllVotesView.swift,
-				Polls/PollOptionAllVotesViewModel.swift,
-				Polls/PollResultsView.swift,
 			);
 			target = 845495002DBA2F7100211413 /* DemoApp */;
 		};
