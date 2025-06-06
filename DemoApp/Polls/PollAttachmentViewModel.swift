@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
 import StreamCore
 import StreamFeeds
 import SwiftUI
@@ -19,11 +20,13 @@ public class PollAttachmentViewModel: ObservableObject {
     
     private var _activity: Activity?
     
+    private var cancellables = Set<AnyCancellable>()
+    
     var activity: Activity {
         if let _activity {
             return _activity
         }
-        let activity = feedsClient.activity(id: activityInfo.id)
+        let activity = feedsClient.activity(id: activityInfo.id, info: activityInfo)
         _activity = activity
         return activity
     }
@@ -123,6 +126,12 @@ public class PollAttachmentViewModel: ObservableObject {
         self.activityInfo = activityInfo
         createdByCurrentUser = poll.createdBy?.id == feedsClient.user.id
         self.currentUserVotes = poll.ownVotes
+        activity.state.$poll.sink { [weak self] poll in
+            if let poll {
+                self?.poll = poll
+            }
+        }
+        .store(in: &cancellables)
     }
         
     /// Casts a vote for a poll.

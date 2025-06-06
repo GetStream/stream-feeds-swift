@@ -9,12 +9,16 @@ public class Activity: WSEventsSubscriber {
     
     private let apiClient: DefaultAPI
     private let activityId: String
+    private let user: User
     
     public internal(set) var state = ActivityState()
     
-    init(id: String, apiClient: DefaultAPI) {
+    init(id: String, user: User, apiClient: DefaultAPI, activityInfo: ActivityInfo? = nil) {
         self.apiClient = apiClient
         self.activityId = id
+        self.user = user
+        //TODO: handle this better.
+        state.poll = activityInfo?.poll
     }
     
     // MARK: - Comments
@@ -318,6 +322,44 @@ public class Activity: WSEventsSubscriber {
                         state.comments[index] = event.comment.toThreadedComment
                     }
                 }
+            }
+        } else if let event = event as? PollVoteCastedEvent { //TODO: handle properly
+            Task { @MainActor in
+                let poll = state.poll
+                var votes = poll?.latestVotesByOption[event.pollVote.optionId] ?? []
+                votes.append(event.pollVote)
+                poll?.latestVotesByOption[event.pollVote.optionId] = votes
+                var voteCounts = poll?.voteCountsByOption ?? [:]
+                var count = voteCounts[event.pollVote.optionId] ?? 0
+                count += 1
+                voteCounts[event.pollVote.optionId] = count
+                poll?.voteCountsByOption = voteCounts
+                if event.pollVote.userId == user.id {
+                    var ownVotes = poll?.ownVotes ?? []
+                    ownVotes.append(event.pollVote)
+                    poll?.ownVotes = ownVotes
+                }
+                state.poll = poll
+            }
+        } else if let event = event as? PollVoteRemovedEvent { //TODO: handle properly
+            Task { @MainActor in
+                let poll = state.poll
+                poll?
+                    .latestVotesByOption[event.pollVote.optionId]?
+                    .removeAll(where: { $0.userId == event.pollVote.userId })
+                poll?.ownVotes.removeAll(where: { vote in
+                    vote.optionId == event.pollVote.optionId && event.pollVote.userId == user.id
+                })
+                var voteCounts = poll?.voteCountsByOption ?? [:]
+                var count = voteCounts[event.pollVote.optionId] ?? 0
+                count -= 1
+                voteCounts[event.pollVote.optionId] = count
+                poll?.voteCountsByOption = voteCounts
+                state.poll = poll
+            }
+        } else if let event = event as? PollVoteChangedEvent { //TODO: handle properly
+            Task { @MainActor in
+                state.poll = event.poll
             }
         }
     }

@@ -8,4 +8,5 @@ import StreamCore
 
 public class ActivityState: ObservableObject {
     @Published public var comments = [ThreadedCommentResponse]()
+    @Published public var poll: PollResponseData?
 }

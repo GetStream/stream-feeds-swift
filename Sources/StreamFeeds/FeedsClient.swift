@@ -81,8 +81,8 @@ public class FeedsClient: WSEventsSubscriber {
         Feed(group: group, id: id, user: user, repository: feedsRepository, events: eventsMiddleware)
     }
     
-    public func activity(id: String) -> Activity {
-        let activity = Activity(id: id, apiClient: apiClient)
+    public func activity(id: String, info: ActivityInfo? = nil) -> Activity {
+        let activity = Activity(id: id, user: user, apiClient: apiClient, activityInfo: info)
         eventsMiddleware.add(subscriber: activity)
         return activity
     }
