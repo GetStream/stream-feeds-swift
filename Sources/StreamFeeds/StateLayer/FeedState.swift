@@ -48,13 +48,13 @@ extension FeedState {
     private func makeChangeHandlers() -> ChangeHandlers {
         return ChangeHandlers(
             activityAdded: { [weak self] activity in
-                self?.activities.insert(byId: activity)
+                self?.activities.sortedInsert(activity, using: ActivityInfo.defaultSorting)
             },
             activityDeleted: { [weak self] activity in
-                self?.activities.removeAll(where: { $0.id == activity.id })
+                self?.activities.sortedRemove(activity, using: ActivityInfo.defaultSorting)
             },
             activityUpdated: { [weak self] activity in
-                self?.activities.insert(byId: activity)
+                self?.activities.sortedInsert(activity, using: ActivityInfo.defaultSorting)
             },
             bookmarkAdded: { [weak self] bookmark in
                 self?.updateActivity(with: bookmark.activityId) { activity in

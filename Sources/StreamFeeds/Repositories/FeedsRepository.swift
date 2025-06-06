@@ -24,7 +24,7 @@ final class FeedsRepository {
         )
         let rawFollowers = response.followers.map(FollowInfo.init(from:))
         return GetOrCreateInfo(
-            activities: response.activities.map(ActivityInfo.init(from:)),
+            activities: response.activities.map(ActivityInfo.init(from:)).sorted(by: ActivityInfo.defaultSorting),
             followers: rawFollowers.filter { $0.isFollower(of: feedId) },
             following: response.following.map(FollowInfo.init(from:)).filter { $0.isFollowing(feedId: feedId) },
             followRequests: rawFollowers.filter(\.isFollowRequest),

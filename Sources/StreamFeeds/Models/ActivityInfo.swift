@@ -44,6 +44,8 @@ public struct ActivityInfo: Identifiable, Sendable {
     
     public let reactionCount: Int
     
+    /// Creates a new instance of `ActivityInfo` from a `ActivityResponse`.
+    /// - Parameter response: The response object containing the activity data.
     init(from response: ActivityResponse) {
         self.attachments = response.attachments
         self.bookmarkCount = response.bookmarkCount
@@ -118,4 +120,10 @@ extension ActivityInfo {
         reactionGroup.increment(with: reaction.createdAt)
         reactionGroups[reaction.type] = reactionGroup
     }
+}
+
+// MARK: - Sorting
+
+extension ActivityInfo {
+    static let defaultSorting: (ActivityInfo, ActivityInfo) -> Bool = { $0.createdAt > $1.createdAt }
 }
