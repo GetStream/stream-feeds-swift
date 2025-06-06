@@ -60,6 +60,13 @@ struct FeedsView: View {
                                         activityToDelete = activity
                                     }
                                 )
+                            } else if activity.poll != nil {
+                                PollAttachmentView(
+                                    feedsClient: feedsClient,
+                                    feed: feed,
+                                    activity: activity,
+                                    isFirst: true
+                                )
                             } else {
                                 ActivityView(
                                     user: activity.user,
@@ -281,6 +288,7 @@ struct FeedsView: View {
 struct UserAvatar: View {
     
     let url: URL?
+    var size: CGFloat = 36
     
     var body: some View {
         AsyncImage(url: url) { image in
@@ -290,7 +298,7 @@ struct UserAvatar: View {
         } placeholder: {
             Color(UIColor.secondarySystemBackground)
         }
-        .frame(width: 36, height: 36)
+        .frame(width: size, height: size)
         .clipShape(Circle())
     }
 }

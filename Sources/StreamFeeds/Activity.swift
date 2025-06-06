@@ -20,6 +20,8 @@ public class Activity: WSEventsSubscriber {
         self.activityId = id
     }
     
+    // MARK: - Comments
+    
     public func queryComments(request: QueryCommentsRequest) async throws -> QueryCommentsResponse {
         let response = try await self.apiClient.queryComments(queryCommentsRequest: request)
         Task { @MainActor in
@@ -142,6 +144,106 @@ public class Activity: WSEventsSubscriber {
         }
         return response
     }
+    
+    // MARK: - Polls
+    
+    @discardableResult
+    public func deletePoll(pollId: String, userId: String?) async throws -> Response {
+        try await apiClient.deletePoll(pollId: pollId, userId: userId)
+    }
+
+    @discardableResult
+    public func getPoll(pollId: String, userId: String?) async throws -> PollResponse {
+        try await apiClient.getPoll(pollId: pollId, userId: userId)
+    }
+
+    @discardableResult
+    public func updatePollPartial(
+        pollId: String,
+        updatePollPartialRequest: UpdatePollPartialRequest
+    ) async throws -> PollResponse {
+        try await apiClient.updatePollPartial(pollId: pollId, updatePollPartialRequest: updatePollPartialRequest)
+    }
+
+    @discardableResult
+    public func createPollOption(
+        pollId: String,
+        createPollOptionRequest: CreatePollOptionRequest
+    ) async throws -> PollOptionResponse {
+        try await apiClient.createPollOption(pollId: pollId, createPollOptionRequest: createPollOptionRequest)
+    }
+
+    @discardableResult
+    public func updatePollOption(
+        pollId: String,
+        updatePollOptionRequest: UpdatePollOptionRequest
+    ) async throws -> PollOptionResponse {
+        try await apiClient.updatePollOption(
+            pollId: pollId,
+            updatePollOptionRequest: updatePollOptionRequest
+        )
+    }
+
+    @discardableResult
+    public func deletePollOption(
+        pollId: String,
+        optionId: String,
+        userId: String?
+    ) async throws -> Response {
+        try await apiClient.deletePollOption(pollId: pollId, optionId: optionId, userId: userId)
+    }
+
+    @discardableResult
+    public func getPollOption(
+        pollId: String,
+        optionId: String,
+        userId: String?
+    ) async throws -> PollOptionResponse {
+        try await apiClient.getPollOption(pollId: pollId, optionId: optionId, userId: userId)
+    }
+
+    @discardableResult
+    public func queryPollVotes(
+        pollId: String,
+        userId: String?,
+        queryPollVotesRequest: QueryPollVotesRequest
+    ) async throws -> PollVotesResponse {
+        try await apiClient.queryPollVotes(pollId: pollId, userId: userId, queryPollVotesRequest: queryPollVotesRequest)
+    }
+    
+    @discardableResult
+    public func castPollVote(
+        activityId: String,
+        pollId: String,
+        castPollVoteRequest: CastPollVoteRequest
+    ) async throws -> PollVoteResponse {
+        try await apiClient.castPollVote(activityId: activityId, pollId: pollId, castPollVoteRequest: castPollVoteRequest)
+    }
+
+    @discardableResult
+    public func removePollVote(
+        activityId: String,
+        pollId: String,
+        voteId: String,
+        userId: String?
+    ) async throws -> PollVoteResponse {
+        try await apiClient.removePollVote(
+            activityId: activityId,
+            pollId: pollId,
+            voteId: voteId,
+            userId: userId
+        )
+    }
+    
+    @discardableResult
+    public func closePoll(pollId: String) async throws -> PollResponse {
+        try await apiClient.updatePollPartial(
+            pollId: pollId,
+            updatePollPartialRequest: .init(set: ["isClosed": .bool(true)])
+        )
+    }
+    
+    // MARK: - Internal
     
     func onEvent(_ event: any Event) {
         if let event = event as? CommentReactionAddedEvent {
