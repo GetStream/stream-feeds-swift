@@ -3,43 +3,29 @@
 //
 
 import Combine
-import StreamChat
+import StreamCore
+import StreamFeeds
 import SwiftUI
 
-class PollCommentsViewModel: ObservableObject, PollVoteListControllerDelegate {
+class PollCommentsViewModel: ObservableObject {
     
-    @Injected(\.chatClient) var chatClient
-    
-    @Published var comments = [PollVote]()
+    @Published var comments = [PollVoteResponseData]()
     @Published var newCommentText = ""
     @Published var addCommentShown = false
     @Published var errorShown = false
     
-    let pollController: PollController
-    let commentsController: PollVoteListController
-    
+    let poll: PollResponseData
+    let activity: Activity
+    let user: User
+        
     private var cancellables = Set<AnyCancellable>()
     private(set) var animateChanges = false
     private var loadingComments = true
         
-    convenience init(poll: Poll, pollController: PollController) {
-        let query = PollVoteListQuery(
-            pollId: poll.id,
-            filter: .equal(.isAnswer, to: true)
-        )
-        self.init(
-            pollController: pollController,
-            commentsController: InjectedValues[\.chatClient].pollVoteListController(query: query)
-        )
-    }
-    
-    init(
-        pollController: PollController,
-        commentsController: PollVoteListController
-    ) {
-        self.commentsController = commentsController
-        self.pollController = pollController
-        commentsController.delegate = self
+    init(poll: PollResponseData, activity: Activity, user: User) {
+        self.poll = poll
+        self.activity = activity
+        self.user = user
         refresh()
         
         // No animation for initial load
@@ -48,39 +34,46 @@ class PollCommentsViewModel: ObservableObject, PollVoteListControllerDelegate {
             .map { _ in true }
             .assignWeakly(to: \.animateChanges, on: self)
             .store(in: &cancellables)
+
     }
     
     func refresh() {
         loadingComments = true
-        commentsController.synchronize { [weak self] error in
-            guard let self else { return }
-            self.loadingComments = false
-            self.comments = Array(self.commentsController.votes)
-            if error != nil {
+        Task {
+            do {
+                try await activity.queryPollVotes(
+                    pollId: poll.id,
+                    userId: user.id,
+                    queryPollVotesRequest: .init(filter: ["is_answer": .bool(true)])
+                )
+                loadingComments = false
+            } catch {
+                loadingComments = false
                 self.errorShown = true
             }
         }
     }
     
     var showsAddCommentButton: Bool {
-        pollController.poll?.isClosed == false
+        poll.isClosed == false
     }
     
     var currentUserAddedComment: Bool {
-        !comments.filter { $0.user?.id == chatClient.currentUserId }.isEmpty
+        !comments.filter { $0.user?.id == user.id }.isEmpty
     }
     
     func add(comment: String) {
-        pollController.castPollVote(answerText: comment, optionId: nil) { [weak self] error in
-            if let error {
-                log.error("Error casting a vote \(error.localizedDescription)")
-                self?.errorShown = true
-            }
+        Task { @MainActor in
+            try await activity.castPollVote(
+                activityId: activity.activityId,
+                pollId: poll.id,
+                castPollVoteRequest: .init(vote: .init(answerText: newCommentText))
+            )
         }
         newCommentText = ""
     }
     
-    func onAppear(comment: PollVote) {
+    func onAppear(comment: PollVoteResponseData) {
         guard !loadingComments,
               let index = comments.firstIndex(where: { $0 == comment }),
               index > comments.count - 10 else { return }
@@ -88,27 +81,15 @@ class PollCommentsViewModel: ObservableObject, PollVoteListControllerDelegate {
         loadComments()
     }
     
-    func controller(
-        _ controller: PollVoteListController,
-        didChangeVotes changes: [ListChange<PollVote>]
-    ) {
-        if animateChanges {
-            withAnimation {
-                self.comments = Array(self.commentsController.votes)
-            }
-        } else {
-            comments = Array(commentsController.votes)
-        }
-    }
-    
+    //TODO: pagination
     private func loadComments() {
-        guard !loadingComments, !commentsController.hasLoadedAllVotes else { return }
-        loadingComments = true
-        commentsController.loadMoreVotes { [weak self] error in
-            self?.loadingComments = false
-            if error != nil {
-                self?.errorShown = true
-            }
-        }
+//        guard !loadingComments, !commentsController.hasLoadedAllVotes else { return }
+//        loadingComments = true
+//        commentsController.loadMoreVotes { [weak self] error in
+//            self?.loadingComments = false
+//            if error != nil {
+//                self?.errorShown = true
+//            }
+//        }
     }
 }

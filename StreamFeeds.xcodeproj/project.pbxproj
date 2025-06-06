@@ -56,9 +56,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Polls/PollAllOptionsView.swift,
-				Polls/PollCommentsView.swift,
-				Polls/PollCommentsViewModel.swift,
 			);
 			target = 845495002DBA2F7100211413 /* DemoApp */;
 		};

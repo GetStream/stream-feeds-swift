@@ -8,9 +8,10 @@ import StreamCore
 public class Activity: WSEventsSubscriber {
     
     private let apiClient: DefaultAPI
-    private let activityId: String
     private let user: User
-    
+
+    public let activityId: String
+
     public internal(set) var state = ActivityState()
     
     init(id: String, user: User, apiClient: DefaultAPI, activityInfo: ActivityInfo? = nil) {
@@ -326,18 +327,25 @@ public class Activity: WSEventsSubscriber {
         } else if let event = event as? PollVoteCastedEvent { //TODO: handle properly
             Task { @MainActor in
                 let poll = state.poll
-                var votes = poll?.latestVotesByOption[event.pollVote.optionId] ?? []
-                votes.append(event.pollVote)
-                poll?.latestVotesByOption[event.pollVote.optionId] = votes
-                var voteCounts = poll?.voteCountsByOption ?? [:]
-                var count = voteCounts[event.pollVote.optionId] ?? 0
-                count += 1
-                voteCounts[event.pollVote.optionId] = count
-                poll?.voteCountsByOption = voteCounts
-                if event.pollVote.userId == user.id {
-                    var ownVotes = poll?.ownVotes ?? []
-                    ownVotes.append(event.pollVote)
-                    poll?.ownVotes = ownVotes
+                if event.pollVote.isAnswer == true {
+                    var answers = poll?.latestAnswers ?? []
+                    answers.append(event.pollVote)
+                    poll?.latestAnswers = answers
+                    poll?.answersCount = answers.count //TODO: not accurate
+                } else {
+                    var votes = poll?.latestVotesByOption[event.pollVote.optionId] ?? []
+                    votes.append(event.pollVote)
+                    poll?.latestVotesByOption[event.pollVote.optionId] = votes
+                    var voteCounts = poll?.voteCountsByOption ?? [:]
+                    var count = voteCounts[event.pollVote.optionId] ?? 0
+                    count += 1
+                    voteCounts[event.pollVote.optionId] = count
+                    poll?.voteCountsByOption = voteCounts
+                    if event.pollVote.userId == user.id {
+                        var ownVotes = poll?.ownVotes ?? []
+                        ownVotes.append(event.pollVote)
+                        poll?.ownVotes = ownVotes
+                    }
                 }
                 state.poll = poll
             }

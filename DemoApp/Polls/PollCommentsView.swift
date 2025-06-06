@@ -2,29 +2,29 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
-import StreamChat
+import StreamCore
+import StreamFeeds
 import SwiftUI
 
-struct PollCommentsView<Factory: ViewFactory>: View {
+struct PollCommentsView: View {
     
-    @Injected(\.colors) var colors
+    let colors = Colors.shared
     
     @Environment(\.presentationMode) var presentationMode
     
     @StateObject var viewModel: PollCommentsViewModel
-    let factory: Factory
     
     init(
-        factory: Factory,
-        poll: Poll,
-        pollController: PollController,
+        poll: PollResponseData,
+        activity: Activity,
+        user: User,
         viewModel: PollCommentsViewModel? = nil
     ) {
-        self.factory = factory
         _viewModel = StateObject(
             wrappedValue: viewModel ?? PollCommentsViewModel(
                 poll: poll,
-                pollController: pollController
+                activity: activity,
+                user: user
             )
         )
     }
@@ -39,14 +39,8 @@ struct PollCommentsView<Factory: ViewFactory>: View {
                                 Text(answer)
                                     .bold()
                                 HStack {
-                                    if viewModel.pollController.poll?.votingVisibility != .anonymous {
-                                        let displayInfo = UserDisplayInfo(
-                                            id: comment.user?.id ?? "",
-                                            name: comment.user?.name ?? "",
-                                            imageURL: comment.user?.imageURL,
-                                            extraData: comment.user?.extraData ?? [:]
-                                        )
-                                        factory.makeMessageAvatarView(for: displayInfo)
+                                    if viewModel.poll.votingVisibility != "anonymous" {
+                                        UserAvatar(url: comment.user?.imageURL)
                                     }
                                     Text(authorTitle(for: comment))
                                     Spacer()
@@ -71,20 +65,16 @@ struct PollCommentsView<Factory: ViewFactory>: View {
                                 title: commentButtonTitle,
                                 isPresented: $viewModel.addCommentShown,
                                 text: $viewModel.newCommentText,
-                                accept: L10n.Alert.Actions.send,
+                                accept: "Add",
                                 action: { viewModel.add(comment: viewModel.newCommentText) }
                             )
                     }
                 }
                 .padding()
             }
-            .alertBanner(
-                isPresented: $viewModel.errorShown,
-                action: viewModel.refresh
-            )
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text(L10n.Message.Polls.Toolbar.commentsTitle)
+                    Text("Comments")
                         .bold()
                 }
                 
@@ -102,14 +92,14 @@ struct PollCommentsView<Factory: ViewFactory>: View {
     
     private var commentButtonTitle: String {
         viewModel.currentUserAddedComment
-            ? L10n.Message.Polls.Button.updateComment
-            : L10n.Message.Polls.Button.addComment
+            ? "Update comment"
+            : "Add comment"
     }
     
-    private func authorTitle(for comment: PollVote) -> String {
-        if viewModel.pollController.poll?.votingVisibility == .anonymous {
-            return L10n.Message.Polls.unknownVoteAuthor
+    private func authorTitle(for comment: PollVoteResponseData) -> String {
+        if viewModel.poll.votingVisibility == "anonymous" {
+            return "anonymous"
         }
-        return comment.user?.name ?? L10n.Message.Polls.unknownVoteAuthor
+        return comment.user?.name ?? "anonymous"
     }
 }

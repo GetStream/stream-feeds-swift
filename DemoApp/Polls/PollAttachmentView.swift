@@ -62,18 +62,6 @@ public struct PollAttachmentView: View {
                 .layoutPriority(1) // do not compress long text
             }
             
-            if options.count > PollAttachmentViewModel.numberOfVisibleOptionsShown {
-                Button {
-                    viewModel.allOptionsShown = true
-                } label: {
-                    Text("See more options")
-                }
-                //TODO: fix this.
-//                .fullScreenCover(isPresented: $viewModel.allOptionsShown) {
-//                    PollAllOptionsView(viewModel: viewModel, factory: factory)
-//                }
-            }
-            
             if viewModel.showSuggestOptionButton {
                 Button {
                     viewModel.suggestOptionShown = true
@@ -111,9 +99,13 @@ public struct PollAttachmentView: View {
                 } label: {
                     Text("View all comments")
                 }
-//                .fullScreenCover(isPresented: $viewModel.allCommentsShown) {
-//                    PollCommentsView(factory: factory, poll: viewModel.poll, pollController: viewModel.pollController)
-//                }
+                .fullScreenCover(isPresented: $viewModel.allCommentsShown) {
+                    PollCommentsView(
+                        poll: viewModel.poll,
+                        activity: viewModel.activity,
+                        user: viewModel.feedsClient.user
+                    )
+                }
             }
             
             Button {
