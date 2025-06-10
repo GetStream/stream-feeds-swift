@@ -142,8 +142,6 @@ struct ProfileView: View {
     }
 }
 
-extension FeedMemberResponse: Identifiable {}
-
 struct FollowSuggestionView: View {
     
     let owner: UserInfo

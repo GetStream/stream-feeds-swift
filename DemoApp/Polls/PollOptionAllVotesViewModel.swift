@@ -6,7 +6,7 @@ import Combine
 import StreamFeeds
 import SwiftUI
 
-class PollOptionAllVotesViewModel: ObservableObject {
+@MainActor class PollOptionAllVotesViewModel: ObservableObject {
     
     let poll: PollInfo
     let option: PollOptionInfo

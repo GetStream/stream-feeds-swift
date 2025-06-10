@@ -25,4 +25,10 @@ public struct FeedMemberInfo: Sendable {
         self.updatedAt = response.updatedAt
         self.user = UserInfo(from: response.user)
     }
-} 
+}
+
+extension FeedMemberInfo: Identifiable {
+    public var id: String {
+        user.id
+    }
+}

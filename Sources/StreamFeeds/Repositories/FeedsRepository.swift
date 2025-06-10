@@ -29,7 +29,7 @@ final class FeedsRepository: Sendable {
             followers: rawFollowers.filter { $0.isFollower(of: feedId) },
             following: response.following.map(FollowInfo.init(from:)).filter { $0.isFollowing(feedId: feedId) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
-            members: response.members,
+            members: response.members.map(FeedMemberInfo.init(from:)),
             ownCapabilities: response.ownCapabilities ?? []
         )
     }
@@ -94,7 +94,7 @@ extension FeedsRepository {
         let followers: [FollowInfo]
         let following: [FollowInfo]
         let followRequests: [FollowInfo]
-        let members: [FeedMemberResponse]
+        let members: [FeedMemberInfo]
         let ownCapabilities: [FeedOwnCapability]
     }
 }

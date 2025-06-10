@@ -100,7 +100,7 @@ public extension PHAsset {
     }
 }
 
-extension PHAsset: Identifiable {
+extension PHAsset: @retroactive Identifiable {
     public var id: String {
         localIdentifier
     }

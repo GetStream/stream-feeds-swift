@@ -7,7 +7,7 @@ import StreamCore
 import StreamFeeds
 import SwiftUI
 
-class PollCommentsViewModel: ObservableObject {
+@MainActor class PollCommentsViewModel: ObservableObject {
     
     @Published var comments = [PollVoteInfo]()
     @Published var newCommentText = ""

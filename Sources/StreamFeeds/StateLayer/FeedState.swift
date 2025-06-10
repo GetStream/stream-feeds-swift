@@ -21,7 +21,7 @@ import Foundation
     @Published public internal(set) var followers = [FollowInfo]()
     @Published public internal(set) var following = [FollowInfo]()
     @Published public internal(set) var followRequests = [FollowInfo]()
-    @Published public internal(set) var members = [FeedMemberResponse]()
+    @Published public internal(set) var members = [FeedMemberInfo]()
     @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
 }
 

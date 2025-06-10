@@ -7,7 +7,7 @@ import Foundation
 import StreamFeeds
 import SwiftUI
 
-class CreatePollViewModel: ObservableObject {
+@MainActor class CreatePollViewModel: ObservableObject {
         
     @Published var question = ""
     

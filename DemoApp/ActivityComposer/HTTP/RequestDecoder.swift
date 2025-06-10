@@ -75,11 +75,11 @@ struct DefaultRequestDecoder: RequestDecoder {
 }
 
 extension ClientError {
-    final class ExpiredToken: ClientError {}
-    final class RefreshingToken: ClientError {}
-    final class TokenRefreshed: ClientError {}
-    final class ConnectionError: ClientError {}
-    final class ResponseBodyEmpty: ClientError {
+    final class ExpiredToken: ClientError, @unchecked Sendable {}
+    final class RefreshingToken: ClientError, @unchecked Sendable {}
+    final class TokenRefreshed: ClientError, @unchecked Sendable {}
+    final class ConnectionError: ClientError, @unchecked Sendable {}
+    final class ResponseBodyEmpty: ClientError, @unchecked Sendable {
         override var localizedDescription: String { "Response body is empty." }
     }
 

@@ -8,7 +8,7 @@ import StreamFeeds
 import SwiftUI
 
 /// View model for the `PollAttachmentView`.
-public class PollAttachmentViewModel: ObservableObject {
+@MainActor public class PollAttachmentViewModel: ObservableObject {
     
     static let numberOfVisibleOptionsShown = 10
     private var isCastingVote = false
@@ -149,14 +149,12 @@ public class PollAttachmentViewModel: ObservableObject {
                     pollId: poll.id,
                     request: .init(vote: .init(optionId: option.id))
                 )
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    self.isCastingVote = false
-                }
+                try await Task.sleep(nanoseconds: 300_000_000)
+                self.isCastingVote = false
             } catch {
                 print("========= \(error)")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    self.isCastingVote = false
-                }
+                try await Task.sleep(nanoseconds: 300_000_000)
+                self.isCastingVote = false
             }
         }
     }

@@ -293,9 +293,9 @@ protocol ConnectionDetailsProviderDelegate: AnyObject {
 }
 
 public extension ClientError {
-    final class InvalidURL: ClientError {}
-    final class InvalidJSON: ClientError {}
-    final class MissingConnectionId: ClientError {}
+    final class InvalidURL: ClientError, @unchecked Sendable {}
+    final class InvalidJSON: ClientError, @unchecked Sendable {}
+    final class MissingConnectionId: ClientError, @unchecked Sendable {}
 }
 
 class ConnectionProvider: ConnectionDetailsProviderDelegate {
