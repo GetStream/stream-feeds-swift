@@ -12,20 +12,26 @@ public struct BookmarkData: Sendable {
     public let folder: BookmarkFolderResponse
     public let updatedAt: Date
     public let user: UserData
-    
-    init(from response: BookmarkResponse) {
-        self.activityId = response.activityId
-        self.createdAt = response.createdAt
-        self.custom = response.custom
-        self.folder = response.folder
-        self.updatedAt = response.updatedAt
-        self.user = UserData(from: response.user)
-    }
 }
 
 extension BookmarkData: Identifiable {
     public var id: String {
         activityId + user.id
+    }
+}
+
+// MARK: - Model Conversions
+
+extension BookmarkResponse {
+    func toModel() -> BookmarkData {
+        BookmarkData(
+            activityId: activityId,
+            createdAt: createdAt,
+            custom: custom,
+            folder: folder,
+            updatedAt: updatedAt,
+            user: user.toModel()
+        )
     }
 }
 

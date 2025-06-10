@@ -27,30 +27,6 @@ public struct PollData: Identifiable, Sendable {
     public private(set) var voteCount: Int
     public private(set) var voteCountsByOption: [String: Int]
     public let votingVisibility: String
-    
-    init(from response: PollResponseData) {
-        self.allowAnswers = response.allowAnswers
-        self.allowUserSuggestedOptions = response.allowUserSuggestedOptions
-        self.answersCount = response.answersCount
-        self.createdAt = response.createdAt
-        self.createdBy = response.createdBy.flatMap(UserData.init(from:))
-        self.createdById = response.createdById
-        self.custom = response.custom
-        self.description = response.description
-        self.enforceUniqueVote = response.enforceUniqueVote
-        self.id = response.id
-        self.isClosed = response.isClosed ?? false
-        self.latestAnswers = response.latestAnswers.map(PollVoteData.init(from:))
-        self.latestVotesByOption = response.latestVotesByOption.mapValues { $0.map(PollVoteData.init(from:)) }
-        self.maxVotesAllowed = response.maxVotesAllowed
-        self.name = response.name
-        self.options = response.options.map(PollOptionData.init(from:))
-        self.ownVotes = response.ownVotes.map(PollVoteData.init(from:))
-        self.updatedAt = response.updatedAt
-        self.voteCount = response.voteCount
-        self.voteCountsByOption = response.voteCountsByOption
-        self.votingVisibility = response.votingVisibility
-    }
 }
 
 // MARK: - Mutating the Data
@@ -102,5 +78,35 @@ extension PollData {
         var optionVotes = latestVotesByOption[vote.optionId] ?? []
         optionVotes.remove(byId: vote)
         latestVotesByOption[vote.optionId] = optionVotes
+    }
+}
+
+// MARK: - Model Conversions
+
+extension PollResponseData {
+    func toModel() -> PollData {
+        PollData(
+            allowAnswers: allowAnswers,
+            allowUserSuggestedOptions: allowUserSuggestedOptions,
+            answersCount: answersCount,
+            createdAt: createdAt,
+            createdBy: createdBy?.toModel(),
+            createdById: createdById,
+            custom: custom,
+            description: description,
+            enforceUniqueVote: enforceUniqueVote,
+            id: id,
+            isClosed: isClosed ?? false,
+            latestAnswers: latestAnswers.map { $0.toModel() },
+            latestVotesByOption: latestVotesByOption.mapValues { votes in votes.map { $0.toModel() } },
+            maxVotesAllowed: maxVotesAllowed,
+            name: name,
+            options: options.map { $0.toModel() },
+            ownVotes: ownVotes.map { $0.toModel() },
+            updatedAt: updatedAt,
+            voteCount: voteCount,
+            voteCountsByOption: voteCountsByOption,
+            votingVisibility: votingVisibility
+        )
     }
 }

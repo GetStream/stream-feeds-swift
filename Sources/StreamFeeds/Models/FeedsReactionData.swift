@@ -12,19 +12,25 @@ public struct FeedsReactionData: Sendable {
     public let type: String
     public let updatedAt: Date
     public let user: UserData
-    
-    init(from response: FeedsReactionResponse) {
-        self.activityId = response.activityId
-        self.createdAt = response.createdAt
-        self.custom = response.custom
-        self.type = response.type
-        self.updatedAt = response.updatedAt
-        self.user = UserData(from: response.user)
-    }
 }
 
 extension FeedsReactionData: Identifiable {
     public var id: String {
         activityId + user.id
+    }
+}
+
+// MARK: - Model Conversions
+
+extension FeedsReactionResponse {
+    func toModel() -> FeedsReactionData {
+        FeedsReactionData(
+            activityId: activityId,
+            createdAt: createdAt,
+            custom: custom,
+            type: type,
+            updatedAt: updatedAt,
+            user: user.toModel()
+        )
     }
 }

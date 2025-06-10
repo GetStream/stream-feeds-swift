@@ -28,44 +28,54 @@ public struct UserData: Identifiable, Sendable {
         guard let image else { return nil }
         return URL(string: image)
     }
-    
-    init(from response: UserResponse) {
-        self.banned = response.banned
-        self.blockedUserIds = response.blockedUserIds
-        self.createdAt = response.createdAt
-        self.custom = response.custom
-        self.deactivatedAt = response.deactivatedAt
-        self.deletedAt = response.deletedAt
-        self.id = response.id
-        self.image = response.image
-        self.language = response.language
-        self.lastActive = response.lastActive
-        self.name = response.name
-        self.online = response.online
-        self.revokeTokensIssuedBefore = response.revokeTokensIssuedBefore
-        self.role = response.role
-        self.teams = response.teams
-        self.teamsRole = response.teamsRole
-        self.updatedAt = response.updatedAt
+}
+
+// MARK: - Model Conversions
+
+extension UserResponse {
+    func toModel() -> UserData {
+        UserData(
+            banned: banned,
+            blockedUserIds: blockedUserIds,
+            createdAt: createdAt,
+            custom: custom,
+            deactivatedAt: deactivatedAt,
+            deletedAt: deletedAt,
+            id: id,
+            image: image,
+            language: language,
+            lastActive: lastActive,
+            name: name,
+            online: online,
+            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
+            role: role,
+            teams: teams,
+            teamsRole: teamsRole,
+            updatedAt: updatedAt
+        )
     }
-    
-    init(from response: UserResponseCommonFields) {
-        self.banned = response.banned
-        self.blockedUserIds = response.blockedUserIds
-        self.createdAt = response.createdAt
-        self.custom = response.custom
-        self.deactivatedAt = response.deactivatedAt
-        self.deletedAt = response.deletedAt
-        self.id = response.id
-        self.image = response.image
-        self.language = response.language
-        self.lastActive = response.lastActive
-        self.name = response.name
-        self.online = response.online
-        self.revokeTokensIssuedBefore = response.revokeTokensIssuedBefore
-        self.role = response.role
-        self.teams = response.teams
-        self.teamsRole = response.teamsRole
-        self.updatedAt = response.updatedAt
+}
+
+extension UserResponseCommonFields {
+    func toModel() -> UserData {
+        UserData(
+            banned: banned,
+            blockedUserIds: blockedUserIds,
+            createdAt: createdAt,
+            custom: custom,
+            deactivatedAt: deactivatedAt,
+            deletedAt: deletedAt,
+            id: id,
+            image: image,
+            language: language,
+            lastActive: lastActive,
+            name: name,
+            online: online,
+            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
+            role: role,
+            teams: teams,
+            teamsRole: teamsRole,
+            updatedAt: updatedAt
+        )
     }
-} 
+}

@@ -15,16 +15,22 @@ public struct PollVoteData: Identifiable, Sendable {
     public let updatedAt: Date
     public let user: UserData?
     public let userId: String?
-    
-    init(from response: PollVoteResponseData) {
-        self.answerText = response.answerText
-        self.createdAt = response.createdAt
-        self.id = response.id
-        self.isAnswer = response.isAnswer
-        self.optionId = response.optionId
-        self.pollId = response.pollId
-        self.updatedAt = response.updatedAt
-        self.user = response.user.flatMap(UserData.init(from:))
-        self.userId = response.userId
+}
+
+// MARK: - Model Conversions
+
+extension PollVoteResponseData {
+    func toModel() -> PollVoteData {
+        PollVoteData(
+            answerText: answerText,
+            createdAt: createdAt,
+            id: id,
+            isAnswer: isAnswer,
+            optionId: optionId,
+            pollId: pollId,
+            updatedAt: updatedAt,
+            user: user?.toModel(),
+            userId: userId
+        )
     }
-} 
+}

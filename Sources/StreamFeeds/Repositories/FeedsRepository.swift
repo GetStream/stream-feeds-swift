@@ -22,14 +22,14 @@ final class FeedsRepository: Sendable {
             feedId: feedId,
             getOrCreateFeedRequest: request
         )
-        let rawFollowers = response.followers.map(FollowData.init(from:))
+        let rawFollowers = response.followers.map { $0.toModel() }
         return GetOrCreateInfo(
-            activities: response.activities.map(ActivityData.init(from:)).sorted(by: ActivityData.defaultSorting),
-            feed: FeedData(from: response.feed),
+            activities: response.activities.map { $0.toModel() }.sorted(by: ActivityData.defaultSorting),
+            feed: response.feed.toModel(),
             followers: rawFollowers.filter { $0.isFollower(of: feedId) },
-            following: response.following.map(FollowData.init(from:)).filter { $0.isFollowing(feedId: feedId) },
+            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feedId: feedId) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
-            members: response.members.map(FeedMemberData.init(from:)),
+            members: response.members.map { $0.toModel() },
             ownCapabilities: response.ownCapabilities ?? []
         )
     }
@@ -42,14 +42,14 @@ final class FeedsRepository: Sendable {
     
     func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedData {
         let response = try await apiClient.updateFeed(feedGroupId: feedGroupId, feedId: feedId, updateFeedRequest: request)
-        return FeedData(from: response.feed)
+        return response.feed.toModel()
     }
     
     // MARK: - Follows
     
     func follow(request: SingleFollowRequest) async throws -> FollowData {
         let response = try await apiClient.follow(singleFollowRequest: request)
-        return FollowData(from: response.follow)
+        return response.follow.toModel()
     }
     
     func unfollow(source: String, target: String) async throws {
@@ -58,12 +58,12 @@ final class FeedsRepository: Sendable {
     
     func acceptFollow(request: AcceptFollowRequest) async throws -> FollowData {
         let response = try await apiClient.acceptFollow(acceptFollowRequest: request)
-        return FollowData(from: response.follow)
+        return response.follow.toModel()
     }
     
     func rejectFollow(request: RejectFollowRequest) async throws -> FollowData {
         let response = try await apiClient.rejectFollow(rejectFollowRequest: request)
-        return FollowData(from: response.follow)
+        return response.follow.toModel()
     }
     
     // MARK: - Members
@@ -74,7 +74,7 @@ final class FeedsRepository: Sendable {
     
     func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberData {
         let response = try await apiClient.acceptFeedMemberInvite(feedId: feedId, feedGroupId: feedGroupId)
-        return FeedMemberData(from: response.member)
+        return response.member.toModel()
     }
     
     func queryFeedMembers(feedGroupId: String, feedId: String, request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
@@ -83,7 +83,7 @@ final class FeedsRepository: Sendable {
     
     func rejectFeedMember(feedGroupId: String, feedId: String) async throws -> FeedMemberData {
         let response = try await apiClient.rejectFeedMemberInvite(feedGroupId: feedGroupId, feedId: feedId)
-        return FeedMemberData(from: response.member)
+        return response.member.toModel()
     }
 }
 

@@ -45,81 +45,7 @@ public struct ActivityData: Identifiable, Sendable {
         reactionGroups.values.reduce(0) { $0 + $1.count }
     }
     
-    private let _parent: BoxedAny?
-    
-    init(from response: ActivityResponse) {
-        self.attachments = response.attachments
-        self.bookmarkCount = response.bookmarkCount
-        self.commentCount = response.commentCount
-        self.comments = response.comments.map { CommentData(from: $0) }
-        self.createdAt = response.createdAt
-        self.currentFeed = response.currentFeed.map { FeedData(from: $0) }
-        self.custom = response.custom
-        self.deletedAt = response.deletedAt
-        self.editedAt = response.editedAt
-        self.expiresAt = response.expiresAt
-        self.feeds = response.feeds
-        self.filterTags = response.filterTags
-        self.id = response.id
-        self.interestTags = response.interestTags
-        self.latestReactions = response.latestReactions.map { FeedsReactionData(from: $0) }
-        self.location = response.location
-        self.mentionedUsers = response.mentionedUsers.map { UserData(from: $0) }
-        self.moderation = response.moderation
-        self.ownBookmarks = response.ownBookmarks.map { BookmarkData(from: $0) }
-        self.ownReactions = response.ownReactions.map { FeedsReactionData(from: $0) }
-        self._parent = BoxedAny(response.parent)
-        self.poll = response.poll.flatMap(PollData.init(from:))
-        self.popularity = response.popularity
-        self.reactionGroups = response.reactionGroups.mapValues { ReactionGroupData(from: $0) }
-        self.score = response.score
-        self.searchData = response.searchData
-        self.shareCount = response.shareCount
-        self.text = response.text
-        self.type = response.type
-        self.updatedAt = response.updatedAt
-        self.user = UserData(from: response.user)
-        self.visibility = response.visibility
-        self.visibilityTag = response.visibilityTag
-    }
-    
-    /// Creates a new instance of `ActivityData` from a `BaseActivityResponse`.
-    /// - Parameter response: The base response object containing the activity data.
-    init(from response: BaseActivityResponse) {
-        self.attachments = response.attachments
-        self.bookmarkCount = response.bookmarkCount
-        self.commentCount = response.commentCount
-        self.comments = response.comments.map { CommentData(from: $0) }
-        self.createdAt = response.createdAt
-        self.currentFeed = response.currentFeed.map { FeedData(from: $0) }
-        self.custom = response.custom
-        self.deletedAt = response.deletedAt
-        self.editedAt = response.editedAt
-        self.expiresAt = response.expiresAt
-        self.feeds = response.feeds
-        self.filterTags = response.filterTags
-        self.id = response.id
-        self.interestTags = response.interestTags
-        self.latestReactions = response.latestReactions.map { FeedsReactionData(from: $0) }
-        self.location = response.location
-        self.mentionedUsers = response.mentionedUsers.map { UserData(from: $0) }
-        self.moderation = response.moderation
-        self.ownBookmarks = response.ownBookmarks.map { BookmarkData(from: $0) }
-        self.ownReactions = response.ownReactions.map { FeedsReactionData(from: $0) }
-        self._parent = nil // BaseActivityResponse doesn't have a parent
-        self.poll = response.poll.flatMap(PollData.init(from:))
-        self.popularity = response.popularity
-        self.reactionGroups = response.reactionGroups.mapValues { ReactionGroupData(from: $0) }
-        self.score = response.score
-        self.searchData = response.searchData
-        self.shareCount = response.shareCount
-        self.text = response.text
-        self.type = response.type
-        self.updatedAt = response.updatedAt
-        self.user = UserData(from: response.user)
-        self.visibility = response.visibility
-        self.visibilityTag = response.visibilityTag
-    }
+    fileprivate let _parent: BoxedAny?
 }
 
 // MARK: - Mutating the Data
@@ -162,4 +88,86 @@ extension ActivityData {
 
 extension ActivityData {
     static let defaultSorting: @Sendable (ActivityData, ActivityData) -> Bool = { $0.createdAt > $1.createdAt }
+}
+
+// MARK: - Model Conversions
+
+extension ActivityResponse {
+    func toModel() -> ActivityData {
+        ActivityData(
+            attachments: attachments,
+            bookmarkCount: bookmarkCount,
+            commentCount: commentCount,
+            comments: comments.map { $0.toModel() },
+            createdAt: createdAt,
+            currentFeed: currentFeed?.toModel(),
+            custom: custom,
+            deletedAt: deletedAt,
+            editedAt: editedAt,
+            expiresAt: expiresAt,
+            feeds: feeds,
+            filterTags: filterTags,
+            id: id,
+            interestTags: interestTags,
+            latestReactions: latestReactions.map { $0.toModel() },
+            location: location,
+            mentionedUsers: mentionedUsers.map { $0.toModel() },
+            moderation: moderation,
+            ownBookmarks: ownBookmarks.map { $0.toModel() },
+            ownReactions: ownReactions.map { $0.toModel() },
+            poll: poll?.toModel(),
+            popularity: popularity,
+            reactionGroups: reactionGroups.mapValues { $0.toModel() },
+            score: score,
+            searchData: searchData,
+            shareCount: shareCount,
+            text: text,
+            type: type,
+            updatedAt: updatedAt,
+            user: user.toModel(),
+            visibility: visibility,
+            visibilityTag: visibilityTag,
+            _parent: BoxedAny(parent)
+        )
+    }
+}
+
+extension BaseActivityResponse {
+    func toModel() -> ActivityData {
+        ActivityData(
+            attachments: attachments,
+            bookmarkCount: bookmarkCount,
+            commentCount: commentCount,
+            comments: comments.map { $0.toModel() },
+            createdAt: createdAt,
+            currentFeed: currentFeed?.toModel(),
+            custom: custom,
+            deletedAt: deletedAt,
+            editedAt: editedAt,
+            expiresAt: expiresAt,
+            feeds: feeds,
+            filterTags: filterTags,
+            id: id,
+            interestTags: interestTags,
+            latestReactions: latestReactions.map { $0.toModel() },
+            location: location,
+            mentionedUsers: mentionedUsers.map { $0.toModel() },
+            moderation: moderation,
+            ownBookmarks: ownBookmarks.map { $0.toModel() },
+            ownReactions: ownReactions.map { $0.toModel() },
+            poll: poll?.toModel(),
+            popularity: popularity,
+            reactionGroups: reactionGroups.mapValues { $0.toModel() },
+            score: score,
+            searchData: searchData,
+            shareCount: shareCount,
+            text: text,
+            type: type,
+            updatedAt: updatedAt,
+            user: user.toModel(),
+            visibility: visibility,
+            visibilityTag: visibilityTag,
+            _parent: nil
+        )
+    }
 }

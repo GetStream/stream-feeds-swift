@@ -18,12 +18,12 @@ final class PollsRepository: Sendable {
             pollId: pollId,
             updatePollPartialRequest: .init(set: ["isClosed": .bool(true)])
         )
-        return PollData(from: response.poll)
+        return response.poll.toModel()
     }
     
     func createPoll(request: CreatePollRequest) async throws -> PollData {
         let response = try await apiClient.createPoll(createPollRequest: request)
-        return PollData(from: response.poll)
+        return response.poll.toModel()
     }
 
     func deletePoll(pollId: String, userId: String?) async throws {
@@ -32,7 +32,7 @@ final class PollsRepository: Sendable {
 
     func getPoll(pollId: String, userId: String?) async throws -> PollData {
         let response = try await apiClient.getPoll(pollId: pollId, userId: userId)
-        return PollData(from: response.poll)
+        return response.poll.toModel()
     }
 
     func updatePollPartial(
@@ -40,7 +40,7 @@ final class PollsRepository: Sendable {
         request: UpdatePollPartialRequest
     ) async throws -> PollData {
         let response = try await apiClient.updatePollPartial(pollId: pollId, updatePollPartialRequest: request)
-        return PollData(from: response.poll)
+        return response.poll.toModel()
     }
 
     // MARK: - Poll Options
@@ -50,7 +50,7 @@ final class PollsRepository: Sendable {
         request: CreatePollOptionRequest
     ) async throws -> PollOptionData {
         let response = try await apiClient.createPollOption(pollId: pollId, createPollOptionRequest: request)
-        return PollOptionData(from: response.pollOption)
+        return response.pollOption.toModel()
     }
 
     func deletePollOption(
@@ -67,7 +67,7 @@ final class PollsRepository: Sendable {
         userId: String?
     ) async throws -> PollOptionData {
         let response = try await apiClient.getPollOption(pollId: pollId, optionId: optionId, userId: userId)
-        return PollOptionData(from: response.pollOption)
+        return response.pollOption.toModel()
     }
 
     func updatePollOption(
@@ -78,7 +78,7 @@ final class PollsRepository: Sendable {
             pollId: pollId,
             updatePollOptionRequest:         request
         )
-        return PollOptionData(from: response.pollOption)
+        return response.pollOption.toModel()
     }
 
     // MARK: - Poll Votes
@@ -91,7 +91,7 @@ final class PollsRepository: Sendable {
         let response = try await apiClient.castPollVote(activityId: activityId, pollId: pollId, castPollVoteRequest: request)
         // TODO: Optional
         guard let vote = response.vote else { return nil }
-        return PollVoteData(from: vote)
+        return vote.toModel()
     }
 
     func queryPollVotes(
@@ -100,7 +100,7 @@ final class PollsRepository: Sendable {
         request: QueryPollVotesRequest
     ) async throws -> [PollVoteData] {
         let response = try await apiClient.queryPollVotes(pollId: pollId, userId: userId, queryPollVotesRequest: request)
-        return response.votes.map(PollVoteData.init(from:))
+        return response.votes.map { $0.toModel() }
     }
     
     func removePollVote(
@@ -117,6 +117,6 @@ final class PollsRepository: Sendable {
         )
         // TODO: Optional
         guard let vote = response.vote else { return nil }
-        return PollVoteData(from: vote)
+        return vote.toModel()
     }
 }

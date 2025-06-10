@@ -19,20 +19,26 @@ public struct FeedData: Identifiable, Sendable {
     public let pinCount: Int
     public let updatedAt: Date
     public let visibility: String?
-    
-    init(from response: FeedResponse) {
-        self.createdAt = response.createdAt
-        self.createdBy = UserData(from: response.createdBy)
-        self.custom = response.custom
-        self.deletedAt = response.deletedAt
-        self.fid = response.fid
-        self.followerCount = response.followerCount
-        self.followingCount = response.followingCount
-        self.groupId = response.groupId
-        self.id = response.id
-        self.memberCount = response.memberCount
-        self.pinCount = response.pinCount
-        self.updatedAt = response.updatedAt
-        self.visibility = response.visibility
+}
+
+// MARK: - Model Conversions
+
+extension FeedResponse {
+    func toModel() -> FeedData {
+        FeedData(
+            createdAt: createdAt,
+            createdBy: createdBy.toModel(),
+            custom: custom,
+            deletedAt: deletedAt,
+            fid: fid,
+            followerCount: followerCount,
+            followingCount: followingCount,
+            groupId: groupId,
+            id: id,
+            memberCount: memberCount,
+            pinCount: pinCount,
+            updatedAt: updatedAt,
+            visibility: visibility
+        )
     }
-} 
+}

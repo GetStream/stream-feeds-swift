@@ -108,7 +108,7 @@ public final class FeedsClient: Sendable {
     
     public func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> [FeedData] {
         let response = try await apiClient.getFollowSuggestions(feedGroupId: feedGroupId, limit: limit)
-        return response.suggestions.map(FeedData.init(from:))
+        return response.suggestions.map { $0.toModel() }
     }
     
     func onEvent(_ event: any Event) {}

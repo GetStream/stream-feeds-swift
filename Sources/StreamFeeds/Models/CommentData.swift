@@ -35,60 +35,6 @@ public struct CommentData: Identifiable, Sendable {
     public var isThreaded: Bool {
         replies != nil
     }
-    
-    init(from response: CommentResponse) {
-        self.attachments = response.attachments
-        self.confidenceScore = response.confidenceScore
-        self.controversyScore = response.controversyScore
-        self.createdAt = response.createdAt
-        self.custom = response.custom
-        self.deletedAt = response.deletedAt
-        self.downvoteCount = response.downvoteCount
-        self.id = response.id
-        self.latestReactions = response.latestReactions?.map(FeedsReactionData.init(from:))
-        self.meta = nil
-        self.mentionedUsers = response.mentionedUsers.map(UserData.init(from:))
-        self.objectId = response.objectId
-        self.objectType = response.objectType
-        self.parentId = response.parentId
-        self.reactionCount = response.reactionCount
-        self.reactionGroups = response.reactionGroups?.mapValues(ReactionGroupData.init(from:))
-        self.replies = nil
-        self.replyCount = response.replyCount
-        self.score = response.score
-        self.status = response.status
-        self.text = response.text
-        self.updatedAt = response.updatedAt
-        self.upvoteCount = response.upvoteCount
-        self.user = UserData(from: response.user)
-    }
-    
-    init(from response: ThreadedCommentResponse) {
-        self.attachments = response.attachments
-        self.confidenceScore = response.confidenceScore
-        self.controversyScore = response.controversyScore
-        self.createdAt = response.createdAt
-        self.custom = response.custom
-        self.deletedAt = response.deletedAt
-        self.downvoteCount = response.downvoteCount
-        self.id = response.id
-        self.latestReactions = response.latestReactions?.map(FeedsReactionData.init(from:))
-        self.mentionedUsers = response.mentionedUsers.map(UserData.init(from:))
-        self.meta = response.meta
-        self.objectId = response.objectId
-        self.objectType = response.objectType
-        self.parentId = response.parentId
-        self.reactionCount = response.reactionCount
-        self.reactionGroups = response.reactionGroups?.mapValues(ReactionGroupData.init(from:))
-        self.replies = response.replies?.map(CommentData.init(from:))
-        self.replyCount = response.replyCount
-        self.score = response.score
-        self.status = response.status
-        self.text = response.text
-        self.updatedAt = response.updatedAt
-        self.upvoteCount = response.upvoteCount
-        self.user = UserData(from: response.user)
-    }
 }
 
 // MARK: - Mutating the Data
@@ -119,4 +65,68 @@ extension CommentData {
 
 extension CommentData {
     static let defaultSorting: @Sendable (CommentData, CommentData) -> Bool = { $0.createdAt > $1.createdAt }
+}
+
+// MARK: - Model Conversions
+
+extension CommentResponse {
+    func toModel() -> CommentData {
+        CommentData(
+            attachments: attachments,
+            confidenceScore: confidenceScore,
+            controversyScore: controversyScore,
+            createdAt: createdAt,
+            custom: custom,
+            deletedAt: deletedAt,
+            downvoteCount: downvoteCount,
+            id: id,
+            latestReactions: latestReactions?.map { $0.toModel() },
+            mentionedUsers: mentionedUsers.map { $0.toModel() },
+            meta: nil,
+            objectId: objectId,
+            objectType: objectType,
+            parentId: parentId,
+            reactionCount: reactionCount,
+            reactionGroups: reactionGroups?.mapValues { $0.toModel() },
+            replies: nil,
+            replyCount: replyCount,
+            score: score,
+            status: status,
+            text: text,
+            updatedAt: updatedAt,
+            upvoteCount: upvoteCount,
+            user: user.toModel()
+        )
+    }
+}
+
+extension ThreadedCommentResponse {
+    func toModel() -> CommentData {
+        CommentData(
+            attachments: attachments,
+            confidenceScore: confidenceScore,
+            controversyScore: controversyScore,
+            createdAt: createdAt,
+            custom: custom,
+            deletedAt: deletedAt,
+            downvoteCount: downvoteCount,
+            id: id,
+            latestReactions: latestReactions?.map { $0.toModel() },
+            mentionedUsers: mentionedUsers.map { $0.toModel() },
+            meta: meta,
+            objectId: objectId,
+            objectType: objectType,
+            parentId: parentId,
+            reactionCount: reactionCount,
+            reactionGroups: reactionGroups?.mapValues { $0.toModel() },
+            replies: replies?.map { $0.toModel() },
+            replyCount: replyCount,
+            score: score,
+            status: status,
+            text: text,
+            updatedAt: updatedAt,
+            upvoteCount: upvoteCount,
+            user: user.toModel()
+        )
+    }
 }

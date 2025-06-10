@@ -9,10 +9,16 @@ public struct PollOptionData: Identifiable, Sendable {
     public let custom: [String: RawJSON]
     public let id: String
     public let text: String
-    
-    init(from response: PollOptionResponseData) {
-        self.custom = response.custom
-        self.id = response.id
-        self.text = response.text
+}
+
+// MARK: - Model Conversions
+
+extension PollOptionResponseData {
+    func toModel() -> PollOptionData {
+        PollOptionData(
+            custom: custom,
+            id: id,
+            text: text
+        )
     }
-} 
+}

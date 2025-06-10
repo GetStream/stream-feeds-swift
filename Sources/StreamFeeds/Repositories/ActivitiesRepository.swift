@@ -15,7 +15,7 @@ final class ActivitiesRepository: Sendable {
     
     func addActivity(request: AddActivityRequest) async throws -> ActivityData {
         let response = try await apiClient.addActivity(addActivityRequest: request)
-        return ActivityData(from: response.activity)
+        return response.activity.toModel()
     }
         
     func deleteActivity(activityId: String, hardDelete: Bool) async throws {
@@ -24,12 +24,12 @@ final class ActivitiesRepository: Sendable {
     
     func getActivity(activityId: String) async throws -> ActivityData {
         let response = try await apiClient.getActivity(activityId: activityId)
-        return ActivityData(from: response.activity)
+        return response.activity.toModel()
     }
 
     func updateActivity(activityId: String, request: UpdateActivityRequest) async throws -> ActivityData {
         let response = try await apiClient.updateActivity(activityId: activityId, updateActivityRequest: request)
-        return ActivityData(from: response.activity)
+        return response.activity.toModel()
     }
     
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
@@ -40,23 +40,23 @@ final class ActivitiesRepository: Sendable {
     
     func addBookmark(activityId: String) async throws -> BookmarkData {
         let response = try await apiClient.addBookmark(activityId: activityId, addBookmarkRequest: .init())
-        return BookmarkData(from: response.bookmark)
+        return response.bookmark.toModel()
     }
     
     func deleteBookmark(activityId: String) async throws -> BookmarkData {
         let response = try await apiClient.deleteBookmark(activityId: activityId)
-        return BookmarkData(from: response.bookmark)
+        return response.bookmark.toModel()
     }
     
     // MARK: - Reactions
     
     func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
         let response = try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
-        return FeedsReactionData(from: response.reaction)
+        return response.reaction.toModel()
     }
     
     func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
-        return FeedsReactionData(from: response.reaction)
+        return response.reaction.toModel()
     }
 }

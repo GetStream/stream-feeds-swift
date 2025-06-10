@@ -19,7 +19,7 @@ final class CommentsRepository: Sendable {
     func queryComments(request: QueryCommentsRequest) async throws -> QueryCommentsData {
         let response = try await self.apiClient.queryComments(queryCommentsRequest: request)
         return QueryCommentsData(
-            comments: response.comments.map(CommentData.init(from:)),
+            comments: response.comments.map { $0.toModel() },
             next: response.next,
             prev: response.prev
         )
@@ -45,19 +45,19 @@ final class CommentsRepository: Sendable {
             prev: prev,
             next: next
         )
-        return response.comments.map(CommentData.init(from:))
+        return response.comments.map { $0.toModel() }
     }
     
     // MARK: - Adding, Updating, and Removing Comments
     
     func addComment(request: AddCommentRequest) async throws -> CommentData {
         let response = try await self.apiClient.addComment(addCommentRequest: request)
-        return CommentData(from: response.comment)
+        return response.comment.toModel()
     }
     
     func addCommentsBatch(request: AddCommentsBatchRequest) async throws -> [CommentData] {
         let response = try await self.apiClient.addCommentsBatch(addCommentsBatchRequest: request)
-        return response.comments.map(CommentData.init(from:))
+        return response.comments.map { $0.toModel() }
     }
     
     func deleteComment(commentId: String) async throws {
@@ -66,24 +66,24 @@ final class CommentsRepository: Sendable {
     
     func getComment(commentId: String) async throws -> CommentData {
         let response = try await self.apiClient.getComment(commentId: commentId)
-        return CommentData(from: response.comment)
+        return response.comment.toModel()
     }
     
     func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
         let response = try await self.apiClient.updateComment(commentId: commentId, updateCommentRequest: request)
-        return CommentData(from: response.comment)
+        return response.comment.toModel()
     }
     
     // MARK: - Comment Reactions
     
     func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
         let response = try await self.apiClient.addCommentReaction(commentId: commentId, addCommentReactionRequest: request)
-        return (FeedsReactionData(from: response.reaction), CommentData(from: response.comment))
+        return (response.reaction.toModel(), response.comment.toModel())
     }
 
     func removeCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
         let response = try await self.apiClient.removeCommentReaction(commentId: commentId, type: type)
-        return (FeedsReactionData(from: response.reaction), CommentData(from: response.comment))
+        return (response.reaction.toModel(), response.comment.toModel())
     }
     
     // MARK: - Comment Replies
@@ -106,7 +106,7 @@ final class CommentsRepository: Sendable {
             prev: prev,
             next: next
         )
-        return response.comments.map(CommentData.init(from:))
+        return response.comments.map { $0.toModel() }
     }
 }
 

@@ -11,15 +11,21 @@ public struct ReactionGroupData: Sendable {
     public private(set) var lastReactionAt: Date
 }
 
-extension ReactionGroupData {
-    init(from response: ReactionGroupResponse) {
-        self.count = response.count
-        self.firstReactionAt = response.firstReactionAt
-        self.lastReactionAt = response.lastReactionAt
-    }
-    
+extension ReactionGroupData {    
     mutating func increment(with date: Date) {
         count += 1
         lastReactionAt = date
+    }
+}
+
+// MARK: - Model Conversions
+
+extension ReactionGroupResponse {
+    func toModel() -> ReactionGroupData {
+        ReactionGroupData(
+            count: count,
+            firstReactionAt: firstReactionAt,
+            lastReactionAt: lastReactionAt
+        )
     }
 }
