@@ -41,7 +41,7 @@ extension FeedState {
         let followAdded: @MainActor (FollowInfo) -> Void
         let followDeleted: @MainActor (FollowInfo) -> Void
         let followUpdated: @MainActor (FollowInfo) -> Void
-        let reactionAdded: @MainActor (ActivityReactionInfo) -> Void
+        let reactionAdded: @MainActor (FeedsReactionInfo) -> Void
     }
     
     private func makeChangeHandlers() -> ChangeHandlers {

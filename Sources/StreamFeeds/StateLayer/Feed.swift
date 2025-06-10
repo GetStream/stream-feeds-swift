@@ -17,19 +17,22 @@ public final class Feed {
     
     var user: User
     
-    private let repository: FeedsRepository
+    private let activitiesRepository: ActivitiesRepository
+    private let feedsRepository: FeedsRepository
     
     internal init(
         group: String,
         id: String,
         user: User,
-        repository: FeedsRepository,
+        activitiesRepository: ActivitiesRepository,
+        feedsRepository: FeedsRepository,
         events: WSEventsSubscribing
     ) {
         self.group = group
         self.id = id
         self.user = user
-        self.repository = repository
+        self.activitiesRepository = activitiesRepository
+        self.feedsRepository = feedsRepository
         let feedId = "\(group):\(id)"
         stateBuilder = StateBuilder { FeedState(feedId: feedId, events: events) }
     }
@@ -42,26 +45,26 @@ public final class Feed {
     // MARK: - Creating and Fetching the Feed
     
     public func getOrCreate(request: GetOrCreateFeedRequest) async throws {
-        let result = try await repository.getOrCreateFeed(feedGroupId: group, feedId: id, request: request)
+        let result = try await feedsRepository.getOrCreateFeed(feedGroupId: group, feedId: id, request: request)
         await state.update(with: result)
     }
     
     @discardableResult
     public func updateFeed(request: UpdateFeedRequest) async throws -> FeedInfo {
-        let feed = try await repository.updateFeed(feedGroupId: group, feedId: id, request: request)
+        let feed = try await feedsRepository.updateFeed(feedGroupId: group, feedId: id, request: request)
         await state.changeHandlers.feedUpdated(feed)
         return feed
     }
     
     public func deleteFeed(hardDelete: Bool = false) async throws {
-        try await repository.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete)
+        try await feedsRepository.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete)
     }
     
     // MARK: - Activities
     
     @discardableResult
     public func addActivity(request: AddActivityRequest) async throws -> ActivityInfo {
-        let activity = try await repository.addActivity(
+        let activity = try await activitiesRepository.addActivity(
             request: request
         )
         await state.changeHandlers.activityAdded(activity)
@@ -69,13 +72,13 @@ public final class Feed {
     }
     
     public func deleteActivity(id: String, hardDelete: Bool = false) async throws {
-        try await repository.deleteActivity(activityId: id, hardDelete: hardDelete)
+        try await activitiesRepository.deleteActivity(activityId: id, hardDelete: hardDelete)
         await state.update { $0.activities.removeAll(where: { $0.id == id }) }
     }
     
     @discardableResult
     public func updateActivity(id: String, request: UpdateActivityRequest) async throws -> ActivityInfo {
-        let activity = try await repository.updateActivity(activityId: id, request: request)
+        let activity = try await activitiesRepository.updateActivity(activityId: id, request: request)
         await state.changeHandlers.activityUpdated(activity)
         return activity
     }
@@ -83,12 +86,12 @@ public final class Feed {
     // MARK: - Activity Interactions
     
     public func markActivity(request: MarkActivityRequest) async throws {
-        try await repository.markActivity(feedGroupId: group, feedId: id, request: request)
+        try await activitiesRepository.markActivity(feedGroupId: group, feedId: id, request: request)
     }
     
     @discardableResult
     public func repost(activityId: String, text: String?) async throws -> ActivityInfo {
-        let activity = try await repository.addActivity(
+        let activity = try await activitiesRepository.addActivity(
             request: .init(fids: [fid], parentId: activityId, text: text, type: "post")
         )
         await state.changeHandlers.activityAdded(activity)
@@ -99,25 +102,25 @@ public final class Feed {
         
     @discardableResult
     public func addBookmark(activityId: String) async throws -> BookmarkInfo {
-        try await repository.addBookmark(activityId: activityId)
+        try await activitiesRepository.addBookmark(activityId: activityId)
     }
     
     @discardableResult
     public func deleteBookmark(activityId: String) async throws -> BookmarkInfo {
-        try await repository.deleteBookmark(activityId: activityId)
+        try await activitiesRepository.deleteBookmark(activityId: activityId)
     }
     
     // MARK: - Follows
     
     @discardableResult
     public func follow(request: SingleFollowRequest) async throws -> FollowInfo {
-        let follow = try await repository.follow(request: request)
+        let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)
         return follow
     }
     
     public func unfollow(sourceFid: String? = nil, targetFid: String) async throws {
-        try await repository.unfollow(source: sourceFid ?? self.fid, target: targetFid)
+        try await feedsRepository.unfollow(source: sourceFid ?? self.fid, target: targetFid)
         // TODO: Review
         await state.update { state in
             state.followers.removeAll(where: { $0.sourceFeed.id == sourceFid && $0.targetFeed.id == targetFid })
@@ -127,7 +130,7 @@ public final class Feed {
     
     @discardableResult
     public func acceptFollow(request: AcceptFollowRequest) async throws -> FollowInfo {
-        let follow = try await repository.acceptFollow(request: request)
+        let follow = try await feedsRepository.acceptFollow(request: request)
         await state.update { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         await state.changeHandlers.followAdded(follow)
         return follow
@@ -135,7 +138,7 @@ public final class Feed {
     
     @discardableResult
     public func rejectFollow(request: RejectFollowRequest) async throws -> FollowInfo {
-        let follow = try await repository.rejectFollow(request: request)
+        let follow = try await feedsRepository.rejectFollow(request: request)
         await state.update { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         return follow
     }
@@ -143,44 +146,44 @@ public final class Feed {
     // MARK: - Members
     
     public func queryFeedMembers(request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
-        try await repository.queryFeedMembers(feedGroupId: group, feedId: id, request: request)
+        try await feedsRepository.queryFeedMembers(feedGroupId: group, feedId: id, request: request)
     }
 
     public func updateFeedMembers(request: UpdateFeedMembersRequest) async throws {
-        try await repository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
+        try await feedsRepository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
     }
 
     public func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
-        let response = try await repository.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId)
+        let response = try await feedsRepository.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId)
         // TODO: update state
         return response
     }
     
     public func rejectFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
-        try await repository.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId)
+        try await feedsRepository.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId)
         // TODO: update state
     }
     
     // MARK: - Reactions
     
     @discardableResult
-    public func addReaction(activityId: String, request: AddReactionRequest) async throws -> ActivityReactionInfo {
-        let reaction = try await repository.addReaction(activityId: activityId, request: request)
+    public func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionInfo {
+        let reaction = try await activitiesRepository.addReaction(activityId: activityId, request: request)
         await state.changeHandlers.reactionAdded(reaction)
         return reaction
     }
     
     @discardableResult
-    public func deleteReaction(activityId: String, type: String) async throws -> ActivityReactionInfo {
-        try await repository.deleteReaction(activityId: activityId, type: type)
+    public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionInfo {
+        try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
     }
     
     // MARK: - Polls
     
     @discardableResult
     public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollResponse {
-        let response = try await repository.apiClient.createPoll(createPollRequest: request)
-        _ = try await repository.addActivity(
+        let response = try await feedsRepository.apiClient.createPoll(createPollRequest: request)
+        _ = try await activitiesRepository.addActivity(
             request: .init(fids: [fid], pollId: response.poll.id, type: activityType)
         )
         return response

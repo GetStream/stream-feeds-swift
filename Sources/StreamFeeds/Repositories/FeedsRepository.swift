@@ -7,13 +7,8 @@ import Foundation
 /// A repository for managing feeds.
 ///
 /// Action methods make API requests and transform API responses to local models.
-final class FeedsRepository {
-    let apiClient: DefaultAPI
-    
-    init(apiClient: DefaultAPI) {
-        self.apiClient = apiClient
-    }
-    
+final class FeedsRepository: Repository {
+
     // MARK: - Creating or Getting the State of the Feed
     
     func getOrCreateFeed(feedGroupId: String, feedId: String, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
@@ -43,38 +38,6 @@ final class FeedsRepository {
     func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedInfo {
         let response = try await apiClient.updateFeed(feedGroupId: feedGroupId, feedId: feedId, updateFeedRequest: request)
         return FeedInfo(from: response.feed)
-    }
-    
-    // MARK: - Activities
-    
-    func addActivity(request: AddActivityRequest) async throws -> ActivityInfo {
-        let response = try await apiClient.addActivity(addActivityRequest: request)
-        return ActivityInfo(from: response.activity)
-    }
-        
-    func deleteActivity(activityId: String, hardDelete: Bool) async throws {
-        _ = try await apiClient.deleteActivity(activityId: activityId, hardDelete: hardDelete)
-    }
-
-    func updateActivity(activityId: String, request: UpdateActivityRequest) async throws -> ActivityInfo {
-        let response = try await apiClient.updateActivity(activityId: activityId, updateActivityRequest: request)
-        return ActivityInfo(from: response.activity)
-    }
-    
-    func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
-        _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
-    }
-    
-    // MARK: - Bookmarks
-    
-    func addBookmark(activityId: String) async throws -> BookmarkInfo {
-        let response = try await apiClient.addBookmark(activityId: activityId, addBookmarkRequest: .init())
-        return BookmarkInfo(from: response.bookmark)
-    }
-    
-    func deleteBookmark(activityId: String) async throws -> BookmarkInfo {
-        let response = try await apiClient.deleteBookmark(activityId: activityId)
-        return BookmarkInfo(from: response.bookmark)
     }
     
     // MARK: - Follows
@@ -116,18 +79,6 @@ final class FeedsRepository {
     func rejectFeedMember(feedGroupId: String, feedId: String) async throws -> FeedMemberInfo {
         let response = try await apiClient.rejectFeedMemberInvite(feedGroupId: feedGroupId, feedId: feedId)
         return FeedMemberInfo(from: response.member)
-    }
-    
-    // MARK: - Reactions
-    
-    func addReaction(activityId: String, request: AddReactionRequest) async throws -> ActivityReactionInfo {
-        let response = try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
-        return ActivityReactionInfo(from: response.reaction)
-    }
-    
-    func deleteReaction(activityId: String, type: String) async throws -> ActivityReactionInfo {
-        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
-        return ActivityReactionInfo(from: response.reaction)
     }
 }
 

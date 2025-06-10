@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct ActivityReactionInfo: Sendable {
+public struct FeedsReactionInfo: Sendable {
     public let activityId: String
     public let createdAt: Date
     public let custom: [String: RawJSON]?
@@ -23,7 +23,7 @@ public struct ActivityReactionInfo: Sendable {
     }
 }
 
-extension ActivityReactionInfo: Identifiable {
+extension FeedsReactionInfo: Identifiable {
     public var id: String {
         activityId + user.id
     }

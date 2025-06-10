@@ -25,9 +25,9 @@ struct CommentsView: View {
     @State var editCommentId: String?
     @State var comment = ""
     
-    init(activityId: String, feedsClient: FeedsClient) {
+    init(activityId: String, feedId: String, feedsClient: FeedsClient) {
         self.activityId = activityId
-        let activity = feedsClient.activity(id: activityId)
+        let activity = feedsClient.activity(for: activityId, feed: feedId)
         _activity = State(initialValue: activity)
         _state = StateObject(wrappedValue: activity.state)
         self.userId = feedsClient.user.id
@@ -204,9 +204,7 @@ struct CommentsView: View {
     }
 }
 
-extension CommentResponse: Identifiable {}
-
-extension ThreadedCommentResponse: Identifiable {
+extension CommentInfo {
     //TODO: maybe expose own reactions.
     func containsUserReaction(with id: String) -> Bool {
         latestReactions?.map(\.user.id).contains(id) == true
@@ -215,7 +213,7 @@ extension ThreadedCommentResponse: Identifiable {
 
 struct CommentView: View {
     
-    var user: UserResponse
+    var user: UserInfo
     var text: String
     var onEdit: () -> ()
     var onDelete: () -> ()
@@ -252,7 +250,7 @@ struct CommentView: View {
 
 struct ActivityActionsView: View {
     
-    var comment: ThreadedCommentResponse
+    var comment: CommentInfo
     var activity: Activity
     var userId: String
     @Binding var expandedCommentRepliesId: String?

@@ -185,7 +185,7 @@ struct FeedsView: View {
             ProfileView(feed: feed, feedsClient: feedsClient)
         })
         .sheet(item: $commentsActivity) { activity in
-            CommentsView(activityId: activity.id, feedsClient: feedsClient)
+            CommentsView(activityId: activity.id, feedId: feed.fid, feedsClient: feedsClient)
                 .modifier(PresentationDetentModifier())
         }
         .onAppear {

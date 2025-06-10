@@ -20,14 +20,14 @@ public struct ActivityInfo: Identifiable, Sendable {
     public let filterTags: [String]
     public let id: String
     public let interestTags: [String]
-    public private(set) var latestReactions: [ActivityReactionInfo]
+    public private(set) var latestReactions: [FeedsReactionInfo]
     public let location: ActivityLocation?
     public let mentionedUsers: [UserInfo]
     public let moderation: ModerationV2Response?
     public private(set) var ownBookmarks: [BookmarkInfo]
-    public private(set) var ownReactions: [ActivityReactionInfo]
+    public private(set) var ownReactions: [FeedsReactionInfo]
     public var parent: ActivityInfo? { _parent?.value as? ActivityInfo }
-    public let poll: PollResponseData?
+    public let poll: PollInfo?
     public let popularity: Int
     public private(set) var reactionGroups: [String: ReactionGroupInfo]
     public let score: Float
@@ -64,14 +64,14 @@ public struct ActivityInfo: Identifiable, Sendable {
         self.filterTags = response.filterTags
         self.id = response.id
         self.interestTags = response.interestTags
-        self.latestReactions = response.latestReactions.map { ActivityReactionInfo(from: $0) }
+        self.latestReactions = response.latestReactions.map { FeedsReactionInfo(from: $0) }
         self.location = response.location
         self.mentionedUsers = response.mentionedUsers.map { UserInfo(from: $0) }
         self.moderation = response.moderation
         self.ownBookmarks = response.ownBookmarks.map { BookmarkInfo(from: $0) }
-        self.ownReactions = response.ownReactions.map { ActivityReactionInfo(from: $0) }
+        self.ownReactions = response.ownReactions.map { FeedsReactionInfo(from: $0) }
         self._parent = BoxedAny(response.parent)
-        self.poll = response.poll
+        self.poll = response.poll.flatMap(PollInfo.init(from:))
         self.popularity = response.popularity
         self.reactionGroups = response.reactionGroups.mapValues { ReactionGroupInfo(from: $0) }
         self.score = response.score
@@ -102,14 +102,14 @@ public struct ActivityInfo: Identifiable, Sendable {
         self.filterTags = response.filterTags
         self.id = response.id
         self.interestTags = response.interestTags
-        self.latestReactions = response.latestReactions.map { ActivityReactionInfo(from: $0) }
+        self.latestReactions = response.latestReactions.map { FeedsReactionInfo(from: $0) }
         self.location = response.location
         self.mentionedUsers = response.mentionedUsers.map { UserInfo(from: $0) }
         self.moderation = response.moderation
         self.ownBookmarks = response.ownBookmarks.map { BookmarkInfo(from: $0) }
-        self.ownReactions = response.ownReactions.map { ActivityReactionInfo(from: $0) }
+        self.ownReactions = response.ownReactions.map { FeedsReactionInfo(from: $0) }
         self._parent = nil // BaseActivityResponse doesn't have a parent
-        self.poll = response.poll
+        self.poll = response.poll.flatMap(PollInfo.init(from:))
         self.popularity = response.popularity
         self.reactionGroups = response.reactionGroups.mapValues { ReactionGroupInfo(from: $0) }
         self.score = response.score
@@ -149,7 +149,7 @@ extension ActivityInfo {
         ownBookmarks.remove(byId: bookmark)
     }
     
-    mutating func addReaction(_ reaction: ActivityReactionInfo) {
+    mutating func addReaction(_ reaction: FeedsReactionInfo) {
         latestReactions.insert(byId: reaction)
         if reaction.user.id == user.id {
             ownReactions.insert(byId: reaction)

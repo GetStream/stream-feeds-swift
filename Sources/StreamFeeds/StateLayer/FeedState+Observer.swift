@@ -34,7 +34,7 @@ extension FeedState {
                     await handlers.activityDeleted(ActivityInfo(from: event.activity))
                 case let event as ActivityReactionAddedEvent:
                     guard event.fid == feedId else { return }
-                    await handlers.reactionAdded(ActivityReactionInfo(from: event.reaction))
+                    await handlers.reactionAdded(FeedsReactionInfo(from: event.reaction))
                 case let event as ActivityUpdatedEvent:
                     guard event.fid == feedId else { return }
                     await handlers.activityUpdated(ActivityInfo(from: event.activity))

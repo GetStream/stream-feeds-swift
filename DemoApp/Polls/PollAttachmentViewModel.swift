@@ -26,13 +26,13 @@ public class PollAttachmentViewModel: ObservableObject {
         if let _activity {
             return _activity
         }
-        let activity = feedsClient.activity(id: activityInfo.id, info: activityInfo)
+        let activity = feedsClient.activity(for: activityInfo.id, feed: feed.fid)
         _activity = activity
         return activity
     }
     
     /// The object representing the state of the poll.
-    @Published public var poll: PollResponseData
+    @Published public var poll: PollInfo
     
     /// If true, an alert with a text field is shown allowing to suggest new options.
     @Published public var suggestOptionShown = false
@@ -70,7 +70,7 @@ public class PollAttachmentViewModel: ObservableObject {
     }
     
     /// A list of votes given by the current user.
-    @Published public var currentUserVotes = [PollVoteResponseData]()
+    @Published public var currentUserVotes = [PollVoteInfo]()
     
     private let createdByCurrentUser: Bool
         
@@ -119,25 +119,27 @@ public class PollAttachmentViewModel: ObservableObject {
         poll.votingVisibility != "anonymous"
     }
     
-    public init(feedsClient: FeedsClient, feed: Feed, poll: PollResponseData, activityInfo: ActivityInfo) {
+    public init(feedsClient: FeedsClient, feed: Feed, poll: PollInfo, activityInfo: ActivityInfo) {
         self.feedsClient = feedsClient
         self.feed = feed
         self.poll = poll
         self.activityInfo = activityInfo
         createdByCurrentUser = poll.createdBy?.id == feedsClient.user.id
         self.currentUserVotes = poll.ownVotes
-        activity.state.$poll.sink { [weak self] poll in
-            if let poll {
-                self?.poll = poll
+        Task { @MainActor in
+            activity.state.$poll.sink { [weak self] poll in
+                if let poll {
+                    self?.poll = poll
+                }
             }
+            .store(in: &cancellables)
         }
-        .store(in: &cancellables)
     }
         
     /// Casts a vote for a poll.
     ///
     /// - Parameter option: The option user tapped on.
-    public func castPollVote(for option: PollOptionResponseData) {
+    public func castPollVote(for option: PollOptionInfo) {
         guard !isCastingVote else { return }
         isCastingVote = true
         Task {
@@ -145,7 +147,7 @@ public class PollAttachmentViewModel: ObservableObject {
                 try await activity.castPollVote(
                     activityId: activityInfo.id,
                     pollId: poll.id,
-                    castPollVoteRequest: .init(vote: .init(optionId: option.id))
+                    request: .init(vote: .init(optionId: option.id))
                 )
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self.isCastingVote = false
@@ -169,7 +171,7 @@ public class PollAttachmentViewModel: ObservableObject {
             try await activity.castPollVote(
                 activityId: activityInfo.id,
                 pollId: poll.id,
-                castPollVoteRequest: .init(vote: .init(answerText: comment))
+                request: .init(vote: .init(answerText: comment))
             )
         }
         commentText = ""
@@ -177,7 +179,7 @@ public class PollAttachmentViewModel: ObservableObject {
     
     /// Removes the given vote from the specified option.
     /// - Parameter option: The option user tapped on.
-    public func removePollVote(for option: PollOptionResponseData) {
+    public func removePollVote(for option: PollOptionInfo) {
         guard !isCastingVote else { return }
         isCastingVote = true
         guard let vote = currentUserVote(for: option) else { return }
@@ -213,7 +215,7 @@ public class PollAttachmentViewModel: ObservableObject {
     }
     
     /// True, if the current user has voted for the specified option, otherwise false.
-    public func optionVotedByCurrentUser(_ option: PollOptionResponseData) -> Bool {
+    public func optionVotedByCurrentUser(_ option: PollOptionInfo) -> Bool {
         poll.hasCurrentUserVoted(for: option)
     }
     
@@ -226,7 +228,7 @@ public class PollAttachmentViewModel: ObservableObject {
         Task {
             try await activity.createPollOption(
                 pollId: poll.id,
-                createPollOptionRequest: .init(text: suggestOptionText)
+                request: .init(text: suggestOptionText)
             )
         }
     }
@@ -234,13 +236,13 @@ public class PollAttachmentViewModel: ObservableObject {
     /// Returns true if the specified option has more votes than any other option.
     ///
     /// - Note: When multiple options have the highest vote count, this function returns false.
-    public func hasMostVotes(for option: PollOptionResponseData) -> Bool {
+    public func hasMostVotes(for option: PollOptionInfo) -> Bool {
         poll.isOptionWithMostVotes(option)
     }
     
     // MARK: - private
     
-    private func currentUserVote(for option: PollOptionResponseData) -> PollVoteResponseData? {
+    private func currentUserVote(for option: PollOptionInfo) -> PollVoteInfo? {
         poll.currentUserVote(for: option)
     }
     
@@ -253,41 +255,41 @@ public class PollAttachmentViewModel: ObservableObject {
     }
 }
 
-public extension PollResponseData {
+public extension PollInfo {
     /// The value of the option with the most votes.
     var currentMaximumVoteCount: Int {
         voteCountsByOption.values.max() ?? 0
     }
 
     /// Whether the poll is already closed and the provided option is the one, and **the only one** with the most votes.
-    func isOptionWinner(_ option: PollOptionResponseData) -> Bool {
+    func isOptionWinner(_ option: PollOptionInfo) -> Bool {
         isClosed == true && isOptionWithMostVotes(option)
     }
 
     /// Whether the poll is already close and the provided option is one of that has the most votes.
-    func isOptionOneOfTheWinners(_ option: PollOptionResponseData) -> Bool {
+    func isOptionOneOfTheWinners(_ option: PollOptionInfo) -> Bool {
         isClosed == true && isOptionWithMaximumVotes(option)
     }
 
     /// Whether the provided option is the one, and **the only one** with the most votes.
-    func isOptionWithMostVotes(_ option: PollOptionResponseData) -> Bool {
+    func isOptionWithMostVotes(_ option: PollOptionInfo) -> Bool {
         let optionsWithMostVotes = voteCountsByOption.filter { $0.value == currentMaximumVoteCount }
         return optionsWithMostVotes.count == 1 && optionsWithMostVotes[option.id] != nil
     }
 
     /// Whether the provided option is one of that has the most votes.
-    func isOptionWithMaximumVotes(_ option: PollOptionResponseData) -> Bool {
+    func isOptionWithMaximumVotes(_ option: PollOptionInfo) -> Bool {
         let optionsWithMostVotes = voteCountsByOption.filter { $0.value == currentMaximumVoteCount }
         return optionsWithMostVotes[option.id] != nil
     }
 
     /// The vote count for the given option.
-    func voteCount(for option: PollOptionResponseData) -> Int {
+    func voteCount(for option: PollOptionInfo) -> Int {
         voteCountsByOption[option.id] ?? 0
     }
     
     // The ratio of the votes for the given option in comparison with the number of total votes.
-    func voteRatio(for option: PollOptionResponseData) -> Float {
+    func voteRatio(for option: PollOptionInfo) -> Float {
         if currentMaximumVoteCount == 0 {
             return 0
         }
@@ -297,12 +299,12 @@ public extension PollResponseData {
     }
 
     /// Returns the vote of the current user for the given option in case the user has voted.
-    func currentUserVote(for option: PollOptionResponseData) -> PollVoteResponseData? {
+    func currentUserVote(for option: PollOptionInfo) -> PollVoteInfo? {
         ownVotes.first(where: { $0.optionId == option.id })
     }
 
     /// Returns a Boolean value indicating whether the current user has voted the given option.
-    func hasCurrentUserVoted(for option: PollOptionResponseData) -> Bool {
+    func hasCurrentUserVoted(for option: PollOptionInfo) -> Bool {
         ownVotes.contains(where: { $0.optionId == option.id })
     }
 }

@@ -19,7 +19,11 @@ public class FeedsClient: WSEventsSubscriber {
     private(set) var connectionRecoveryHandler: ConnectionRecoveryHandler?
     
     private let eventsMiddleware = WSEventsMiddleware()
+    
+    private let activitiesRepository: ActivitiesRepository
+    private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
+    private let pollsRepository: PollsRepository
     
     public var userAuth: UserAuth?
     
@@ -57,7 +61,10 @@ public class FeedsClient: WSEventsSubscriber {
             transport: apiTransport,
             middlewares: [defaultParams]
         )
+        activitiesRepository = ActivitiesRepository(apiClient: apiClient)
+        commentsRepository = CommentsRepository(apiClient: apiClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
+        pollsRepository = PollsRepository(apiClient: apiClient)
         if user.type != .anonymous {
             let userAuth = UserAuth { [weak self] in
                 self?.token.rawValue ?? ""
@@ -78,12 +85,25 @@ public class FeedsClient: WSEventsSubscriber {
     }
     
     public func feed(group: String, id: String) -> Feed {
-        Feed(group: group, id: id, user: user, repository: feedsRepository, events: eventsMiddleware)
+        Feed(
+            group: group,
+            id: id,
+            user: user,
+            activitiesRepository: activitiesRepository,
+            feedsRepository: feedsRepository,
+            events: eventsMiddleware
+        )
     }
     
-    public func activity(id: String, info: ActivityInfo? = nil) -> Activity {
-        let activity = Activity(id: id, user: user, apiClient: apiClient, activityInfo: info)
-        eventsMiddleware.add(subscriber: activity)
+    public func activity(for activityId: String, feed feedsId: String) -> Activity {
+        let activity = Activity(
+            id: activityId,
+            feedsId: feedsId,
+            activitiesRepository: activitiesRepository,
+            commentsRepository: commentsRepository,
+            pollsRepository: pollsRepository,
+            events: eventsMiddleware
+        )
         return activity
     }
     

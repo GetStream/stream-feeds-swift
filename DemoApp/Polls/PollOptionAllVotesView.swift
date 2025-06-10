@@ -10,8 +10,8 @@ struct PollOptionAllVotesView: View {
     @StateObject var viewModel: PollOptionAllVotesViewModel
     
     init(
-        poll: PollResponseData,
-        option: PollOptionResponseData,
+        poll: PollInfo,
+        option: PollOptionInfo,
         activity: Activity,
         feedsClient: FeedsClient
     ) {

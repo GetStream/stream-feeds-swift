@@ -143,11 +143,11 @@ public struct PollAttachmentView: View {
         .padding()
     }
     
-    private var poll: PollResponseData {
+    private var poll: PollInfo {
         viewModel.poll
     }
     
-    private var options: [PollOptionResponseData] {
+    private var options: [PollOptionInfo] {
         poll.options
     }
     
@@ -162,13 +162,11 @@ public struct PollAttachmentView: View {
     }
 }
 
-extension PollOptionResponseData: Identifiable {}
-
 struct PollOptionView: View {
     
     @ObservedObject var viewModel: PollAttachmentViewModel
     
-    let option: PollOptionResponseData
+    let option: PollOptionInfo
     var optionFont: Font = .body
     var optionVotes: Int?
     var maxVotes: Int?

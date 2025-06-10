@@ -9,12 +9,12 @@ import SwiftUI
 
 class PollCommentsViewModel: ObservableObject {
     
-    @Published var comments = [PollVoteResponseData]()
+    @Published var comments = [PollVoteInfo]()
     @Published var newCommentText = ""
     @Published var addCommentShown = false
     @Published var errorShown = false
     
-    let poll: PollResponseData
+    let poll: PollInfo
     let activity: Activity
     let user: User
         
@@ -22,7 +22,7 @@ class PollCommentsViewModel: ObservableObject {
     private(set) var animateChanges = false
     private var loadingComments = true
         
-    init(poll: PollResponseData, activity: Activity, user: User) {
+    init(poll: PollInfo, activity: Activity, user: User) {
         self.poll = poll
         self.activity = activity
         self.user = user
@@ -44,7 +44,7 @@ class PollCommentsViewModel: ObservableObject {
                 try await activity.queryPollVotes(
                     pollId: poll.id,
                     userId: user.id,
-                    queryPollVotesRequest: .init(filter: ["is_answer": .bool(true)])
+                    request: .init(filter: ["is_answer": .bool(true)])
                 )
                 loadingComments = false
             } catch {
@@ -67,15 +67,15 @@ class PollCommentsViewModel: ObservableObject {
             try await activity.castPollVote(
                 activityId: activity.activityId,
                 pollId: poll.id,
-                castPollVoteRequest: .init(vote: .init(answerText: newCommentText))
+                request: .init(vote: .init(answerText: newCommentText))
             )
         }
         newCommentText = ""
     }
     
-    func onAppear(comment: PollVoteResponseData) {
+    func onAppear(comment: PollVoteInfo) {
         guard !loadingComments,
-              let index = comments.firstIndex(where: { $0 == comment }),
+              let index = comments.firstIndex(where: { $0.id == comment.id }),
               index > comments.count - 10 else { return }
         
         loadComments()
