@@ -69,9 +69,9 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		845494EE2DBA2E7C00211413 /* StreamFeedsTests */ = {
+		4F8C94982DF84DD600996F0D /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = StreamFeedsTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		845495022DBA2F7100211413 /* DemoApp */ = {
@@ -125,7 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				84AA90152DCB5DEF0030DD7D /* Sources */,
-				845494EE2DBA2E7C00211413 /* StreamFeedsTests */,
+				4F8C94982DF84DD600996F0D /* Tests */,
 				845495022DBA2F7100211413 /* DemoApp */,
 				845495132DBA36A700211413 /* Frameworks */,
 				845494E32DBA2E7C00211413 /* Products */,
@@ -201,7 +201,7 @@
 				845494ED2DBA2E7C00211413 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				845494EE2DBA2E7C00211413 /* StreamFeedsTests */,
+				4F8C94982DF84DD600996F0D /* Tests */,
 			);
 			name = StreamFeedsTests;
 			packageProductDependencies = (
@@ -373,7 +373,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -408,7 +408,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class Activity {
+public final class Activity: Sendable {
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
     private let pollsRepository: PollsRepository
-    private let stateBuilder: StateBuilder<ActivityState>
+    @MainActor private let stateBuilder: StateBuilder<ActivityState>
     public let activityId: String
     
     init(
@@ -30,7 +30,7 @@ public final class Activity {
     // MARK: - Accessing the State
     
     /// An observable object representing the current state of the activity.
-    @MainActor public lazy private(set) var state: ActivityState = stateBuilder.build()
+    @MainActor public var state: ActivityState { stateBuilder.state }
     
     /// Fetches the state of the activity.
     public func get() async throws {

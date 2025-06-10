@@ -4,12 +4,25 @@
 
 import Foundation
 
-final class PollsRepository: Repository {
+final class PollsRepository: Sendable {
+    private let apiClient: DefaultAPI
+    
+    init(apiClient: DefaultAPI) {
+        self.apiClient = apiClient
+    }
+    
+    // MARK: - Poll
+    
     func closePoll(pollId: String) async throws -> PollInfo {
         let response = try await apiClient.updatePollPartial(
             pollId: pollId,
             updatePollPartialRequest: .init(set: ["isClosed": .bool(true)])
         )
+        return PollInfo(from: response.poll)
+    }
+    
+    func createPoll(request: CreatePollRequest) async throws -> PollInfo {
+        let response = try await apiClient.createPoll(createPollRequest: request)
         return PollInfo(from: response.poll)
     }
 

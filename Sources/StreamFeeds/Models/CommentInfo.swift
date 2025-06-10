@@ -118,5 +118,5 @@ extension CommentInfo {
 // MARK: - Sorting
 
 extension CommentInfo {
-    static let defaultSorting: (CommentInfo, CommentInfo) -> Bool = { $0.createdAt > $1.createdAt }
+    static let defaultSorting: @Sendable (CommentInfo, CommentInfo) -> Bool = { $0.createdAt > $1.createdAt }
 }

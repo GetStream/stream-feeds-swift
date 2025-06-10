@@ -8,14 +8,10 @@ import StreamCore
 extension FeedState {
     final class WebSocketObserver: WSEventsSubscriber {
         private let feedId: String
+        private let handlers: FeedState.ChangeHandlers
         
-        init(feedId: String) {
+        init(feedId: String, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
             self.feedId = feedId
-        }
-        
-        private var handlers: FeedState.ChangeHandlers?
-        
-        @MainActor func startObserving(_ events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
             self.handlers = handlers
             events.add(subscriber: self)
         }
@@ -23,8 +19,7 @@ extension FeedState {
         // MARK: - Event Subscription
         
         func onEvent(_ event: any Event) {
-            Task {
-                guard let handlers else { return }
+            Task { [handlers, feedId] in
                 switch event {
                 case let event as ActivityAddedEvent:
                     guard event.fid == feedId else { return }

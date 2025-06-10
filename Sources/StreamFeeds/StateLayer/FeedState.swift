@@ -6,13 +6,12 @@ import Combine
 import Foundation
 
 @MainActor public class FeedState: ObservableObject {
-    private let webSocketObserver: WebSocketObserver
-    private(set) lazy var changeHandlers = makeChangeHandlers()
+    private var webSocketObserver: WebSocketObserver?
+    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
     
     init(feedId: String, events: WSEventsSubscribing) {
         self.feedId = feedId
-        webSocketObserver = WebSocketObserver(feedId: feedId)
-        webSocketObserver.startObserving(events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(feedId: feedId, subscribing: events, handlers: makeChangeHandlers())
     }
     
     public let feedId: String

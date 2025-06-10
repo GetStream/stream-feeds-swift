@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:StreamFeedsTests/StreamFeeds.xctestplan"
+            reference = "container:Tests/StreamFeedsTests/StreamFeeds.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>

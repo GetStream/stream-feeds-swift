@@ -3,11 +3,11 @@
 //
 
 import Foundation
-import StreamCore
+@preconcurrency import StreamCore
 
-public class FeedsClient: WSEventsSubscriber {
-    
-    public let apiKey: APIKey
+public final class FeedsClient: Sendable {
+    // TODO: Update Core
+    nonisolated(unsafe) public let apiKey: APIKey
     public let user: User
     public let token: UserToken
     
@@ -16,34 +16,24 @@ public class FeedsClient: WSEventsSubscriber {
     
     private let xStreamClientHeader = "stream-feeds-swift-v0.0.1"
     
-    private(set) var connectionRecoveryHandler: ConnectionRecoveryHandler?
+    private let connectionRecoveryHandler = AllocatedUnfairLock<ConnectionRecoveryHandler?>(nil)
+    private let webSocketClient = AllocatedUnfairLock<WebSocketClient?>(nil)
     
     private let eventsMiddleware = WSEventsMiddleware()
+    private let eventNotificationCenter: EventNotificationCenter
     
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
     private let pollsRepository: PollsRepository
     
-    public var userAuth: UserAuth?
+    private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
     
-    private(set) lazy var eventNotificationCenter: EventNotificationCenter = {
-        let center = EventNotificationCenter()
-        eventsMiddleware.add(subscriber: self)
-        var middlewares: [EventMiddleware] = [
-            eventsMiddleware
-        ]
-        center.add(middlewares: middlewares)
-        return center
-    }()
-    
-    private var webSocketClient: WebSocketClient? {
-        didSet {
-            setupConnectionRecoveryHandler()
-        }
+    public var userAuth: UserAuth? {
+        _userAuth.value
     }
     
-    private var connectTask: Task<Void, Error>?
+    private let connectTask = AllocatedUnfairLock<Task<Void, Error>?>(nil)
     
     //TODO: token provider, environment and other stuff.
     public init(apiKey: APIKey, user: User, token: UserToken) {
@@ -61,10 +51,14 @@ public class FeedsClient: WSEventsSubscriber {
             transport: apiTransport,
             middlewares: [defaultParams]
         )
+        self.eventNotificationCenter = EventNotificationCenter()
+        eventNotificationCenter.add(middlewares: [eventsMiddleware])
+        
         activitiesRepository = ActivitiesRepository(apiClient: apiClient)
         commentsRepository = CommentsRepository(apiClient: apiClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
+        
         if user.type != .anonymous {
             let userAuth = UserAuth { [weak self] in
                 self?.token.rawValue ?? ""
@@ -74,7 +68,7 @@ public class FeedsClient: WSEventsSubscriber {
                 }
                 return await self.loadConnectionId()
             }
-            self.userAuth = userAuth
+            self._userAuth.withLock { $0 = userAuth }
             apiClient.middlewares.append(userAuth)
         } else {
             let anonymousAuth = AnonymousAuth(token: token.rawValue)
@@ -91,6 +85,7 @@ public class FeedsClient: WSEventsSubscriber {
             user: user,
             activitiesRepository: activitiesRepository,
             feedsRepository: feedsRepository,
+            pollsRepository: pollsRepository,
             events: eventsMiddleware
         )
     }
@@ -125,12 +120,12 @@ public class FeedsClient: WSEventsSubscriber {
     /// - Important: This behaviour is only enabled for non-test environments. This is to reduce the
     /// noise in logs and avoid unnecessary network operations with the backend.
     private func initialConnectIfRequired(apiKey: String) {
-        guard connectTask == nil else {
+        guard connectTask.value == nil else {
             return
         }
 
         //TODO: check guest users support.
-        connectTask = Task {
+        connectTask.value = Task {
             do {
                 try Task.checkCancellation()
                 try await self.connectUser(isInitial: true)
@@ -141,11 +136,11 @@ public class FeedsClient: WSEventsSubscriber {
     }
     
     private func connectUser(isInitial: Bool = false) async throws {
-        if !isInitial && connectTask != nil {
+        if !isInitial && connectTask.value != nil {
             log.debug("Waiting for already running connect task")
-            _ = await connectTask?.result
+            _ = await connectTask.value?.result
         }
-        if case .connected(healthCheckInfo: _) = webSocketClient?.connectionState {
+        if case .connected(healthCheckInfo: _) = webSocketClient.value?.connectionState {
             return
         }
         if user.type == .anonymous {
@@ -162,10 +157,13 @@ public class FeedsClient: WSEventsSubscriber {
             "X-Stream-Client": xStreamClientHeader // TODO: fix this
         ]
         
+        let webSocketClient: WebSocketClient
         let v2 = "ws://localhost:8800/api/v2/connect"
         if let connectURL = try? URL(string: v2)?.appendingQueryItems(queryParams) {
             webSocketClient = makeWebSocketClient(url: connectURL, apiKey: apiKey)
-            webSocketClient?.connect()
+            self.webSocketClient.value = webSocketClient
+            setupConnectionRecoveryHandler()
+            webSocketClient.connect()
         } else {
             throw ClientError.Unknown()
         }
@@ -175,7 +173,7 @@ public class FeedsClient: WSEventsSubscriber {
             timeout = true
         }
         log.debug("Listening for WS connection")
-        webSocketClient?.onConnected = {
+        webSocketClient.onConnected = {
             control.cancel()
             connected = true
             log.debug("WS connected")
@@ -231,14 +229,13 @@ public class FeedsClient: WSEventsSubscriber {
     }
     
     private func setupConnectionRecoveryHandler() {
-        guard let webSocketClient = webSocketClient else {
+        guard let webSocketClient = webSocketClient.value else {
             return
         }
         
         let backgroundTaskSchedulerBuilder: BackgroundTaskScheduler = IOSBackgroundTaskScheduler()
 
-        connectionRecoveryHandler = nil
-        connectionRecoveryHandler = DefaultConnectionRecoveryHandler(
+        connectionRecoveryHandler.value = DefaultConnectionRecoveryHandler(
             webSocketClient: webSocketClient,
             eventNotificationCenter: eventNotificationCenter,
             backgroundTaskScheduler: backgroundTaskSchedulerBuilder,
@@ -253,9 +250,10 @@ public class FeedsClient: WSEventsSubscriber {
         if let connectionId = loadConnectionIdFromHealthcheck() {
             return connectionId
         }
+        guard let connectionState = webSocketClient.value?.connectionState else { return "" }
         
-        guard webSocketClient?.connectionState == .connecting
-            || webSocketClient?.connectionState == .authenticating else {
+        guard connectionState == .connecting
+            || connectionState == .authenticating else {
             return ""
         }
         
@@ -280,7 +278,7 @@ public class FeedsClient: WSEventsSubscriber {
     }
     
     private func loadConnectionIdFromHealthcheck() -> String? {
-        if case let .connected(healthCheckInfo: healtCheckInfo) = webSocketClient?.connectionState {
+        if case let .connected(healthCheckInfo: healtCheckInfo) = webSocketClient.value?.connectionState {
             return healtCheckInfo.connectionId
         }
         return nil

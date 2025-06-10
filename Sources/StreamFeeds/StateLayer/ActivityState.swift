@@ -8,11 +8,16 @@ import StreamCore
 
 @MainActor public class ActivityState: ObservableObject {
     private(set) lazy var changeHandlers = makeChangeHandlers()
-    private let webSocketObserver: WebSocketObserver
+    private var webSocketObserver: WebSocketObserver?
     
     init(activityId: String, feedsId: String, events: WSEventsSubscribing) {
-        webSocketObserver = WebSocketObserver(activityId: activityId, feedsId: feedsId)
-        webSocketObserver.startObserving(events, handlers: changeHandlers)
+        let webSocketObserver = WebSocketObserver(
+            activityId: activityId,
+            feedsId: feedsId,
+            subscribing: events,
+            handlers: changeHandlers
+        )
+        self.webSocketObserver = webSocketObserver
     }
     
     @Published public private(set) var activity: ActivityInfo?
@@ -25,7 +30,7 @@ import StreamCore
 // MARK: - Updating the State
 
 extension ActivityState {
-    struct ChangeHandlers {
+    struct ChangeHandlers: Sendable {
         let activityUpdated: @MainActor (ActivityInfo) -> Void
         let commentAdded: @MainActor (CommentInfo) -> Void
         let commentDeleted: @MainActor (CommentInfo) -> Void

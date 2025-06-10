@@ -7,11 +7,12 @@ import StreamCore
 
 final class WSEventsMiddleware: EventMiddleware, WSEventsSubscribing {
     
-    private var subscribers = NSHashTable<AnyObject>.weakObjects()
+    private let subscribers = AllocatedUnfairLock(NSHashTable<AnyObject>.weakObjects())
 
     func handle(event: Event) -> Event? {
         var feedsClient: FeedsClient?
-        for subscriber in subscribers.allObjects {
+        let allObjects = subscribers.withLock { $0.allObjects }
+        for subscriber in allObjects {
             if let subscriber = subscriber as? FeedsClient {
                 feedsClient = subscriber
             } else {
@@ -24,19 +25,19 @@ final class WSEventsMiddleware: EventMiddleware, WSEventsSubscribing {
     }
     
     func add(subscriber: WSEventsSubscriber) {
-        subscribers.add(subscriber)
+        subscribers.withLock { $0.add(subscriber) }
     }
     
     func remove(subscriber: WSEventsSubscriber) {
-        subscribers.remove(subscriber)
+        subscribers.withLock { $0.remove(subscriber) }
     }
     
     func removeAllSubscribers() {
-        subscribers.removeAllObjects()
+        subscribers.withLock { $0.removeAllObjects() }
     }
 }
 
-protocol WSEventsSubscribing {
+protocol WSEventsSubscribing: Sendable {
     func add(subscriber: WSEventsSubscriber)
 }
 

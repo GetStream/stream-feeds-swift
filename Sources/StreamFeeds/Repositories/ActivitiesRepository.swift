@@ -4,7 +4,12 @@
 
 import Foundation
 
-final class ActivitiesRepository: Repository {
+final class ActivitiesRepository: Sendable {
+    private let apiClient: DefaultAPI
+    
+    init(apiClient: DefaultAPI) {
+        self.apiClient = apiClient
+    }
     
     // MARK: - Activities
     

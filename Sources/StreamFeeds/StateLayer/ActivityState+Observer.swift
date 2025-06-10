@@ -9,15 +9,16 @@ extension ActivityState {
     final class WebSocketObserver: WSEventsSubscriber {
         private let activityId: String
         private let feedsId: String
+        private let handlers: ActivityState.ChangeHandlers
         
-        init(activityId: String, feedsId: String) {
+        init(
+            activityId: String,
+            feedsId: String,
+            subscribing events: WSEventsSubscribing,
+            handlers: ActivityState.ChangeHandlers
+        ) {
             self.activityId = activityId
             self.feedsId = feedsId
-        }
-        
-        private var handlers: ActivityState.ChangeHandlers?
-        
-        @MainActor func startObserving(_ events: WSEventsSubscribing, handlers: ActivityState.ChangeHandlers) {
             self.handlers = handlers
             events.add(subscriber: self)
         }
@@ -25,8 +26,7 @@ extension ActivityState {
         // MARK: - Event Subscription
         
         func onEvent(_ event: any Event) {
-            Task {
-                guard let handlers else { return }
+            Task { [handlers, feedsId] in
                 switch event {
                 case let event as CommentAddedEvent:
                     guard event.fid == feedsId else { return }

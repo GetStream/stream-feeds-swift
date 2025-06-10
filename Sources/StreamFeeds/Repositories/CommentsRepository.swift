@@ -7,7 +7,12 @@ import Foundation
 /// A repository for managing comments.
 ///
 /// Action methods make API requests and transform API responses to local models.
-final class CommentsRepository: Repository {
+final class CommentsRepository: Sendable {
+    private let apiClient: DefaultAPI
+    
+    init(apiClient: DefaultAPI) {
+        self.apiClient = apiClient
+    }
     
     // MARK: - Querying Comments
     

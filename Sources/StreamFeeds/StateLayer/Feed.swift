@@ -5,8 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class Feed {
-    private let stateBuilder: StateBuilder<FeedState>
+public final class Feed: Sendable {
+    @MainActor private let stateBuilder: StateBuilder<FeedState>
     
     public let group: String
     public let id: String
@@ -15,10 +15,12 @@ public final class Feed {
         "\(group):\(id)"
     }
     
-    var user: User
+    // TODO: Move?
+    private let user: User
     
     private let activitiesRepository: ActivitiesRepository
     private let feedsRepository: FeedsRepository
+    private let pollsRepository: PollsRepository
     
     internal init(
         group: String,
@@ -26,6 +28,7 @@ public final class Feed {
         user: User,
         activitiesRepository: ActivitiesRepository,
         feedsRepository: FeedsRepository,
+        pollsRepository: PollsRepository,
         events: WSEventsSubscribing
     ) {
         self.group = group
@@ -33,6 +36,7 @@ public final class Feed {
         self.user = user
         self.activitiesRepository = activitiesRepository
         self.feedsRepository = feedsRepository
+        self.pollsRepository = pollsRepository
         let feedId = "\(group):\(id)"
         stateBuilder = StateBuilder { FeedState(feedId: feedId, events: events) }
     }
@@ -40,7 +44,7 @@ public final class Feed {
     // MARK: - Accessing the State
     
     /// An observable object representing the current state of the feed.
-    @MainActor public lazy private(set) var state: FeedState = stateBuilder.build()
+    @MainActor public var state: FeedState { stateBuilder.state }
     
     // MARK: - Creating and Fetching the Feed
     
@@ -181,11 +185,11 @@ public final class Feed {
     // MARK: - Polls
     
     @discardableResult
-    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollResponse {
-        let response = try await feedsRepository.apiClient.createPoll(createPollRequest: request)
+    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollInfo {
+        let poll = try await pollsRepository.createPoll(request: request)
         _ = try await activitiesRepository.addActivity(
-            request: .init(fids: [fid], pollId: response.poll.id, type: activityType)
+            request: .init(fids: [fid], pollId: poll.id, type: activityType)
         )
-        return response
+        return poll
     }
 }

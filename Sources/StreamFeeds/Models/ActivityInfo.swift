@@ -163,5 +163,5 @@ extension ActivityInfo {
 // MARK: - Sorting
 
 extension ActivityInfo {
-    static let defaultSorting: (ActivityInfo, ActivityInfo) -> Bool = { $0.createdAt > $1.createdAt }
+    static let defaultSorting: @Sendable (ActivityInfo, ActivityInfo) -> Bool = { $0.createdAt > $1.createdAt }
 }

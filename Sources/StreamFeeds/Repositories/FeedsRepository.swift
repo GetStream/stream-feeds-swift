@@ -7,8 +7,13 @@ import Foundation
 /// A repository for managing feeds.
 ///
 /// Action methods make API requests and transform API responses to local models.
-final class FeedsRepository: Repository {
-
+final class FeedsRepository: Sendable {
+    private let apiClient: DefaultAPI
+    
+    init(apiClient: DefaultAPI) {
+        self.apiClient = apiClient
+    }
+    
     // MARK: - Creating or Getting the State of the Feed
     
     func getOrCreateFeed(feedGroupId: String, feedId: String, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
