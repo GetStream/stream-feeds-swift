@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public struct ReactionGroupInfo: Sendable {
+public struct ReactionGroupData: Sendable {
     public private(set) var count: Int
     public let firstReactionAt: Date
     public private(set) var lastReactionAt: Date
 }
 
-extension ReactionGroupInfo {
+extension ReactionGroupData {
     init(from response: ReactionGroupResponse) {
         self.count = response.count
         self.firstReactionAt = response.firstReactionAt

@@ -10,7 +10,7 @@ public struct PollAttachmentView: View {
     
     private let colors = Colors.shared
         
-    private let activity: ActivityInfo
+    private let activity: ActivityData
     private let isFirst: Bool
     
     @StateObject var viewModel: PollAttachmentViewModel
@@ -18,7 +18,7 @@ public struct PollAttachmentView: View {
     public init(
         feedsClient: FeedsClient,
         feed: Feed,
-        activity: ActivityInfo,
+        activity: ActivityData,
         isFirst: Bool
     ) {
         self.activity = activity
@@ -143,11 +143,11 @@ public struct PollAttachmentView: View {
         .padding()
     }
     
-    private var poll: PollInfo {
+    private var poll: PollData {
         viewModel.poll
     }
     
-    private var options: [PollOptionInfo] {
+    private var options: [PollOptionData] {
         poll.options
     }
     
@@ -166,7 +166,7 @@ struct PollOptionView: View {
     
     @ObservedObject var viewModel: PollAttachmentViewModel
     
-    let option: PollOptionInfo
+    let option: PollOptionData
     var optionFont: Font = .body
     var optionVotes: Int?
     var maxVotes: Int?

@@ -16,14 +16,14 @@ struct FeedsView: View {
     @StateObject var state: FeedState
     
     @State var showAddActivity = false
-    @State var commentsActivity: ActivityInfo?
+    @State var commentsActivity: ActivityData?
     @State var activityName = ""
     @State var comment = ""
     @State var showActivityOptions = false
     @State var addImage = false
-    @State var activityToUpdate: ActivityInfo?
+    @State var activityToUpdate: ActivityData?
     @State var updatedActivityText = ""
-    @State var activityToDelete: ActivityInfo?
+    @State var activityToDelete: ActivityData?
     @State var profileShown = false
     
     init(credentials: UserCredentials) {
@@ -305,12 +305,12 @@ struct UserAvatar: View {
 
 struct ActivityView: View {
     
-    let user: UserInfo
+    let user: UserData
     let text: String
     var attachments: [Attachment]?
-    var activity: ActivityInfo
-    var onUpdate: (ActivityInfo, String) -> Void
-    var onDelete: (ActivityInfo) -> Void
+    var activity: ActivityData
+    var onUpdate: (ActivityData, String) -> Void
+    var onDelete: (ActivityData) -> Void
     
     var body: some View {
         HStack(alignment: .top) {

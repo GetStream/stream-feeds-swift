@@ -54,7 +54,7 @@ public final class Feed: Sendable {
     }
     
     @discardableResult
-    public func updateFeed(request: UpdateFeedRequest) async throws -> FeedInfo {
+    public func updateFeed(request: UpdateFeedRequest) async throws -> FeedData {
         let feed = try await feedsRepository.updateFeed(feedGroupId: group, feedId: id, request: request)
         await state.changeHandlers.feedUpdated(feed)
         return feed
@@ -67,7 +67,7 @@ public final class Feed: Sendable {
     // MARK: - Activities
     
     @discardableResult
-    public func addActivity(request: AddActivityRequest) async throws -> ActivityInfo {
+    public func addActivity(request: AddActivityRequest) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(
             request: request
         )
@@ -81,7 +81,7 @@ public final class Feed: Sendable {
     }
     
     @discardableResult
-    public func updateActivity(id: String, request: UpdateActivityRequest) async throws -> ActivityInfo {
+    public func updateActivity(id: String, request: UpdateActivityRequest) async throws -> ActivityData {
         let activity = try await activitiesRepository.updateActivity(activityId: id, request: request)
         await state.changeHandlers.activityUpdated(activity)
         return activity
@@ -94,7 +94,7 @@ public final class Feed: Sendable {
     }
     
     @discardableResult
-    public func repost(activityId: String, text: String?) async throws -> ActivityInfo {
+    public func repost(activityId: String, text: String?) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(
             request: .init(fids: [fid], parentId: activityId, text: text, type: "post")
         )
@@ -105,19 +105,19 @@ public final class Feed: Sendable {
     // MARK: - Bookmarks
         
     @discardableResult
-    public func addBookmark(activityId: String) async throws -> BookmarkInfo {
+    public func addBookmark(activityId: String) async throws -> BookmarkData {
         try await activitiesRepository.addBookmark(activityId: activityId)
     }
     
     @discardableResult
-    public func deleteBookmark(activityId: String) async throws -> BookmarkInfo {
+    public func deleteBookmark(activityId: String) async throws -> BookmarkData {
         try await activitiesRepository.deleteBookmark(activityId: activityId)
     }
     
     // MARK: - Follows
     
     @discardableResult
-    public func follow(request: SingleFollowRequest) async throws -> FollowInfo {
+    public func follow(request: SingleFollowRequest) async throws -> FollowData {
         let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)
         return follow
@@ -133,7 +133,7 @@ public final class Feed: Sendable {
     }
     
     @discardableResult
-    public func acceptFollow(request: AcceptFollowRequest) async throws -> FollowInfo {
+    public func acceptFollow(request: AcceptFollowRequest) async throws -> FollowData {
         let follow = try await feedsRepository.acceptFollow(request: request)
         await state.update { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         await state.changeHandlers.followAdded(follow)
@@ -141,7 +141,7 @@ public final class Feed: Sendable {
     }
     
     @discardableResult
-    public func rejectFollow(request: RejectFollowRequest) async throws -> FollowInfo {
+    public func rejectFollow(request: RejectFollowRequest) async throws -> FollowData {
         let follow = try await feedsRepository.rejectFollow(request: request)
         await state.update { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         return follow
@@ -157,13 +157,13 @@ public final class Feed: Sendable {
         try await feedsRepository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
     }
 
-    public func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
+    public func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberData {
         let response = try await feedsRepository.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId)
         // TODO: update state
         return response
     }
     
-    public func rejectFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberInfo {
+    public func rejectFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberData {
         try await feedsRepository.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId)
         // TODO: update state
     }
@@ -171,21 +171,21 @@ public final class Feed: Sendable {
     // MARK: - Reactions
     
     @discardableResult
-    public func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionInfo {
+    public func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
         let reaction = try await activitiesRepository.addReaction(activityId: activityId, request: request)
         await state.changeHandlers.reactionAdded(reaction)
         return reaction
     }
     
     @discardableResult
-    public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionInfo {
+    public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
     }
     
     // MARK: - Polls
     
     @discardableResult
-    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollInfo {
+    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollData {
         let poll = try await pollsRepository.createPoll(request: request)
         _ = try await activitiesRepository.addActivity(
             request: .init(fids: [fid], pollId: poll.id, type: activityType)

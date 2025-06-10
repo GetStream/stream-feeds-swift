@@ -41,7 +41,7 @@ public final class Activity: Sendable {
     // MARK: - Querying the List of Comments
     
     @discardableResult
-    public func queryComments(request: QueryCommentsRequest) async throws -> [CommentInfo] {
+    public func queryComments(request: QueryCommentsRequest) async throws -> [CommentData] {
         let data = try await commentsRepository.queryComments(request: request)
         await state.update(with: data)
         return data.comments
@@ -56,7 +56,7 @@ public final class Activity: Sendable {
         limit: Int? = nil,
         prev: String? = nil,
         next: String? = nil
-    ) async throws -> [CommentInfo] {
+    ) async throws -> [CommentData] {
         let comments = try await commentsRepository.getComments(
             objectId: objectId,
             objectType: objectType,
@@ -72,7 +72,7 @@ public final class Activity: Sendable {
         return comments
     }
     
-    public func getComment(commentId: String) async throws -> CommentInfo {
+    public func getComment(commentId: String) async throws -> CommentData {
         let comment = try await commentsRepository.getComment(commentId: commentId)
         await state.changeHandlers.commentUpdated(comment)
         return comment
@@ -81,14 +81,14 @@ public final class Activity: Sendable {
     // MARK: - Adding, Updating, and Removing Comments
     
     @discardableResult
-    public func addComment(request: AddCommentRequest) async throws -> CommentInfo {
+    public func addComment(request: AddCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.addComment(request: request)
         await state.changeHandlers.commentAdded(comment)
         return comment
     }
     
     @discardableResult
-    public func addCommentsBatch(request: AddCommentsBatchRequest) async throws -> [CommentInfo] {
+    public func addCommentsBatch(request: AddCommentsBatchRequest) async throws -> [CommentData] {
         let comments = try await commentsRepository.addCommentsBatch(request: request)
         await state.update { state in
             comments.forEach { state.changeHandlers.commentAdded($0) }
@@ -102,7 +102,7 @@ public final class Activity: Sendable {
     }
     
     @discardableResult
-    public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentInfo {
+    public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.updateComment(commentId: commentId, request: request)
         await state.changeHandlers.commentUpdated(comment)
         return comment
@@ -111,14 +111,14 @@ public final class Activity: Sendable {
     // MARK: - Comment Reactions
     
     @discardableResult
-    public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionInfo {
+    public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
         await state.changeHandlers.commentReactionAdded(result.reaction, result.comment)
         return result.reaction
     }
 
     @discardableResult
-    public func removeCommentReaction(commentId: String, type: String) async throws -> FeedsReactionInfo {
+    public func removeCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.removeCommentReaction(commentId: commentId, type: type)
         await state.changeHandlers.commentReactionDeleted(result.reaction, result.comment)
         return result.reaction
@@ -134,7 +134,7 @@ public final class Activity: Sendable {
         limit: Int? = nil,
         prev: String? = nil,
         next: String? = nil
-    ) async throws -> [CommentInfo] {
+    ) async throws -> [CommentData] {
         let comments = try await commentsRepository.getCommentReplies(
             commentId: commentId,
             depth: depth,
@@ -153,7 +153,7 @@ public final class Activity: Sendable {
     // MARK: - Polls
     
     @discardableResult
-    public func closePoll(pollId: String) async throws -> PollInfo {
+    public func closePoll(pollId: String) async throws -> PollData {
         try await updatePollPartial(pollId: pollId, request: .init(set: ["isClosed": .bool(true)]))
     }
     
@@ -163,7 +163,7 @@ public final class Activity: Sendable {
     }
 
     @discardableResult
-    public func getPoll(pollId: String, userId: String?) async throws -> PollInfo {
+    public func getPoll(pollId: String, userId: String?) async throws -> PollData {
         let poll = try await pollsRepository.getPoll(pollId: pollId, userId: userId)
         await state.changeHandlers.pollUpdated(poll)
         return poll
@@ -173,7 +173,7 @@ public final class Activity: Sendable {
     public func updatePollPartial(
         pollId: String,
         request: UpdatePollPartialRequest
-    ) async throws -> PollInfo {
+    ) async throws -> PollData {
         let poll = try await pollsRepository.updatePollPartial(pollId: pollId, request: request)
         await state.changeHandlers.pollUpdated(poll)
         return poll
@@ -185,7 +185,7 @@ public final class Activity: Sendable {
     public func createPollOption(
         pollId: String,
         request: CreatePollOptionRequest
-    ) async throws -> PollOptionInfo {
+    ) async throws -> PollOptionData {
         let option = try await pollsRepository.createPollOption(pollId: pollId, request: request)
         await state.update { $0.poll?.addOption(option) }
         return option
@@ -205,7 +205,7 @@ public final class Activity: Sendable {
         pollId: String,
         optionId: String,
         userId: String?
-    ) async throws -> PollOptionInfo {
+    ) async throws -> PollOptionData {
         try await pollsRepository.getPollOption(pollId: pollId, optionId: optionId, userId: userId)
     }
     
@@ -213,7 +213,7 @@ public final class Activity: Sendable {
     public func updatePollOption(
         pollId: String,
         request: UpdatePollOptionRequest
-    ) async throws -> PollOptionInfo {
+    ) async throws -> PollOptionData {
         let option = try await pollsRepository.updatePollOption(
             pollId: pollId,
             request: request
@@ -229,7 +229,7 @@ public final class Activity: Sendable {
         activityId: String,
         pollId: String,
         request: CastPollVoteRequest
-    ) async throws -> PollVoteInfo? {
+    ) async throws -> PollVoteData? {
         let vote = try await pollsRepository.castPollVote(activityId: activityId, pollId: pollId, request: request)
         if let vote {
             await state.update { $0.poll?.castVote(vote) }
@@ -242,7 +242,7 @@ public final class Activity: Sendable {
         pollId: String,
         userId: String?,
         request: QueryPollVotesRequest
-    ) async throws -> [PollVoteInfo] {
+    ) async throws -> [PollVoteData] {
         try await pollsRepository.queryPollVotes(pollId: pollId, userId: userId, request: request)
     }
 
@@ -252,7 +252,7 @@ public final class Activity: Sendable {
         pollId: String,
         voteId: String,
         userId: String?
-    ) async throws -> PollVoteInfo? {
+    ) async throws -> PollVoteData? {
         let vote = try await pollsRepository.removePollVote(
             activityId: activityId,
             pollId: pollId,

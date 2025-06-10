@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct PollVoteInfo: Identifiable, Sendable {
+public struct PollVoteData: Identifiable, Sendable {
     public let answerText: String?
     public let createdAt: Date
     public let id: String
@@ -13,7 +13,7 @@ public struct PollVoteInfo: Identifiable, Sendable {
     public let optionId: String
     public let pollId: String
     public let updatedAt: Date
-    public let user: UserInfo?
+    public let user: UserData?
     public let userId: String?
     
     init(from response: PollVoteResponseData) {
@@ -24,7 +24,7 @@ public struct PollVoteInfo: Identifiable, Sendable {
         self.optionId = response.optionId
         self.pollId = response.pollId
         self.updatedAt = response.updatedAt
-        self.user = response.user.flatMap(UserInfo.init(from:))
+        self.user = response.user.flatMap(UserData.init(from:))
         self.userId = response.userId
     }
 } 

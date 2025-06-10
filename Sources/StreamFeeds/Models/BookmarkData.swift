@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public struct BookmarkInfo: Sendable {
+public struct BookmarkData: Sendable {
     public let activityId: String
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let folder: BookmarkFolderResponse
     public let updatedAt: Date
-    public let user: UserInfo
+    public let user: UserData
     
     init(from response: BookmarkResponse) {
         self.activityId = response.activityId
@@ -19,11 +19,11 @@ public struct BookmarkInfo: Sendable {
         self.custom = response.custom
         self.folder = response.folder
         self.updatedAt = response.updatedAt
-        self.user = UserInfo(from: response.user)
+        self.user = UserData(from: response.user)
     }
 }
 
-extension BookmarkInfo: Identifiable {
+extension BookmarkData: Identifiable {
     public var id: String {
         activityId + user.id
     }
@@ -46,6 +46,30 @@ extension BookmarkAddedEvent {
             ),
             updatedAt: createdAt,
             user: user
+        )
+    }
+}
+
+extension UserResponseCommonFields {
+    func toUserResponse() -> UserResponse {
+        UserResponse(
+            banned: banned,
+            blockedUserIds: blockedUserIds,
+            createdAt: createdAt,
+            custom: custom,
+            deactivatedAt: deactivatedAt,
+            deletedAt: deletedAt,
+            id: id,
+            image: image,
+            language: language,
+            lastActive: lastActive,
+            name: name,
+            online: online,
+            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
+            role: role,
+            teams: teams,
+            teamsRole: teamsRole,
+            updatedAt: updatedAt
         )
     }
 }

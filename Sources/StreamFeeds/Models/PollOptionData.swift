@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct PollOptionInfo: Identifiable, Sendable {
+public struct PollOptionData: Identifiable, Sendable {
     public let custom: [String: RawJSON]
     public let id: String
     public let text: String

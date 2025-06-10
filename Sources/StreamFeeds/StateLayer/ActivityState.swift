@@ -20,29 +20,29 @@ import StreamCore
         self.webSocketObserver = webSocketObserver
     }
     
-    @Published public private(set) var activity: ActivityInfo?
+    @Published public private(set) var activity: ActivityData?
     
-    @Published public internal(set) var comments = [CommentInfo]()
+    @Published public internal(set) var comments = [CommentData]()
     
-    @Published public internal(set) var poll: PollInfo?
+    @Published public internal(set) var poll: PollData?
 }
 
 // MARK: - Updating the State
 
 extension ActivityState {
     struct ChangeHandlers: Sendable {
-        let activityUpdated: @MainActor (ActivityInfo) -> Void
-        let commentAdded: @MainActor (CommentInfo) -> Void
-        let commentDeleted: @MainActor (CommentInfo) -> Void
-        let commentUpdated: @MainActor (CommentInfo) -> Void
-        let commentReactionAdded: @MainActor (FeedsReactionInfo, CommentInfo) -> Void
-        let commentReactionDeleted: @MainActor (FeedsReactionInfo, CommentInfo) -> Void
-        let pollClosed: @MainActor (PollInfo) -> Void
-        let pollDeleted: @MainActor (PollInfo) -> Void
-        let pollUpdated: @MainActor (PollInfo) -> Void
-        let pollVoteCasted: @MainActor (PollVoteInfo, PollInfo) -> Void
-        let pollVoteChanged: @MainActor (PollVoteInfo, PollInfo) -> Void
-        let pollVoteRemoved: @MainActor (PollVoteInfo, PollInfo) -> Void
+        let activityUpdated: @MainActor (ActivityData) -> Void
+        let commentAdded: @MainActor (CommentData) -> Void
+        let commentDeleted: @MainActor (CommentData) -> Void
+        let commentUpdated: @MainActor (CommentData) -> Void
+        let commentReactionAdded: @MainActor (FeedsReactionData, CommentData) -> Void
+        let commentReactionDeleted: @MainActor (FeedsReactionData, CommentData) -> Void
+        let pollClosed: @MainActor (PollData) -> Void
+        let pollDeleted: @MainActor (PollData) -> Void
+        let pollUpdated: @MainActor (PollData) -> Void
+        let pollVoteCasted: @MainActor (PollVoteData, PollData) -> Void
+        let pollVoteChanged: @MainActor (PollVoteData, PollData) -> Void
+        let pollVoteRemoved: @MainActor (PollVoteData, PollData) -> Void
     }
     
     private func makeChangeHandlers() -> ChangeHandlers {
@@ -57,7 +57,7 @@ extension ActivityState {
                         parentComment.addReply(comment)
                     }
                 } else {
-                    self?.comments.sortedInsert(comment, using: CommentInfo.defaultSorting)
+                    self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
                 }
             },
             commentDeleted: { [weak self] comment in
@@ -67,7 +67,7 @@ extension ActivityState {
                         parentComment.removeReply(comment)
                     }
                 } else {
-                    self?.comments.sortedRemove(comment, using: CommentInfo.defaultSorting)
+                    self?.comments.sortedRemove(comment, using: CommentData.defaultSorting)
                 }
             },
             commentUpdated: { [weak self] comment in
@@ -77,14 +77,14 @@ extension ActivityState {
                         parentComment.replaceReply(comment)
                     }
                 } else {
-                    self?.comments.sortedReplace(comment, using: CommentInfo.defaultSorting)
+                    self?.comments.sortedReplace(comment, using: CommentData.defaultSorting)
                 }
             },
             commentReactionAdded: { [weak self] reaction, comment in
-                self?.comments.sortedReplace(comment, using: CommentInfo.defaultSorting)
+                self?.comments.sortedReplace(comment, using: CommentData.defaultSorting)
             },
             commentReactionDeleted: { [weak self] reaction, comment in
-                self?.comments.sortedReplace(comment, using: CommentInfo.defaultSorting)
+                self?.comments.sortedReplace(comment, using: CommentData.defaultSorting)
             },
             pollClosed: { [weak self] poll in
                 guard poll.id == self?.poll?.id else { return }
@@ -113,14 +113,14 @@ extension ActivityState {
         )
     }
     
-    private func updateComment(with id: String, changes: (inout CommentInfo) -> Void) {
+    private func updateComment(with id: String, changes: (inout CommentData) -> Void) {
         guard let index = comments.firstIndex(where: { $0.id == id }) else { return }
         var comment = comments[index]
         changes(&comment)
         self.comments[index] = comment
     }
     
-    func updateActivity(_ activity: ActivityInfo) {
+    func updateActivity(_ activity: ActivityData) {
         self.activity = activity
         self.poll = activity.poll
     }
@@ -130,6 +130,6 @@ extension ActivityState {
     }
     
     func update(with data: CommentsRepository.QueryCommentsData) {
-        comments = data.comments.sorted(by: CommentInfo.defaultSorting)
+        comments = data.comments.sorted(by: CommentData.defaultSorting)
     }
 }

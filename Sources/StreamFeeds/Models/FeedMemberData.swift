@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FeedMemberInfo: Sendable {
+public struct FeedMemberData: Sendable {
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let requestAcceptedAt: Date?
@@ -13,7 +13,7 @@ public struct FeedMemberInfo: Sendable {
     public let role: String
     public let status: String
     public let updatedAt: Date
-    public let user: UserInfo
+    public let user: UserData
     
     init(from response: FeedMemberResponse) {
         self.createdAt = response.createdAt
@@ -23,11 +23,11 @@ public struct FeedMemberInfo: Sendable {
         self.role = response.role
         self.status = response.status
         self.updatedAt = response.updatedAt
-        self.user = UserInfo(from: response.user)
+        self.user = UserData(from: response.user)
     }
 }
 
-extension FeedMemberInfo: Identifiable {
+extension FeedMemberData: Identifiable {
     public var id: String {
         user.id
     }

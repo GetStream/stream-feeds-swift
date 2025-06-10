@@ -204,7 +204,7 @@ struct CommentsView: View {
     }
 }
 
-extension CommentInfo {
+extension CommentData {
     //TODO: maybe expose own reactions.
     func containsUserReaction(with id: String) -> Bool {
         latestReactions?.map(\.user.id).contains(id) == true
@@ -213,7 +213,7 @@ extension CommentInfo {
 
 struct CommentView: View {
     
-    var user: UserInfo
+    var user: UserData
     var text: String
     var onEdit: () -> ()
     var onDelete: () -> ()
@@ -250,7 +250,7 @@ struct CommentView: View {
 
 struct ActivityActionsView: View {
     
-    var comment: CommentInfo
+    var comment: CommentData
     var activity: Activity
     var userId: String
     @Binding var expandedCommentRepliesId: String?

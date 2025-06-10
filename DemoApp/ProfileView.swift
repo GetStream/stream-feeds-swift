@@ -17,7 +17,7 @@ struct ProfileView: View {
     let feedsClient: FeedsClient
     @ObservedObject var state: FeedState
     
-    @State var followSuggestions = [FeedInfo]()
+    @State var followSuggestions = [FeedData]()
     
     init(feed: Feed, feedsClient: FeedsClient) {
         self.feed = feed
@@ -144,9 +144,9 @@ struct ProfileView: View {
 
 struct FollowSuggestionView: View {
     
-    let owner: UserInfo
+    let owner: UserData
     let feed: Feed
-    let targetFeed: FeedInfo
+    let targetFeed: FeedData
     
     var body: some View {
         VStack {

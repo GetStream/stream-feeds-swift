@@ -15,7 +15,7 @@ struct PollCommentsView: View {
     @StateObject var viewModel: PollCommentsViewModel
     
     init(
-        poll: PollInfo,
+        poll: PollData,
         activity: Activity,
         user: User,
         viewModel: PollCommentsViewModel? = nil
@@ -96,7 +96,7 @@ struct PollCommentsView: View {
             : "Add comment"
     }
     
-    private func authorTitle(for comment: PollVoteInfo) -> String {
+    private func authorTitle(for comment: PollVoteData) -> String {
         if viewModel.poll.votingVisibility == "anonymous" {
             return "anonymous"
         }

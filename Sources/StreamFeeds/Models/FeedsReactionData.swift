@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public struct FeedsReactionInfo: Sendable {
+public struct FeedsReactionData: Sendable {
     public let activityId: String
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let type: String
     public let updatedAt: Date
-    public let user: UserInfo
+    public let user: UserData
     
     init(from response: FeedsReactionResponse) {
         self.activityId = response.activityId
@@ -19,11 +19,11 @@ public struct FeedsReactionInfo: Sendable {
         self.custom = response.custom
         self.type = response.type
         self.updatedAt = response.updatedAt
-        self.user = UserInfo(from: response.user)
+        self.user = UserData(from: response.user)
     }
 }
 
-extension FeedsReactionInfo: Identifiable {
+extension FeedsReactionData: Identifiable {
     public var id: String {
         activityId + user.id
     }

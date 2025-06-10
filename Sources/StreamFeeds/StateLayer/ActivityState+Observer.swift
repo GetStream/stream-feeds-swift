@@ -30,40 +30,40 @@ extension ActivityState {
                 switch event {
                 case let event as CommentAddedEvent:
                     guard event.fid == feedsId else { return }
-                    await handlers.commentAdded(CommentInfo(from: event.comment))
+                    await handlers.commentAdded(CommentData(from: event.comment))
                 case let event as CommentDeletedEvent:
                     guard event.fid == feedsId else { return }
-                    await handlers.commentDeleted(CommentInfo(from: event.comment))
+                    await handlers.commentDeleted(CommentData(from: event.comment))
                 case let event as CommentUpdatedEvent:
                     guard event.fid == feedsId else { return }
-                    await handlers.commentUpdated(CommentInfo(from: event.comment))
+                    await handlers.commentUpdated(CommentData(from: event.comment))
                 case let event as CommentReactionAddedEvent:
                     guard event.fid == feedsId else { return }
-                    let comment = CommentInfo(from: event.comment)
-                    let reaction = FeedsReactionInfo(from: event.reaction)
+                    let comment = CommentData(from: event.comment)
+                    let reaction = FeedsReactionData(from: event.reaction)
                     await handlers.commentReactionAdded(reaction, comment)
                 case let event as CommentReactionDeletedEvent:
                     guard event.fid == feedsId else { return }
-                    let comment = CommentInfo(from: event.comment)
-                    let reaction = FeedsReactionInfo(from: event.reaction)
+                    let comment = CommentData(from: event.comment)
+                    let reaction = FeedsReactionData(from: event.reaction)
                     await handlers.commentReactionDeleted(reaction, comment)
                 case let event as PollClosedEvent:
-                    await handlers.pollClosed(PollInfo(from: event.poll))
+                    await handlers.pollClosed(PollData(from: event.poll))
                 case let event as PollDeletedEvent:
-                    await handlers.pollDeleted(PollInfo(from: event.poll))
+                    await handlers.pollDeleted(PollData(from: event.poll))
                 case let event as PollUpdatedEvent:
-                    await handlers.pollUpdated(PollInfo(from: event.poll))
+                    await handlers.pollUpdated(PollData(from: event.poll))
                 case let event as PollVoteCastedEvent:
-                    let poll = PollInfo(from: event.poll)
-                    let vote = PollVoteInfo(from: event.pollVote)
+                    let poll = PollData(from: event.poll)
+                    let vote = PollVoteData(from: event.pollVote)
                     await handlers.pollVoteCasted(vote, poll)
                 case let event as PollVoteChangedEvent:
-                    let poll = PollInfo(from: event.poll)
-                    let vote = PollVoteInfo(from: event.pollVote)
+                    let poll = PollData(from: event.poll)
+                    let vote = PollVoteData(from: event.pollVote)
                     await handlers.pollVoteChanged(vote, poll)
                 case let event as PollVoteRemovedEvent:
-                    let poll = PollInfo(from: event.poll)
-                    let vote = PollVoteInfo(from: event.pollVote)
+                    let poll = PollData(from: event.poll)
+                    let vote = PollVoteData(from: event.pollVote)
                     await handlers.pollVoteRemoved(vote, poll)
                 default:
                     break

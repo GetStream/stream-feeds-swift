@@ -16,7 +16,7 @@ import SwiftUI
         
     let feedsClient: FeedsClient
     let feed: Feed
-    let activityInfo: ActivityInfo
+    let activityInfo: ActivityData
     
     private var _activity: Activity?
     
@@ -32,7 +32,7 @@ import SwiftUI
     }
     
     /// The object representing the state of the poll.
-    @Published public var poll: PollInfo
+    @Published public var poll: PollData
     
     /// If true, an alert with a text field is shown allowing to suggest new options.
     @Published public var suggestOptionShown = false
@@ -70,7 +70,7 @@ import SwiftUI
     }
     
     /// A list of votes given by the current user.
-    @Published public var currentUserVotes = [PollVoteInfo]()
+    @Published public var currentUserVotes = [PollVoteData]()
     
     private let createdByCurrentUser: Bool
         
@@ -119,7 +119,7 @@ import SwiftUI
         poll.votingVisibility != "anonymous"
     }
     
-    public init(feedsClient: FeedsClient, feed: Feed, poll: PollInfo, activityInfo: ActivityInfo) {
+    public init(feedsClient: FeedsClient, feed: Feed, poll: PollData, activityInfo: ActivityData) {
         self.feedsClient = feedsClient
         self.feed = feed
         self.poll = poll
@@ -139,7 +139,7 @@ import SwiftUI
     /// Casts a vote for a poll.
     ///
     /// - Parameter option: The option user tapped on.
-    public func castPollVote(for option: PollOptionInfo) {
+    public func castPollVote(for option: PollOptionData) {
         guard !isCastingVote else { return }
         isCastingVote = true
         Task {
@@ -177,7 +177,7 @@ import SwiftUI
     
     /// Removes the given vote from the specified option.
     /// - Parameter option: The option user tapped on.
-    public func removePollVote(for option: PollOptionInfo) {
+    public func removePollVote(for option: PollOptionData) {
         guard !isCastingVote else { return }
         isCastingVote = true
         guard let vote = currentUserVote(for: option) else { return }
@@ -213,7 +213,7 @@ import SwiftUI
     }
     
     /// True, if the current user has voted for the specified option, otherwise false.
-    public func optionVotedByCurrentUser(_ option: PollOptionInfo) -> Bool {
+    public func optionVotedByCurrentUser(_ option: PollOptionData) -> Bool {
         poll.hasCurrentUserVoted(for: option)
     }
     
@@ -234,13 +234,13 @@ import SwiftUI
     /// Returns true if the specified option has more votes than any other option.
     ///
     /// - Note: When multiple options have the highest vote count, this function returns false.
-    public func hasMostVotes(for option: PollOptionInfo) -> Bool {
+    public func hasMostVotes(for option: PollOptionData) -> Bool {
         poll.isOptionWithMostVotes(option)
     }
     
     // MARK: - private
     
-    private func currentUserVote(for option: PollOptionInfo) -> PollVoteInfo? {
+    private func currentUserVote(for option: PollOptionData) -> PollVoteData? {
         poll.currentUserVote(for: option)
     }
     
@@ -253,41 +253,41 @@ import SwiftUI
     }
 }
 
-public extension PollInfo {
+public extension PollData {
     /// The value of the option with the most votes.
     var currentMaximumVoteCount: Int {
         voteCountsByOption.values.max() ?? 0
     }
 
     /// Whether the poll is already closed and the provided option is the one, and **the only one** with the most votes.
-    func isOptionWinner(_ option: PollOptionInfo) -> Bool {
+    func isOptionWinner(_ option: PollOptionData) -> Bool {
         isClosed == true && isOptionWithMostVotes(option)
     }
 
     /// Whether the poll is already close and the provided option is one of that has the most votes.
-    func isOptionOneOfTheWinners(_ option: PollOptionInfo) -> Bool {
+    func isOptionOneOfTheWinners(_ option: PollOptionData) -> Bool {
         isClosed == true && isOptionWithMaximumVotes(option)
     }
 
     /// Whether the provided option is the one, and **the only one** with the most votes.
-    func isOptionWithMostVotes(_ option: PollOptionInfo) -> Bool {
+    func isOptionWithMostVotes(_ option: PollOptionData) -> Bool {
         let optionsWithMostVotes = voteCountsByOption.filter { $0.value == currentMaximumVoteCount }
         return optionsWithMostVotes.count == 1 && optionsWithMostVotes[option.id] != nil
     }
 
     /// Whether the provided option is one of that has the most votes.
-    func isOptionWithMaximumVotes(_ option: PollOptionInfo) -> Bool {
+    func isOptionWithMaximumVotes(_ option: PollOptionData) -> Bool {
         let optionsWithMostVotes = voteCountsByOption.filter { $0.value == currentMaximumVoteCount }
         return optionsWithMostVotes[option.id] != nil
     }
 
     /// The vote count for the given option.
-    func voteCount(for option: PollOptionInfo) -> Int {
+    func voteCount(for option: PollOptionData) -> Int {
         voteCountsByOption[option.id] ?? 0
     }
     
     // The ratio of the votes for the given option in comparison with the number of total votes.
-    func voteRatio(for option: PollOptionInfo) -> Float {
+    func voteRatio(for option: PollOptionData) -> Float {
         if currentMaximumVoteCount == 0 {
             return 0
         }
@@ -297,12 +297,12 @@ public extension PollInfo {
     }
 
     /// Returns the vote of the current user for the given option in case the user has voted.
-    func currentUserVote(for option: PollOptionInfo) -> PollVoteInfo? {
+    func currentUserVote(for option: PollOptionData) -> PollVoteData? {
         ownVotes.first(where: { $0.optionId == option.id })
     }
 
     /// Returns a Boolean value indicating whether the current user has voted the given option.
-    func hasCurrentUserVoted(for option: PollOptionInfo) -> Bool {
+    func hasCurrentUserVoted(for option: PollOptionData) -> Bool {
         ownVotes.contains(where: { $0.optionId == option.id })
     }
 }

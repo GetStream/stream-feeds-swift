@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FollowInfo: Sendable {
+public struct FollowData: Sendable {
     public typealias FollowStatus = FollowResponse.FollowStatus
     
     public let createdAt: Date
@@ -14,9 +14,9 @@ public struct FollowInfo: Sendable {
     public let pushPreference: String
     public let requestAcceptedAt: Date?
     public let requestRejectedAt: Date?
-    public let sourceFeed: FeedInfo
+    public let sourceFeed: FeedData
     public let status: FollowStatus
-    public let targetFeed: FeedInfo
+    public let targetFeed: FeedData
     public let updatedAt: Date
     
     init(from response: FollowResponse) {
@@ -26,9 +26,9 @@ public struct FollowInfo: Sendable {
         self.pushPreference = response.pushPreference
         self.requestAcceptedAt = response.requestAcceptedAt
         self.requestRejectedAt = response.requestRejectedAt
-        self.sourceFeed = FeedInfo(from: response.sourceFeed)
+        self.sourceFeed = FeedData(from: response.sourceFeed)
         self.status = response.status
-        self.targetFeed = FeedInfo(from: response.targetFeed)
+        self.targetFeed = FeedData(from: response.targetFeed)
         self.updatedAt = response.updatedAt
     }
     
@@ -53,7 +53,7 @@ public struct FollowInfo: Sendable {
     }
 }
 
-extension FollowInfo: Identifiable {
+extension FollowData: Identifiable {
     // TODO: Review
     public var id: String {
         "\(sourceFeed.fid)\(targetFeed.fid)\(createdAt.timeIntervalSince1970)"

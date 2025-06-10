@@ -81,14 +81,14 @@ struct PollOptionResultsView: View {
     
     let colors = Colors.shared
     
-    var poll: PollInfo
-    var option: PollOptionInfo
-    var votes: [PollVoteInfo]
+    var poll: PollData
+    var option: PollOptionData
+    var votes: [PollVoteData]
     var allButtonShown = false
     var hasMostVotes: Bool = false
     var activity: Activity
     var feedsClient: FeedsClient
-    var onVoteAppear: ((PollVoteInfo) -> Void)?
+    var onVoteAppear: ((PollVoteData) -> Void)?
     
     var body: some View {
         VStack(spacing: 24) {
@@ -132,7 +132,7 @@ struct PollOptionResultsView: View {
     }
 }
 
-extension PollVoteInfo {
+extension PollVoteData {
     var displayId: String {
         "\(id)-\(optionId)-\(pollId)"
     }

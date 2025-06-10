@@ -9,12 +9,12 @@ import SwiftUI
 
 @MainActor class PollCommentsViewModel: ObservableObject {
     
-    @Published var comments = [PollVoteInfo]()
+    @Published var comments = [PollVoteData]()
     @Published var newCommentText = ""
     @Published var addCommentShown = false
     @Published var errorShown = false
     
-    let poll: PollInfo
+    let poll: PollData
     let activity: Activity
     let user: User
         
@@ -22,7 +22,7 @@ import SwiftUI
     private(set) var animateChanges = false
     private var loadingComments = true
         
-    init(poll: PollInfo, activity: Activity, user: User) {
+    init(poll: PollData, activity: Activity, user: User) {
         self.poll = poll
         self.activity = activity
         self.user = user
@@ -73,7 +73,7 @@ import SwiftUI
         newCommentText = ""
     }
     
-    func onAppear(comment: PollVoteInfo) {
+    func onAppear(comment: PollVoteData) {
         guard !loadingComments,
               let index = comments.firstIndex(where: { $0.id == comment.id }),
               index > comments.count - 10 else { return }

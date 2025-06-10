@@ -8,19 +8,19 @@ import SwiftUI
 
 @MainActor class PollOptionAllVotesViewModel: ObservableObject {
     
-    let poll: PollInfo
-    let option: PollOptionInfo
+    let poll: PollData
+    let option: PollOptionData
     let activity: Activity
     let feedsClient: FeedsClient
     
-    @Published var pollVotes = [PollVoteInfo]()
+    @Published var pollVotes = [PollVoteData]()
     @Published var errorShown = false
     
     private var cancellables = Set<AnyCancellable>()
     private(set) var animateChanges = false
     private var loadingVotes = false
         
-    init(poll: PollInfo, option: PollOptionInfo, activity: Activity, feedsClient: FeedsClient) {
+    init(poll: PollData, option: PollOptionData, activity: Activity, feedsClient: FeedsClient) {
         self.poll = poll
         self.option = option
         self.activity = activity
@@ -54,7 +54,7 @@ import SwiftUI
         }
     }
     
-    func onAppear(vote: PollVoteInfo) {
+    func onAppear(vote: PollVoteData) {
         guard !loadingVotes,
               let index = pollVotes.firstIndex(where: { $0.id == vote.id }),
               index > pollVotes.count - 10 else { return }
