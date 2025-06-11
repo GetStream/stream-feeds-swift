@@ -47,6 +47,11 @@ final class FeedsRepository: Sendable {
     
     // MARK: - Follows
     
+    func queryFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> [FeedData] {
+        let response = try await apiClient.getFollowSuggestions(feedGroupId: feedGroupId, limit: limit)
+        return response.suggestions.map { $0.toModel() }
+    }
+    
     func follow(request: SingleFollowRequest) async throws -> FollowData {
         let response = try await apiClient.follow(singleFollowRequest: request)
         return response.follow.toModel()

@@ -10,17 +10,10 @@ final class WSEventsMiddleware: EventMiddleware, WSEventsSubscribing {
     private let subscribers = AllocatedUnfairLock(NSHashTable<AnyObject>.weakObjects())
 
     func handle(event: Event) -> Event? {
-        var feedsClient: FeedsClient?
         let allObjects = subscribers.withLock { $0.allObjects }
         for subscriber in allObjects {
-            if let subscriber = subscriber as? FeedsClient {
-                feedsClient = subscriber
-            } else {
-                (subscriber as? WSEventsSubscriber)?.onEvent(event)
-            }
+            (subscriber as? WSEventsSubscriber)?.onEvent(event)
         }
-        feedsClient?.onEvent(event)
-        
         return event
     }
     

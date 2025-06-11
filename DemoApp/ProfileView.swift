@@ -132,9 +132,7 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .onAppear {
                 Task {
-                    let suggestionsResponse = try await self.feedsClient.getFollowSuggestions(
-                        feedGroupId: "user", limit: 10
-                    )
+                    let suggestionsResponse = try await feed.queryFollowSuggestions(limit: 10)
                     followSuggestions = suggestionsResponse
                 }
             }

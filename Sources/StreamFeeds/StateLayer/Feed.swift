@@ -116,6 +116,10 @@ public final class Feed: Sendable {
     
     // MARK: - Follows
     
+    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedData] {
+        try await feedsRepository.queryFollowSuggestions(feedGroupId: group, limit: limit)
+    }
+    
     @discardableResult
     public func follow(request: SingleFollowRequest) async throws -> FollowData {
         let follow = try await feedsRepository.follow(request: request)
