@@ -34,12 +34,12 @@ extension FeedState {
                     guard event.fid == feedId else { return }
                     await handlers.activityUpdated(event.activity.toModel())
                 case let event as BookmarkAddedEvent:
-                    guard event.fid == feedId else { return }
-                    // TODO: Verify bookmark response structure
-                    guard let bookmark = event.bookmark else { return }
-                    await handlers.bookmarkAdded(bookmark.toModel())
+                    // TODO: This is not correct?
+                    guard event.bookmark.activity.feeds.contains(feedId) else { return }
+                    await handlers.bookmarkAdded(event.bookmark.toModel())
                 case let event as BookmarkDeletedEvent:
-                    guard event.fid == feedId else { return }
+                    // TODO: This is not correct?
+                    guard event.bookmark.activity.feeds.contains(feedId) else { return }
                     await handlers.bookmarkDeleted(event.bookmark.toModel())
                 case let event as CommentAddedEvent:
                     guard event.fid == feedId else { return }

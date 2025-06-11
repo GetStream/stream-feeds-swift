@@ -53,15 +53,15 @@ extension ActivityState {
                     await handlers.pollDeleted(event.poll.toModel())
                 case let event as PollUpdatedEvent:
                     await handlers.pollUpdated(event.poll.toModel())
-                case let event as PollVoteCastedEvent:
+                case let event as PollVoteCastedFeedEvent:
                     let poll = event.poll.toModel()
                     let vote = event.pollVote.toModel()
                     await handlers.pollVoteCasted(vote, poll)
-                case let event as PollVoteChangedEvent:
+                case let event as PollVoteChangedFeedEvent:
                     let poll = event.poll.toModel()
                     let vote = event.pollVote.toModel()
                     await handlers.pollVoteChanged(vote, poll)
-                case let event as PollVoteRemovedEvent:
+                case let event as PollVoteRemovedFeedEvent:
                     let poll = event.poll.toModel()
                     let vote = event.pollVote.toModel()
                     await handlers.pollVoteRemoved(vote, poll)

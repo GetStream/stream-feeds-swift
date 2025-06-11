@@ -5,9 +5,9 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
     public enum FeedVisibility: String, Sendable, Codable, CaseIterable {
         case followers
         case members
-        case `private` = "private"
-        case `public` = "public"
-        case visible = "visible"
+        case `private`
+        case `public`
+        case visible
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {

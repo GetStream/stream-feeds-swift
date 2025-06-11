@@ -14,13 +14,13 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var members: [FeedMemberResponse]
     public var next: String?
     public var notificationStatus: NotificationStatusResponse?
-    public var ownCapabilities: [FeedOwnCapability]?
+    public var ownCapabilities: [FeedOwnCapability]
     public var ownFollows: [FollowResponse]?
     public var ownMembership: FeedMemberResponse?
     public var pinnedActivities: [ActivityPinResponse]
     public var prev: String?
 
-    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, ownCapabilities: [FeedOwnCapability], ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.duration = duration

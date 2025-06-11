@@ -4,7 +4,7 @@ import StreamCore
 public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public enum VotingVisibility: String, Sendable, Codable, CaseIterable {
         case anonymous
-        case `public` = "public"
+        case `public`
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {

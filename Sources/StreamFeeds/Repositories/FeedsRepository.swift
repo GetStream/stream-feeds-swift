@@ -30,7 +30,7 @@ final class FeedsRepository: Sendable {
             following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feedId: feedId) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
             members: response.members.map { $0.toModel() },
-            ownCapabilities: response.ownCapabilities ?? []
+            ownCapabilities: response.ownCapabilities
         )
     }
     

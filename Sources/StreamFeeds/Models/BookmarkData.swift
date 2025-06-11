@@ -6,17 +6,17 @@ import Foundation
 import StreamCore
 
 public struct BookmarkData: Sendable {
-    public let activityId: String
+    public let activity: ActivityData
     public let createdAt: Date
     public let custom: [String: RawJSON]?
-    public let folder: BookmarkFolderResponse
+    public let folder: BookmarkFolderResponse?
     public let updatedAt: Date
     public let user: UserData
 }
 
 extension BookmarkData: Identifiable {
     public var id: String {
-        activityId + user.id
+        activity.id + user.id
     }
 }
 
@@ -25,33 +25,12 @@ extension BookmarkData: Identifiable {
 extension BookmarkResponse {
     func toModel() -> BookmarkData {
         BookmarkData(
-            activityId: activityId,
+            activity: activity.toModel(),
             createdAt: createdAt,
             custom: custom,
             folder: folder,
             updatedAt: updatedAt,
             user: user.toModel()
-        )
-    }
-}
-
-// TODO: Event is missing the response
-
-extension BookmarkAddedEvent {
-    var bookmark: BookmarkResponse? {
-        guard let user = user?.toUserResponse() else { return nil }
-        return BookmarkResponse(
-            activityId: activityId,
-            createdAt: createdAt,
-            custom: custom,
-            folder: BookmarkFolderResponse(
-                createdAt: Date(),
-                id: "bookmarks",
-                name: "Bookmarks",
-                updatedAt: Date()
-            ),
-            updatedAt: createdAt,
-            user: user
         )
     }
 }

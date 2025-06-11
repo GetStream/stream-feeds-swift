@@ -2,15 +2,15 @@ import Foundation
 import StreamCore
 
 public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activityId: String
+    public var activity: ActivityResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]?
-    public var folder: BookmarkFolderResponse
+    public var folder: BookmarkFolderResponse?
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(activityId: String, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse, updatedAt: Date, user: UserResponse) {
-        self.activityId = activityId
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse? = nil, updatedAt: Date, user: UserResponse) {
+        self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
         self.folder = folder
@@ -19,7 +19,7 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityId = "activity_id"
+        case activity
         case createdAt = "created_at"
         case custom
         case folder
@@ -28,7 +28,7 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public static func == (lhs: BookmarkResponse, rhs: BookmarkResponse) -> Bool {
-        lhs.activityId == rhs.activityId &&
+        lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.folder == rhs.folder &&
@@ -37,7 +37,7 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityId)
+        hasher.combine(activity)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(folder)

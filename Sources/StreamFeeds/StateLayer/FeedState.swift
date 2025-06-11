@@ -55,12 +55,12 @@ extension FeedState {
                 self?.activities.sortedInsert(activity, using: ActivityData.defaultSorting)
             },
             bookmarkAdded: { [weak self] bookmark in
-                self?.updateActivity(with: bookmark.activityId) { activity in
+                self?.updateActivity(with: bookmark.activity.id) { activity in
                     activity.addBookmark(bookmark)
                 }
             },
             bookmarkDeleted: { [weak self] bookmark in
-                self?.updateActivity(with: bookmark.activityId) { activity in
+                self?.updateActivity(with: bookmark.activity.id) { activity in
                     activity.deleteBookmark(bookmark)
                 }
             },

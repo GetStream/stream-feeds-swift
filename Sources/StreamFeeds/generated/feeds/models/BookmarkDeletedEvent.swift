@@ -5,16 +5,14 @@ public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JS
     public var bookmark: BookmarkResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var fid: String
     public var receivedAt: Date?
     public var type: String = "bookmark.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(bookmark: BookmarkResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(bookmark: BookmarkResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.bookmark = bookmark
         self.createdAt = createdAt
         self.custom = custom
-        self.fid = fid
         self.receivedAt = receivedAt
         self.user = user
     }
@@ -23,7 +21,6 @@ public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JS
         case bookmark
         case createdAt = "created_at"
         case custom
-        case fid
         case receivedAt = "received_at"
         case type
         case user
@@ -33,7 +30,6 @@ public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JS
         lhs.bookmark == rhs.bookmark &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
-            lhs.fid == rhs.fid &&
             lhs.receivedAt == rhs.receivedAt &&
             lhs.type == rhs.type &&
             lhs.user == rhs.user
@@ -43,7 +39,6 @@ public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JS
         hasher.combine(bookmark)
         hasher.combine(createdAt)
         hasher.combine(custom)
-        hasher.combine(fid)
         hasher.combine(receivedAt)
         hasher.combine(type)
         hasher.combine(user)

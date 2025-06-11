@@ -2,14 +2,14 @@ import Foundation
 import StreamCore
 
 public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activityId: String
+    public var activity: ActivityResponse
     public var createdAt: Date
     public var duration: String
     public var fid: String
     public var userId: String
 
-    public init(activityId: String, createdAt: Date, duration: String, fid: String, userId: String) {
-        self.activityId = activityId
+    public init(activity: ActivityResponse, createdAt: Date, duration: String, fid: String, userId: String) {
+        self.activity = activity
         self.createdAt = createdAt
         self.duration = duration
         self.fid = fid
@@ -17,7 +17,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityId = "activity_id"
+        case activity
         case createdAt = "created_at"
         case duration
         case fid
@@ -25,7 +25,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
     }
 
     public static func == (lhs: PinActivityResponse, rhs: PinActivityResponse) -> Bool {
-        lhs.activityId == rhs.activityId &&
+        lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&
             lhs.duration == rhs.duration &&
             lhs.fid == rhs.fid &&
@@ -33,7 +33,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityId)
+        hasher.combine(activity)
         hasher.combine(createdAt)
         hasher.combine(duration)
         hasher.combine(fid)

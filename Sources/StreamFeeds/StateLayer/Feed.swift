@@ -110,8 +110,8 @@ public final class Feed: Sendable {
     }
     
     @discardableResult
-    public func deleteBookmark(activityId: String) async throws -> BookmarkData {
-        try await activitiesRepository.deleteBookmark(activityId: activityId)
+    public func deleteBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
+        try await activitiesRepository.deleteBookmark(activityId: activityId, folderId: folderId)
     }
     
     // MARK: - Follows

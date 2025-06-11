@@ -3,9 +3,9 @@ import StreamCore
 
 public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
-        case `private` = "private"
-        case `public` = "public"
-        case tag = "tag"
+        case `private`
+        case `public`
+        case tag
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
