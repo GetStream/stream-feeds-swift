@@ -11,7 +11,7 @@ import StreamFeeds
 
 struct FeedsView: View {
     
-    @State var feedsClient: FeedsClient
+    let feedsClient: FeedsClient
     @State var feed: Feed
     @StateObject var state: FeedState
     
@@ -26,14 +26,9 @@ struct FeedsView: View {
     @State var activityToDelete: ActivityData?
     @State var profileShown = false
     
-    init(credentials: UserCredentials) {
-        let feedsClient = FeedsClient(
-            apiKey: .init("892s22ypvt6m"),
-            user: credentials.user,
-            token: credentials.token
-        )
+    init(feedsClient: FeedsClient) {
         self.feedsClient = feedsClient
-        let feed = feedsClient.feed(group: "user", id: credentials.user.id)
+        let feed = feedsClient.feed(group: "user", id: feedsClient.user.id)
         _feed = State(initialValue: feed)
         _state = StateObject(wrappedValue: feed.state)
         LogConfig.level = .debug

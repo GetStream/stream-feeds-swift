@@ -1,30 +1,9 @@
 //
-//  LoginView.swift
-//  DemoApp
-//
-//  Created by Martin Mitrevski on 9.5.25.
+// Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
-import SwiftUI
+import Foundation
 import StreamCore
-
-struct LoginView: View {
-    
-    var onUserSelected: (UserCredentials) -> ()
-    
-    var body: some View {
-        VStack {
-            ForEach(UserCredentials.builtIn) { credentials in
-                Button {
-                    onUserSelected(credentials)
-                } label: {
-                    Text("Login as \(credentials.user.name)")
-                }
-                .padding()
-            }
-        }
-    }
-}
 
 struct UserCredentials: Identifiable {
     let user: User
@@ -35,7 +14,14 @@ struct UserCredentials: Identifiable {
 }
 
 extension UserCredentials {
-    static let builtIn: [UserCredentials] = [.martin, .tommaso, .thierry, .marcelo, .toomas]
+    static let builtIn: [UserCredentials] = [
+        .martin,
+        .tommaso,
+        .thierry,
+        .marcelo,
+        .kanat,
+        .toomas
+    ].sorted(by: { $0.user.name.localizedCaseInsensitiveCompare($1.user.name) == .orderedAscending })
     
     static let martin = UserCredentials(
         user: .init(id: "martin", name: "Martin", imageURL: URL(string: "https://getstream.io/static/2796a305dd07651fcceb4721a94f4505/802d2/martin-mitrevski.webp")),
@@ -57,6 +43,11 @@ extension UserCredentials {
         token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFyY2VsbyJ9.lM_lJBxac1KHaEaDWYLP7Sr4r1u3xsry3CclTeihrYE")
     )
     
+    static let kanat = UserCredentials(
+        user: .init(id: "kanat", name: "Kanat"),
+        token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoia2FuYXQifQ.P7rVVPHX4d21HpP6nvEQXiTKlJdFh7_YYZUP3rZB_oA")
+    )
+    
     static let toomas = UserCredentials(
         user: .init(id: "toomas", name: "Toomas"),
         token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidG9vbWFzIn0.c0YPLh9Q8l_mvgaTVEh9_w_qJW3m_C_dXL2DonlH6n0")
@@ -67,12 +58,9 @@ extension UserCredentials {
     }
     
     static func credentials(for id: String) -> UserCredentials {
-        switch id {
-        case "martin": return .martin
-        case "thierry": return .thierry
-        case "marcelo": return .marcelo
-        case "toomas": return .toomas
-        default: return .tommaso
+        if let credentials = builtIn.first(where: { $0.id == id }) {
+            return credentials
         }
+        return .tommaso
     }
 }

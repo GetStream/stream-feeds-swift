@@ -58,7 +58,9 @@ public final class FeedsClient: Sendable {
         commentsRepository = CommentsRepository(apiClient: apiClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
-        
+    }
+    
+    public func connect() async throws {
         if user.type != .anonymous {
             let userAuth = UserAuth { [weak self] in
                 self?.token.rawValue ?? ""
@@ -76,6 +78,7 @@ public final class FeedsClient: Sendable {
         }
         
         initialConnectIfRequired(apiKey: apiKey.apiKeyString)
+        try await connectTask.value?.value
     }
 }
 

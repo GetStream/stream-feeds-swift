@@ -22,6 +22,7 @@ extension FeedsClient {
                 try await self.connectUser(isInitial: true)
             } catch {
                 log.error(error)
+                throw error
             }
         }
     }
