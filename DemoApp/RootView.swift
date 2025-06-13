@@ -37,6 +37,7 @@ struct RootView: View {
             state = .connecting
             let client = FeedsClient.client(for: credentials)
             try await client.connect()
+            userId = credentials.id
             state = .loggedIn(client)
         } catch {
             state = .loggedOut

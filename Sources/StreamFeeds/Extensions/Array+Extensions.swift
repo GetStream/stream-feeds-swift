@@ -166,7 +166,7 @@ extension Array {
         var left = startIndex
         var right = endIndex
         while left < right {
-            let mid = index(left, offsetBy: distance(from: left / 2, to: right / 2))
+            let mid = index(left, offsetBy: distance(from: left , to: right) / 2)
             if sorting(self[mid], element) {
                 left = index(after: mid)
             } else {

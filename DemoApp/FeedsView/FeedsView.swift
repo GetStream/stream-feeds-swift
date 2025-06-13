@@ -8,7 +8,7 @@ import SwiftUI
 struct FeedsView: View {
     let client: FeedsClient
     @State private var feed: Feed
-    @State private var profileShown = false
+    @State private var presentedSheet: Sheet?
     
     init(client: FeedsClient) {
         self.client = client
@@ -28,7 +28,14 @@ struct FeedsView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        profileShown = true
+                        presentedSheet = .feedDebugCommands
+                    } label: {
+                        Image(systemName: "hammer")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        presentedSheet = .profile
                     } label: {
                         Image(systemName: "person")
                     }
@@ -38,9 +45,25 @@ struct FeedsView: View {
                 }
             })
         }
-        .sheet(isPresented: $profileShown) {
-            ProfileView(feed: feed, feedsClient: client)
+        .sheet(item: $presentedSheet, content: makeSheet)
+    }
+    
+    @ViewBuilder
+    private func makeSheet(_ sheet: Sheet) -> some View {
+        switch sheet {
+        case .feedDebugCommands:
+            DebugFeedView(feed: feed, client: client)
+        case .profile:
+            ProfileView(feed: feed, client: client)
         }
+    }
+}
+
+extension FeedsView {
+    enum Sheet: String, Identifiable {
+        case feedDebugCommands
+        case profile
+        var id: String { rawValue }
     }
 }
 

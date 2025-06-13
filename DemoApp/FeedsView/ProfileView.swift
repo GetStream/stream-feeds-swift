@@ -14,14 +14,14 @@ struct ProfileView: View {
     @AppStorage("userId") var userId: String = ""
     
     let feed: Feed
-    let feedsClient: FeedsClient
+    let client: FeedsClient
     @ObservedObject var state: FeedState
     
     @State var followSuggestions = [FeedData]()
     
-    init(feed: Feed, feedsClient: FeedsClient) {
+    init(feed: Feed, client: FeedsClient) {
         self.feed = feed
-        self.feedsClient = feedsClient
+        self.client = client
         self.state = feed.state
     }
     
