@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import StreamCore
 import StreamFeeds
 import SwiftUI
 
@@ -17,7 +18,7 @@ struct RootView: View {
             case .connecting:
                 ProgressView()
             case .loggedIn(let feedsClient):
-                FeedsView(feedsClient: feedsClient)
+                FeedsView(client: feedsClient)
             case .loggedOut:
                 LoginView { userCredentials in
                     Task { await connect(with: userCredentials) }
@@ -54,7 +55,8 @@ extension RootView {
 
 extension FeedsClient {
     static func client(for credentials: UserCredentials) -> FeedsClient {
-        FeedsClient(
+        LogConfig.level = .debug
+        return FeedsClient(
             apiKey: .init("892s22ypvt6m"),
             user: credentials.user,
             token: credentials.token
