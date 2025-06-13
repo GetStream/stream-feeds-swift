@@ -23,6 +23,8 @@ import Foundation
     @Published public internal(set) var followRequests = [FollowData]()
     @Published public internal(set) var members = [FeedMemberData]()
     @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
+    
+    public private(set) var activitiesPagination: PaginationData?
 }
 
 // MARK: - Updating the State
@@ -127,8 +129,14 @@ extension FeedState {
         addFollow(follow)
     }
     
+    func didPaginateActivities(_ result: PaginationResult<ActivityData>) {
+        activitiesPagination = result.pagination
+        activities = activities.sortedMerge(result.models, using: ActivityData.defaultSorting)
+    }
+    
     func update(with data: FeedsRepository.GetOrCreateInfo) {
         activities = data.activities
+        activitiesPagination = data.activitiesPagination
         feed = data.feed
         followers = data.followers
         following = data.following

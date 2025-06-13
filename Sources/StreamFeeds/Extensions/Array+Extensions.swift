@@ -66,6 +66,46 @@ extension Array {
         }
     }
     
+    /// Merges two sorted arrays while maintaining the sort order and handling duplicates.
+    ///
+    /// - Parameters:
+    ///   - incomingElements: The sorted array to merge with the current array.
+    ///   - areInIncreasingOrder: A closure that defines the sort order between two elements.
+    /// - Returns: A new array containing all elements from both arrays, maintaining the sort order.
+    /// - Note: This function assumes both arrays are already sorted according to the provided sorting closure.
+    /// - Important: When elements with the same ID exist in both arrays, the element from the incoming array is preferred.
+    /// - Complexity: O(n + m) where n and m are the lengths of the arrays.
+    func sortedMerge(_ incomingElements: [Element], using areInIncreasingOrder: (Element, Element) -> Bool) -> [Element] where Element: Identifiable {
+        let incomingIds = Set<Element.ID>(incomingElements.map(\.id))
+        var mergedResult = [Element]()
+        mergedResult.reserveCapacity(count + incomingElements.count)
+        var currentIndex = startIndex
+        var otherIndex = incomingElements.startIndex
+        while currentIndex < endIndex && otherIndex < incomingElements.endIndex {
+            if areInIncreasingOrder(self[currentIndex], incomingElements[otherIndex]) {
+                // Incoming elements are preferred
+                if !incomingIds.contains(self[currentIndex].id) {
+                    mergedResult.append(self[currentIndex])
+                }
+                currentIndex = self.index(after: currentIndex)
+            } else {
+                mergedResult.append(incomingElements[otherIndex])
+                otherIndex = incomingElements.index(after: otherIndex)
+            }
+        }
+        while currentIndex < endIndex {
+            // Incoming elements are preferred
+            if !incomingIds.contains(self[currentIndex].id) {
+                mergedResult.append(self[currentIndex])
+            }
+            currentIndex = self.index(after: currentIndex)
+        }
+        if otherIndex < incomingElements.endIndex {
+            mergedResult.append(contentsOf: incomingElements[otherIndex...])
+        }
+        return mergedResult
+    }
+    
     /// Removes an element from the sorted array based on its ID.
     ///
     /// At first it tries to use binary search, but if it fails, does a linear lookup.

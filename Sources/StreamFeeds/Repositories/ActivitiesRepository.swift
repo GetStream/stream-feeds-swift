@@ -32,8 +32,20 @@ final class ActivitiesRepository: Sendable {
         return response.activity.toModel()
     }
     
+    // MARK: - Activity Interactions
+    
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
         _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
+    }
+    
+    // MARK: - Activity Pagination
+    
+    func queryActivities(with query: ActivitiesQuery) async throws -> PaginationResult<ActivityData> {
+        let response = try await apiClient.queryActivities(queryActivitiesRequest: query.toRequest())
+        return PaginationResult(
+            models: response.activities.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
     }
     
     // MARK: - Bookmarks

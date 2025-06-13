@@ -25,6 +25,7 @@ final class FeedsRepository: Sendable {
         let rawFollowers = response.followers.map { $0.toModel() }
         return GetOrCreateInfo(
             activities: response.activities.map { $0.toModel() }.sorted(by: ActivityData.defaultSorting),
+            activitiesPagination: PaginationData(next: response.next, previous: response.prev),
             feed: response.feed.toModel(),
             followers: rawFollowers.filter { $0.isFollower(of: feedId) },
             following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feedId: feedId) },
@@ -95,6 +96,7 @@ final class FeedsRepository: Sendable {
 extension FeedsRepository {
     struct GetOrCreateInfo {
         let activities: [ActivityData]
+        let activitiesPagination: PaginationData
         let feed: FeedData
         let followers: [FollowData]
         let following: [FollowData]

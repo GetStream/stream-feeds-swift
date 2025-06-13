@@ -53,6 +53,8 @@ public final class Feed: Sendable {
         await state.update(with: result)
     }
     
+    // MARK: - Updating the Feed
+    
     @discardableResult
     public func updateFeed(request: UpdateFeedRequest) async throws -> FeedData {
         let feed = try await feedsRepository.updateFeed(feedGroupId: group, feedId: id, request: request)
@@ -100,6 +102,15 @@ public final class Feed: Sendable {
         )
         await state.changeHandlers.activityAdded(activity)
         return activity
+    }
+    
+    // MARK: - Activity Pagination
+    
+    @discardableResult
+    public func queryActivities(with query: ActivitiesQuery) async throws -> [ActivityData] {
+        let result = try await activitiesRepository.queryActivities(with: query)
+        await state.didPaginateActivities(result)
+        return result.models
     }
     
     // MARK: - Bookmarks
