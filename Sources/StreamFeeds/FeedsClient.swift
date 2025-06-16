@@ -12,6 +12,7 @@ public final class FeedsClient: Sendable {
     public let token: UserToken
     
     private let apiClient: DefaultAPI
+    private let devicesClient: DevicesAPI
     private let apiTransport: DefaultAPITransport
     
     let xStreamClientHeader = "stream-feeds-swift-v0.0.1"
@@ -50,9 +51,15 @@ public final class FeedsClient: Sendable {
             xStreamClientHeader: xStreamClientHeader,
             tokenProvider: tokenProvider
         )
+        let basePath = "http://localhost:3030"
         let defaultParams = DefaultParams(apiKey: apiKey.apiKeyString, xStreamClientHeader: xStreamClientHeader)
         self.apiClient = DefaultAPI(
-            basePath: "http://localhost:3030",
+            basePath: basePath,
+            transport: apiTransport,
+            middlewares: [defaultParams]
+        )
+        self.devicesClient = DevicesAPI(
+            basePath: basePath,
             transport: apiTransport,
             middlewares: [defaultParams]
         )
@@ -84,6 +91,18 @@ public final class FeedsClient: Sendable {
         
         initialConnectIfRequired(apiKey: apiKey.apiKeyString)
         try await connectTask.value?.value
+    }
+    
+    public func createDevice(request: CreateDeviceRequest) async throws -> ModelResponse {
+        try await devicesClient.createDevice(createDeviceRequest: request)
+    }
+    
+    public func listDevices() async throws -> ListDevicesResponse {
+        try await devicesClient.listDevices()
+    }
+    
+    public func deleteDevice(deviceId: String) async throws -> ModelResponse {
+        try await devicesClient.deleteDevice(id: deviceId)
     }
 }
 
