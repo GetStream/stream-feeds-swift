@@ -7,7 +7,7 @@ public final class ActivityUnpinnedEvent: @unchecked Sendable, Event, Codable, J
     public var fid: String
     public var pinnedActivity: PinActivityResponse
     public var receivedAt: Date?
-    public var type: String = "activity.unpinned"
+    public var type: String = "feeds.activity.unpinned"
     public var user: UserResponseCommonFields?
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, pinnedActivity: PinActivityResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

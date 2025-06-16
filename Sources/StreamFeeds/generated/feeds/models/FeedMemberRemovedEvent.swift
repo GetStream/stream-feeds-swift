@@ -7,7 +7,7 @@ public final class FeedMemberRemovedEvent: @unchecked Sendable, Event, Codable, 
     public var fid: String
     public var memberId: String
     public var receivedAt: Date?
-    public var type: String = "feed_member.removed"
+    public var type: String = "feeds.feed_member.removed"
     public var user: UserResponseCommonFields?
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, memberId: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

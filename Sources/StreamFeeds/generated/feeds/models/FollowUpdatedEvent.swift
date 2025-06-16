@@ -7,7 +7,7 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
     public var fid: String
     public var follow: FollowResponse
     public var receivedAt: Date?
-    public var type: String = "follow.updated"
+    public var type: String = "feeds.follow.updated"
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
         self.createdAt = createdAt

@@ -2,6 +2,26 @@ import Foundation
 import StreamCore
 
 public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public enum string: String, Sendable, Codable, CaseIterable {
+        case best
+        case controversial
+        case first
+        case last
+        case top
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue)
+            {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var filter: [String: RawJSON]
     public var limit: Int?
     public var next: String?

@@ -59,7 +59,7 @@ extension FollowResponse {
             requestAcceptedAt: requestAcceptedAt,
             requestRejectedAt: requestRejectedAt,
             sourceFeed: sourceFeed.toModel(),
-            status: status,
+            status: FollowData.FollowStatus(rawValue: status) ?? .unknown,
             targetFeed: targetFeed.toModel(),
             updatedAt: updatedAt
         )

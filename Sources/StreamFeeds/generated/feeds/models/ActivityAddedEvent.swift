@@ -7,7 +7,7 @@ public final class ActivityAddedEvent: @unchecked Sendable, Event, Codable, JSON
     public var custom: [String: RawJSON]
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "activity.added"
+    public var type: String = "feeds.activity.added"
     public var user: UserResponseCommonFields?
 
     public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

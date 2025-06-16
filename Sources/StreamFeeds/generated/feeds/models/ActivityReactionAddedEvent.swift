@@ -8,7 +8,7 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
-    public var type: String = "activity.reaction.added"
+    public var type: String = "feeds.activity.reaction.added"
     public var user: UserResponseCommonFields?
 
     public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

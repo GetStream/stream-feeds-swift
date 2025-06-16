@@ -64,7 +64,7 @@ struct FeedsListView: View {
                 do {
                     try await self.feed.getOrCreate(
                         request: .init(
-                            data: .init(members: [.init(userId: client.user.id)], visibility: .public),
+                            data: .init(members: [.init(userId: client.user.id)], visibility: "public"),
                             followerPagination: .init(limit: 10),
                             followingPagination: .init(limit: 10),
                             memberPagination: .init(limit: 10),

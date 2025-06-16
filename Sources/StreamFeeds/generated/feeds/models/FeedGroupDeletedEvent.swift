@@ -7,7 +7,7 @@ public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, J
     public var fid: String
     public var groupId: String
     public var receivedAt: Date?
-    public var type: String = "feed_group.deleted"
+    public var type: String = "feeds.feed_group.deleted"
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, groupId: String, receivedAt: Date? = nil) {
         self.createdAt = createdAt

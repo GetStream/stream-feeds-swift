@@ -7,7 +7,7 @@ public final class CommentDeletedEvent: @unchecked Sendable, Event, Codable, JSO
     public var custom: [String: RawJSON]
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "comment.deleted"
+    public var type: String = "feeds.comment.deleted"
     public var user: UserResponseCommonFields?
 
     public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

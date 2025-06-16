@@ -7,7 +7,7 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
     public var feedGroup: FeedGroup?
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "feed_group.changed"
+    public var type: String = "feeds.feed_group.changed"
     public var user: UserResponseCommonFields?
 
     public init(createdAt: Date, custom: [String: RawJSON], feedGroup: FeedGroup? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

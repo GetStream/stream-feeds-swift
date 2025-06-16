@@ -7,7 +7,7 @@ public final class CommentAddedEvent: @unchecked Sendable, Event, Codable, JSONE
     public var custom: [String: RawJSON]
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "comment.added"
+    public var type: String = "feeds.comment.added"
     public var user: UserResponseCommonFields?
 
     public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

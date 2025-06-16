@@ -7,7 +7,7 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
     public var custom: [String: RawJSON]
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "activity.deleted"
+    public var type: String = "feeds.activity.deleted"
     public var user: UserResponseCommonFields?
 
     public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

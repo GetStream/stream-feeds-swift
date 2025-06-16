@@ -27,11 +27,11 @@ public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable, 
     public var requestAcceptedAt: Date?
     public var requestRejectedAt: Date?
     public var sourceFeed: FeedResponse
-    public var status: FollowStatus
+    public var status: String
     public var targetFeed: FeedResponse
     public var updatedAt: Date
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, followerRole: String, pushPreference: String, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, sourceFeed: FeedResponse, status: FollowStatus, targetFeed: FeedResponse, updatedAt: Date) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, followerRole: String, pushPreference: String, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, sourceFeed: FeedResponse, status: String, targetFeed: FeedResponse, updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
         self.followerRole = followerRole

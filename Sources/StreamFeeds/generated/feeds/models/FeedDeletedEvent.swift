@@ -6,7 +6,7 @@ public final class FeedDeletedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var custom: [String: RawJSON]
     public var fid: String
     public var receivedAt: Date?
-    public var type: String = "feed.deleted"
+    public var type: String = "feeds.feed.deleted"
     public var user: UserResponseCommonFields?
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

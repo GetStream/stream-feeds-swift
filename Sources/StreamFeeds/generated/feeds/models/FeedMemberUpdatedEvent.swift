@@ -7,7 +7,7 @@ public final class FeedMemberUpdatedEvent: @unchecked Sendable, Event, Codable, 
     public var fid: String
     public var member: FeedMemberResponse
     public var receivedAt: Date?
-    public var type: String = "feed_member.updated"
+    public var type: String = "feeds.feed_member.updated"
     public var user: UserResponseCommonFields?
 
     public init(createdAt: Date, custom: [String: RawJSON], fid: String, member: FeedMemberResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

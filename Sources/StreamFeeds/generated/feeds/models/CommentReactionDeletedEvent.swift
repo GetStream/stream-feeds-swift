@@ -8,7 +8,7 @@ public final class CommentReactionDeletedEvent: @unchecked Sendable, Event, Coda
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
-    public var type: String = "comment.reaction.deleted"
+    public var type: String = "feeds.comment.reaction.deleted"
 
     public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil) {
         self.comment = comment

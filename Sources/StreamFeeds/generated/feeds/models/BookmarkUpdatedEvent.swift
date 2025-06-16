@@ -6,7 +6,7 @@ public final class BookmarkUpdatedEvent: @unchecked Sendable, Event, Codable, JS
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var receivedAt: Date?
-    public var type: String = "bookmark.updated"
+    public var type: String = "feeds.bookmark.updated"
     public var user: UserResponseCommonFields?
 
     public init(bookmark: BookmarkResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {

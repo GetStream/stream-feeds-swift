@@ -8,6 +8,7 @@ private class WSEventMapping: Decodable {
 public enum FeedsEvent: Codable, Hashable {
     case typeActivityAddedEvent(ActivityAddedEvent)
     case typeActivityDeletedEvent(ActivityDeletedEvent)
+    case typeActivityMarkEvent(ActivityMarkEvent)
     case typeActivityPinnedEvent(ActivityPinnedEvent)
     case typeActivityReactionAddedEvent(ActivityReactionAddedEvent)
     case typeActivityReactionDeletedEvent(ActivityReactionDeletedEvent)
@@ -126,6 +127,8 @@ public enum FeedsEvent: Codable, Hashable {
             return value.type
         case .typeConnectionErrorEvent(let value):
             return value.type
+        case .typeActivityMarkEvent(let value):
+            return value.type
         }
     }
 
@@ -208,6 +211,8 @@ public enum FeedsEvent: Codable, Hashable {
         case .typeHealthCheckEvent(let value):
             return value
         case .typeConnectionErrorEvent(let value):
+            return value
+        case .typeActivityMarkEvent(let value):
             return value
         }
     }
@@ -293,82 +298,87 @@ public enum FeedsEvent: Codable, Hashable {
             try container.encode(value)
         case .typeConnectionErrorEvent(let value):
             try container.encode(value)
+        case .typeActivityMarkEvent(let value):
+            try container.encode(value)
         }
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let dto = try container.decode(WSEventMapping.self)
-        if dto.type == "activity.added" {
+        if dto.type == "feeds.activity.added" {
             let value = try container.decode(ActivityAddedEvent.self)
             self = .typeActivityAddedEvent(value)
-        } else if dto.type == "activity.deleted" {
+        } else if dto.type == "feeds.activity.deleted" {
             let value = try container.decode(ActivityDeletedEvent.self)
             self = .typeActivityDeletedEvent(value)
-        } else if dto.type == "activity.pinned" {
+        } else if dto.type == "feeds.activity.marked" {
+            let value = try container.decode(ActivityMarkEvent.self)
+            self = .typeActivityMarkEvent(value)
+        } else if dto.type == "feeds.activity.pinned" {
             let value = try container.decode(ActivityPinnedEvent.self)
             self = .typeActivityPinnedEvent(value)
-        } else if dto.type == "activity.reaction.added" {
+        } else if dto.type == "feeds.activity.reaction.added" {
             let value = try container.decode(ActivityReactionAddedEvent.self)
             self = .typeActivityReactionAddedEvent(value)
-        } else if dto.type == "activity.reaction.deleted" {
+        } else if dto.type == "feeds.activity.reaction.deleted" {
             let value = try container.decode(ActivityReactionDeletedEvent.self)
             self = .typeActivityReactionDeletedEvent(value)
-        } else if dto.type == "activity.removed_from_feed" {
+        } else if dto.type == "feeds.activity.removed_from_feed" {
             let value = try container.decode(ActivityRemovedFromFeedEvent.self)
             self = .typeActivityRemovedFromFeedEvent(value)
-        } else if dto.type == "activity.unpinned" {
+        } else if dto.type == "feeds.activity.unpinned" {
             let value = try container.decode(ActivityUnpinnedEvent.self)
             self = .typeActivityUnpinnedEvent(value)
-        } else if dto.type == "activity.updated" {
+        } else if dto.type == "feeds.activity.updated" {
             let value = try container.decode(ActivityUpdatedEvent.self)
             self = .typeActivityUpdatedEvent(value)
-        } else if dto.type == "bookmark.added" {
+        } else if dto.type == "feeds.bookmark.added" {
             let value = try container.decode(BookmarkAddedEvent.self)
             self = .typeBookmarkAddedEvent(value)
-        } else if dto.type == "bookmark.deleted" {
+        } else if dto.type == "feeds.bookmark.deleted" {
             let value = try container.decode(BookmarkDeletedEvent.self)
             self = .typeBookmarkDeletedEvent(value)
-        } else if dto.type == "bookmark.updated" {
+        } else if dto.type == "feeds.bookmark.updated" {
             let value = try container.decode(BookmarkUpdatedEvent.self)
             self = .typeBookmarkUpdatedEvent(value)
-        } else if dto.type == "comment.added" {
+        } else if dto.type == "feeds.comment.added" {
             let value = try container.decode(CommentAddedEvent.self)
             self = .typeCommentAddedEvent(value)
-        } else if dto.type == "comment.deleted" {
+        } else if dto.type == "feeds.comment.deleted" {
             let value = try container.decode(CommentDeletedEvent.self)
             self = .typeCommentDeletedEvent(value)
-        } else if dto.type == "comment.reaction.added" {
+        } else if dto.type == "feeds.comment.reaction.added" {
             let value = try container.decode(CommentReactionAddedEvent.self)
             self = .typeCommentReactionAddedEvent(value)
-        } else if dto.type == "comment.reaction.deleted" {
+        } else if dto.type == "feeds.comment.reaction.deleted" {
             let value = try container.decode(CommentReactionDeletedEvent.self)
             self = .typeCommentReactionDeletedEvent(value)
-        } else if dto.type == "comment.updated" {
+        } else if dto.type == "feeds.comment.updated" {
             let value = try container.decode(CommentUpdatedEvent.self)
             self = .typeCommentUpdatedEvent(value)
-        } else if dto.type == "feed.created" {
+        } else if dto.type == "feeds.feed.created" {
             let value = try container.decode(FeedCreatedEvent.self)
             self = .typeFeedCreatedEvent(value)
-        } else if dto.type == "feed.deleted" {
+        } else if dto.type == "feeds.feed.deleted" {
             let value = try container.decode(FeedDeletedEvent.self)
             self = .typeFeedDeletedEvent(value)
-        } else if dto.type == "feed.updated" {
+        } else if dto.type == "feeds.feed.updated" {
             let value = try container.decode(FeedUpdatedEvent.self)
             self = .typeFeedUpdatedEvent(value)
-        } else if dto.type == "feed_group.changed" {
+        } else if dto.type == "feeds.feed_group.changed" {
             let value = try container.decode(FeedGroupChangedEvent.self)
             self = .typeFeedGroupChangedEvent(value)
-        } else if dto.type == "feed_group.deleted" {
+        } else if dto.type == "feeds.feed_group.deleted" {
             let value = try container.decode(FeedGroupDeletedEvent.self)
             self = .typeFeedGroupDeletedEvent(value)
-        } else if dto.type == "feed_member.added" {
+        } else if dto.type == "feeds.feed_member.added" {
             let value = try container.decode(FeedMemberAddedEvent.self)
             self = .typeFeedMemberAddedEvent(value)
-        } else if dto.type == "feed_member.removed" {
+        } else if dto.type == "feeds.feed_member.removed" {
             let value = try container.decode(FeedMemberRemovedEvent.self)
             self = .typeFeedMemberRemovedEvent(value)
-        } else if dto.type == "feed_member.updated" {
+        } else if dto.type == "feeds.feed_member.updated" {
             let value = try container.decode(FeedMemberUpdatedEvent.self)
             self = .typeFeedMemberUpdatedEvent(value)
         } else if dto.type == "feeds.poll.closed" {
@@ -389,22 +399,22 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.poll.vote_removed" {
             let value = try container.decode(PollVoteRemovedFeedEvent.self)
             self = .typePollVoteRemovedFeedEvent(value)
-        } else if dto.type == "follow.created" {
+        } else if dto.type == "feeds.follow.created" {
             let value = try container.decode(FollowCreatedEvent.self)
             self = .typeFollowCreatedEvent(value)
-        } else if dto.type == "follow.deleted" {
+        } else if dto.type == "feeds.follow.deleted" {
             let value = try container.decode(FollowDeletedEvent.self)
             self = .typeFollowDeletedEvent(value)
-        } else if dto.type == "follow.updated" {
+        } else if dto.type == "feeds.follow.updated" {
             let value = try container.decode(FollowUpdatedEvent.self)
             self = .typeFollowUpdatedEvent(value)
-        } else if dto.type == "poll.closed" {
+        } else if dto.type == "feeds.poll.closed" {
             let value = try container.decode(PollClosedEvent.self)
             self = .typePollClosedEvent(value)
-        } else if dto.type == "poll.deleted" {
+        } else if dto.type == "feeds.poll.deleted" {
             let value = try container.decode(PollDeletedEvent.self)
             self = .typePollDeletedEvent(value)
-        } else if dto.type == "poll.updated" {
+        } else if dto.type == "feeds.poll.updated" {
             let value = try container.decode(PollUpdatedEvent.self)
             self = .typePollUpdatedEvent(value)
         } else if dto.type == "connection.ok" {
