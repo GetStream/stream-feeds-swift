@@ -36,14 +36,19 @@ public final class FeedsClient: Sendable {
     let connectTask = AllocatedUnfairLock<Task<Void, Error>?>(nil)
     
     //TODO: token provider, environment and other stuff.
-    public init(apiKey: APIKey, user: User, token: UserToken) {
+    public init(
+        apiKey: APIKey,
+        user: User,
+        token: UserToken,
+        tokenProvider: UserTokenProvider? = nil
+    ) {
         self.apiKey = apiKey
         self.user = user
         self.token = token
         self.apiTransport = URLSessionTransport(
             urlSession: Self.makeURLSession(),
             xStreamClientHeader: xStreamClientHeader,
-            tokenProvider: nil //TODO: fix this.
+            tokenProvider: tokenProvider
         )
         let defaultParams = DefaultParams(apiKey: apiKey.apiKeyString, xStreamClientHeader: xStreamClientHeader)
         self.apiClient = DefaultAPI(
