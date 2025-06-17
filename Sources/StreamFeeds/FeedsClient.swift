@@ -99,6 +99,15 @@ public final class FeedsClient: Sendable {
         try await connectTask.value?.value
     }
     
+    // MARK: - Activities
+    
+    @discardableResult
+    public func addActivity(request: AddActivityRequest) async throws -> AddActivityResponse {
+        try await apiClient.addActivity(addActivityRequest: request)
+    }
+    
+    // MARK: - Devices
+    
     @discardableResult
     public func createDevice(id: String) async throws -> ModelResponse {
         guard !id.isEmpty else {
