@@ -8,12 +8,14 @@ import StreamCore
 public final class Feed: Sendable {
     @MainActor private let stateBuilder: StateBuilder<FeedState>
     
-    public let group: String
-    public let id: String
+    public var group: String { feedQuery.feedGroupId }
+    public var id: String { feedQuery.feedId }
     
     public var fid: String {
         "\(group):\(id)"
     }
+    
+    private let feedQuery: FeedQuery
     
     // TODO: Move?
     private let user: User
@@ -23,22 +25,18 @@ public final class Feed: Sendable {
     private let pollsRepository: PollsRepository
     
     internal init(
-        group: String,
-        id: String,
+        query: FeedQuery,
         user: User,
-        activitiesRepository: ActivitiesRepository,
-        feedsRepository: FeedsRepository,
-        pollsRepository: PollsRepository,
-        events: WSEventsSubscribing
+        client: FeedsClient
     ) {
-        self.group = group
-        self.id = id
         self.user = user
-        self.activitiesRepository = activitiesRepository
-        self.feedsRepository = feedsRepository
-        self.pollsRepository = pollsRepository
-        let feedId = "\(group):\(id)"
-        stateBuilder = StateBuilder { FeedState(feedId: feedId, events: events) }
+        self.activitiesRepository = client.activitiesRepository
+        self.feedsRepository = client.feedsRepository
+        self.pollsRepository = client.pollsRepository
+        self.feedQuery = query
+        let feedId = "\(feedQuery.feedGroupId):\(feedQuery.feedId)"
+        let events = client.eventsMiddleware
+        stateBuilder = StateBuilder { FeedState(feedId: feedId, feedQuery: query, events: events) }
     }
     
     // MARK: - Accessing the State
@@ -48,8 +46,8 @@ public final class Feed: Sendable {
     
     // MARK: - Creating and Fetching the Feed
     
-    public func getOrCreate(request: GetOrCreateFeedRequest) async throws {
-        let result = try await feedsRepository.getOrCreateFeed(feedGroupId: group, feedId: id, request: request)
+    public func get() async throws {
+        let result = try await feedsRepository.getOrCreateFeed(with: feedQuery)
         await state.didQueryFeed(with: result)
     }
     

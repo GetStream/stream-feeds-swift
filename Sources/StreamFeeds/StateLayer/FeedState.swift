@@ -9,12 +9,14 @@ import Foundation
     private var webSocketObserver: WebSocketObserver?
     lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
     
-    init(feedId: String, events: WSEventsSubscribing) {
+    init(feedId: String, feedQuery: FeedQuery, events: WSEventsSubscribing) {
         self.feedId = feedId
+        self.feedQuery = feedQuery
         webSocketObserver = WebSocketObserver(feedId: feedId, subscribing: events, handlers: makeChangeHandlers())
     }
     
     public let feedId: String
+    public let feedQuery: FeedQuery
     
     @Published public internal(set) var activities = [ActivityData]()
     @Published public internal(set) var feed: FeedData?
