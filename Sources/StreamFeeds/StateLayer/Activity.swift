@@ -5,13 +5,29 @@
 import Foundation
 import StreamCore
 
+/// A class representing a single activity in a feed.
+///
+/// This class provides methods to interact with an activity including fetching its data,
+/// managing comments, handling reactions, and working with polls. It maintains an observable
+/// state that automatically updates when WebSocket events are received.
 public final class Activity: Sendable {
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
     private let pollsRepository: PollsRepository
     @MainActor private let stateBuilder: StateBuilder<ActivityState>
+    
+    /// The unique identifier of this activity.
     public let activityId: String
     
+    /// Initializes a new Activity instance.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the activity
+    ///   - feedsId: The identifier of the feed containing this activity
+    ///   - activitiesRepository: Repository for activity operations
+    ///   - commentsRepository: Repository for comment operations
+    ///   - pollsRepository: Repository for poll operations
+    ///   - events: The WebSocket events subscriber for real-time updates
     init(
         id: String,
         feedsId: String,
@@ -32,7 +48,11 @@ public final class Activity: Sendable {
     /// An observable object representing the current state of the activity.
     @MainActor public var state: ActivityState { stateBuilder.state }
     
-    /// Fetches the state of the activity.
+    /// Fetches the current state of the activity.
+    ///
+    /// This method retrieves the latest activity data from the server and updates the local state.
+    ///
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func get() async throws {
         let activity = try await activitiesRepository.getActivity(activityId: activityId)
         await state.updateActivity(activity)
@@ -40,6 +60,11 @@ public final class Activity: Sendable {
     
     // MARK: - Querying the List of Comments
     
+    /// Queries comments for this activity based on the provided request parameters.
+    ///
+    /// - Parameter request: The query request containing filtering and pagination parameters
+    /// - Returns: An array of comment data matching the query criteria
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func queryComments(request: QueryCommentsRequest) async throws -> [CommentData] {
         let data = try await commentsRepository.queryComments(request: request)
@@ -47,6 +72,19 @@ public final class Activity: Sendable {
         return data.comments
     }
     
+    /// Gets comments for a specific object with optional filtering and pagination.
+    ///
+    /// - Parameters:
+    ///   - objectId: The unique identifier of the object to get comments for
+    ///   - objectType: The type of object (e.g., "activity", "comment")
+    ///   - depth: Optional depth for nested comment retrieval
+    ///   - sort: Optional sorting criteria
+    ///   - repliesLimit: Optional limit for the number of replies to include
+    ///   - limit: Optional limit for the number of comments to return
+    ///   - prev: Optional pagination token for previous page
+    ///   - next: Optional pagination token for next page
+    /// - Returns: An array of comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComments(
         objectId: String,
         objectType: String,
@@ -72,6 +110,11 @@ public final class Activity: Sendable {
         return comments
     }
     
+    /// Gets a specific comment by its identifier.
+    ///
+    /// - Parameter commentId: The unique identifier of the comment to retrieve
+    /// - Returns: The comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
         let comment = try await commentsRepository.getComment(commentId: commentId)
         await state.changeHandlers.commentUpdated(comment)
@@ -80,6 +123,11 @@ public final class Activity: Sendable {
     
     // MARK: - Adding, Updating, and Removing Comments
     
+    /// Adds a new comment to this activity.
+    ///
+    /// - Parameter request: The request containing the comment data to add
+    /// - Returns: The created comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addComment(request: AddCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.addComment(request: request)
@@ -87,6 +135,11 @@ public final class Activity: Sendable {
         return comment
     }
     
+    /// Adds multiple comments in a batch operation.
+    ///
+    /// - Parameter request: The request containing the batch of comments to add
+    /// - Returns: An array of the created comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addCommentsBatch(request: AddCommentsBatchRequest) async throws -> [CommentData] {
         let comments = try await commentsRepository.addCommentsBatch(request: request)
@@ -96,11 +149,22 @@ public final class Activity: Sendable {
         return comments
     }
     
+    /// Deletes a comment from this activity.
+    ///
+    /// - Parameter commentId: The unique identifier of the comment to delete
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteComment(commentId: String) async throws {
         try await commentsRepository.deleteComment(commentId: commentId)
         // TODO: state update with nesting and id
     }
     
+    /// Updates an existing comment.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to update
+    ///   - request: The request containing the updated comment data
+    /// - Returns: The updated comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.updateComment(commentId: commentId, request: request)
@@ -110,6 +174,13 @@ public final class Activity: Sendable {
     
     // MARK: - Comment Reactions
     
+    /// Adds a reaction to a comment.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to react to
+    ///   - request: The request containing the reaction data
+    /// - Returns: The created reaction data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
@@ -117,6 +188,13 @@ public final class Activity: Sendable {
         return result.reaction
     }
 
+    /// Removes a reaction from a comment.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment
+    ///   - type: The type of reaction to remove
+    /// - Returns: The removed reaction data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func removeCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.removeCommentReaction(commentId: commentId, type: type)
@@ -126,6 +204,18 @@ public final class Activity: Sendable {
     
     // MARK: - Comment Replies
     
+    /// Gets replies to a specific comment with optional filtering and pagination.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the parent comment
+    ///   - depth: Optional depth for nested reply retrieval
+    ///   - sort: Optional sorting criteria
+    ///   - repliesLimit: Optional limit for the number of replies to include
+    ///   - limit: Optional limit for the number of replies to return
+    ///   - prev: Optional pagination token for previous page
+    ///   - next: Optional pagination token for next page
+    /// - Returns: An array of reply comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getCommentReplies(
         commentId: String,
         depth: Int? = nil,
@@ -152,16 +242,34 @@ public final class Activity: Sendable {
     
     // MARK: - Polls
     
+    /// Closes a poll, preventing further votes.
+    ///
+    /// - Parameter pollId: The unique identifier of the poll to close
+    /// - Returns: The updated poll data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func closePoll(pollId: String) async throws -> PollData {
         try await updatePollPartial(pollId: pollId, request: .init(set: ["isClosed": .bool(true)]))
     }
     
+    /// Deletes a poll.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll to delete
+    ///   - userId: Optional user identifier for authorization
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deletePoll(pollId: String, userId: String?) async throws {
         try await pollsRepository.deletePoll(pollId: pollId, userId: userId)
         // TODO: set to nil?
     }
 
+    /// Gets a specific poll by its identifier.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll to retrieve
+    ///   - userId: Optional user identifier for user-specific poll data
+    /// - Returns: The poll data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func getPoll(pollId: String, userId: String?) async throws -> PollData {
         let poll = try await pollsRepository.getPoll(pollId: pollId, userId: userId)
@@ -169,6 +277,13 @@ public final class Activity: Sendable {
         return poll
     }
 
+    /// Updates a poll with partial data.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll to update
+    ///   - request: The request containing the partial update data
+    /// - Returns: The updated poll data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func updatePollPartial(
         pollId: String,
@@ -181,6 +296,13 @@ public final class Activity: Sendable {
     
     // MARK: - Poll Options
 
+    /// Creates a new option for a poll.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll
+    ///   - request: The request containing the poll option data
+    /// - Returns: The created poll option data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func createPollOption(
         pollId: String,
@@ -191,6 +313,13 @@ public final class Activity: Sendable {
         return option
     }
 
+    /// Deletes a poll option.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll
+    ///   - optionId: The unique identifier of the option to delete
+    ///   - userId: Optional user identifier for authorization
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deletePollOption(
         pollId: String,
         optionId: String,
@@ -200,6 +329,14 @@ public final class Activity: Sendable {
         await state.update { $0.poll?.removeOption(withId: optionId) }
     }
 
+    /// Gets a specific poll option by its identifier.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll
+    ///   - optionId: The unique identifier of the option to retrieve
+    ///   - userId: Optional user identifier for user-specific option data
+    /// - Returns: The poll option data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func getPollOption(
         pollId: String,
@@ -209,6 +346,13 @@ public final class Activity: Sendable {
         try await pollsRepository.getPollOption(pollId: pollId, optionId: optionId, userId: userId)
     }
     
+    /// Updates a poll option.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll
+    ///   - request: The request containing the updated poll option data
+    /// - Returns: The updated poll option data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func updatePollOption(
         pollId: String,
@@ -224,6 +368,14 @@ public final class Activity: Sendable {
     
     // MARK: - Poll Votes
     
+    /// Casts a vote in a poll.
+    ///
+    /// - Parameters:
+    ///   - activityId: The unique identifier of the activity containing the poll
+    ///   - pollId: The unique identifier of the poll
+    ///   - request: The request containing the vote data
+    /// - Returns: The created vote data, or `nil` if the vote was not created
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func castPollVote(
         activityId: String,
@@ -237,6 +389,14 @@ public final class Activity: Sendable {
         return vote
     }
 
+    /// Queries votes for a poll based on the provided request parameters.
+    ///
+    /// - Parameters:
+    ///   - pollId: The unique identifier of the poll
+    ///   - userId: Optional user identifier for user-specific vote data
+    ///   - request: The query request containing filtering and pagination parameters
+    /// - Returns: An array of poll vote data matching the query criteria
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func queryPollVotes(
         pollId: String,
@@ -246,6 +406,15 @@ public final class Activity: Sendable {
         try await pollsRepository.queryPollVotes(pollId: pollId, userId: userId, request: request)
     }
 
+    /// Removes a vote from a poll.
+    ///
+    /// - Parameters:
+    ///   - activityId: The unique identifier of the activity containing the poll
+    ///   - pollId: The unique identifier of the poll
+    ///   - voteId: The unique identifier of the vote to remove
+    ///   - userId: Optional user identifier for authorization
+    /// - Returns: The removed vote data, or `nil` if the vote was not found
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func removePollVote(
         activityId: String,
