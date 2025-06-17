@@ -106,6 +106,16 @@ public final class FeedsClient: Sendable {
         try await apiClient.addActivity(addActivityRequest: request)
     }
     
+    @discardableResult
+    public func upsertActivities(request: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse {
+        try await apiClient.upsertActivities(upsertActivitiesRequest: request)
+    }
+    
+    @discardableResult
+    public func removeActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
+        try await apiClient.removeActivities(deleteActivitiesRequest: request)
+    }
+    
     // MARK: - Devices
     
     @discardableResult
