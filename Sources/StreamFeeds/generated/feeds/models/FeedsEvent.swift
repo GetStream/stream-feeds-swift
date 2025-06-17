@@ -40,9 +40,9 @@ public enum FeedsEvent: Codable, Hashable {
     case typeFollowCreatedEvent(FollowCreatedEvent)
     case typeFollowDeletedEvent(FollowDeletedEvent)
     case typeFollowUpdatedEvent(FollowUpdatedEvent)
-    case typePollClosedEvent(PollClosedEvent)
-    case typePollDeletedEvent(PollDeletedEvent)
-    case typePollUpdatedEvent(PollUpdatedEvent)
+    case typePollClosedEvent(PollClosedFeedEvent)
+    case typePollDeletedEvent(PollDeletedFeedEvent)
+    case typePollUpdatedEvent(PollUpdatedFeedEvent)
     case typeConnectedEvent(ConnectedEvent)
     case typeHealthCheckEvent(HealthCheckEvent)
     case typeConnectionErrorEvent(ConnectionErrorEvent)
@@ -409,13 +409,13 @@ public enum FeedsEvent: Codable, Hashable {
             let value = try container.decode(FollowUpdatedEvent.self)
             self = .typeFollowUpdatedEvent(value)
         } else if dto.type == "feeds.poll.closed" {
-            let value = try container.decode(PollClosedEvent.self)
+            let value = try container.decode(PollClosedFeedEvent.self)
             self = .typePollClosedEvent(value)
         } else if dto.type == "feeds.poll.deleted" {
-            let value = try container.decode(PollDeletedEvent.self)
+            let value = try container.decode(PollDeletedFeedEvent.self)
             self = .typePollDeletedEvent(value)
         } else if dto.type == "feeds.poll.updated" {
-            let value = try container.decode(PollUpdatedEvent.self)
+            let value = try container.decode(PollUpdatedFeedEvent.self)
             self = .typePollUpdatedEvent(value)
         } else if dto.type == "connection.ok" {
             let value = try container.decode(ConnectedEvent.self)

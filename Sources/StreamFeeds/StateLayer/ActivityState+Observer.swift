@@ -47,11 +47,11 @@ extension ActivityState {
                     let comment = event.comment.toModel()
                     let reaction = event.reaction.toModel()
                     await handlers.commentReactionDeleted(reaction, comment)
-                case let event as PollClosedEvent:
+                case let event as PollClosedFeedEvent:
                     await handlers.pollClosed(event.poll.toModel())
-                case let event as PollDeletedEvent:
+                case let event as PollDeletedFeedEvent:
                     await handlers.pollDeleted(event.poll.toModel())
-                case let event as PollUpdatedEvent:
+                case let event as PollUpdatedFeedEvent:
                     await handlers.pollUpdated(event.poll.toModel())
                 case let event as PollVoteCastedFeedEvent:
                     let poll = event.poll.toModel()
