@@ -25,7 +25,7 @@ import Photos
     
     init(feed: Feed, feedsClient: FeedsClient) {
         self.feed = feed
-        self.requestEncoder = DefaultRequestEncoder(baseURL: URL(string: "http://localhost:3030")!, apiKey: .init("892s22ypvt6m"))
+        self.requestEncoder = DefaultRequestEncoder(baseURL: URL(string: "http://\(host):3030")!, apiKey: .init("892s22ypvt6m"))
         self.cdnClient = StreamCDNClient(
             encoder: requestEncoder,
             decoder: DefaultRequestDecoder(),

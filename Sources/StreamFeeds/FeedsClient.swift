@@ -5,6 +5,9 @@
 import Foundation
 @preconcurrency import StreamCore
 
+//NOTE: change this to IP address to test push, for example: 192.168.0.227.
+public let host = "localhost"
+
 public final class FeedsClient: Sendable {
     // TODO: Update Core
     nonisolated(unsafe) public let apiKey: APIKey
@@ -29,6 +32,7 @@ public final class FeedsClient: Sendable {
     let pollsRepository: PollsRepository
     
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
+    private let pushNotificationsConfig: PushNotificationsConfig
     
     public var userAuth: UserAuth? {
         _userAuth.value
@@ -36,22 +40,23 @@ public final class FeedsClient: Sendable {
     
     let connectTask = AllocatedUnfairLock<Task<Void, Error>?>(nil)
     
-    //TODO: token provider, environment and other stuff.
     public init(
         apiKey: APIKey,
         user: User,
         token: UserToken,
+        pushNotificationsConfig: PushNotificationsConfig = .default,
         tokenProvider: UserTokenProvider? = nil
     ) {
         self.apiKey = apiKey
         self.user = user
         self.token = token
+        self.pushNotificationsConfig = pushNotificationsConfig
         self.apiTransport = URLSessionTransport(
             urlSession: Self.makeURLSession(),
             xStreamClientHeader: xStreamClientHeader,
             tokenProvider: tokenProvider
         )
-        let basePath = "http://localhost:3030"
+        let basePath = "http://\(host):3030"
         let defaultParams = DefaultParams(apiKey: apiKey.apiKeyString, xStreamClientHeader: xStreamClientHeader)
         self.apiClient = DefaultAPI(
             basePath: basePath,
@@ -84,6 +89,7 @@ public final class FeedsClient: Sendable {
             }
             self._userAuth.withLock { $0 = userAuth }
             apiClient.middlewares.append(userAuth)
+            devicesClient.middlewares.append(userAuth)
         } else {
             let anonymousAuth = AnonymousAuth(token: token.rawValue)
             apiClient.middlewares.append(anonymousAuth)
@@ -93,14 +99,30 @@ public final class FeedsClient: Sendable {
         try await connectTask.value?.value
     }
     
-    public func createDevice(request: CreateDeviceRequest) async throws -> ModelResponse {
-        try await devicesClient.createDevice(createDeviceRequest: request)
+    @discardableResult
+    public func createDevice(id: String) async throws -> ModelResponse {
+        guard !id.isEmpty else {
+            throw ClientError("Device id must not be empty when trying to set device.")
+        }
+        guard let provider = CreateDeviceRequest.PushProvider(
+            rawValue: pushNotificationsConfig.pushProviderInfo.pushProvider.rawValue
+        ) else {
+            throw ClientError.Unexpected("Invalid push provider value")
+        }
+        let request = CreateDeviceRequest(
+            id: id,
+            pushProvider: provider,
+            pushProviderName: pushNotificationsConfig.pushProviderInfo.name,
+            voipToken: nil
+        )
+        return try await devicesClient.createDevice(createDeviceRequest: request)
     }
     
     public func listDevices() async throws -> ListDevicesResponse {
         try await devicesClient.listDevices()
     }
     
+    @discardableResult
     public func deleteDevice(deviceId: String) async throws -> ModelResponse {
         try await devicesClient.deleteDevice(id: deviceId)
     }

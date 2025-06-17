@@ -8,13 +8,11 @@ import SwiftUI
 
 struct RootView: View {
     @AppStorage("userId") var userId: String = ""
-    @State private var state: ViewState = .loggedOut
-    @State private var client: FeedsClient?
-    @State private var showsLoginAlert = false
+    @ObservedObject var appState = AppState.shared
     
     var body: some View {
         Group {
-            switch state {
+            switch appState.viewState {
             case .connecting:
                 ProgressView()
             case .loggedIn(let feedsClient):
@@ -25,32 +23,25 @@ struct RootView: View {
                 }
             }
         }
-        .alert("Failed to Connect", isPresented: $showsLoginAlert) {}
+        .alert("Failed to Connect", isPresented: $appState.showsLoginAlert) {}
         .task {
-            guard !userId.isEmpty, client == nil else { return }
+            guard !userId.isEmpty, appState.client == nil else { return }
             await connect(with: UserCredentials.credentials(for: userId))
         }
     }
     
     private func connect(with credentials: UserCredentials) async {
         do {
-            state = .connecting
+            appState.viewState = .connecting
             let client = FeedsClient.client(for: credentials)
             try await client.connect()
+            appState.client = client
             userId = credentials.id
-            state = .loggedIn(client)
+            appState.viewState = .loggedIn(client)
         } catch {
-            state = .loggedOut
-            showsLoginAlert = true
+            appState.viewState = .loggedOut
+            appState.showsLoginAlert = true
         }
-    }
-}
-
-extension RootView {
-    enum ViewState {
-        case connecting
-        case loggedIn(FeedsClient)
-        case loggedOut
     }
 }
 
@@ -63,6 +54,54 @@ extension FeedsClient {
             token: credentials.token
         )
     }
+}
+
+class AppState: ObservableObject {
+    
+    static let shared = AppState()
+    
+    private init() {}
+    
+    @Published var pushToken: String? {
+        didSet {
+            if pushToken != oldValue {
+                didUpdate(pushToken: pushToken)
+            }
+        }
+    }
+    @Published var viewState: ViewState = .loggedOut
+    @Published var client: FeedsClient? {
+        didSet {
+            if client != nil {
+                didUpdate(pushToken: pushToken)
+            }
+
+        }
+    }
+    @Published var showsLoginAlert = false
+        
+    private func didUpdate(pushToken: String?) {
+        if let pushToken, let client {
+            Task {
+                do {
+                    try await client.createDevice(id: pushToken)
+                    log.debug("Push notification registration ✅")
+                } catch {
+                    log.error("Push notification registration ❌:\(error)")
+                }
+            }
+        } else if let pushToken, !pushToken.isEmpty {
+            log.debug("Deferring push notification setup for token:\(pushToken)")
+        } else {
+            log.debug("Clearing up push notification token.")
+        }
+    }
+}
+
+enum ViewState {
+    case connecting
+    case loggedIn(FeedsClient)
+    case loggedOut
 }
 
 #Preview {

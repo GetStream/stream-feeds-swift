@@ -50,7 +50,7 @@ extension FeedsClient {
         ]
         
         let webSocketClient: WebSocketClient
-        let v2 = "ws://localhost:8800/api/v2/connect"
+        let v2 = "ws://\(host):8800/api/v2/connect"
         if let connectURL = try? URL(string: v2)?.appendingQueryItems(queryParams) {
             webSocketClient = makeWebSocketClient(url: connectURL, apiKey: apiKey)
             self.webSocketClient.value = webSocketClient

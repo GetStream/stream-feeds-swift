@@ -11,6 +11,8 @@ import StreamFeeds
 
 @main
 struct DemoAppApp: App {
+    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
+
     var body: some Scene {
         WindowGroup {
             RootView()
