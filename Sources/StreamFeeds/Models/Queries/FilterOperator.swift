@@ -41,3 +41,12 @@ public enum FilterOperator: String, Sendable {
     /// Matches if the key array contains the given value.
     case contains = "$contains"
 }
+
+extension FilterOperator {
+    var isGroup: Bool {
+        switch self {
+        case .and, .or: return true
+        default: return false
+        }
+    }
+}

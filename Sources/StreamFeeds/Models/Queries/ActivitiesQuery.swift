@@ -10,14 +10,14 @@ public struct ActivitiesQuery: Sendable {
     let sort: [Sort<ActivitiesSortField>]
     let next: String?
     let previous: String?
-    let limit: Int
+    let limit: Int?
     
     public init(
         filter: ActivityFilter?,
         sort: [Sort<ActivitiesSortField>],
         next: String?,
         previous: String?,
-        limit: Int
+        limit: Int?
     ) {
         self.filter = filter
         self.sort = sort
@@ -29,39 +29,39 @@ public struct ActivitiesQuery: Sendable {
 
 // MARK: - Filters
 
-public struct ActivityFilterField: FilterFieldRawRepresentable, Sendable {
-    public let rawValue: String
+public struct ActivityFilterField: FilterFieldRepresentable, Sendable {
+    public let value: String
     
-    init(field: String) {
-        self.rawValue = field
+    public init(value: String) {
+        self.value = value
     }
     
-    init(field: ActivityResponse.CodingKeys) {
-        self.rawValue = field.rawValue
+    init(codingKey: ActivityResponse.CodingKeys) {
+        self.value = codingKey.rawValue
     }
 }
 
 extension ActivityFilterField {
-    public static let createdAt = Self(field: .createdAt)
-    public static let id = Self(field: .id)
-    public static let filterTags = Self(field: .filterTags)
-    public static let popularity = Self(field: .popularity)
-    public static let searchData = Self(field: .searchData)
-    public static let text = Self(field: .text)
-    public static let type = Self(field: .type)
-    public static let userId = Self(field: "user_id")
+    public static let createdAt = Self(codingKey: .createdAt)
+    public static let id = Self(codingKey: .id)
+    public static let filterTags = Self(codingKey: .filterTags)
+    public static let popularity = Self(codingKey: .popularity)
+    public static let searchData = Self(codingKey: .searchData)
+    public static let text = Self(codingKey: .text)
+    public static let type = Self(codingKey: .type)
+    public static let userId = Self(value: "user_id")
 }
 
 public struct ActivityFilter: Filter {
-    public init(operator filterOperator: FilterOperator, field: ActivityFilterField, value: any FilterValue) {
-        self.operator = filterOperator
+    public init(filterOperator: FilterOperator, field: ActivityFilterField, value: any FilterValue) {
+        self.filterOperator = filterOperator
         self.field = field
         self.value = value
     }
     
     public let field: ActivityFilterField
     public let value: any FilterValue
-    public let `operator`: FilterOperator
+    public let filterOperator: FilterOperator
 }
 
 // MARK: - Sorting
@@ -84,7 +84,7 @@ extension ActivitiesSortField: ExpressibleByStringLiteral {
 extension ActivitiesQuery {
     func toRequest() -> QueryActivitiesRequest {
         QueryActivitiesRequest(
-            filter: filter.flatMap(\.toRawJSON),
+            filter: filter.flatMap { $0.toRawJSON() },
             limit: limit,
             next: next,
             prev: previous,

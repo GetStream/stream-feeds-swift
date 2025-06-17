@@ -24,7 +24,13 @@ import Foundation
     @Published public internal(set) var members = [FeedMemberData]()
     @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
     
+    // MARK: - Pagination State
+    
     public private(set) var activitiesPagination: PaginationData?
+    
+    public var canLoadMoreActivities: Bool { activitiesPagination?.next != nil }
+    
+    private(set) var activitiesQueryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>?
 }
 
 // MARK: - Updating the State
@@ -96,8 +102,8 @@ extension FeedState {
         )
     }
     
-    func update(_ changes: @MainActor (FeedState) -> Void) {
-        changes(self)
+    func access<T>(_ actions: @MainActor (FeedState) -> T) -> T {
+        actions(self)
     }
         
     private func updateActivity(with id: String, changes: (inout ActivityData) -> Void) {
@@ -129,20 +135,25 @@ extension FeedState {
         addFollow(follow)
     }
     
-    func didPaginateActivities(_ result: PaginationResult<ActivityData>) {
-        activitiesPagination = result.pagination
-        activities = activities.sortedMerge(result.models, using: ActivityData.defaultSorting)
+    func didQueryFeed(with response: FeedsRepository.GetOrCreateInfo) {
+        activities = response.activities
+        activitiesPagination = response.activitiesPagination
+        activitiesQueryConfig = response.activitiesQueryConfig
+        feed = response.feed
+        followers = response.followers
+        following = response.following
+        followRequests = response.followRequests
+        members = response.members
+        ownCapabilities = response.ownCapabilities
     }
     
-    func update(with data: FeedsRepository.GetOrCreateInfo) {
-        activities = data.activities
-        activitiesPagination = data.activitiesPagination
-        feed = data.feed
-        followers = data.followers
-        following = data.following
-        followRequests = data.followRequests
-        members = data.members
-        ownCapabilities = data.ownCapabilities
+    func didPaginateActivities(
+        with response: PaginationResult<ActivityData>,
+        for queryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>
+    ) {
+        activitiesPagination = response.pagination
+        activitiesQueryConfig = queryConfig
+        activities = activities.sortedMerge(response.models, using: ActivityData.defaultSorting)
     }
 }
 

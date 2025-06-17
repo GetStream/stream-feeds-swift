@@ -50,7 +50,7 @@ public final class Feed: Sendable {
     
     public func getOrCreate(request: GetOrCreateFeedRequest) async throws {
         let result = try await feedsRepository.getOrCreateFeed(feedGroupId: group, feedId: id, request: request)
-        await state.update(with: result)
+        await state.didQueryFeed(with: result)
     }
     
     // MARK: - Updating the Feed
@@ -79,7 +79,7 @@ public final class Feed: Sendable {
     
     public func deleteActivity(id: String, hardDelete: Bool = false) async throws {
         try await activitiesRepository.deleteActivity(activityId: id, hardDelete: hardDelete)
-        await state.update { $0.activities.removeAll(where: { $0.id == id }) }
+        await state.access { $0.activities.removeAll(where: { $0.id == id }) }
     }
     
     @discardableResult
@@ -109,8 +109,25 @@ public final class Feed: Sendable {
     @discardableResult
     public func queryActivities(with query: ActivitiesQuery) async throws -> [ActivityData] {
         let result = try await activitiesRepository.queryActivities(with: query)
-        await state.didPaginateActivities(result)
+        let queryConfig =  QueryConfiguration(filter: query.filter, sort: query.sort)
+        await state.didPaginateActivities(with: result, for: queryConfig)
         return result.models
+    }
+    
+    @discardableResult
+    public func queryMoreActivities(limit: Int? = nil) async throws -> [ActivityData] {
+        let nextQuery: ActivitiesQuery? = await state.access { state in
+            guard let next = state.activitiesPagination?.next else { return nil }
+            return ActivitiesQuery(
+                filter: state.activitiesQueryConfig?.filter,
+                sort: state.activitiesQueryConfig?.sort ?? [],
+                next: nil,
+                previous: next,
+                limit: limit
+            )
+        }
+        guard let nextQuery else { return [] }
+        return try await queryActivities(with: nextQuery)
     }
     
     // MARK: - Bookmarks
@@ -141,7 +158,7 @@ public final class Feed: Sendable {
     public func unfollow(sourceFid: String? = nil, targetFid: String) async throws {
         try await feedsRepository.unfollow(source: sourceFid ?? self.fid, target: targetFid)
         // TODO: Review
-        await state.update { state in
+        await state.access { state in
             state.followers.removeAll(where: { $0.sourceFeed.id == sourceFid && $0.targetFeed.id == targetFid })
             state.following.removeAll(where: { $0.sourceFeed.id == sourceFid && $0.targetFeed.id == targetFid })
         }
@@ -150,7 +167,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func acceptFollow(request: AcceptFollowRequest) async throws -> FollowData {
         let follow = try await feedsRepository.acceptFollow(request: request)
-        await state.update { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
+        await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         await state.changeHandlers.followAdded(follow)
         return follow
     }
@@ -158,7 +175,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func rejectFollow(request: RejectFollowRequest) async throws -> FollowData {
         let follow = try await feedsRepository.rejectFollow(request: request)
-        await state.update { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
+        await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         return follow
     }
     

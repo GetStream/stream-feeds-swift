@@ -51,6 +51,14 @@ struct FeedsListView: View {
                     )
                 }
             }
+            .onScrollPaginationChanged(onBottomThreshold: {
+                guard state.canLoadMoreActivities else { return }
+                do {
+                    try await feed.queryMoreActivities(limit: 10)
+                } catch {
+                    log.error("Failed to load more activities with \(error)")
+                }
+            })
         }
         .modifier(AddButtonModifier(addItemShown: $showActivityOptions, buttonShown: true))
         .padding(.top)
@@ -67,6 +75,7 @@ struct FeedsListView: View {
                             data: .init(members: [.init(userId: client.user.id)], visibility: "public"),
                             followerPagination: .init(limit: 10),
                             followingPagination: .init(limit: 10),
+                            limit: 10,
                             memberPagination: .init(limit: 10),
                             watch: true
                         )
