@@ -55,7 +55,7 @@ public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable
         case createdAt = "created_at"
         case createdBy = "created_by"
         case createdById = "created_by_id"
-        case custom = "Custom"
+        case custom
         case description
         case enforceUniqueVote = "enforce_unique_vote"
         case id

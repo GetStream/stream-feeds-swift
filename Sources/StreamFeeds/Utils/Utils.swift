@@ -34,3 +34,5 @@ internal extension URL {
         return newURL
     }
 }
+
+public typealias DeviceResponse = Device
