@@ -71,5 +71,14 @@ struct DebugAction: Identifiable {
 @available(iOS 17.0, *)
 #Preview {
     @Previewable var client = FeedsClient.client(for: .toomas)
-    DebugFeedView(feed: client.feed(group: "user", id: UserCredentials.toomas.id), client: client)
+    DebugFeedView(
+        feed: client.feed(
+            for: FeedQuery(
+                feedId:  UserCredentials.toomas.id,
+                feedGroupId: "user",
+                data: nil
+            )
+        ),
+        client: client
+    )
 }

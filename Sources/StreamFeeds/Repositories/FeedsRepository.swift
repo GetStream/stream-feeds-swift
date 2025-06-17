@@ -16,7 +16,11 @@ final class FeedsRepository: Sendable {
     
     // MARK: - Creating or Getting the State of the Feed
     
-    func getOrCreateFeed(feedGroupId: String, feedId: String, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
+    func getOrCreateFeed(with query: FeedQuery) async throws -> GetOrCreateInfo {
+        try await getOrCreateFeed(feedGroupId: query.feedGroupId, feedId: query.feedId, request: query.toRequest())
+    }
+    
+    private func getOrCreateFeed(feedGroupId: String, feedId: String, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
         let response = try await apiClient.getOrCreateFeed(
             feedGroupId: feedGroupId,
             feedId: feedId,

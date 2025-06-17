@@ -23,6 +23,7 @@ struct FeedsListView: View {
     @State var activityToUpdate: ActivityData?
     @State var updatedActivityText = ""
     @State var activityToDelete: ActivityData?
+    @State private var bannerError: Error?
     
     init(feed: Feed, client: FeedsClient) {
         self.client = client
@@ -51,12 +52,13 @@ struct FeedsListView: View {
                     )
                 }
             }
+            .errorBanner(for: $bannerError)
             .onScrollPaginationChanged(onBottomThreshold: {
                 guard state.canLoadMoreActivities else { return }
                 do {
                     try await feed.queryMoreActivities(limit: 10)
                 } catch {
-                    log.error("Failed to load more activities with \(error)")
+                    bannerError = error
                 }
             })
         }
@@ -70,18 +72,9 @@ struct FeedsListView: View {
         .onAppear {
             Task {
                 do {
-                    try await self.feed.getOrCreate(
-                        request: .init(
-                            data: .init(members: [.init(userId: client.user.id)], visibility: "public"),
-                            followerPagination: .init(limit: 10),
-                            followingPagination: .init(limit: 10),
-                            limit: 10,
-                            memberPagination: .init(limit: 10),
-                            watch: true
-                        )
-                    )
+                    try await feed.get()
                 } catch {
-                    print("====== \(error)")
+                    bannerError = error
                 }
             }
         }

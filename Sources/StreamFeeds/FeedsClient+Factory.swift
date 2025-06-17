@@ -22,15 +22,7 @@ extension FeedsClient {
     
     // MARK: - Feeds
     
-    public func feed(group: String, id: String) -> Feed {
-        Feed(
-            group: group,
-            id: id,
-            user: user,
-            activitiesRepository: activitiesRepository,
-            feedsRepository: feedsRepository,
-            pollsRepository: pollsRepository,
-            events: eventsMiddleware
-        )
+    public func feed(for query: FeedQuery) -> Feed {
+        Feed(query: query, user: user, client: self)
     }
 }
