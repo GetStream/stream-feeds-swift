@@ -5,39 +5,71 @@
 import Combine
 import Foundation
 
+/// An observable object representing the current state of a feed.
+///
+/// This class manages the state of a feed including activities, followers, members, and pagination information.
+/// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
 @MainActor public class FeedState: ObservableObject {
     private var webSocketObserver: WebSocketObserver?
     lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
     
+    /// Initializes a new FeedState instance.
+    ///
+    /// - Parameters:
+    ///   - feedId: The unique identifier of the feed
+    ///   - feedQuery: The query used to create this feed
+    ///   - events: The WebSocket events subscriber for real-time updates
     init(feedId: String, feedQuery: FeedQuery, events: WSEventsSubscribing) {
         self.feedId = feedId
         self.feedQuery = feedQuery
         webSocketObserver = WebSocketObserver(feedId: feedId, subscribing: events, handlers: makeChangeHandlers())
     }
     
+    /// The unique identifier of the feed.
     public let feedId: String
+    
+    /// The query used to create this feed.
     public let feedQuery: FeedQuery
     
+    /// The list of activities in the feed, sorted by default sorting criteria.
     @Published public internal(set) var activities = [ActivityData]()
+    
+    /// The feed data containing feed metadata and configuration.
     @Published public internal(set) var feed: FeedData?
+    
+    /// The list of followers for this feed.
     @Published public internal(set) var followers = [FollowData]()
+    
+    /// The list of feeds that this feed is following.
     @Published public internal(set) var following = [FollowData]()
+    
+    /// The list of pending follow requests for this feed.
     @Published public internal(set) var followRequests = [FollowData]()
+    
+    /// The list of members in this feed.
     @Published public internal(set) var members = [FeedMemberData]()
+    
+    /// The capabilities that the current user has for this feed.
     @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
     
     // MARK: - Pagination State
     
+    /// Pagination information for activities queries.
     public private(set) var activitiesPagination: PaginationData?
     
+    /// Indicates whether there are more activities available to load.
     public var canLoadMoreActivities: Bool { activitiesPagination?.next != nil }
     
+    /// The configuration used for the last activities query.
     private(set) var activitiesQueryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>?
 }
 
 // MARK: - Updating the State
 
 extension FeedState {
+    /// Handlers for various state change events.
+    ///
+    /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
     struct ChangeHandlers {
         let activityAdded: @MainActor (ActivityData) -> Void
         let activityDeleted: @MainActor (ActivityData) -> Void
@@ -53,6 +85,9 @@ extension FeedState {
         let reactionAdded: @MainActor (FeedsReactionData) -> Void
     }
     
+    /// Creates the change handlers for state updates.
+    ///
+    /// - Returns: A ChangeHandlers instance with all the necessary update functions
     private func makeChangeHandlers() -> ChangeHandlers {
         return ChangeHandlers(
             activityAdded: { [weak self] activity in
@@ -104,10 +139,19 @@ extension FeedState {
         )
     }
     
+    /// Provides thread-safe access to the state for modifications.
+    ///
+    /// - Parameter actions: A closure that receives the current state and can modify it
+    /// - Returns: The result of the actions closure
     func access<T>(_ actions: @MainActor (FeedState) -> T) -> T {
         actions(self)
     }
         
+    /// Updates a specific activity in the activities array.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the activity to update
+    ///   - changes: A closure that receives the activity and can modify it
     private func updateActivity(with id: String, changes: (inout ActivityData) -> Void) {
         guard let index = activities.firstIndex(where: { $0.id == id }) else { return }
         var activity = activities[index]
@@ -115,6 +159,9 @@ extension FeedState {
         self.activities[index] = activity
     }
     
+    /// Adds a follow to the appropriate collection based on its type.
+    ///
+    /// - Parameter follow: The follow data to add
     private func addFollow(_ follow: FollowData) {
         if follow.isFollowRequest {
             followRequests.insert(byId: follow)
@@ -125,18 +172,29 @@ extension FeedState {
         }
     }
     
+    /// Removes a follow from all collections.
+    ///
+    /// - Parameter follow: The follow data to remove
     private func removeFollow(_ follow: FollowData) {
         following.remove(byId: follow)
         followers.remove(byId: follow)
         followRequests.remove(byId: follow)
     }
     
+    /// Updates a follow by removing and re-adding it to the appropriate collection.
+    ///
+    /// - Parameter follow: The follow data to update
     private func updateFollow(_ follow: FollowData) {
         // Review: currently simplified
         removeFollow(follow)
         addFollow(follow)
     }
     
+    /// Updates the state with feed query results.
+    ///
+    /// This method is called when a feed is initially queried or refreshed.
+    ///
+    /// - Parameter response: The response containing feed data, activities, and other information
     func didQueryFeed(with response: FeedsRepository.GetOrCreateInfo) {
         activities = response.activities
         activitiesPagination = response.activitiesPagination
@@ -149,6 +207,13 @@ extension FeedState {
         ownCapabilities = response.ownCapabilities
     }
     
+    /// Updates the state with paginated activities results.
+    ///
+    /// This method is called when additional activities are loaded through pagination.
+    ///
+    /// - Parameters:
+    ///   - response: The pagination response containing new activities
+    ///   - queryConfig: The query configuration used for this pagination request
     func didPaginateActivities(
         with response: PaginationResult<ActivityData>,
         for queryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>

@@ -6,10 +6,20 @@ import Combine
 import Foundation
 import StreamCore
 
+/// An observable object representing the current state of an activity.
+///
+/// This class manages the state of a single activity including its comments, poll data, and real-time updates.
+/// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
 @MainActor public class ActivityState: ObservableObject {
     private(set) lazy var changeHandlers = makeChangeHandlers()
     private var webSocketObserver: WebSocketObserver?
     
+    /// Initializes a new ActivityState instance.
+    ///
+    /// - Parameters:
+    ///   - activityId: The unique identifier of the activity
+    ///   - feedsId: The identifier of the feed containing this activity
+    ///   - events: The WebSocket events subscriber for real-time updates
     init(activityId: String, feedsId: String, events: WSEventsSubscribing) {
         let webSocketObserver = WebSocketObserver(
             activityId: activityId,
@@ -20,16 +30,22 @@ import StreamCore
         self.webSocketObserver = webSocketObserver
     }
     
+    /// The current activity data.
     @Published public private(set) var activity: ActivityData?
     
+    /// The list of comments for this activity, sorted by default sorting criteria.
     @Published public internal(set) var comments = [CommentData]()
     
+    /// The poll data associated with this activity, if any.
     @Published public internal(set) var poll: PollData?
 }
 
 // MARK: - Updating the State
 
 extension ActivityState {
+    /// Handlers for various activity state change events.
+    ///
+    /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
     struct ChangeHandlers: Sendable {
         let activityUpdated: @MainActor (ActivityData) -> Void
         let commentAdded: @MainActor (CommentData) -> Void
@@ -45,6 +61,9 @@ extension ActivityState {
         let pollVoteRemoved: @MainActor (PollVoteData, PollData) -> Void
     }
     
+    /// Creates the change handlers for activity state updates.
+    ///
+    /// - Returns: A ChangeHandlers instance with all the necessary update functions
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
             activityUpdated: { [weak self] activity in
@@ -113,6 +132,11 @@ extension ActivityState {
         )
     }
     
+    /// Updates a specific comment in the comments array.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the comment to update
+    ///   - changes: A closure that receives the comment and can modify it
     private func updateComment(with id: String, changes: (inout CommentData) -> Void) {
         guard let index = comments.firstIndex(where: { $0.id == id }) else { return }
         var comment = comments[index]
@@ -120,15 +144,26 @@ extension ActivityState {
         self.comments[index] = comment
     }
     
+    /// Updates the activity data and associated poll.
+    ///
+    /// - Parameter activity: The updated activity data
     func updateActivity(_ activity: ActivityData) {
         self.activity = activity
         self.poll = activity.poll
     }
     
+    /// Provides thread-safe access to the state for modifications.
+    ///
+    /// - Parameter changes: A closure that receives the current state and can modify it
     func update(_ changes: @MainActor (ActivityState) -> Void) {
         changes(self)
     }
     
+    /// Updates the state with comments query results.
+    ///
+    /// This method is called when comments are initially loaded or refreshed.
+    ///
+    /// - Parameter data: The response containing comments data
     func update(with data: CommentsRepository.QueryCommentsData) {
         comments = data.comments.sorted(by: CommentData.defaultSorting)
     }
