@@ -99,6 +99,12 @@ public final class FeedsClient: Sendable {
         try await connectTask.value?.value
     }
     
+    // MARK: - Feeds
+    
+    public func queryFeeds(request: QueryFeedsRequest) async throws -> QueryFeedsResponse {
+        try await apiClient.feedsQueryFeeds(queryFeedsRequest: request)
+    }
+    
     // MARK: - Activities
     
     @discardableResult
