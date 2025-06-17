@@ -6,11 +6,11 @@ import Foundation
 
 enum EndpointPath: Codable {
     
-    case uploadAttachment(channelId: String, type: String)
+    case uploadAttachment(type: String)
     
     var value: String {
         switch self {
-        case let .uploadAttachment(channelId, type): return "channels/\(channelId)/\(type)"
+        case let .uploadAttachment(type): return "/api/v3/common/uploads/\(type)"
         }
     }
 }

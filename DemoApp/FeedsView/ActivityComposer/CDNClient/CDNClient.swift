@@ -111,7 +111,7 @@ class StreamCDNClient: CDNClient {
             fileName: uploadingState.localFileURL.lastPathComponent,
             mimeType: uploadingState.file.type.mimeType
         )
-        let endpoint = Endpoint<FileUploadPayload>.uploadAttachment(with: attachment.id.fid, type: attachment.type)
+        let endpoint = Endpoint<FileUploadPayload>.uploadAttachment(type: attachment.type)
 
         encoder.encodeRequest(for: endpoint) { [weak self] (requestResult) in
             var urlRequest: URLRequest
