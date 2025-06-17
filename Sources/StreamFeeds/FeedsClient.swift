@@ -116,6 +116,12 @@ public final class FeedsClient: Sendable {
         try await apiClient.removeActivities(deleteActivitiesRequest: request)
     }
     
+    // MARK: - Follows
+    
+    public func queryFollows(request: QueryFollowsRequest) async throws -> QueryFollowsResponse {
+        try await apiClient.queryFollows(queryFollowsRequest: request)
+    }
+    
     // MARK: - Devices
     
     @discardableResult
