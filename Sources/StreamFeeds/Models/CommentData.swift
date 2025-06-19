@@ -14,14 +14,14 @@ public struct CommentData: Identifiable, Sendable {
     public let deletedAt: Date?
     public let downvoteCount: Int
     public let id: String
-    public let latestReactions: [FeedsReactionData]?
+    public private(set) var latestReactions: [FeedsReactionData]
     public let mentionedUsers: [UserData]
     public let meta: RepliesMeta?
     public let objectId: String
     public let objectType: String
     public let parentId: String?
-    public let reactionCount: Int
-    public let reactionGroups: [String: ReactionGroupData]?
+    public private(set) var reactionCount: Int
+    public private(set) var reactionGroups: [String: ReactionGroupData]
     public private(set) var replies: [CommentData]?
     public private(set) var replyCount: Int
     public let score: Int
@@ -40,6 +40,21 @@ public struct CommentData: Identifiable, Sendable {
 // MARK: - Mutating the Data
 
 extension CommentData {
+    
+    // MARK: - Comments
+    
+    mutating func addReaction(_ reaction: FeedsReactionData) {
+        FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
+        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
+    }
+    
+    mutating func removeReaction(_ reaction: FeedsReactionData) {
+        FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
+        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
+    }
+    
+    // MARK: - Replies
+    
     mutating func addReply(_ comment: CommentData) {
         var replies = self.replies ?? []
         replies.insert(byId: comment)
@@ -80,14 +95,14 @@ extension CommentResponse {
             deletedAt: deletedAt,
             downvoteCount: downvoteCount,
             id: id,
-            latestReactions: latestReactions?.map { $0.toModel() },
+            latestReactions: latestReactions?.map { $0.toModel() } ?? [],
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             meta: nil,
             objectId: objectId,
             objectType: objectType,
             parentId: parentId,
             reactionCount: reactionCount,
-            reactionGroups: reactionGroups?.mapValues { $0.toModel() },
+            reactionGroups: reactionGroups?.mapValues { $0.toModel() } ?? [:],
             replies: nil,
             replyCount: replyCount,
             score: score,
@@ -111,14 +126,14 @@ extension ThreadedCommentResponse {
             deletedAt: deletedAt,
             downvoteCount: downvoteCount,
             id: id,
-            latestReactions: latestReactions?.map { $0.toModel() },
+            latestReactions: latestReactions?.map { $0.toModel() } ?? [],
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             meta: meta,
             objectId: objectId,
             objectType: objectType,
             parentId: parentId,
             reactionCount: reactionCount,
-            reactionGroups: reactionGroups?.mapValues { $0.toModel() },
+            reactionGroups: reactionGroups?.mapValues { $0.toModel() } ?? [:],
             replies: replies?.map { $0.toModel() },
             replyCount: replyCount,
             score: score,

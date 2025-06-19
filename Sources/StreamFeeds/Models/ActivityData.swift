@@ -74,27 +74,16 @@ extension ActivityData {
     }
     
     mutating func addReaction(_ reaction: FeedsReactionData) {
-        latestReactions.insert(byId: reaction)
+        FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         if reaction.user.id == user.id {
             ownReactions.insert(byId: reaction)
         }
-        var reactionGroup = reactionGroups[reaction.type] ?? ReactionGroupData(count: 1, firstReactionAt: reaction.createdAt, lastReactionAt: reaction.createdAt)
-        reactionGroup.increment(with: reaction.createdAt)
-        reactionGroups[reaction.type] = reactionGroup
     }
     
     mutating func removeReaction(_ reaction: FeedsReactionData) {
-        latestReactions.remove(byId: reaction)
+        FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
         if reaction.user.id == user.id {
             ownReactions.remove(byId: reaction)
-        }
-        if var reactionGroup = reactionGroups[reaction.type] {
-            reactionGroup.decrement(with: reaction.createdAt)
-            if reactionGroup.count > 0 {
-                reactionGroups[reaction.type] = reactionGroup
-            } else {
-                reactionGroups.removeValue(forKey: reaction.type)
-            }
         }
     }
 }

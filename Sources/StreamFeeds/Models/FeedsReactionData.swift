@@ -20,6 +20,37 @@ extension FeedsReactionData: Identifiable {
     }
 }
 
+// MARK: - Mutating the Data
+
+extension FeedsReactionData {
+    static func updateByAdding(
+        reaction: FeedsReactionData,
+        to latestReactions: inout [FeedsReactionData],
+        reactionGroups: inout [String: ReactionGroupData]
+    ) {
+        latestReactions.insert(byId: reaction)
+        var reactionGroup = reactionGroups[reaction.type] ?? ReactionGroupData(count: 1, firstReactionAt: reaction.createdAt, lastReactionAt: reaction.createdAt)
+        reactionGroup.increment(with: reaction.createdAt)
+        reactionGroups[reaction.type] = reactionGroup
+    }
+    
+    static func updateByRemoving(
+        reaction: FeedsReactionData,
+        from latestReactions: inout [FeedsReactionData],
+        reactionGroups: inout [String: ReactionGroupData]
+    ) {
+        latestReactions.remove(byId: reaction)
+        if var reactionGroup = reactionGroups[reaction.type] {
+            reactionGroup.decrement(with: reaction.createdAt)
+            if reactionGroup.count > 0 {
+                reactionGroups[reaction.type] = reactionGroup
+            } else {
+                reactionGroups.removeValue(forKey: reaction.type)
+            }
+        }
+    }
+}
+
 // MARK: - Model Conversions
 
 extension FeedsReactionResponse {

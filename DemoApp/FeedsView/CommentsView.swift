@@ -207,7 +207,7 @@ struct CommentsView: View {
 extension CommentData {
     //TODO: maybe expose own reactions.
     func containsUserReaction(with id: String) -> Bool {
-        latestReactions?.map(\.user.id).contains(id) == true
+        latestReactions.contains(where: { $0.user.id == id })
     }
 }
 
@@ -298,7 +298,7 @@ struct ActivityActionsView: View {
             }
             
             Image(systemName: containsUserReaction ? "heart.fill" : "heart")
-            Text("\(comment.reactionGroups?["heart"]?.count ?? 0)")
+            Text("\(comment.reactionGroups["heart"]?.count ?? 0)")
         }
         .padding(.leading)
     }

@@ -100,10 +100,14 @@ extension ActivityState {
                 }
             },
             commentReactionAdded: { [weak self] reaction, comment in
-                self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
+                self?.updateComment(with: comment.id) { comment in
+                    comment.addReaction(reaction)
+                }
             },
             commentReactionDeleted: { [weak self] reaction, comment in
-                self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
+                self?.updateComment(with: comment.id) { comment in
+                    comment.removeReaction(reaction)
+                }
             },
             pollClosed: { [weak self] poll in
                 guard poll.id == self?.poll?.id else { return }
