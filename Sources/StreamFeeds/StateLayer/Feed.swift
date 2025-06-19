@@ -49,7 +49,7 @@ public final class Feed: Sendable {
     /// The feed state will be updated with the fetched data including activities, followers, and other feed information.
     ///
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func get() async throws {
+    public func getOrCreate() async throws {
         let result = try await feedsRepository.getOrCreateFeed(with: feedQuery)
         await state.didQueryFeed(with: result)
     }

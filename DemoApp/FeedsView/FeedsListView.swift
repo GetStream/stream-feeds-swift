@@ -72,7 +72,7 @@ struct FeedsListView: View {
         .onAppear {
             Task {
                 do {
-                    try await feed.get()
+                    try await feed.getOrCreate()
                 } catch {
                     bannerError = error
                 }
