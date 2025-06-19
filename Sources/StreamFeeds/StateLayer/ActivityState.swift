@@ -96,14 +96,14 @@ extension ActivityState {
                         parentComment.replaceReply(comment)
                     }
                 } else {
-                    self?.comments.sortedReplace(comment, using: CommentData.defaultSorting)
+                    self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
                 }
             },
             commentReactionAdded: { [weak self] reaction, comment in
-                self?.comments.sortedReplace(comment, using: CommentData.defaultSorting)
+                self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
             },
             commentReactionDeleted: { [weak self] reaction, comment in
-                self?.comments.sortedReplace(comment, using: CommentData.defaultSorting)
+                self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
             },
             pollClosed: { [weak self] poll in
                 guard poll.id == self?.poll?.id else { return }

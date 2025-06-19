@@ -112,4 +112,128 @@ struct ArrayExtensions_Tests {
         array.sortedRemove(nonExistentItem, using: sorting)
         #expect(array.count == 2) // Count should remain unchanged
     }
+    
+    // MARK: - Sorted Merge Tests
+    
+    @Test("Sorted merge - empty arrays")
+    func testSortedMergeEmptyArrays() {
+        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        
+        // Both arrays empty
+        let empty1: [TestItem] = []
+        let empty2: [TestItem] = []
+        let result1 = empty1.sortedMerge(empty2, using: sorting)
+        #expect(result1.isEmpty)
+        
+        // First array empty
+        let array2: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2)
+        ]
+        let result2 = empty1.sortedMerge(array2, using: sorting)
+        #expect(result2.count == 2)
+        #expect(result2[0].value == 1)
+        #expect(result2[1].value == 2)
+        
+        // Second array empty
+        let array1: [TestItem] = [
+            TestItem(id: "3", value: 3),
+            TestItem(id: "4", value: 4)
+        ]
+        let result3 = array1.sortedMerge(empty2, using: sorting)
+        #expect(result3.count == 2)
+        #expect(result3[0].value == 3)
+        #expect(result3[1].value == 4)
+    }
+    
+    @Test("Sorted merge - no duplicates")
+    func testSortedMergeNoDuplicates() {
+        let array1: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "3", value: 3),
+            TestItem(id: "5", value: 5)
+        ]
+        let array2: [TestItem] = [
+            TestItem(id: "2", value: 2),
+            TestItem(id: "4", value: 4),
+            TestItem(id: "6", value: 6)
+        ]
+        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        
+        let result = array1.sortedMerge(array2, using: sorting)
+        #expect(result.count == 6)
+        
+        // Verify order
+        for i in 0..<result.count {
+            #expect(result[i].value == i + 1)
+        }
+    }
+    
+    @Test("Sorted merge - with duplicates")
+    func testSortedMergeWithDuplicates() {
+        let array1: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2),
+            TestItem(id: "3", value: 3)
+        ]
+        let array2: [TestItem] = [
+            TestItem(id: "2", value: 2), // Duplicate with different value
+            TestItem(id: "4", value: 4),
+            TestItem(id: "5", value: 5)
+        ]
+        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        
+        let result = array1.sortedMerge(array2, using: sorting)
+        #expect(result.count == 5) // Should have 5 unique items
+        
+        // Verify order and that incoming elements are preferred
+        #expect(result[0].value == 1)
+        #expect(result[1].value == 2) // Should be from array2
+        #expect(result[2].value == 3)
+        #expect(result[3].value == 4)
+        #expect(result[4].value == 5)
+    }
+    
+    @Test("Sorted merge - all duplicates")
+    func testSortedMergeAllDuplicates() {
+        let array1: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2)
+        ]
+        let array2: [TestItem] = [
+            TestItem(id: "1", value: 10), // Same ID, different value
+            TestItem(id: "2", value: 20)  // Same ID, different value
+        ]
+        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        
+        let result = array1.sortedMerge(array2, using: sorting)
+        #expect(result.count == 2) // Should have 2 unique items
+        
+        // Verify that incoming elements are preferred
+        #expect(result[0].value == 10)
+        #expect(result[1].value == 20)
+    }
+    
+    @Test("Sorted merge - different sizes")
+    func testSortedMergeDifferentSizes() {
+        let array1: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "3", value: 3)
+        ]
+        let array2: [TestItem] = [
+            TestItem(id: "2", value: 2),
+            TestItem(id: "4", value: 4),
+            TestItem(id: "5", value: 5),
+            TestItem(id: "6", value: 6)
+        ]
+        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        
+        let result = array1.sortedMerge(array2, using: sorting)
+        #expect(result.count == 6)
+        
+        // Verify order
+        for i in 0..<result.count {
+            #expect(result[i].value == i + 1)
+        }
+    }
 }

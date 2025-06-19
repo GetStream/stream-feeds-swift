@@ -122,16 +122,6 @@ extension Array {
         }
     }
     
-    /// Replaces an element from the sorted array based on its ID if it exists.
-    ///
-    /// - Parameters:
-    ///   - element: The new element for replacing the existing one.
-    ///   - sorting: A closure that defines the sort order between two elements.
-    mutating func sortedReplace(_ element: Element, using sorting: (Element, Element) -> Bool) where Element: Identifiable {
-        guard let index = firstSortedIndex(for: element, using: sorting) else { return }
-        self.replaceSubrange(index...index, with: CollectionOfOne(element))
-    }
-    
     /// Performs a binary search to find an element with the same ID in a sorted array.
     ///
     /// - Important: Only works if sorting parameters have not changed.
