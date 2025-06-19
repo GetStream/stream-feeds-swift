@@ -31,12 +31,12 @@ public struct FollowData: Sendable {
         status == .pending
     }
     
-    func isFollower(of feedId: String) -> Bool {
-        isFollower && targetFeed.id == feedId
+    func isFollower(of fid: FeedId) -> Bool {
+        isFollower && targetFeed.fid == fid
     }
     
-    func isFollowing(feedId: String) -> Bool {
-        isFollowing && sourceFeed.id == feedId
+    func isFollowing(_ fid: FeedId) -> Bool {
+        isFollowing && sourceFeed.fid == fid
     }
 }
 

@@ -16,17 +16,16 @@ import Foundation
     /// Initializes a new FeedState instance.
     ///
     /// - Parameters:
-    ///   - feedId: The unique identifier of the feed
     ///   - feedQuery: The query used to create this feed
     ///   - events: The WebSocket events subscriber for real-time updates
-    init(feedId: String, feedQuery: FeedQuery, events: WSEventsSubscribing) {
-        self.feedId = feedId
+    init(feedQuery: FeedQuery, events: WSEventsSubscribing) {
+        self.fid = feedQuery.fid
         self.feedQuery = feedQuery
-        webSocketObserver = WebSocketObserver(feedId: feedId, subscribing: events, handlers: makeChangeHandlers())
+        webSocketObserver = WebSocketObserver(fid: feedQuery.fid.rawValue, subscribing: events, handlers: makeChangeHandlers())
     }
     
     /// The unique identifier of the feed.
-    public let feedId: String
+    public let fid: FeedId
     
     /// The query used to create this feed.
     public let feedQuery: FeedQuery
@@ -165,9 +164,9 @@ extension FeedState {
     private func addFollow(_ follow: FollowData) {
         if follow.isFollowRequest {
             followRequests.insert(byId: follow)
-        } else if follow.isFollowing(feedId: feedId) {
+        } else if follow.isFollowing(fid) {
             following.insert(byId: follow)
-        } else if follow.isFollower(of: feedId) {
+        } else if follow.isFollower(of: fid) {
             followers.insert(byId: follow)
         }
     }

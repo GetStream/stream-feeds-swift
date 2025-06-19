@@ -49,7 +49,7 @@ struct DebugFeedView: View {
             DebugAction(title: "Generate 10 Activities") {
                 for index in (0..<10).reversed() {
                     let request = AddActivityRequest(
-                        fids: [feed.fid],
+                        fids: [feed.fid.rawValue],
                         text: "Generated \(index) at \(Date().formatted(.dateTime))",
                         type: "activity"
                     )
@@ -74,8 +74,7 @@ struct DebugAction: Identifiable {
     DebugFeedView(
         feed: client.feed(
             for: FeedQuery(
-                feedId:  UserCredentials.toomas.id,
-                feedGroupId: "user",
+                fid: FeedId(groupId: "user", id: UserCredentials.toomas.id),
                 data: nil
             )
         ),

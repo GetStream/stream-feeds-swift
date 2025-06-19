@@ -25,9 +25,9 @@ struct CommentsView: View {
     @State var editCommentId: String?
     @State var comment = ""
     
-    init(activityId: String, feedId: String, feedsClient: FeedsClient) {
+    init(activityId: String, fid: FeedId, feedsClient: FeedsClient) {
         self.activityId = activityId
-        let activity = feedsClient.activity(for: activityId, feed: feedId)
+        let activity = feedsClient.activity(for: activityId, fid: fid)
         _activity = State(initialValue: activity)
         _state = StateObject(wrappedValue: activity.state)
         self.userId = feedsClient.user.id

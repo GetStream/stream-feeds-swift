@@ -17,13 +17,13 @@ final class FeedsRepository: Sendable {
     // MARK: - Creating or Getting the State of the Feed
     
     func getOrCreateFeed(with query: FeedQuery) async throws -> GetOrCreateInfo {
-        try await getOrCreateFeed(feedGroupId: query.feedGroupId, feedId: query.feedId, request: query.toRequest())
+        try await getOrCreateFeed(fid: query.fid, request: query.toRequest())
     }
     
-    private func getOrCreateFeed(feedGroupId: String, feedId: String, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
+    private func getOrCreateFeed(fid: FeedId, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
         let response = try await apiClient.getOrCreateFeed(
-            feedGroupId: feedGroupId,
-            feedId: feedId,
+            feedGroupId: fid.groupId,
+            feedId: fid.id,
             getOrCreateFeedRequest: request
         )
         let rawFollowers = response.followers.map { $0.toModel() }
@@ -35,8 +35,8 @@ final class FeedsRepository: Sendable {
                 sort: [Sort(field: .createdAt, direction: .forward)]
             ),
             feed: response.feed.toModel(),
-            followers: rawFollowers.filter { $0.isFollower(of: feedId) },
-            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feedId: feedId) },
+            followers: rawFollowers.filter { $0.isFollower(of: fid) },
+            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(fid) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
             members: response.members.map { $0.toModel() },
             ownCapabilities: response.ownCapabilities
@@ -66,8 +66,8 @@ final class FeedsRepository: Sendable {
         return response.follow.toModel()
     }
     
-    func unfollow(source: String, target: String) async throws {
-        _ = try await apiClient.unfollow(source: source, target: target)
+    func unfollow(source: FeedId, target: FeedId) async throws {
+        _ = try await apiClient.unfollow(source: source.rawValue, target: target.rawValue)
     }
     
     func acceptFollow(request: AcceptFollowRequest) async throws -> FollowData {

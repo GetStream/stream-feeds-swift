@@ -23,14 +23,14 @@ public final class Activity: Sendable {
     ///
     /// - Parameters:
     ///   - id: The unique identifier of the activity
-    ///   - feedsId: The identifier of the feed containing this activity
+    ///   - fid: The identifier of the feed containing this activity
     ///   - activitiesRepository: Repository for activity operations
     ///   - commentsRepository: Repository for comment operations
     ///   - pollsRepository: Repository for poll operations
     ///   - events: The WebSocket events subscriber for real-time updates
     init(
         id: String,
-        feedsId: String,
+        fid: FeedId,
         activitiesRepository: ActivitiesRepository,
         commentsRepository: CommentsRepository,
         pollsRepository: PollsRepository,
@@ -40,7 +40,7 @@ public final class Activity: Sendable {
         self.activitiesRepository = activitiesRepository
         self.commentsRepository = commentsRepository
         self.pollsRepository = pollsRepository
-        self.stateBuilder = StateBuilder { ActivityState(activityId: id, feedsId: feedsId, events: events) }
+        self.stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events) }
     }
     
     // MARK: - Accessing the State

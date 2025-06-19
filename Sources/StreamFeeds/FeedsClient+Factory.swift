@@ -8,10 +8,10 @@ extension FeedsClient {
     
     // MARK: - Activities
     
-    public func activity(for activityId: String, feed feedsId: String) -> Activity {
+    public func activity(for activityId: String, fid: FeedId) -> Activity {
         let activity = Activity(
             id: activityId,
-            feedsId: feedsId,
+            fid: fid,
             activitiesRepository: activitiesRepository,
             commentsRepository: commentsRepository,
             pollsRepository: pollsRepository,

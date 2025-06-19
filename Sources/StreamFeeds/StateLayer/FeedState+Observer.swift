@@ -7,11 +7,11 @@ import StreamCore
 
 extension FeedState {
     final class WebSocketObserver: WSEventsSubscriber {
-        private let feedId: String
+        private let fid: String
         private let handlers: FeedState.ChangeHandlers
         
-        init(feedId: String, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
-            self.feedId = feedId
+        init(fid: String, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
+            self.fid = fid
             self.handlers = handlers
             events.add(subscriber: self)
         }
@@ -19,45 +19,45 @@ extension FeedState {
         // MARK: - Event Subscription
         
         func onEvent(_ event: any Event) {
-            Task { [handlers, feedId] in
+            Task { [handlers, fid] in
                 switch event {
                 case let event as ActivityAddedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.activityAdded(event.activity.toModel())
                 case let event as ActivityDeletedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.activityDeleted(event.activity.toModel())
                 case let event as ActivityReactionAddedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.reactionAdded(event.reaction.toModel())
                 case let event as ActivityUpdatedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.activityUpdated(event.activity.toModel())
                 case let event as BookmarkAddedEvent:
                     // TODO: This is not correct?
-                    guard event.bookmark.activity.feeds.contains(feedId) else { return }
+                    guard event.bookmark.activity.feeds.contains(fid) else { return }
                     await handlers.bookmarkAdded(event.bookmark.toModel())
                 case let event as BookmarkDeletedEvent:
                     // TODO: This is not correct?
-                    guard event.bookmark.activity.feeds.contains(feedId) else { return }
+                    guard event.bookmark.activity.feeds.contains(fid) else { return }
                     await handlers.bookmarkDeleted(event.bookmark.toModel())
                 case let event as CommentAddedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.commentAdded(event.comment.toModel())
                 case let event as CommentDeletedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.commentDeleted(event.comment.toModel())
                 case let event as FeedUpdatedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.feedUpdated(event.feed.toModel())
                 case let event as FollowCreatedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.followAdded(event.follow.toModel())
                 case let event as FollowDeletedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.followDeleted(event.follow.toModel())
                 case let event as FollowUpdatedEvent:
-                    guard event.fid == feedId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.followUpdated(event.follow.toModel())
                 default:
                     break

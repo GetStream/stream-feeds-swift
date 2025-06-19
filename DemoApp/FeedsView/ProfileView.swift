@@ -46,7 +46,7 @@ struct ProfileView: View {
                                 Button {
                                     Task {
                                         try await feed.acceptFollow(
-                                            request: .init(sourceFid: request.sourceFeed.fid, targetFid: request.targetFeed.fid)
+                                            request: .init(sourceFid: request.sourceFeed.fid.rawValue, targetFid: request.targetFeed.fid.rawValue)
                                         )
                                     }
                                 } label: {
@@ -57,7 +57,7 @@ struct ProfileView: View {
                                 Button {
                                     Task {
                                         try await feed.rejectFollow(
-                                            request: .init(sourceFid: request.sourceFeed.fid, targetFid: request.targetFeed.fid)
+                                            request: .init(sourceFid: request.sourceFeed.fid.rawValue, targetFid: request.targetFeed.fid.rawValue)
                                         )
                                     }
                                 } label: {
@@ -152,7 +152,7 @@ struct FollowSuggestionView: View {
             Text(owner.name ?? owner.id)
             Button {
                 Task {
-                    try await feed.follow(request: .init(source: feed.fid, target: targetFeed.fid))
+                    try await feed.follow(request: .init(source: feed.fid.rawValue, target: targetFeed.fid.rawValue))
                 }
             } label: {
                 Text("Follow")
@@ -161,7 +161,7 @@ struct FollowSuggestionView: View {
             Button {
                 Task {
                     //TODO: check how request to follow will work.
-                    try await feed.follow(request: .init(source: feed.fid, target: targetFeed.fid))
+                    try await feed.follow(request: .init(source: feed.fid.rawValue, target: targetFeed.fid.rawValue))
                 }
             } label: {
                 Text("Request to follow")

@@ -5,15 +5,13 @@
 import Foundation
 
 public struct FeedQuery: Sendable {
-    public let feedId: String
-    public let feedGroupId: String
+    public let fid: FeedId
     public let activityFilter: ActivityFilter?
     public let activityLimit: Int?
     public let data: FeedInput?
     
-    public init(feedId: String, feedGroupId: String, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, data: FeedInput?) {
-        self.feedId = feedId
-        self.feedGroupId = feedGroupId
+    public init(fid: FeedId, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, data: FeedInput?) {
+        self.fid = fid
         self.activityFilter = activityFilter
         self.activityLimit = activityLimit
         self.data = data

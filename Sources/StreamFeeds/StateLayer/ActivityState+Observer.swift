@@ -8,17 +8,17 @@ import StreamCore
 extension ActivityState {
     final class WebSocketObserver: WSEventsSubscriber {
         private let activityId: String
-        private let feedsId: String
+        private let fid: String
         private let handlers: ActivityState.ChangeHandlers
         
         init(
             activityId: String,
-            feedsId: String,
+            fid: FeedId,
             subscribing events: WSEventsSubscribing,
             handlers: ActivityState.ChangeHandlers
         ) {
             self.activityId = activityId
-            self.feedsId = feedsId
+            self.fid = fid.rawValue
             self.handlers = handlers
             events.add(subscriber: self)
         }
@@ -26,24 +26,24 @@ extension ActivityState {
         // MARK: - Event Subscription
         
         func onEvent(_ event: any Event) {
-            Task { [handlers, feedsId] in
+            Task { [handlers, fid] in
                 switch event {
                 case let event as CommentAddedEvent:
-                    guard event.fid == feedsId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.commentAdded(event.comment.toModel())
                 case let event as CommentDeletedEvent:
-                    guard event.fid == feedsId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.commentDeleted(event.comment.toModel())
                 case let event as CommentUpdatedEvent:
-                    guard event.fid == feedsId else { return }
+                    guard event.fid == fid else { return }
                     await handlers.commentUpdated(event.comment.toModel())
                 case let event as CommentReactionAddedEvent:
-                    guard event.fid == feedsId else { return }
+                    guard event.fid == fid else { return }
                     let comment = event.comment.toModel()
                     let reaction = event.reaction.toModel()
                     await handlers.commentReactionAdded(reaction, comment)
                 case let event as CommentReactionDeletedEvent:
-                    guard event.fid == feedsId else { return }
+                    guard event.fid == fid else { return }
                     let comment = event.comment.toModel()
                     let reaction = event.reaction.toModel()
                     await handlers.commentReactionDeleted(reaction, comment)

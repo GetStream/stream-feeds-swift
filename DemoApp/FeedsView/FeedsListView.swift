@@ -66,7 +66,7 @@ struct FeedsListView: View {
         .padding(.top)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $commentsActivity) { activity in
-            CommentsView(activityId: activity.id, feedId: feed.fid, feedsClient: client)
+            CommentsView(activityId: activity.id, fid: feed.fid, feedsClient: client)
                 .modifier(PresentationDetentModifier())
         }
         .onAppear {
@@ -100,7 +100,7 @@ struct FeedsListView: View {
                         }
                         _ = try await feed.addActivity(
                             request: .init(
-                                attachments: attachments, fids: [feed.fid], text: activityName, type: "activity"
+                                attachments: attachments, fids: [feed.fid.rawValue], text: activityName, type: "activity"
                             )
                         )
                         activityName = ""

@@ -18,12 +18,12 @@ import StreamCore
     ///
     /// - Parameters:
     ///   - activityId: The unique identifier of the activity
-    ///   - feedsId: The identifier of the feed containing this activity
+    ///   - fid: The identifier of the feed containing this activity
     ///   - events: The WebSocket events subscriber for real-time updates
-    init(activityId: String, feedsId: String, events: WSEventsSubscribing) {
+    init(activityId: String, fid: FeedId, events: WSEventsSubscribing) {
         let webSocketObserver = WebSocketObserver(
             activityId: activityId,
-            feedsId: feedsId,
+            fid: fid,
             subscribing: events,
             handlers: changeHandlers
         )

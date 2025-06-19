@@ -8,13 +8,6 @@ import StreamCore
 public final class Feed: Sendable {
     @MainActor private let stateBuilder: StateBuilder<FeedState>
     
-    public var group: String { feedQuery.feedGroupId }
-    public var id: String { feedQuery.feedId }
-    
-    public var fid: String {
-        "\(group):\(id)"
-    }
-    
     private let feedQuery: FeedQuery
     
     // TODO: Move?
@@ -34,10 +27,14 @@ public final class Feed: Sendable {
         self.feedsRepository = client.feedsRepository
         self.pollsRepository = client.pollsRepository
         self.feedQuery = query
-        let feedId = "\(feedQuery.feedGroupId):\(feedQuery.feedId)"
         let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { FeedState(feedId: feedId, feedQuery: query, events: events) }
+        stateBuilder = StateBuilder { FeedState(feedQuery: query, events: events) }
     }
+    
+    public var fid: FeedId { feedQuery.fid }
+    
+    private var id: String { fid.id }
+    private var group: String { fid.groupId }
     
     // MARK: - Accessing the State
     
@@ -140,7 +137,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func repost(activityId: String, text: String?) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(
-            request: .init(fids: [fid], parentId: activityId, text: text, type: "post")
+            request: .init(fids: [fid.rawValue], parentId: activityId, text: text, type: "post")
         )
         await state.changeHandlers.activityAdded(activity)
         return activity
@@ -235,12 +232,12 @@ public final class Feed: Sendable {
     ///   - sourceFid: The source feed identifier. If `nil`, uses the current feed's identifier.
     ///   - targetFid: The target feed identifier to unfollow
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func unfollow(sourceFid: String? = nil, targetFid: String) async throws {
+    public func unfollow(sourceFid: FeedId? = nil, targetFid: FeedId) async throws {
         try await feedsRepository.unfollow(source: sourceFid ?? self.fid, target: targetFid)
         // TODO: Review
         await state.access { state in
-            state.followers.removeAll(where: { $0.sourceFeed.id == sourceFid && $0.targetFeed.id == targetFid })
-            state.following.removeAll(where: { $0.sourceFeed.id == sourceFid && $0.targetFeed.id == targetFid })
+            state.followers.removeAll(where: { $0.sourceFeed.fid == sourceFid && $0.targetFeed.fid == targetFid })
+            state.following.removeAll(where: { $0.sourceFeed.fid == sourceFid && $0.targetFeed.fid == targetFid })
         }
     }
     
@@ -290,26 +287,20 @@ public final class Feed: Sendable {
 
     /// Accepts a feed member invitation.
     ///
-    /// - Parameters:
-    ///   - feedId: The feed identifier
-    ///   - feedGroupId: The feed group identifier
     /// - Returns: The accepted feed member data
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberData {
-        let response = try await feedsRepository.acceptFeedMember(feedId: feedId, feedGroupId: feedGroupId)
+    public func acceptFeedMember() async throws -> FeedMemberData {
+        let response = try await feedsRepository.acceptFeedMember(feedId: id, feedGroupId: group)
         // TODO: update state
         return response
     }
     
     /// Rejects a feed member invitation.
     ///
-    /// - Parameters:
-    ///   - feedId: The feed identifier
-    ///   - feedGroupId: The feed group identifier
     /// - Returns: The rejected feed member data
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func rejectFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberData {
-        try await feedsRepository.rejectFeedMember(feedGroupId: feedGroupId, feedId: feedId)
+    public func rejectFeedMember() async throws -> FeedMemberData {
+        try await feedsRepository.rejectFeedMember(feedGroupId: group, feedId: id)
         // TODO: update state
     }
     
@@ -354,7 +345,7 @@ public final class Feed: Sendable {
     public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollData {
         let poll = try await pollsRepository.createPoll(request: request)
         _ = try await activitiesRepository.addActivity(
-            request: .init(fids: [fid], pollId: poll.id, type: activityType)
+            request: .init(fids: [fid.rawValue], pollId: poll.id, type: activityType)
         )
         return poll
     }

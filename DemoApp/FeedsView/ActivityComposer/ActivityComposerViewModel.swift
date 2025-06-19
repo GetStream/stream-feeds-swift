@@ -101,7 +101,7 @@ import Photos
             if let localFileURL = attachment.localFileURL {
                 let attachmentFile = try AttachmentFile(url: localFileURL)
                 let activityAttachment = ChatMessageAttachment<Data>(
-                    id: AttachmentId(fid: feed.fid, activityId: UUID().uuidString, index: 0),
+                    id: AttachmentId(fid: feed.fid.rawValue, activityId: UUID().uuidString, index: 0),
                     type: attachment.type,
                     payload: .init(),
                     downloadingState: nil,
@@ -118,7 +118,7 @@ import Photos
             }
         }
         _ = try await feed.addActivity(
-            request: .init(attachments: uploadedAttachments, fids: [feed.fid], text: text, type: "activity")
+            request: .init(attachments: uploadedAttachments, fids: [feed.fid.rawValue], text: text, type: "activity")
         )
         text = ""
         addedAssets = []
