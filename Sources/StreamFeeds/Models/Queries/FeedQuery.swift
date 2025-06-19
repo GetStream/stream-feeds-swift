@@ -10,7 +10,7 @@ public struct FeedQuery: Sendable {
     public let activityLimit: Int?
     public let data: FeedInput?
     
-    public init(fid: FeedId, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, data: FeedInput?) {
+    public init(fid: FeedId, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, data: FeedInput? = nil) {
         self.fid = fid
         self.activityFilter = activityFilter
         self.activityLimit = activityLimit

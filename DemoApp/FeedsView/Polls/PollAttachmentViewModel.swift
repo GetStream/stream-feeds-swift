@@ -26,7 +26,7 @@ import SwiftUI
         if let _activity {
             return _activity
         }
-        let activity = feedsClient.activity(for: activityInfo.id, fid: feed.fid)
+        let activity = feedsClient.activity(for: activityInfo.id, in: feed.fid)
         _activity = activity
         return activity
     }

@@ -24,22 +24,17 @@ public final class Activity: Sendable {
     /// - Parameters:
     ///   - id: The unique identifier of the activity
     ///   - fid: The identifier of the feed containing this activity
-    ///   - activitiesRepository: Repository for activity operations
-    ///   - commentsRepository: Repository for comment operations
-    ///   - pollsRepository: Repository for poll operations
-    ///   - events: The WebSocket events subscriber for real-time updates
+    ///   - client: The feeds client instance.
     init(
         id: String,
         fid: FeedId,
-        activitiesRepository: ActivitiesRepository,
-        commentsRepository: CommentsRepository,
-        pollsRepository: PollsRepository,
-        events: WSEventsSubscribing
+        client: FeedsClient
     ) {
         self.activityId = id
-        self.activitiesRepository = activitiesRepository
-        self.commentsRepository = commentsRepository
-        self.pollsRepository = pollsRepository
+        self.activitiesRepository = client.activitiesRepository
+        self.commentsRepository = client.commentsRepository
+        self.pollsRepository = client.pollsRepository
+        let events = client.eventsMiddleware
         self.stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events) }
     }
     

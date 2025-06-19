@@ -85,6 +85,8 @@ public final class FeedsClient: Sendable {
         pollsRepository = PollsRepository(apiClient: apiClient)
     }
     
+    // MARK: - Connecting the User
+    
     /// Establishes a connection to the Stream service.
     ///
     /// This method sets up authentication and initializes the WebSocket connection for real-time updates.
@@ -115,6 +117,46 @@ public final class FeedsClient: Sendable {
     
     // MARK: - Feeds
     
+    /// Creates a feed instance for the specified group and ID.
+    ///
+    /// This method creates a `Feed` object that represents a specific feed.
+    /// The feed can be used to fetch activities, manage follows, and receive real-time updates.
+    ///
+    /// - Parameters:
+    ///   - group: The feed group identifier (e.g., "user", "timeline", "notification")
+    ///   - id: The specific feed identifier within the group
+    /// - Returns: A `Feed` instance that can be used to interact with the specified feed
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   let userFeed = client.feed(group: "user", id: "john")
+    ///   let timelineFeed = client.feed(group: "timeline", id: "flat")
+    ///   ```
+    public func feed(group: String, id: String) -> Feed {
+        feed(for: FeedQuery(fid: FeedId(groupId: group, id: id)))
+    }
+    
+    /// Creates a feed instance based on the provided query.
+    ///
+    /// This method creates a `Feed` object using a `FeedQuery` that can include additional
+    /// configuration such as activity filters, limits, and feed data for creation.
+    ///
+    /// - Parameter query: The feed query containing the feed identifier and optional configuration
+    /// - Returns: A `Feed` instance that can be used to interact with the specified feed
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   let query = FeedQuery(
+    ///       fid: FeedId(groupId: "user", id: "john"),
+    ///       activityLimit: 20,
+    ///       data: FeedInput(name: "John's Feed")
+    ///   )
+    ///   let feed = client.feed(for: query)
+    ///   ```
+    public func feed(for query: FeedQuery) -> Feed {
+        Feed(query: query, user: user, client: self)
+    }
+    
     /// Queries feeds based on the provided request parameters.
     ///
     /// - Parameter request: The query request containing filtering and pagination parameters
@@ -125,6 +167,25 @@ public final class FeedsClient: Sendable {
     }
     
     // MARK: - Activities
+    
+    /// Creates an activity instance for the specified activity ID and feed.
+    ///
+    /// This method creates an `Activity` object that represents a specific activity within a feed.
+    /// The activity can be used to manage comments, reactions, and other activity-specific operations.
+    ///
+    /// - Parameters:
+    ///   - activityId: The unique identifier of the activity
+    ///   - fid: The feed identifier where the activity belongs
+    /// - Returns: An `Activity` instance that can be used to interact with the specified activity
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   let feedId = FeedId(groupId: "user", id: "john")
+    ///   let activity = client.activity(for: "activity-123", in: feedId)
+    ///   ```
+    public func activity(for activityId: String, in fid: FeedId) -> Activity {
+        Activity(id: activityId, fid: fid, client: self)
+    }
     
     /// Adds a new activity to the specified feeds.
     ///
