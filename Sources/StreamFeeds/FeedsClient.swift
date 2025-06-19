@@ -28,6 +28,7 @@ public final class FeedsClient: Sendable {
     
     let activitiesRepository: ActivitiesRepository
     let commentsRepository: CommentsRepository
+    let devicesRepository: DevicesRepository
     let feedsRepository: FeedsRepository
     let pollsRepository: PollsRepository
     
@@ -81,6 +82,7 @@ public final class FeedsClient: Sendable {
         
         activitiesRepository = ActivitiesRepository(apiClient: apiClient)
         commentsRepository = CommentsRepository(apiClient: apiClient)
+        devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
     }
@@ -230,49 +232,31 @@ public final class FeedsClient: Sendable {
     
     // MARK: - Devices
     
+    /// Queries all devices associated with the current user.
+    ///
+    /// - Returns: A response containing the list of devices
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func queryDevices() async throws -> ListDevicesResponse {
+        try await devicesRepository.queryDevices()
+    }
+    
     /// Creates a new device for push notifications.
     ///
     /// - Parameter id: The unique identifier for the device
-    /// - Returns: A response confirming the device creation
     /// - Throws: 
     ///   - `ClientError` if the device ID is empty
     ///   - `ClientError` if the push provider is invalid
     ///   - `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func createDevice(id: String) async throws -> ModelResponse {
-        guard !id.isEmpty else {
-            throw ClientError("Device id must not be empty when trying to set device.")
-        }
-        guard let provider = CreateDeviceRequest.PushProvider(
-            rawValue: pushNotificationsConfig.pushProviderInfo.pushProvider.rawValue
-        ) else {
-            throw ClientError.Unexpected("Invalid push provider value")
-        }
-        let request = CreateDeviceRequest(
-            id: id,
-            pushProvider: provider,
-            pushProviderName: pushNotificationsConfig.pushProviderInfo.name,
-            voipToken: nil
-        )
-        return try await devicesClient.createDevice(createDeviceRequest: request)
-    }
-    
-    /// Lists all devices associated with the current user.
-    ///
-    /// - Returns: A response containing the list of devices
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func listDevices() async throws -> ListDevicesResponse {
-        try await devicesClient.listDevices()
+    public func createDevice(id: String) async throws {
+        try await devicesRepository.createDevice(id: id, pushConfig: pushNotificationsConfig)
     }
     
     /// Deletes a device by its identifier.
     ///
     /// - Parameter deviceId: The unique identifier of the device to delete
-    /// - Returns: A response confirming the device deletion
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func deleteDevice(deviceId: String) async throws -> ModelResponse {
-        try await devicesClient.deleteDevice(id: deviceId)
+    public func deleteDevice(deviceId: String) async throws {
+        try await devicesRepository.deleteDevice(deviceId: deviceId)
     }
 }
 
