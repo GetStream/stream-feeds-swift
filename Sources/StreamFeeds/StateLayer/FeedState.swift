@@ -82,6 +82,7 @@ extension FeedState {
         let followDeleted: @MainActor (FollowData) -> Void
         let followUpdated: @MainActor (FollowData) -> Void
         let reactionAdded: @MainActor (FeedsReactionData) -> Void
+        let reactionDeleted: @MainActor (FeedsReactionData) -> Void
     }
     
     /// Creates the change handlers for state updates.
@@ -133,6 +134,11 @@ extension FeedState {
             reactionAdded: { [weak self] reaction in
                 self?.updateActivity(with: reaction.activityId) { activity in
                     activity.addReaction(reaction)
+                }
+            },
+            reactionDeleted: { [weak self] reaction in
+                self?.updateActivity(with: reaction.activityId) { activity in
+                    activity.removeReaction(reaction)
                 }
             }
         )

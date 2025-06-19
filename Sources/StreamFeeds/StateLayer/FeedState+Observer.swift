@@ -30,6 +30,9 @@ extension FeedState {
                 case let event as ActivityReactionAddedEvent:
                     guard event.fid == fid else { return }
                     await handlers.reactionAdded(event.reaction.toModel())
+                case let event as ActivityReactionDeletedEvent:
+                    guard event.fid == fid else { return }
+                    await handlers.reactionDeleted(event.reaction.toModel())
                 case let event as ActivityUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.activityUpdated(event.activity.toModel())

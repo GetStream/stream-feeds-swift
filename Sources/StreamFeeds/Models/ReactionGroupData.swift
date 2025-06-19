@@ -11,8 +11,14 @@ public struct ReactionGroupData: Sendable {
     public private(set) var lastReactionAt: Date
 }
 
-extension ReactionGroupData {    
+extension ReactionGroupData {
+    mutating func decrement(with date: Date) {
+        guard date >= firstReactionAt || date <= lastReactionAt else { return }
+        count = max(0, count - 1)
+    }
+    
     mutating func increment(with date: Date) {
+        guard date > firstReactionAt else { return }
         count += 1
         lastReactionAt = date
     }
