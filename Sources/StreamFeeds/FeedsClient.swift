@@ -9,8 +9,7 @@ import Foundation
 public let host = "localhost"
 
 public final class FeedsClient: Sendable {
-    // TODO: Update Core
-    nonisolated(unsafe) public let apiKey: APIKey
+    public let apiKey: APIKey
     public let user: User
     public let token: UserToken
     
