@@ -42,6 +42,11 @@ final class PollsRepository: Sendable {
         let response = try await apiClient.updatePollPartial(pollId: pollId, updatePollPartialRequest: request)
         return response.poll.toModel()
     }
+    
+    func updatePoll(request: UpdatePollRequest) async throws -> PollData {
+        let response = try await apiClient.updatePoll(updatePollRequest: request)
+        return response.poll.toModel()
+    }
 
     // MARK: - Poll Options
     

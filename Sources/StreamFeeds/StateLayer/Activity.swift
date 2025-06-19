@@ -289,6 +289,19 @@ public final class Activity: Sendable {
         return poll
     }
     
+    /// Updates a poll.
+    ///
+    /// - Parameters:
+    ///   - request: The request containing the update data
+    /// - Returns: The updated poll data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updatePoll(request: UpdatePollRequest) async throws -> PollData {
+        let poll = try await pollsRepository.updatePoll(request: request)
+        await state.changeHandlers.pollUpdated(poll)
+        return poll
+    }
+    
     // MARK: - Poll Options
 
     /// Creates a new option for a poll.
