@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Network
 import StreamCore
 import StreamFeeds
 import SwiftUI
@@ -13,6 +14,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        // Xcode 26 beta workaround
+        nw_tls_create_options()
+        
         UNUserNotificationCenter.current().delegate = self
         setUpRemoteNotifications()
 
