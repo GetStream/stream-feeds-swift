@@ -146,7 +146,7 @@ struct CommentsView: View {
                 Task {
                     do {
                         try await activity.addComment(
-                            request: .init(comment: comment, objectId: activityId, objectType: "activity")
+                            request: .init(comment: comment)
                         )
                         comment = ""
                     } catch {
@@ -164,8 +164,6 @@ struct CommentsView: View {
                         try await activity.addComment(
                             request: .init(
                                 comment: comment,
-                                objectId: activityId,
-                                objectType: "activity",
                                 parentId: nestedCommentRepliesId ?? expandedCommentRepliesId
                             )
                         )

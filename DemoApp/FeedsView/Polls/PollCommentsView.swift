@@ -15,14 +15,12 @@ struct PollCommentsView: View {
     @StateObject var viewModel: PollCommentsViewModel
     
     init(
-        poll: PollData,
         activity: Activity,
         user: User,
         viewModel: PollCommentsViewModel? = nil
     ) {
         _viewModel = StateObject(
             wrappedValue: viewModel ?? PollCommentsViewModel(
-                poll: poll,
                 activity: activity,
                 user: user
             )
@@ -39,7 +37,7 @@ struct PollCommentsView: View {
                                 Text(answer)
                                     .bold()
                                 HStack {
-                                    if viewModel.poll.votingVisibility != "anonymous" {
+                                    if viewModel.poll?.votingVisibility != "anonymous" {
                                         UserAvatar(url: comment.user?.imageURL)
                                     }
                                     Text(authorTitle(for: comment))
@@ -97,7 +95,7 @@ struct PollCommentsView: View {
     }
     
     private func authorTitle(for comment: PollVoteData) -> String {
-        if viewModel.poll.votingVisibility == "anonymous" {
+        if viewModel.poll?.votingVisibility == "anonymous" {
             return "anonymous"
         }
         return comment.user?.name ?? "anonymous"

@@ -134,7 +134,24 @@ public final class FeedsClient: Sendable {
     ///   let timelineFeed = client.feed(group: "timeline", id: "flat")
     ///   ```
     public func feed(group: String, id: String) -> Feed {
-        feed(for: FeedQuery(fid: FeedId(groupId: group, id: id)))
+        feed(for: FeedId(groupId: group, id: id))
+    }
+    
+    /// Creates a feed instance for the specified feed ID.
+    ///
+    /// This method creates a `Feed` object that represents a specific feed using a `FeedId`.
+    /// The feed can be used to fetch activities, manage follows, and receive real-time updates.
+    ///
+    /// - Parameter fid: The feed identifier containing the group and ID
+    /// - Returns: A `Feed` instance that can be used to interact with the specified feed
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   let feedId = FeedId(groupId: "user", id: "john")
+    ///   let userFeed = client.feed(for: feedId)
+    ///   ```
+    public func feed(for fid: FeedId) -> Feed {
+        feed(for: FeedQuery(fid: fid))
     }
     
     /// Creates a feed instance based on the provided query.

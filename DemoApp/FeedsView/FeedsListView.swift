@@ -100,7 +100,7 @@ struct FeedsListView: View {
                         }
                         _ = try await feed.addActivity(
                             request: .init(
-                                attachments: attachments, fids: [feed.fid.rawValue], text: activityName, type: "activity"
+                                attachments: attachments, text: activityName, type: "activity"
                             )
                         )
                         activityName = ""

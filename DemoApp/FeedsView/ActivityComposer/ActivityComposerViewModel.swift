@@ -118,7 +118,7 @@ import Photos
             }
         }
         _ = try await feed.addActivity(
-            request: .init(attachments: uploadedAttachments, fids: [feed.fid.rawValue], text: text, type: "activity")
+            request: .init(attachments: uploadedAttachments, text: text, type: "activity")
         )
         text = ""
         addedAssets = []
