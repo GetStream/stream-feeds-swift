@@ -25,7 +25,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
     public var parent: ActivityResponse?
     public var poll: PollResponseData?
     public var popularity: Int
-    public var reactionGroups: [String: ReactionGroupResponse]
+    public var reactionGroups: [String: ReactionGroupResponse?]
     public var score: Float
     public var searchData: [String: RawJSON]
     public var shareCount: Int
@@ -36,7 +36,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
     public var visibility: String
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionGroups: [String: ReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionGroups: [String: ReactionGroupResponse?], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: String, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount

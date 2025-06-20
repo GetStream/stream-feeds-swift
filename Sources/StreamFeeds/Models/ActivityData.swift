@@ -121,7 +121,7 @@ extension ActivityResponse {
             ownReactions: ownReactions.map { $0.toModel() },
             poll: poll?.toModel(),
             popularity: popularity,
-            reactionGroups: reactionGroups.mapValues { $0.toModel() },
+            reactionGroups: reactionGroups.compactMapValues { $0?.toModel() },
             score: score,
             searchData: searchData,
             shareCount: shareCount,

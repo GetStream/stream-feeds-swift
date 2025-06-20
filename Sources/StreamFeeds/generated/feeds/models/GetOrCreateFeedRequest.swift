@@ -2,24 +2,7 @@ import Foundation
 import StreamCore
 
 public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
-        case first
-        case last
-        case popular
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
+    public var activitySelectorOptions: [String: RawJSON]?
     public var commentLimit: Int?
     public var commentSort: String?
     public var data: FeedInput?
@@ -34,7 +17,8 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var view: String?
     public var watch: Bool?
 
-    public init(commentLimit: Int? = nil, commentSort: String? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followerPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
+    public init(activitySelectorOptions: [String: RawJSON]? = nil, commentLimit: Int? = nil, commentSort: String? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followerPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
+        self.activitySelectorOptions = activitySelectorOptions
         self.commentLimit = commentLimit
         self.commentSort = commentSort
         self.data = data
@@ -51,6 +35,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case activitySelectorOptions = "activity_selector_options"
         case commentLimit = "comment_limit"
         case commentSort = "comment_sort"
         case data
@@ -67,7 +52,8 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     }
 
     public static func == (lhs: GetOrCreateFeedRequest, rhs: GetOrCreateFeedRequest) -> Bool {
-        lhs.commentLimit == rhs.commentLimit &&
+        lhs.activitySelectorOptions == rhs.activitySelectorOptions &&
+            lhs.commentLimit == rhs.commentLimit &&
             lhs.commentSort == rhs.commentSort &&
             lhs.data == rhs.data &&
             lhs.externalRanking == rhs.externalRanking &&
@@ -83,6 +69,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(activitySelectorOptions)
         hasher.combine(commentLimit)
         hasher.combine(commentSort)
         hasher.combine(data)

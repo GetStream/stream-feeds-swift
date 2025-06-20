@@ -18,7 +18,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var objectType: String
     public var parentId: String?
     public var reactionCount: Int
-    public var reactionGroups: [String: ReactionGroupResponse]?
+    public var reactionGroups: [String: ReactionGroupResponse?]?
     public var replies: [ThreadedCommentResponse]?
     public var replyCount: Int
     public var score: Int
@@ -28,7 +28,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var upvoteCount: Int
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
