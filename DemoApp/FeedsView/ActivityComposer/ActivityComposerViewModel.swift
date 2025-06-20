@@ -162,3 +162,13 @@ public enum GallerySupportedTypes {
     case images
     case videos
 }
+
+extension AddedAsset {
+    func toAttachmentPayload() throws -> AnyAttachmentPayload {
+        return try AnyAttachmentPayload(
+            localFileURL: url,
+            attachmentType: type == .video ? .video : .image,
+            extraData: extraData
+        )
+    }
+}
