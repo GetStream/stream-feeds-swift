@@ -7,7 +7,7 @@ import Foundation
 /// The attachment which was successfully uploaded.
 public struct UploadedAttachment {
     /// The attachment which contains the payload details of the attachment.
-    public var attachment: AnyChatMessageAttachment
+    public var attachment: AnyStreamAttachment
 
     /// The original file remote url.
     public let remoteURL: URL
@@ -16,7 +16,7 @@ public struct UploadedAttachment {
     public let thumbnailURL: URL?
 
     public init(
-        attachment: AnyChatMessageAttachment,
+        attachment: AnyStreamAttachment,
         remoteURL: URL,
         thumbnailURL: URL? = nil
     ) {

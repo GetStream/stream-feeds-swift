@@ -7,9 +7,9 @@ import StreamCore
 
 /// A type alias for attachment with `GiphyAttachmentPayload` payload type.
 ///
-/// The ephemeral message containing `ChatMessageGiphyAttachment` attachment will be created
+/// The ephemeral message containing `StreamGiphyAttachment` attachment will be created
 /// when `/giphy` command is used.
-public typealias ChatMessageGiphyAttachment = ChatMessageAttachment<GiphyAttachmentPayload>
+public typealias StreamGiphyAttachment = StreamAttachment<GiphyAttachmentPayload>
 
 /// Represents a payload for attachments with `.giphy` type.
 public struct GiphyAttachmentPayload: AttachmentPayload {

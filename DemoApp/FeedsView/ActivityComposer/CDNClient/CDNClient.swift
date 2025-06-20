@@ -26,7 +26,7 @@ public protocol CDNClient {
     ///   - progress: A closure that broadcasts upload progress.
     ///   - completion: Returns the uploaded file's information.
     func uploadAttachment(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)?,
         completion: @escaping (Result<URL, Error>) -> Void
     )
@@ -37,7 +37,7 @@ public protocol CDNClient {
     ///   - progress: A closure that broadcasts upload progress.
     ///   - completion: Returns the uploaded file's information.
     func uploadAttachment(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)?,
         completion: @escaping (Result<UploadedFile, Error>) -> Void
     )
@@ -45,7 +45,7 @@ public protocol CDNClient {
 
 public extension CDNClient {
     func uploadAttachment(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)?,
         completion: @escaping (Result<UploadedFile, Error>) -> Void
     ) {
@@ -81,7 +81,7 @@ class StreamCDNClient: CDNClient {
     }
 
     func uploadAttachment(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)? = nil,
         completion: @escaping (Result<URL, Error>) -> Void
     ) {
@@ -96,7 +96,7 @@ class StreamCDNClient: CDNClient {
     }
 
     func uploadAttachment(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)? = nil,
         completion: @escaping (Result<UploadedFile, Error>) -> Void
     ) {

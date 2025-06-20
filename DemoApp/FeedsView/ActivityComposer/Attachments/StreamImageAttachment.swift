@@ -7,10 +7,10 @@ import StreamCore
 
 /// A type alias for attachment with `ImageAttachmentPayload` payload type.
 ///
-/// The `ChatMessageImageAttachment` attachment will be added to the message automatically
+/// The `StreamImageAttachment` attachment will be added to the message automatically
 /// if the message was sent with attached `AnyAttachmentPayload` created with
 /// local URL and `.image` attachment type.
-public typealias ChatMessageImageAttachment = ChatMessageAttachment<ImageAttachmentPayload>
+public typealias StreamImageAttachment = StreamAttachment<ImageAttachmentPayload>
 
 /// Represents a payload for attachments with `.image` type.
 public struct ImageAttachmentPayload: AttachmentPayload {

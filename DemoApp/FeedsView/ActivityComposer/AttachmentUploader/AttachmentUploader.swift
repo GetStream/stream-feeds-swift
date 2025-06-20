@@ -12,7 +12,7 @@ public protocol AttachmentUploader {
     ///   - progress: The progress of the upload.
     ///   - completion: The callback with the uploaded attachment.
     func upload(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)?,
         completion: @escaping (Result<UploadedAttachment, Error>) -> Void
     )
@@ -26,7 +26,7 @@ public class StreamAttachmentUploader: AttachmentUploader {
     }
 
     public func upload(
-        _ attachment: AnyChatMessageAttachment,
+        _ attachment: AnyStreamAttachment,
         progress: ((Double) -> Void)?,
         completion: @escaping (Result<UploadedAttachment, Error>) -> Void
     ) {

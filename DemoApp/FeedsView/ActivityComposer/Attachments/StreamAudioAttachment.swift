@@ -5,25 +5,23 @@
 import Foundation
 import StreamCore
 
-/// A type alias for attachment with `VideoAttachmentPayload` payload type.
+/// A type alias for attachment with `AudioAttachmentPayload` payload type.
 ///
-/// The `ChatMessageVideoAttachment` attachment will be added to the message automatically
-/// if the message was sent with attached `AnyAttachmentPayload` created with
-/// local URL and `.video` attachment type.
-public typealias ChatMessageVideoAttachment = ChatMessageAttachment<VideoAttachmentPayload>
+/// The `StreamAudioAttachment` attachment will be added to the content automatically
+/// if the content was sent with attached `AnyAttachmentPayload` created with
+/// local URL and `.audio` attachment type.
+public typealias StreamAudioAttachment = StreamAttachment<AudioAttachmentPayload>
 
 /// Represents a payload for attachments with `.media` type.
-public struct VideoAttachmentPayload: AttachmentPayload {
-    /// An attachment type all `MediaAttachmentPayload` instances conform to. Is set to `.video`.
-    public static let type: AttachmentType = .video
+public struct AudioAttachmentPayload: AttachmentPayload {
+    /// An attachment type all `MediaAttachmentPayload` instances conform to. Is set to `.audio`.
+    public static let type: AttachmentType = .audio
 
-    /// A title, usually the name of the video.
+    /// A title, usually the name of the audio.
     public var title: String?
-    /// A link to the video.
-    public var videoURL: URL
-    /// A link to the video thumbnail.
-    public var thumbnailURL: URL?
-    /// The video itself.
+    /// A link to the audio.
+    public var audioURL: URL
+    /// The audio itself.
     public var file: AttachmentFile
     /// An extra data.
     public var extraData: [String: RawJSON]?
@@ -37,43 +35,39 @@ public struct VideoAttachmentPayload: AttachmentPayload {
             .flatMap { try? JSONDecoder.default.decode(T.self, from: $0) }
     }
 
-    /// Creates `VideoAttachmentPayload` instance.
+    /// Creates `AudioAttachmentPayload` instance.
     ///
     /// Use this initializer if the attachment is already uploaded and you have the remote URLs.
-    public init(title: String?, videoRemoteURL: URL, thumbnailURL: URL? = nil, file: AttachmentFile, extraData: [String: RawJSON]?) {
+    public init(title: String?, audioRemoteURL: URL, file: AttachmentFile, extraData: [String: RawJSON]?) {
         self.title = title
-        videoURL = videoRemoteURL
-        self.thumbnailURL = thumbnailURL
+        audioURL = audioRemoteURL
         self.file = file
         self.extraData = extraData
     }
 }
 
-extension VideoAttachmentPayload: Hashable {}
+extension AudioAttachmentPayload: Hashable {}
 
 // MARK: - Local Downloads
 
-extension VideoAttachmentPayload: AttachmentPayloadDownloading {
+extension AudioAttachmentPayload: AttachmentPayloadDownloading {
     public var localStorageFileName: String {
         title ?? file.defaultLocalStorageFileName(for: Self.type)
     }
     
     public var remoteURL: URL {
-        videoURL
+        audioURL
     }
 }
 
 // MARK: - Encodable
 
-extension VideoAttachmentPayload: Encodable {
+extension AudioAttachmentPayload: Encodable {
     public func encode(to encoder: Encoder) throws {
         var values = extraData ?? [:]
         values[AttachmentCodingKeys.title.rawValue] = title.map { .string($0) }
-        values[AttachmentCodingKeys.assetURL.rawValue] = .string(videoURL.absoluteString)
-        thumbnailURL.map {
-            values[AttachmentCodingKeys.thumbURL.rawValue] = .string($0.absoluteString)
-        }
-        values[AttachmentFile.CodingKeys.size.rawValue] = .number(Double(Int(file.size)))
+        values[AttachmentCodingKeys.assetURL.rawValue] = .string(audioURL.absoluteString)
+        values[AttachmentFile.CodingKeys.size.rawValue] = .number(Double(file.size))
         values[AttachmentFile.CodingKeys.mimeType.rawValue] = file.mimeType.map { .string($0) }
         try values.encode(to: encoder)
     }
@@ -81,14 +75,13 @@ extension VideoAttachmentPayload: Encodable {
 
 // MARK: - Decodable
 
-extension VideoAttachmentPayload: Decodable {
+extension AudioAttachmentPayload: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: AttachmentCodingKeys.self)
 
         self.init(
             title: try container.decodeIfPresent(String.self, forKey: .title),
-            videoRemoteURL: try container.decode(URL.self, forKey: .assetURL),
-            thumbnailURL: try container.decodeIfPresent(URL.self, forKey: .thumbURL),
+            audioRemoteURL: try container.decode(URL.self, forKey: .assetURL),
             file: try AttachmentFile(from: decoder),
             extraData: try Self.decodeExtraData(from: decoder)
         )

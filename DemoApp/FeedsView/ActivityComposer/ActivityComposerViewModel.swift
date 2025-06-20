@@ -100,7 +100,7 @@ import Photos
         for attachment in attachments {
             if let localFileURL = attachment.localFileURL {
                 let attachmentFile = try AttachmentFile(url: localFileURL)
-                let activityAttachment = ChatMessageAttachment<Data>(
+                let activityAttachment = StreamAttachment<Data>(
                     id: AttachmentId(fid: feed.fid.rawValue, activityId: UUID().uuidString, index: 0),
                     type: attachment.type,
                     payload: .init(),
@@ -124,7 +124,7 @@ import Photos
         addedAssets = []
     }
     
-    func upload(attachment: AnyChatMessageAttachment) async throws -> UploadedAttachment {
+    func upload(attachment: AnyStreamAttachment) async throws -> UploadedAttachment {
         try await withCheckedThrowingContinuation { continuation in
             attachmentsUploader.upload(attachment, progress: nil) { result in
                 switch result {

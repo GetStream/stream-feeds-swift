@@ -7,9 +7,9 @@ import StreamCore
 
 /// A type alias for attachment with `LinkAttachmentPayload` payload type.
 ///
-/// The `ChatMessageLinkAttachment` attachment will be added to the message automatically
-/// if the message is sent with the text containing the URL.
-public typealias ChatMessageLinkAttachment = ChatMessageAttachment<LinkAttachmentPayload>
+/// The `StreamLinkAttachment` attachment will be added to the content automatically
+/// if the content is sent with the text containing the URL.
+public typealias StreamLinkAttachment = StreamAttachment<LinkAttachmentPayload>
 
 /// Represents a payload for attachments with `.linkPreview` type.
 public struct LinkAttachmentPayload: AttachmentPayload {

@@ -7,10 +7,10 @@ import StreamCore
 
 /// A type alias for attachment with `VoiceRecordingAttachmentPayload` payload type.
 ///
-/// The `ChatMessageVoiceRecordingAttachment` attachment will be added to the message
-/// automatically if the message was sent with attached `AnyAttachmentPayload` created with
+/// The `StreamVoiceRecordingAttachment` attachment will be added to the content
+/// automatically if the content was sent with attached `AnyAttachmentPayload` created with
 /// local URL and `.voiceRecording` attachment type.
-public typealias ChatMessageVoiceRecordingAttachment = ChatMessageAttachment<VoiceRecordingAttachmentPayload>
+public typealias StreamVoiceRecordingAttachment = StreamAttachment<VoiceRecordingAttachmentPayload>
 
 /// Represents a payload for attachments with `.voiceRecording` type.
 public struct VoiceRecordingAttachmentPayload: AttachmentPayload {

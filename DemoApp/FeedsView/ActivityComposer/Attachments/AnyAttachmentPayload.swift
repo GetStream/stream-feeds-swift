@@ -47,8 +47,8 @@ public extension AnyAttachmentPayload {
     /// - Important: This initializer should only be used for attachments already uploaded or not requiring uploading.
     /// Please use `init(localFileURL:customPayload:)` initializer for custom attachments requiring uploading.
     ///
-    /// If attached to the new message the attachment with the given payload will be immediately
-    /// available on `ChatMessage` with the `uploadingState == nil` since it doesn't require prior
+    /// If attached to the new content the attachment with the given payload will be immediately
+    /// available on it, with the `uploadingState == nil` since it doesn't require prior
     /// uploading.
     ///
     /// - Parameter payload: The payload to have the message attachment with.
@@ -64,7 +64,7 @@ public extension AnyAttachmentPayload {
     /// Use this initialiser if you want to create a custom attachment which will be lazily uploaded after creating a message.
     /// You can track the progress of the attachment upload in your custom `AttachmentViewInjector`.
     ///
-    /// - Important: You will need to inject a `ChatClientConfig.uploadedAttachmentPostProcessor` and update the url of your
+    /// - Important: For chat, you will need to inject a `ChatClientConfig.uploadedAttachmentPostProcessor` and update the url of your
     ///   custom attachment with the given remote url. You should read the docs on how to properly do this here: https://getstream.io/chat/docs/sdk/ios/uikit/guides/working-with-attachments/#tracking-custom-attachment-upload-progress.
     ///
     /// - Parameters:
@@ -192,7 +192,7 @@ extension AttachmentPayload {
     }
 }
 
-extension ChatMessageAttachment<Data> {
+extension StreamAttachment<Data> {
     func toAnyAttachmentPayload() -> AnyAttachmentPayload? {
         let types: [AttachmentType: AttachmentPayload.Type] = [
             .image: ImageAttachmentPayload.self,
@@ -218,7 +218,7 @@ extension ChatMessageAttachment<Data> {
     }
 }
 
-public extension Array where Element == ChatMessageAttachment<Data> {
+public extension Array where Element == StreamAttachment<Data> {
     func toAnyAttachmentPayload() -> [AnyAttachmentPayload] {
         compactMap { $0.toAnyAttachmentPayload() }
     }

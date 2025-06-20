@@ -4,10 +4,10 @@
 
 import Foundation
 
-/// A type representing a chat message attachment.
-/// `ChatMessageAttachment<Payload>` is an immutable snapshot of message attachment at the given time.
+/// A type representing a content attachment.
+/// `StreamAttachment<Payload>` is an immutable snapshot of the attachment at the given time.
 @dynamicMemberLookup
-public struct ChatMessageAttachment<Payload> {
+public struct StreamAttachment<Payload> {
     /// The attachment identifier.
     public let id: AttachmentId
 
@@ -45,14 +45,14 @@ public struct ChatMessageAttachment<Payload> {
     }
 }
 
-public extension ChatMessageAttachment {
+public extension StreamAttachment {
     subscript<T>(dynamicMember keyPath: KeyPath<Payload, T>) -> T {
         payload[keyPath: keyPath]
     }
 }
 
-extension ChatMessageAttachment: Equatable where Payload: Equatable {}
-extension ChatMessageAttachment: Hashable where Payload: Hashable {}
+extension StreamAttachment: Equatable where Payload: Equatable {}
+extension StreamAttachment: Hashable where Payload: Hashable {}
 
 /// A type represeting the downloading state for attachments.
 public struct AttachmentDownloadingState: Hashable {
@@ -85,9 +85,9 @@ public struct AttachmentUploadingState: Hashable {
 
 // MARK: - Type erasure/recovery
 
-public typealias AnyChatMessageAttachment = ChatMessageAttachment<Data>
+public typealias AnyStreamAttachment = StreamAttachment<Data>
 
-public extension AnyChatMessageAttachment {
+public extension AnyStreamAttachment {
     /// Converts type-erased attachment to the attachment with the concrete payload.
     ///
     /// Attachment with the requested payload type will be returned if the type-erased payload
@@ -97,7 +97,7 @@ public extension AnyChatMessageAttachment {
     /// - Returns: The attachment with the requested payload type or `nil`.
     func attachment<PayloadData: AttachmentPayload>(
         payloadType: PayloadData.Type
-    ) -> ChatMessageAttachment<PayloadData>? {
+    ) -> StreamAttachment<PayloadData>? {
         guard
             PayloadData.type == type || type == .unknown,
             let concretePayload = try? JSONDecoder.default.decode(PayloadData.self, from: payload)
@@ -114,10 +114,10 @@ public extension AnyChatMessageAttachment {
 }
 
 // swiftlint:disable force_try
-public extension ChatMessageAttachment where Payload: AttachmentPayload {
+public extension StreamAttachment where Payload: AttachmentPayload {
     /// Returns an attachment matching `self` but payload casted to `Any`.
-    var asAnyAttachment: AnyChatMessageAttachment {
-        AnyChatMessageAttachment(
+    var asAnyAttachment: AnyStreamAttachment {
+        AnyStreamAttachment(
             id: id,
             type: type,
             payload: try! JSONEncoder.default.encode(payload),
@@ -129,10 +129,10 @@ public extension ChatMessageAttachment where Payload: AttachmentPayload {
 
 // swiftlint:enable force_try
 
-public extension ChatMessageAttachment where Payload: AttachmentPayload {
+public extension StreamAttachment where Payload: AttachmentPayload {
     func asAttachment<NewPayload: AttachmentPayload>(
         payloadType: NewPayload.Type
-    ) -> ChatMessageAttachment<NewPayload>? {
+    ) -> StreamAttachment<NewPayload>? {
         guard
             let payloadData = try? JSONEncoder.default.encode(payload),
             let concretePayload = try? JSONDecoder.default.decode(NewPayload.self, from: payloadData)
@@ -188,7 +188,7 @@ extension URL {
     }
 }
 
-extension ChatMessageAttachment where Payload: AttachmentPayloadDownloading {
+extension StreamAttachment where Payload: AttachmentPayloadDownloading {
     /// A local and unique file path for the attachment.
     var relativeStoragePath: String {
         "\(id.activityId)-\(id.index)/\(payload.localStorageFileName)"
