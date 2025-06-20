@@ -14,16 +14,16 @@ import SwiftUI
     @Published var addCommentShown = false
     @Published var errorShown = false
     
-    let poll: PollData
     let activity: Activity
     let user: User
         
     private var cancellables = Set<AnyCancellable>()
     private(set) var animateChanges = false
     private var loadingComments = true
+    
+    var poll: PollData? { activity.state.poll }
         
-    init(poll: PollData, activity: Activity, user: User) {
-        self.poll = poll
+    init(activity: Activity, user: User) {
         self.activity = activity
         self.user = user
         refresh()
@@ -42,7 +42,6 @@ import SwiftUI
         Task {
             do {
                 try await activity.queryPollVotes(
-                    pollId: poll.id,
                     userId: user.id,
                     request: .init(filter: ["is_answer": .bool(true)])
                 )
@@ -55,7 +54,7 @@ import SwiftUI
     }
     
     var showsAddCommentButton: Bool {
-        poll.isClosed == false
+        activity.state.poll?.isClosed == false
     }
     
     var currentUserAddedComment: Bool {
@@ -65,8 +64,6 @@ import SwiftUI
     func add(comment: String) {
         Task { @MainActor in
             try await activity.castPollVote(
-                activityId: activity.activityId,
-                pollId: poll.id,
                 request: .init(vote: .init(answerText: newCommentText))
             )
         }

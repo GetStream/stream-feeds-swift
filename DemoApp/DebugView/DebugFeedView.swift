@@ -48,8 +48,7 @@ struct DebugFeedView: View {
         [
             DebugAction(title: "Generate 10 Activities") {
                 for index in (0..<10).reversed() {
-                    let request = AddActivityRequest(
-                        fids: [feed.fid.rawValue],
+                    let request = FeedAddActivityRequest(
                         text: "Generated \(index) at \(Date().formatted(.dateTime))",
                         type: "activity"
                     )

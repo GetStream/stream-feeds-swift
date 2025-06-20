@@ -145,8 +145,6 @@ import SwiftUI
         Task {
             do {
                 try await activity.castPollVote(
-                    activityId: activityInfo.id,
-                    pollId: poll.id,
                     request: .init(vote: .init(optionId: option.id))
                 )
                 try await Task.sleep(nanoseconds: 300_000_000)
@@ -167,8 +165,6 @@ import SwiftUI
     public func add(comment: String) {
         Task {
             try await activity.castPollVote(
-                activityId: activityInfo.id,
-                pollId: poll.id,
                 request: .init(vote: .init(answerText: comment))
             )
         }
@@ -184,8 +180,6 @@ import SwiftUI
         Task {
             do {
                 try await activity.removePollVote(
-                    activityId: activityInfo.id,
-                    pollId: poll.id,
                     voteId: vote.id,
                     userId: feedsClient.user.id
                 )
@@ -204,7 +198,7 @@ import SwiftUI
         isClosingPoll = true
         Task {
             do {
-                try await activity.closePoll(pollId: poll.id)
+                try await activity.closePoll()
                 self.isClosingPoll = false
             } catch {
                 self.isClosingPoll = false
@@ -225,7 +219,6 @@ import SwiftUI
         guard !isDuplicate else { return }
         Task {
             try await activity.createPollOption(
-                pollId: poll.id,
                 request: .init(text: suggestOptionText)
             )
         }

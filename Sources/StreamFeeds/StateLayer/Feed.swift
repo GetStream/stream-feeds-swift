@@ -14,6 +14,7 @@ public final class Feed: Sendable {
     private let user: User
     
     private let activitiesRepository: ActivitiesRepository
+    private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
     private let pollsRepository: PollsRepository
     
@@ -24,6 +25,7 @@ public final class Feed: Sendable {
     ) {
         self.user = user
         self.activitiesRepository = client.activitiesRepository
+        self.commentsRepository = client.commentsRepository
         self.feedsRepository = client.feedsRepository
         self.pollsRepository = client.pollsRepository
         self.feedQuery = query
@@ -84,9 +86,9 @@ public final class Feed: Sendable {
     /// - Returns: The created activity data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func addActivity(request: AddActivityRequest) async throws -> ActivityData {
+    public func addActivity(request: FeedAddActivityRequest) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(
-            request: request
+            request: request.withFid(fid)
         )
         await state.changeHandlers.activityAdded(activity)
         return activity
@@ -118,6 +120,16 @@ public final class Feed: Sendable {
     }
     
     // MARK: - Activity Interactions
+    
+    /// Adds a new comment to activity with id.
+    ///
+    /// - Parameter request: The request containing the comment data to add
+    /// - Returns: The created comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func addComment(request: AddCommentRequest) async throws -> CommentData {
+        try await commentsRepository.addComment(request: request)
+    }
     
     /// Marks an activity as read or unread.
     ///
@@ -339,14 +351,13 @@ public final class Feed: Sendable {
     /// - Parameters:
     ///   - request: The request containing the poll data to create
     ///   - activityType: The type of activity to create for the poll
-    /// - Returns: The created poll data
+    /// - Returns: The created activity with poll
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> PollData {
+    public func createPoll(request: CreatePollRequest, activityType: String) async throws -> ActivityData {
         let poll = try await pollsRepository.createPoll(request: request)
-        _ = try await activitiesRepository.addActivity(
+        return try await activitiesRepository.addActivity(
             request: .init(fids: [fid.rawValue], pollId: poll.id, type: activityType)
         )
-        return poll
     }
 }

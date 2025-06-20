@@ -158,9 +158,10 @@ extension ActivityState {
     
     /// Provides thread-safe access to the state for modifications.
     ///
-    /// - Parameter changes: A closure that receives the current state and can modify it
-    func update(_ changes: @MainActor (ActivityState) -> Void) {
-        changes(self)
+    /// - Parameter actions: A closure that receives the current state and can modify it
+    /// - Returns: The result of the actions closure
+    func access<T>(_ actions: @MainActor (ActivityState) -> T) -> T {
+        actions(self)
     }
     
     /// Updates the state with comments query results.

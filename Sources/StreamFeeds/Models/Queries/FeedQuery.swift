@@ -10,6 +10,9 @@ public struct FeedQuery: Sendable {
     public let activityLimit: Int?
     public let data: FeedInput?
     
+    /// Subscribes to web-socket events for this feed if true.
+    public var watch = true
+    
     public init(fid: FeedId, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, data: FeedInput? = nil) {
         self.fid = fid
         self.activityFilter = activityFilter
@@ -35,7 +38,7 @@ extension FeedQuery {
             next: nil,
             prev: nil,
             view: nil,
-            watch: true
+            watch: watch
         )
     }
 }

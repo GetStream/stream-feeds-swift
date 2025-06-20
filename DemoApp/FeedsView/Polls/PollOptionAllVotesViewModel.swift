@@ -39,7 +39,6 @@ import SwiftUI
         Task { @MainActor in
             do {
                 self.pollVotes = try await activity.queryPollVotes(
-                    pollId: poll.id,
                     userId: feedsClient.user.id,
                     request: .init(
                         filter: ["poll_id": .string(poll.id), "option_id": .string(option.id)]
