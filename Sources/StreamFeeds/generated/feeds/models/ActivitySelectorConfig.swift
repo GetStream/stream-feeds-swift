@@ -39,6 +39,3 @@ public final class ActivitySelectorConfig: @unchecked Sendable, Codable, JSONEnc
         hasher.combine(type)
     }
 }
-
-//TODO: move this.
-public struct SortParam: @unchecked Sendable, Codable, JSONEncodable, Hashable {}
