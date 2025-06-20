@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
 import Foundation
 @preconcurrency import StreamCore
 
@@ -40,6 +41,13 @@ public final class FeedsClient: Sendable {
     
     let connectTask = AllocatedUnfairLock<Task<Void, Error>?>(nil)
     
+    nonisolated(unsafe) private let eventSubject: PassthroughSubject<Event, Never> = .init()
+    public var eventPublisher: AnyPublisher<Event, Never> {
+        eventSubject
+            .eraseToAnyPublisher()
+    }
+
+    
     /// Initializes a new FeedsClient instance.
     ///
     /// - Parameters:
@@ -77,13 +85,15 @@ public final class FeedsClient: Sendable {
             middlewares: [defaultParams]
         )
         self.eventNotificationCenter = EventNotificationCenter()
-        eventNotificationCenter.add(middlewares: [eventsMiddleware])
         
         activitiesRepository = ActivitiesRepository(apiClient: apiClient)
         commentsRepository = CommentsRepository(apiClient: apiClient)
         devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
+        
+        eventsMiddleware.add(subscriber: self)
+        eventNotificationCenter.add(middlewares: [eventsMiddleware])
     }
     
     // MARK: - Connecting the User
@@ -182,6 +192,32 @@ public final class FeedsClient: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func queryFeeds(request: QueryFeedsRequest) async throws -> QueryFeedsResponse {
         try await apiClient.feedsQueryFeeds(queryFeedsRequest: request)
+    }
+    
+    // MARK: - Events
+    
+    /// Creates a typed event publisher for specific event types.
+    ///
+    /// This method allows you to subscribe to specific event types by filtering the main event stream.
+    /// It's useful when you only want to handle certain types of events.
+    ///
+    /// - Parameter event: The specific event type to filter for
+    /// - Returns: A publisher that emits only events of the specified type
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   client.eventPublisher(for: ActivityAddedEvent.self)
+    ///       .sink { activityEvent in
+    ///           print("New activity: \(activityEvent.activity.id)")
+    ///       }
+    ///       .store(in: &cancellables)
+    ///   ```
+    public func eventPublisher<WSEvent: Event>(
+        for event: WSEvent.Type
+    ) -> AnyPublisher<WSEvent, Never> {
+        eventSubject
+            .compactMap { $0 as? WSEvent }
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Activities
@@ -287,4 +323,11 @@ extension FeedsClient: ConnectionStateDelegate {
         _ client: WebSocketClient,
         didUpdateConnectionState state: WebSocketConnectionState
     ) {}
+}
+
+extension FeedsClient: WSEventsSubscriber {
+    
+    func onEvent(_ event: any Event) {
+        eventSubject.send(event)
+    }
 }
