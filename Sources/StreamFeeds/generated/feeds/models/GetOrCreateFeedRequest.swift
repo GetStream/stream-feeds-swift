@@ -10,6 +10,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var filter: [String: RawJSON]?
     public var followerPagination: PagerRequest?
     public var followingPagination: PagerRequest?
+    public var interestWeights: [String: Float]?
     public var limit: Int?
     public var memberPagination: PagerRequest?
     public var next: String?
@@ -17,7 +18,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var view: String?
     public var watch: Bool?
 
-    public init(activitySelectorOptions: [String: RawJSON]? = nil, commentLimit: Int? = nil, commentSort: String? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followerPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
+    public init(activitySelectorOptions: [String: RawJSON]? = nil, commentLimit: Int? = nil, commentSort: String? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followerPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
         self.activitySelectorOptions = activitySelectorOptions
         self.commentLimit = commentLimit
         self.commentSort = commentSort
@@ -26,6 +27,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         self.filter = filter
         self.followerPagination = followerPagination
         self.followingPagination = followingPagination
+        self.interestWeights = interestWeights
         self.limit = limit
         self.memberPagination = memberPagination
         self.next = next
@@ -43,6 +45,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         case filter
         case followerPagination = "follower_pagination"
         case followingPagination = "following_pagination"
+        case interestWeights = "interest_weights"
         case limit
         case memberPagination = "member_pagination"
         case next
@@ -60,6 +63,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
             lhs.filter == rhs.filter &&
             lhs.followerPagination == rhs.followerPagination &&
             lhs.followingPagination == rhs.followingPagination &&
+            lhs.interestWeights == rhs.interestWeights &&
             lhs.limit == rhs.limit &&
             lhs.memberPagination == rhs.memberPagination &&
             lhs.next == rhs.next &&
@@ -77,6 +81,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         hasher.combine(filter)
         hasher.combine(followerPagination)
         hasher.combine(followingPagination)
+        hasher.combine(interestWeights)
         hasher.combine(limit)
         hasher.combine(memberPagination)
         hasher.combine(next)
