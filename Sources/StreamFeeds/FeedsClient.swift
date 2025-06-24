@@ -13,10 +13,16 @@ public final class FeedsClient: Sendable {
     public let apiKey: APIKey
     public let user: User
     public let token: UserToken
+
+    let attachmentsUploader: StreamAttachmentUploader
     
     private let apiClient: DefaultAPI
     private let devicesClient: DevicesAPI
     private let apiTransport: DefaultAPITransport
+    private let cdnClient: CDNClient
+    
+    nonisolated(unsafe) private var requestEncoder: RequestEncoder
+    nonisolated(unsafe) private var connectionProvider: ConnectionProvider?
     
     let xStreamClientHeader = "stream-feeds-swift-v0.0.1"
     
@@ -73,7 +79,10 @@ public final class FeedsClient: Sendable {
             tokenProvider: tokenProvider
         )
         let basePath = "http://\(host):3030"
-        let defaultParams = DefaultParams(apiKey: apiKey.apiKeyString, xStreamClientHeader: xStreamClientHeader)
+        let defaultParams = DefaultParams(
+            apiKey: apiKey.apiKeyString,
+            xStreamClientHeader: xStreamClientHeader
+        )
         self.apiClient = DefaultAPI(
             basePath: basePath,
             transport: apiTransport,
@@ -91,6 +100,17 @@ public final class FeedsClient: Sendable {
         devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
+        
+        self.requestEncoder = DefaultRequestEncoder(
+            baseURL: URL(string: basePath)!,
+            apiKey: apiKey
+        )
+        self.cdnClient = StreamCDNClient(
+            encoder: requestEncoder,
+            decoder: DefaultRequestDecoder(),
+            sessionConfiguration: .default
+        )
+        self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
         
         eventsMiddleware.add(subscriber: self)
         eventNotificationCenter.add(middlewares: [eventsMiddleware])
@@ -115,6 +135,12 @@ public final class FeedsClient: Sendable {
                 return await self.loadConnectionId()
             }
             self._userAuth.withLock { $0 = userAuth }
+            let connectionId = try await userAuth.connectionId()
+            connectionProvider = ConnectionProvider(
+                connectionId: connectionId,
+                token: token
+            )
+            self.requestEncoder.connectionDetailsProviderDelegate = connectionProvider
             apiClient.middlewares.append(userAuth)
             devicesClient.middlewares.append(userAuth)
         } else {

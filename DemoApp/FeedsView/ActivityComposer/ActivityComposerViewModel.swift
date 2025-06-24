@@ -17,31 +17,10 @@ import Photos
     @Published public var text = ""
     @Published var createPollShown = false
     
-    let attachmentsUploader: StreamAttachmentUploader
     let feed: Feed
-    var requestEncoder: RequestEncoder
-    let cdnClient: CDNClient
-    var connectionProvider: ConnectionProvider?
     
     init(feed: Feed, feedsClient: FeedsClient) {
         self.feed = feed
-        self.requestEncoder = DefaultRequestEncoder(baseURL: URL(string: "http://\(host):3030")!, apiKey: .init("892s22ypvt6m"))
-        self.cdnClient = StreamCDNClient(
-            encoder: requestEncoder,
-            decoder: DefaultRequestDecoder(),
-            sessionConfiguration: .default
-        )
-        self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
-        if let userAuth = feedsClient.userAuth {
-            Task {
-                let connectionId = try await userAuth.connectionId()
-                connectionProvider = ConnectionProvider(
-                    connectionId: connectionId,
-                    token: feedsClient.token
-                )
-                self.requestEncoder.connectionDetailsProviderDelegate = connectionProvider
-            }
-        }
     }
     
     func askForPhotosPermission() {
@@ -96,45 +75,12 @@ import Photos
         }
         
         let attachments = try addedAssets.map { try $0.toAttachmentPayload() }
-        var uploadedAttachments = [Attachment]()
-        for attachment in attachments {
-            if let localFileURL = attachment.localFileURL {
-                let attachmentFile = try AttachmentFile(url: localFileURL)
-                let activityAttachment = StreamAttachment<Data>(
-                    id: AttachmentId(fid: feed.fid.rawValue, activityId: UUID().uuidString, index: 0),
-                    type: attachment.type,
-                    payload: .init(),
-                    downloadingState: nil,
-                    uploadingState: .init(
-                        localFileURL: localFileURL,
-                        state: .pendingUpload, // will not be used
-                        file: attachmentFile
-                    )
-                )
-                let uploaded = try await upload(attachment: activityAttachment)
-                uploadedAttachments.append(
-                    Attachment(assetUrl: uploaded.remoteURL.absoluteString, custom: [:], imageUrl: uploaded.remoteURL.absoluteString)
-                )
-            }
-        }
         _ = try await feed.addActivity(
-            request: .init(attachments: uploadedAttachments, text: text, type: "activity")
+            request: .init(text: text, type: "activity"),
+            attachments: attachments
         )
         text = ""
         addedAssets = []
-    }
-    
-    func upload(attachment: AnyStreamAttachment) async throws -> UploadedAttachment {
-        try await withCheckedThrowingContinuation { continuation in
-            attachmentsUploader.upload(attachment, progress: nil) { result in
-                switch result {
-                case .success(let success):
-                    continuation.resume(returning: success)
-                case .failure(let failure):
-                    continuation.resume(throwing: failure)
-                }
-            }
-        }
     }
     
     private func fetchAssets() {
