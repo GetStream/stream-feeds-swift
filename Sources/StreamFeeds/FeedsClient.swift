@@ -39,7 +39,7 @@ public final class FeedsClient: Sendable {
     let pollsRepository: PollsRepository
     
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
-    private let pushNotificationsConfig: PushNotificationsConfig
+    private let feedsConfig: FeedsConfig
     
     public var userAuth: UserAuth? {
         _userAuth.value
@@ -66,13 +66,13 @@ public final class FeedsClient: Sendable {
         apiKey: APIKey,
         user: User,
         token: UserToken,
-        pushNotificationsConfig: PushNotificationsConfig = .default,
+        feedsConfig: FeedsConfig = .default,
         tokenProvider: UserTokenProvider? = nil
     ) {
         self.apiKey = apiKey
         self.user = user
         self.token = token
-        self.pushNotificationsConfig = pushNotificationsConfig
+        self.feedsConfig = feedsConfig
         self.apiTransport = URLSessionTransport(
             urlSession: Self.makeURLSession(),
             xStreamClientHeader: xStreamClientHeader,
@@ -105,7 +105,7 @@ public final class FeedsClient: Sendable {
             baseURL: URL(string: basePath)!,
             apiKey: apiKey
         )
-        self.cdnClient = StreamCDNClient(
+        self.cdnClient = feedsConfig.customCDNClient ?? StreamCDNClient(
             encoder: requestEncoder,
             decoder: DefaultRequestDecoder(),
             sessionConfiguration: .default
@@ -326,7 +326,10 @@ public final class FeedsClient: Sendable {
     ///   - `ClientError` if the push provider is invalid
     ///   - `APIError` if the network request fails or the server returns an error
     public func createDevice(id: String) async throws {
-        try await devicesRepository.createDevice(id: id, pushConfig: pushNotificationsConfig)
+        try await devicesRepository.createDevice(
+            id: id,
+            pushConfig: feedsConfig.pushNotificationsConfig
+        )
     }
     
     /// Deletes a device by its identifier.
