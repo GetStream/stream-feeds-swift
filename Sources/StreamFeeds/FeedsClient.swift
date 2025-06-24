@@ -14,7 +14,7 @@ public final class FeedsClient: Sendable {
     public let user: User
     public let token: UserToken
 
-    let attachmentsUploader: StreamAttachmentUploader
+    public let attachmentsUploader: StreamAttachmentUploader
     
     private let apiClient: DefaultAPI
     private let devicesClient: DevicesAPI
@@ -338,6 +338,30 @@ public final class FeedsClient: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteDevice(deviceId: String) async throws {
         try await devicesRepository.deleteDevice(deviceId: deviceId)
+    }
+    
+    // MARK: - Files
+    
+    /// Deletes a previously uploaded file from the CDN.
+    ///
+    /// This is typically used for videos, or other non-image attachments.
+    /// The method makes an asynchronous request to the global file deletion endpoint.
+    ///
+    /// - Parameter url: The full CDN URL of the file to delete.
+    /// - Throws: An error if the request fails or the file could not be deleted.
+    public func deleteFile(url: String) async throws {
+        _ = try await self.apiClient.deleteFileGlobal(url: url)
+    }
+
+    /// Deletes a previously uploaded image from the CDN.
+    ///
+    /// This is intended for removing images such as user-uploaded photos or thumbnails.
+    /// The method makes an asynchronous request to the global image deletion endpoint.
+    ///
+    /// - Parameter url: The full CDN URL of the image to delete.
+    /// - Throws: An error if the request fails or the image could not be deleted.
+    public func deleteImage(url: String) async throws {
+        _ = try await self.apiClient.deleteImageGlobal(url: url)
     }
 }
 
