@@ -1,0 +1,27 @@
+import Foundation
+import StreamCore
+
+public final class UpsertConfigResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var config: ConfigResponse?
+    public var duration: String
+
+    public init(config: ConfigResponse? = nil, duration: String) {
+        self.config = config
+        self.duration = duration
+    }
+
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case config
+        case duration
+    }
+
+    public static func == (lhs: UpsertConfigResponse, rhs: UpsertConfigResponse) -> Bool {
+        lhs.config == rhs.config &&
+            lhs.duration == rhs.duration
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(config)
+        hasher.combine(duration)
+    }
+}

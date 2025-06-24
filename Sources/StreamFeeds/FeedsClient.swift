@@ -350,7 +350,7 @@ public final class FeedsClient: Sendable {
     /// - Parameter url: The full CDN URL of the file to delete.
     /// - Throws: An error if the request fails or the file could not be deleted.
     public func deleteFile(url: String) async throws {
-        _ = try await self.apiClient.deleteFileGlobal(url: url)
+        _ = try await self.apiClient.deleteFile(url: url)
     }
 
     /// Deletes a previously uploaded image from the CDN.
@@ -361,7 +361,7 @@ public final class FeedsClient: Sendable {
     /// - Parameter url: The full CDN URL of the image to delete.
     /// - Throws: An error if the request fails or the image could not be deleted.
     public func deleteImage(url: String) async throws {
-        _ = try await self.apiClient.deleteImageGlobal(url: url)
+        _ = try await self.apiClient.deleteImage(url: url)
     }
 }
 

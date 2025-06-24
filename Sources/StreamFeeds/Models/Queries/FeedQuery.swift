@@ -26,8 +26,6 @@ public struct FeedQuery: Sendable {
 extension FeedQuery {
     func toRequest() -> GetOrCreateFeedRequest {
         GetOrCreateFeedRequest(
-            commentLimit: 10,
-            commentSort: nil,
             data: data,
             externalRanking: nil,
             filter: activityFilter?.toRawJSON(),

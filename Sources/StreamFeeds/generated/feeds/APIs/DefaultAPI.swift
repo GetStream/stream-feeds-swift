@@ -1079,6 +1079,139 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func ban(banRequest: BanRequest) async throws -> BanResponse {
+        let path = "/api/v2/moderation/ban"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: banRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(BanResponse.self, from: $0)
+        }
+    }
+
+    open func upsertConfig(upsertConfigRequest: UpsertConfigRequest) async throws -> UpsertConfigResponse {
+        let path = "/api/v2/moderation/config"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: upsertConfigRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpsertConfigResponse.self, from: $0)
+        }
+    }
+
+    open func deleteConfig(key: String, team: String?) async throws -> DeleteModerationConfigResponse {
+        var path = "/api/v2/moderation/config/{key}"
+
+        let keyPreEscape = "\(APIHelper.mapValueToPathItem(key))"
+        let keyPostEscape = keyPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "key"), with: keyPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteModerationConfigResponse.self, from: $0)
+        }
+    }
+
+    open func getConfig(key: String, team: String?) async throws -> GetConfigResponse {
+        var path = "/api/v2/moderation/config/{key}"
+
+        let keyPreEscape = "\(APIHelper.mapValueToPathItem(key))"
+        let keyPostEscape = keyPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "key"), with: keyPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
+
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetConfigResponse.self, from: $0)
+        }
+    }
+
+    open func queryModerationConfigs(queryModerationConfigsRequest: QueryModerationConfigsRequest) async throws -> QueryModerationConfigsResponse {
+        let path = "/api/v2/moderation/configs"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: queryModerationConfigsRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(QueryModerationConfigsResponse.self, from: $0)
+        }
+    }
+
+    open func flag(flagRequest: FlagRequest) async throws -> FlagResponse {
+        let path = "/api/v2/moderation/flag"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: flagRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(FlagResponse.self, from: $0)
+        }
+    }
+
+    open func mute(muteRequest: MuteRequest) async throws -> MuteResponse {
+        let path = "/api/v2/moderation/mute"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: muteRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(MuteResponse.self, from: $0)
+        }
+    }
+
+    open func queryReviewQueue(queryReviewQueueRequest: QueryReviewQueueRequest) async throws -> QueryReviewQueueResponse {
+        let path = "/api/v2/moderation/review_queue"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: queryReviewQueueRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(QueryReviewQueueResponse.self, from: $0)
+        }
+    }
+
+    open func submitAction(submitActionRequest: SubmitActionRequest) async throws -> SubmitActionResponse {
+        let path = "/api/v2/moderation/submit_action"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: submitActionRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(SubmitActionResponse.self, from: $0)
+        }
+    }
+
     open func getOG(url: String) async throws -> GetOGResponse {
         let path = "/api/v2/og"
 
@@ -1305,7 +1438,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteFileGlobal(url: String?) async throws -> Response {
+    open func deleteFile(url: String?) async throws -> Response {
         let path = "/api/v2/uploads/file"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
@@ -1323,7 +1456,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func uploadFileGlobal(fileUploadRequest: FileUploadRequest) async throws -> FileUploadResponse {
+    open func uploadFile(fileUploadRequest: FileUploadRequest) async throws -> FileUploadResponse {
         let path = "/api/v2/uploads/file"
 
         let urlRequest = try makeRequest(
@@ -1336,7 +1469,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteImageGlobal(url: String?) async throws -> Response {
+    open func deleteImage(url: String?) async throws -> Response {
         let path = "/api/v2/uploads/image"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
@@ -1354,7 +1487,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func uploadImageGlobal(imageUploadRequest: ImageUploadRequest) async throws -> ImageUploadResponse {
+    open func uploadImage(imageUploadRequest: ImageUploadRequest) async throws -> ImageUploadResponse {
         let path = "/api/v2/uploads/image"
 
         let urlRequest = try makeRequest(
@@ -1567,6 +1700,24 @@ protocol DefaultAPIEndpoints {
 
     func createGuest(createGuestRequest: CreateGuestRequest) async throws -> CreateGuestResponse
 
+    func ban(banRequest: BanRequest) async throws -> BanResponse
+
+    func upsertConfig(upsertConfigRequest: UpsertConfigRequest) async throws -> UpsertConfigResponse
+
+    func deleteConfig(key: String, team: String?) async throws -> DeleteModerationConfigResponse
+
+    func getConfig(key: String, team: String?) async throws -> GetConfigResponse
+
+    func queryModerationConfigs(queryModerationConfigsRequest: QueryModerationConfigsRequest) async throws -> QueryModerationConfigsResponse
+
+    func flag(flagRequest: FlagRequest) async throws -> FlagResponse
+
+    func mute(muteRequest: MuteRequest) async throws -> MuteResponse
+
+    func queryReviewQueue(queryReviewQueueRequest: QueryReviewQueueRequest) async throws -> QueryReviewQueueResponse
+
+    func submitAction(submitActionRequest: SubmitActionRequest) async throws -> SubmitActionResponse
+
     func getOG(url: String) async throws -> GetOGResponse
 
     func createPoll(createPollRequest: CreatePollRequest) async throws -> PollResponse
@@ -1591,13 +1742,13 @@ protocol DefaultAPIEndpoints {
 
     func queryPollVotes(pollId: String, userId: String?, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse
 
-    func deleteFileGlobal(url: String?) async throws -> Response
+    func deleteFile(url: String?) async throws -> Response
 
-    func uploadFileGlobal(fileUploadRequest: FileUploadRequest) async throws -> FileUploadResponse
+    func uploadFile(fileUploadRequest: FileUploadRequest) async throws -> FileUploadResponse
 
-    func deleteImageGlobal(url: String?) async throws -> Response
+    func deleteImage(url: String?) async throws -> Response
 
-    func uploadImageGlobal(imageUploadRequest: ImageUploadRequest) async throws -> ImageUploadResponse
+    func uploadImage(imageUploadRequest: ImageUploadRequest) async throws -> ImageUploadResponse
 
     func queryUsers(payload: QueryUsersPayload?) async throws -> QueryUsersResponse
 

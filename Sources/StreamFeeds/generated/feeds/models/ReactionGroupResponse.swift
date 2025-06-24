@@ -5,9 +5,9 @@ public final class ReactionGroupResponse: @unchecked Sendable, Codable, JSONEnco
     public var count: Int
     public var firstReactionAt: Date
     public var lastReactionAt: Date
-    public var sumScores: Int
+    public var sumScores: Int?
 
-    public init(count: Int, firstReactionAt: Date, lastReactionAt: Date, sumScores: Int) {
+    public init(count: Int, firstReactionAt: Date, lastReactionAt: Date, sumScores: Int?) {
         self.count = count
         self.firstReactionAt = firstReactionAt
         self.lastReactionAt = lastReactionAt
