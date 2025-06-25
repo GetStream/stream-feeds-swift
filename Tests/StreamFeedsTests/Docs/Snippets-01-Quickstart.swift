@@ -2,12 +2,16 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
 import StreamCore
 import StreamFeeds
 import Testing
 
 struct Snippets_01_Quickstart {
     var client: FeedsClient!
+    var feed: Feed!
+    
+    private func handle<T>(_ variable: T) {}
     
     func gettingStarted() async throws {
         // Initialize the client
@@ -28,6 +32,8 @@ struct Snippets_01_Quickstart {
                 type: "post"
             )
         )
+        
+        handle(activity)
     }
     
     func socialMediaFeed() async throws {
@@ -90,6 +96,43 @@ struct Snippets_01_Quickstart {
                 )
             )
         )
+    }
+    
+    func customActivityTypes() async throws {
+        let workoutActivity = try await feed.addActivity(
+            request: .init(
+                custom: [
+                    "distance": 5.2,
+                    "duration": 1800,
+                    "calories": 450
+                ],
+                text: "Just finished my run",
+                type: "workout"
+            )
+        )
+        
+        handle(workoutActivity)
+    }
+    
+    func realTimeUpdatesWithSwiftUI() async throws {
+        @MainActor class FeedViewModel: ObservableObject {
+            private var cancellables = Set<AnyCancellable>()
+            private let feed: Feed
+            @Published var activities: [ActivityData] = []
+
+            init(feed: Feed) {
+                self.feed = feed
+                setupRealtimeUpdates()
+            }
+
+            private func setupRealtimeUpdates() {
+                feed.state.$activities
+                    .sink { [weak self] activities in
+                        self?.activities = activities
+                    }
+                    .store(in: &cancellables)
+            }
+        }
     }
 }
 
