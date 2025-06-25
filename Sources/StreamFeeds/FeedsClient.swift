@@ -16,6 +16,8 @@ public final class FeedsClient: Sendable {
 
     public let attachmentsUploader: StreamAttachmentUploader
     
+    public let moderation: Moderation
+    
     private let apiClient: DefaultAPI
     private let devicesClient: DevicesAPI
     private let apiTransport: DefaultAPITransport
@@ -111,6 +113,7 @@ public final class FeedsClient: Sendable {
             sessionConfiguration: .default
         )
         self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
+        self.moderation = Moderation(apiClient: apiClient)
         
         eventsMiddleware.add(subscriber: self)
         eventNotificationCenter.add(middlewares: [eventsMiddleware])
