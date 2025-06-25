@@ -32,6 +32,13 @@ final class ActivitiesRepository: Sendable {
         return response.activity.toModel()
     }
     
+    // MARK: - Activity Batch Operations
+    
+    func upsertActivities(_ activities: [ActivityRequest]) async throws -> [ActivityData] {
+        let response = try await apiClient.upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest(activities: activities))
+        return response.activities.map { $0.toModel() }
+    }
+    
     // MARK: - Activity Interactions
     
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
