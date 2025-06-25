@@ -96,13 +96,6 @@ public final class FeedsClient: Sendable {
             middlewares: [defaultParams]
         )
         self.eventNotificationCenter = EventNotificationCenter()
-        
-        activitiesRepository = ActivitiesRepository(apiClient: apiClient)
-        commentsRepository = CommentsRepository(apiClient: apiClient)
-        devicesRepository = DevicesRepository(devicesClient: devicesClient)
-        feedsRepository = FeedsRepository(apiClient: apiClient)
-        pollsRepository = PollsRepository(apiClient: apiClient)
-        
         self.requestEncoder = DefaultRequestEncoder(
             baseURL: URL(string: basePath)!,
             apiKey: apiKey
@@ -113,6 +106,13 @@ public final class FeedsClient: Sendable {
             sessionConfiguration: .default
         )
         self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
+        
+        activitiesRepository = ActivitiesRepository(apiClient: apiClient, attachmentUploader: attachmentsUploader)
+        commentsRepository = CommentsRepository(apiClient: apiClient)
+        devicesRepository = DevicesRepository(devicesClient: devicesClient)
+        feedsRepository = FeedsRepository(apiClient: apiClient)
+        pollsRepository = PollsRepository(apiClient: apiClient)
+        
         self.moderation = Moderation(apiClient: apiClient)
         
         eventsMiddleware.add(subscriber: self)

@@ -76,8 +76,7 @@ import Photos
         
         let attachments = try addedAssets.map { try $0.toAttachmentPayload() }
         _ = try await feed.addActivity(
-            request: .init(text: text, type: "activity"),
-            attachments: attachments
+            request: .init(attachmentUploads: attachments, text: text, type: "activity")
         )
         text = ""
         addedAssets = []

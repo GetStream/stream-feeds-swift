@@ -89,57 +89,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addActivity(request: FeedAddActivityRequest) async throws -> ActivityData {
-        let activity = try await activitiesRepository.addActivity(
-            request: request.withFid(fid)
-        )
-        await state.changeHandlers.activityAdded(activity)
-        return activity
-    }
-        
-    /// Adds a new activity with local attachments (that are automatically uploaded) to the feed.
-    ///
-    /// - Parameters:
-    ///  - request: The request containing the activity data to add
-    ///  - attachments: list of local attachments that will be uploaded.
-    /// - Returns: The created activity data
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func addActivity(
-        request: FeedAddActivityRequest,
-        attachments: [AnyAttachmentPayload]
-    ) async throws -> ActivityData {
-        var uploadedAttachments = [Attachment]()
-        for (index, attachment) in attachments.enumerated() {
-            if let localFileURL = attachment.localFileURL {
-                let attachmentFile = try AttachmentFile(url: localFileURL)
-                let activityAttachment = StreamAttachment<Data>(
-                    id: AttachmentId(
-                        fid: fid.rawValue,
-                        activityId: UUID().uuidString, //TODO: how do we know this?
-                        index: index
-                    ),
-                    type: attachment.type,
-                    payload: .init(),
-                    downloadingState: nil,
-                    uploadingState: .init(
-                        localFileURL: localFileURL,
-                        state: .pendingUpload, // will not be used
-                        file: attachmentFile
-                    )
-                )
-                let uploaded = try await upload(attachment: activityAttachment)
-                uploadedAttachments.append(
-                    Attachment(assetUrl: uploaded.remoteURL.absoluteString, custom: [:], imageUrl: uploaded.remoteURL.absoluteString)
-                )
-            }
-        }
-
-        let request = request.withFid(fid)
-        let existing = request.attachments ?? []
-        request.attachments = uploadedAttachments + existing
-        let activity = try await activitiesRepository.addActivity(
-            request: request
-        )
+        let activity = try await activitiesRepository.addActivity(request: request, in: fid)
         await state.changeHandlers.activityAdded(activity)
         return activity
     }
@@ -409,20 +359,5 @@ public final class Feed: Sendable {
         return try await activitiesRepository.addActivity(
             request: .init(fids: [fid.rawValue], pollId: poll.id, type: activityType)
         )
-    }
-    
-    // MARK: - private
-    
-    private func upload(attachment: AnyStreamAttachment) async throws -> UploadedAttachment {
-        try await withCheckedThrowingContinuation { continuation in
-            attachmentsUploader.upload(attachment, progress: nil) { result in
-                switch result {
-                case .success(let success):
-                    continuation.resume(returning: success)
-                case .failure(let failure):
-                    continuation.resume(throwing: failure)
-                }
-            }
-        }
     }
 }
