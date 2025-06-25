@@ -14,10 +14,10 @@ public struct ActivitiesQuery: Sendable {
     
     public init(
         filter: ActivityFilter?,
-        sort: [Sort<ActivitiesSortField>],
-        next: String?,
-        previous: String?,
-        limit: Int?
+        sort: [Sort<ActivitiesSortField>] = [],
+        next: String? = nil,
+        previous: String? = nil,
+        limit: Int? = nil
     ) {
         self.filter = filter
         self.sort = sort
@@ -69,8 +69,8 @@ public struct ActivityFilter: Filter {
 public struct ActivitiesSortField: SortField {
     public let rawValue: String
     
-    static let createdAt: Self = "created_at"
-    static let popularity: Self = "popularity"
+    public static let createdAt: Self = "created_at"
+    public static let popularity: Self = "popularity"
 }
 
 extension ActivitiesSortField: ExpressibleByStringLiteral {

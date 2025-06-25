@@ -40,6 +40,9 @@ public enum FilterOperator: String, Sendable {
 
     /// Matches if the key array contains the given value.
     case contains = "$contains"
+    
+    /// Matches if the value contains JSON with the given path.
+    case pathExists = "$path_exists"
 }
 
 extension FilterOperator {

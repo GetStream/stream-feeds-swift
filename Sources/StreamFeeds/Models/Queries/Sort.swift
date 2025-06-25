@@ -12,7 +12,7 @@ public struct Sort<Field: SortField>: Sendable {
     public let field: Field
     public let direction: SortDirection
 
-    init(field: Field, direction: SortDirection) {
+    public init(field: Field, direction: SortDirection) {
         self.direction = direction
         self.field = field
     }

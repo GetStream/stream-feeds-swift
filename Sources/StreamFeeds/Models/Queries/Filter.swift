@@ -22,23 +22,77 @@ public protocol FilterFieldRepresentable: Sendable {
 
 extension FilterFieldRepresentable {
     static var and: Self { Self(value: "$and") }
+    static var or: Self { Self(value: "$or") }
 }
+
+// MARK: - Filter Building
 
 extension Filter {
     public static func equal<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
         F(filterOperator: .equal, field: field, value: value)
     }
     
+    public static func greater<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .greater, field: field, value: value)
+    }
+    
+    public static func greaterOrEqual<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .greaterOrEqual, field: field, value: value)
+    }
+    
+    public static func less<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .less, field: field, value: value)
+    }
+    
+    public static func lessOrEqual<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .lessOrEqual, field: field, value: value)
+    }
+    
+    public static func `in`<F>(_ field: FilterField, values: [F]) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .in, field: field, value: values)
+    }
+    
+    public static func exists<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .exists, field: field, value: value)
+    }
+    
+    public static func contains<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .contains, field: field, value: value)
+    }
+    
+    public static func pathExists<F>(_ field: FilterField, value: String) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .pathExists, field: field, value: value)
+    }
+    
+    public static func autocomplete<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .autocomplete, field: field, value: value)
+    }
+
+    public static func query<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .query, field: field, value: value)
+    }
+        
     public static func and<F>(_ filters: [F]) -> F where F: Filter, F.FilterField == FilterField {
         F(filterOperator: .and, field: .and, value: filters)
+    }
+    
+    public static func or<F>(_ filters: [F]) -> F where F: Filter, F.FilterField == FilterField {
+        F(filterOperator: .or, field: .and, value: filters)
     }
 }
 
 // MARK: - Supported Filter Values
 
+extension Bool: FilterValue {}
+extension Date: FilterValue {}
+extension Double: FilterValue {}
+extension Float: FilterValue {}
+extension Int: FilterValue {}
 extension String: FilterValue {}
+extension URL: FilterValue {}
 
 extension Array: FilterValue where Element: FilterValue {}
+extension Dictionary: FilterValue where Key == String, Value == RawJSON {}
 
 // MARK: - Filter and RawJSON Conversions
 
