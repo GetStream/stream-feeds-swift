@@ -131,7 +131,7 @@ extension ActivityResponse {
             user: user.toModel(),
             visibility: visibility,
             visibilityTag: visibilityTag,
-            _parent: BoxedAny(parent)
+            _parent: BoxedAny(parent?.toModel())
         )
     }
 }
