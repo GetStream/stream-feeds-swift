@@ -96,13 +96,6 @@ public final class FeedsClient: Sendable {
             middlewares: [defaultParams]
         )
         self.eventNotificationCenter = EventNotificationCenter()
-        
-        activitiesRepository = ActivitiesRepository(apiClient: apiClient)
-        commentsRepository = CommentsRepository(apiClient: apiClient)
-        devicesRepository = DevicesRepository(devicesClient: devicesClient)
-        feedsRepository = FeedsRepository(apiClient: apiClient)
-        pollsRepository = PollsRepository(apiClient: apiClient)
-        
         self.requestEncoder = DefaultRequestEncoder(
             baseURL: URL(string: basePath)!,
             apiKey: apiKey
@@ -113,6 +106,13 @@ public final class FeedsClient: Sendable {
             sessionConfiguration: .default
         )
         self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
+        
+        activitiesRepository = ActivitiesRepository(apiClient: apiClient, attachmentUploader: attachmentsUploader)
+        commentsRepository = CommentsRepository(apiClient: apiClient)
+        devicesRepository = DevicesRepository(devicesClient: devicesClient)
+        feedsRepository = FeedsRepository(apiClient: apiClient)
+        pollsRepository = PollsRepository(apiClient: apiClient)
+        
         self.moderation = Moderation(apiClient: apiClient)
         
         eventsMiddleware.add(subscriber: self)
@@ -282,12 +282,12 @@ public final class FeedsClient: Sendable {
     
     /// Upserts (inserts or updates) multiple activities.
     ///
-    /// - Parameter request: The request containing the activities to upsert
-    /// - Returns: A response containing the upserted activities
+    /// - Parameter request: The array of requests to upsert
+    /// - Returns: An array of upserted activities
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func upsertActivities(request: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse {
-        try await apiClient.upsertActivities(upsertActivitiesRequest: request)
+    public func upsertActivities(_ activities: [ActivityRequest]) async throws -> [ActivityData] {
+        try await activitiesRepository.upsertActivities(activities)
     }
     
     /// Removes multiple activities from the specified feeds.

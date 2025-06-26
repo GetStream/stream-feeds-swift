@@ -3,12 +3,15 @@
 //
 
 import Foundation
+import StreamCore
 
 final class ActivitiesRepository: Sendable {
     private let apiClient: DefaultAPI
+    private let attachmentUploader: StreamAttachmentUploader
     
-    init(apiClient: DefaultAPI) {
+    init(apiClient: DefaultAPI, attachmentUploader: StreamAttachmentUploader) {
         self.apiClient = apiClient
+        self.attachmentUploader = attachmentUploader
     }
     
     // MARK: - Activities
@@ -16,6 +19,14 @@ final class ActivitiesRepository: Sendable {
     func addActivity(request: AddActivityRequest) async throws -> ActivityData {
         let response = try await apiClient.addActivity(addActivityRequest: request)
         return response.activity.toModel()
+    }
+    
+    func addActivity(request: FeedAddActivityRequest, in fid: FeedId) async throws -> ActivityData {
+        let uploadedAttachments: [Attachment] = try await {
+            guard let payloads = request.attachmentUploads, !payloads.isEmpty else { return [] }
+            return try await uploadAttachmentPayloads(payloads, in: fid)
+        }()
+        return try await addActivity(request: request.withFid(fid, uploadedAttachments: uploadedAttachments))
     }
         
     func deleteActivity(activityId: String, hardDelete: Bool) async throws {
@@ -30,6 +41,50 @@ final class ActivitiesRepository: Sendable {
     func updateActivity(activityId: String, request: UpdateActivityRequest) async throws -> ActivityData {
         let response = try await apiClient.updateActivity(activityId: activityId, updateActivityRequest: request)
         return response.activity.toModel()
+    }
+    
+    // MARK: - Activity Attachment Uploading
+    
+    func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in fid: FeedId) async throws -> [Attachment] {
+        let dataAttachments: [StreamAttachment<Data>] = try attachments
+            .filter { $0.localFileURL != nil }
+            .enumerated()
+            .compactMap { index, attachment in
+                guard let localFileURL = attachment.localFileURL else { return nil }
+                let attachmentFile = try AttachmentFile(url: localFileURL)
+                let payloadData = try JSONEncoder().encode(attachment.payload)
+                try Task.checkCancellation()
+                return StreamAttachment<Data>(
+                    id: AttachmentId(
+                        fid: fid.rawValue,
+                        activityId: UUID().uuidString, //TODO: how do we know this?
+                        index: index
+                    ),
+                    type: attachment.type,
+                    payload: payloadData,
+                    downloadingState: nil,
+                    uploadingState: .init(
+                        localFileURL: localFileURL,
+                        state: .pendingUpload, // will not be used
+                        file: attachmentFile
+                    )
+                )
+        }
+        return try await attachmentUploader.upload(dataAttachments, progress: nil)
+            .map { uploadedAttachment in
+                Attachment(
+                    assetUrl: uploadedAttachment.remoteURL.absoluteString,
+                    custom: [:],
+                    imageUrl: uploadedAttachment.remoteURL.absoluteString
+                )
+            }
+    }
+    
+    // MARK: - Activity Batch Operations
+    
+    func upsertActivities(_ activities: [ActivityRequest]) async throws -> [ActivityData] {
+        let response = try await apiClient.upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest(activities: activities))
+        return response.activities.map { $0.toModel() }
     }
     
     // MARK: - Activity Interactions

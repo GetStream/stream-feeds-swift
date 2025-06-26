@@ -8,9 +8,11 @@ import StreamCore
 /// A request for adding activities when interacting with ``Feed``.
 public struct FeedAddActivityRequest: Sendable {
     private let request: AddActivityRequest
+    let attachmentUploads: [AnyAttachmentPayload]?
     
     public init(
         attachments: [Attachment]? = nil,
+        attachmentUploads: [AnyAttachmentPayload]? = nil,
         custom: [String: RawJSON]? = nil,
         expiresAt: String? = nil,
         filterTags: [String]? = nil,
@@ -26,6 +28,7 @@ public struct FeedAddActivityRequest: Sendable {
         visibility: AddActivityRequest.ActivityVisibility? = nil,
         visibilityTag: String? = nil
     ) {
+        self.attachmentUploads = attachmentUploads
         request = AddActivityRequest(
             attachments: attachments,
             custom: custom,
@@ -46,8 +49,13 @@ public struct FeedAddActivityRequest: Sendable {
         )
     }
     
-    func withFid(_ fid: FeedId) -> AddActivityRequest {
+    var fidString: String? { request.fids.first }
+    
+    func withFid(_ fid: FeedId, uploadedAttachments: [Attachment]) -> AddActivityRequest {
         request.fids = [fid.rawValue]
+        
+        let attachments = (request.attachments ?? []) + uploadedAttachments
+        request.attachments = attachments.isEmpty ? nil : attachments
         return request
     }
 }

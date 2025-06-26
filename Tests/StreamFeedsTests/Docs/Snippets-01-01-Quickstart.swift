@@ -5,9 +5,8 @@
 import Combine
 import StreamCore
 import StreamFeeds
-import Testing
 
-struct Snippets_01_Quickstart {
+struct Snippets_01_01_Quickstart {
     var client: FeedsClient!
     var feed: Feed!
     
