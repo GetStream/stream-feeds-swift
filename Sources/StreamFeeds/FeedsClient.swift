@@ -214,13 +214,18 @@ public final class FeedsClient: Sendable {
         Feed(query: query, user: user, client: self)
     }
     
-    /// Queries feeds based on the provided request parameters.
+    // MARK: - Feed Lists
+    
+    /// Creates a feed list instance based on the provided query.
     ///
-    /// - Parameter request: The query request containing filtering and pagination parameters
-    /// - Returns: A response containing the queried feeds
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func queryFeeds(request: QueryFeedsRequest) async throws -> QueryFeedsResponse {
-        try await apiClient.feedsQueryFeeds(queryFeedsRequest: request)
+    /// This method creates a `FeedList` object that represents a collection of feeds matching the specified query.
+    /// The feed list can be used to fetch multiple feeds, manage feed groups, and receive real-time updates
+    /// for all feeds in the list.
+    ///
+    /// - Parameter query: The feeds query containing filtering and pagination parameters
+    /// - Returns: A `FeedList` instance that can be used to interact with the collection of feeds
+    public func feedList(for query: FeedsQuery) -> FeedList {
+        FeedList(query: query, client: self)
     }
     
     // MARK: - Events

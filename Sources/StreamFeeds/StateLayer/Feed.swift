@@ -182,8 +182,8 @@ public final class Feed: Sendable {
             return ActivitiesQuery(
                 filter: state.activitiesQueryConfig?.filter,
                 sort: state.activitiesQueryConfig?.sort ?? [],
-                next: nil,
-                previous: next,
+                next: next,
+                previous: nil,
                 limit: limit
             )
         }

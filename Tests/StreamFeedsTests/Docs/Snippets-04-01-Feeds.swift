@@ -167,4 +167,79 @@ import StreamFeeds
         _ = try await feed.acceptFeedMember()
         _ = try await feed.rejectFeedMember()
     }
+    
+    func queryingMyFeeds() async throws {        
+        let query = FeedsQuery(
+            filter: .equal(.createdById, value: "john"),
+            sort: [Sort(field: .createdAt, direction: .reverse)],
+            limit: 10,
+            watch: true
+        )
+        let feedList = client.feedList(for: query)
+        // Page 1
+        let page1 = try await feedList.get()
+        
+        // Page 2
+        let page2 = try await feedList.queryMoreFeeds(limit: 10)
+        
+        let page1And2 = feedList.state.feeds
+        
+        suppressUnusedWarning([page1, page2, page1And2])
+    }
+    
+    func queryingFeedsWhereIAmAMember() async throws {
+        let query = FeedsQuery(
+            filter: .contains(.members, value: "john")
+        )
+        let feedList = client.feedList(for: query)
+        let feeds = try await feedList.get()
+        
+        suppressUnusedWarning(feeds)
+    }
+    
+    func queryingFeedsThatIFollow() async throws {
+        // TODO: How to do this?
+//        let query = FeedsQuery(
+//            filter: .contains(., value: "john")
+//        )
+//        let feedList = client.feedList(for: query)
+//        let feeds = try await feedList.get()
+//        
+//        suppressUnusedWarning(feeds)
+    }
+    
+    func queryingFeedsByNameOrDescription() async throws {
+        let sportsQuery = FeedsQuery(
+            filter: .and([
+                .equal(.visibility, value: "public"),
+                .query(.name, value: "Sports")
+            ])
+        )
+        let sportsFeedList = client.feedList(for: sportsQuery)
+        let sportsFeeds = try await sportsFeedList.get()
+        
+        let techQuery = FeedsQuery(
+            filter: .and([
+                .equal(.visibility, value: "public"),
+                .autocomplete(.description, value: "tech")
+            ])
+        )
+        let techFeedList = client.feedList(for: techQuery)
+        let techFeeds = try await techFeedList.get()
+        
+        suppressUnusedWarning([sportsFeeds, techFeeds])
+    }
+    
+    func queryingFeedsByCreatorName() async throws {
+        let query = FeedsQuery(
+            filter: .and([
+                .equal(.visibility, value: "public"),
+                .query(.createdByName, value: "Thompson")
+            ])
+        )
+        let feedList = client.feedList(for: query)
+        let feeds = try await feedList.get()
+        
+        suppressUnusedWarning(feeds)
+    }
 }

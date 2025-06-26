@@ -21,7 +21,7 @@ import Foundation
     init(feedQuery: FeedQuery, events: WSEventsSubscribing) {
         self.fid = feedQuery.fid
         self.feedQuery = feedQuery
-        webSocketObserver = WebSocketObserver(fid: feedQuery.fid.rawValue, subscribing: events, handlers: makeChangeHandlers())
+        webSocketObserver = WebSocketObserver(fid: feedQuery.fid.rawValue, subscribing: events, handlers: changeHandlers)
     }
     
     /// The unique identifier of the feed.
@@ -89,7 +89,7 @@ extension FeedState {
     ///
     /// - Returns: A ChangeHandlers instance with all the necessary update functions
     private func makeChangeHandlers() -> ChangeHandlers {
-        return ChangeHandlers(
+        ChangeHandlers(
             activityAdded: { [weak self] activity in
                 self?.activities.sortedInsert(activity, using: ActivityData.defaultSorting)
             },

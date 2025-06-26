@@ -56,6 +56,8 @@ struct Snippets_03_03_FileUploads {
                 type: "activity"
             )
         )
+        
+        suppressUnusedWarning(activity)
     }
     
     func howToUploadAFileOrImage_3() async throws {
@@ -67,6 +69,8 @@ struct Snippets_03_03_FileUploads {
                 type: "activity"
             )
         )
+        
+        suppressUnusedWarning(activity)
     }
     
     func usingYourOwnCDN() async throws {
@@ -83,12 +87,12 @@ struct Snippets_03_03_FileUploads {
                     // Your code to handle image uploading.
                     // Don't forget to call `progress(x)` to report back the uploading progress.
                     // When the uploading is finished, call the completion block with the result.
-                    
+                    uploadImage(imageAttachment, progress: progress)
                 } else if let fileAttachment = attachment.attachment(payloadType: FileAttachmentPayload.self) {
                     // Your code to handle file uploading.
                     // Don't forget to call `progress(x)` to report back the uploading progress.
                     // When the uploading is finished, call the completion block with the result.
-                    
+                    uploadFile(fileAttachment, progress: progress)
                 } else {
                     // Unsupported attachment type
                     struct UnsupportedAttachmentType: Error {}
@@ -106,5 +110,9 @@ struct Snippets_03_03_FileUploads {
             token: UserToken("my token"),
             feedsConfig: config
         )
+        
+        suppressUnusedWarning(client)
+        func uploadImage(_ attachment: StreamAttachment<ImageAttachmentPayload>, progress: (@Sendable (Double) -> Void)?) {}
+        func uploadFile(_ attachment: StreamAttachment<FileAttachmentPayload>, progress: (@Sendable (Double) -> Void)?) {}
     }
 }

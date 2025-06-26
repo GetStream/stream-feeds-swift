@@ -54,6 +54,15 @@ final class FeedsRepository: Sendable {
         return response.feed.toModel()
     }
     
+    // MARK: - Feed Lists
+    
+    func queryFeeds(with query: FeedsQuery) async throws -> PaginationResult<FeedData> {
+        let response = try await apiClient.feedsQueryFeeds(queryFeedsRequest: query.toRequest())
+        let feeds = response.feeds.map { $0.toModel() }
+        let pagination = PaginationData(next: response.next, previous: response.prev)
+        return PaginationResult(models: feeds, pagination: pagination)
+    }
+    
     // MARK: - Follows
     
     func queryFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> [FeedData] {

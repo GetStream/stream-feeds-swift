@@ -6,5 +6,5 @@ import Foundation
 
 struct QueryConfiguration<F, S> where F: Filter, S: SortField {
     let filter: F?
-    let sort: [Sort<S>]
+    let sort: [Sort<S>]?
 }

@@ -33,3 +33,14 @@ public enum SortDirection: Int, CustomStringConvertible, Sendable {
 extension Sort: CustomStringConvertible {
     public var description: String { "\(field.rawValue):\(direction)" }
 }
+
+// MARK: - OpenAPI Request
+
+extension Sort {
+    func toRequest() -> SortParamRequest {
+        SortParamRequest(
+            direction: direction.rawValue,
+            field: field.rawValue
+        )
+    }
+}

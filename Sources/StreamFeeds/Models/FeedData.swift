@@ -21,6 +21,12 @@ public struct FeedData: Identifiable, Sendable {
     public let visibility: String?
 }
 
+// MARK: - Sorting
+
+extension FeedData {
+    static let defaultSorting: @Sendable (FeedData, FeedData) -> Bool = { $0.createdAt > $1.createdAt }
+}
+
 // MARK: - Model Conversions
 
 extension FeedResponse {

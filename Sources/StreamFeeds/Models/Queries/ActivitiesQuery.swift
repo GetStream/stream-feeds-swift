@@ -7,7 +7,7 @@ import StreamCore
 
 public struct ActivitiesQuery: Sendable {
     let filter: ActivityFilter?
-    let sort: [Sort<ActivitiesSortField>]
+    let sort: [Sort<ActivitiesSortField>]?
     let next: String?
     let previous: String?
     let limit: Int?
@@ -88,7 +88,7 @@ extension ActivitiesQuery {
             limit: limit,
             next: next,
             prev: previous,
-            sort: sort.map { SortParamRequest(direction: $0.direction.rawValue, field: $0.field.rawValue) }
+            sort: sort?.map { $0.toRequest() }
         )
     }
 }
