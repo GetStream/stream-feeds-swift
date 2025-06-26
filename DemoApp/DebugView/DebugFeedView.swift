@@ -73,7 +73,7 @@ struct DebugAction: Identifiable {
     DebugFeedView(
         feed: client.feed(
             for: FeedQuery(
-                fid: FeedId(groupId: "user", id: UserCredentials.toomas.id),
+                fid: FeedId(group: "user", id: UserCredentials.toomas.id),
                 data: nil
             )
         ),

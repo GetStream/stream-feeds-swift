@@ -22,7 +22,7 @@ final class FeedsRepository: Sendable {
     
     private func getOrCreateFeed(fid: FeedId, request: GetOrCreateFeedRequest) async throws -> GetOrCreateInfo {
         let response = try await apiClient.getOrCreateFeed(
-            feedGroupId: fid.groupId,
+            feedGroupId: fid.group,
             feedId: fid.id,
             getOrCreateFeedRequest: request
         )

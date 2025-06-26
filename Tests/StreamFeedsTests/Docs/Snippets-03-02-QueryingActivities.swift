@@ -16,6 +16,8 @@ struct Snippets_03_02_QueryingActivities {
             limit: 10
         )
         let activities = try await feed.queryActivities(with: query)
+        
+        suppressUnusedWarning(activities)
     }
     
     func queryingActivitiesByText() async throws {
@@ -24,6 +26,8 @@ struct Snippets_03_02_QueryingActivities {
             filter: .query(.text, value: "popularity")
         )
         let activities = try await feed.queryActivities(with: query)
+        
+        suppressUnusedWarning(activities)
     }
     
     func queryingActivitiesBySearchData() async throws {
@@ -39,5 +43,8 @@ struct Snippets_03_02_QueryingActivities {
             filter: .pathExists(.searchData, value: "campaign.location.mall")
         )
         let activities2 = try await feed.queryActivities(with: query2)
+        
+        suppressUnusedWarning(activities)
+        suppressUnusedWarning(activities2)
     }
 }

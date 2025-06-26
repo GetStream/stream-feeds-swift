@@ -32,7 +32,7 @@ struct Snippets_01_01_Quickstart {
             )
         )
         
-        handle(activity)
+        suppressUnusedWarning(activity)
     }
     
     func socialMediaFeed() async throws {
@@ -54,7 +54,7 @@ struct Snippets_01_01_Quickstart {
             )
         )
         // Add a reaction to comment
-        let activity = client.activity(for: "activity_123", in: FeedId(groupId: "timeline", id: "john"))
+        let activity = client.activity(for: "activity_123", in: FeedId(group: "timeline", id: "john"))
         try await activity.addCommentReaction(
             commentId: "comment_123",
             request: .init(type: "love")
@@ -72,7 +72,7 @@ struct Snippets_01_01_Quickstart {
     
     func polls() async throws {
         // Create a poll
-        let feedId = FeedId(groupId: "user", id: "john")
+        let feedId = FeedId(group: "user", id: "john")
         let feed = client.feed(for: feedId)
         let activityData = try await feed.createPoll(
             request: .init(

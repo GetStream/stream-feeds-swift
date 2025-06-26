@@ -38,7 +38,7 @@ public final class Feed: Sendable {
     public var fid: FeedId { feedQuery.fid }
     
     private var id: String { fid.id }
-    private var group: String { fid.groupId }
+    private var group: String { fid.group }
     
     // MARK: - Accessing the State
     

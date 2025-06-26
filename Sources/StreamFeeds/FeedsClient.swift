@@ -173,7 +173,7 @@ public final class FeedsClient: Sendable {
     ///   let timelineFeed = client.feed(group: "timeline", id: "flat")
     ///   ```
     public func feed(group: String, id: String) -> Feed {
-        feed(for: FeedId(groupId: group, id: id))
+        feed(for: FeedId(group: group, id: id))
     }
     
     /// Creates a feed instance for the specified feed ID.

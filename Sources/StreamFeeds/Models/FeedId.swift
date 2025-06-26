@@ -7,10 +7,10 @@ import Foundation
 /// A unique identifier for a feed in the Stream Feeds system.
 ///
 /// A `FeedId` consists of two components:
-/// - `groupId`: The feed group identifier (e.g., "user", "timeline", "notification")
+/// - `group`: The feed group identifier (e.g., "user", "timeline", "notification")
 /// - `id`: The specific feed identifier within that group
 ///
-/// The complete feed identifier is represented as a colon-separated string: `"groupId:id"`
+/// The complete feed identifier is represented as a colon-separated string: `"group:id"`
 /// For example: `"user:john"`, `"timeline:flat"`, `"notification:aggregated"`
 ///
 /// This type is thread-safe and can be used across different execution contexts.
@@ -23,7 +23,7 @@ public struct FeedId: Sendable {
     /// - `"timeline"`: Timeline feeds
     /// - `"notification"`: Notification feeds
     /// - `"aggregated"`: Aggregated feeds
-    public let groupId: String
+    public let group: String
     
     /// The specific feed identifier within the group.
     ///
@@ -34,44 +34,44 @@ public struct FeedId: Sendable {
     /// The complete feed identifier as a colon-separated string.
     ///
     /// This is the canonical string representation of the feed ID,
-    /// formatted as `"groupId:id"`. This value is used for API requests
+    /// formatted as `"group:id"`. This value is used for API requests
     /// and serialization.
     public let rawValue: String
     
     /// Creates a new feed identifier with the specified group and feed IDs.
     ///
     /// - Parameters:
-    ///   - groupId: The feed group identifier (e.g., "user", "timeline")
+    ///   - group: The feed group identifier (e.g., "user", "timeline")
     ///   - id: The specific feed identifier within the group
     ///
     /// - Example:
     ///   ```swift
-    ///   let userFeed = FeedId(groupId: "user", id: "john")
+    ///   let userFeed = FeedId(group: "user", id: "john")
     ///   // Creates "user:john"
     ///   ```
-    public init(groupId: String, id: String) {
-        self.groupId = groupId
+    public init(group: String, id: String) {
+        self.group = group
         self.id = id
-        self.rawValue = "\(groupId):\(id)"
+        self.rawValue = "\(group):\(id)"
     }
     
     /// Creates a feed identifier from a raw string value.
     ///
-    /// The string should be in the format `"groupId:id"`. If the string
+    /// The string should be in the format `"group:id"`. If the string
     /// doesn't contain a colon separator, the entire string will be used
-    /// as the `id` and `groupId` will be empty.
+    /// as the `id` and `group` will be empty.
     ///
     /// - Parameter rawValue: The raw string representation of the feed ID
     ///
     /// - Example:
     ///   ```swift
     ///   let feed = FeedId(rawValue: "user:john")
-    ///   // Creates FeedId with groupId: "user", id: "john"
+    ///   // Creates FeedId with group: "user", id: "john"
     ///   ```
     public init(rawValue: String) {
         self.rawValue = rawValue
         let components = rawValue.split(separator: ":")
-        groupId = String(components.first ?? "")
+        group = String(components.first ?? "")
         id = String(components.last ?? "")
     }
 }

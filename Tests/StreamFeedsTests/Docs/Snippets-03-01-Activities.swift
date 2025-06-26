@@ -10,8 +10,6 @@ struct Snippets_03_01_Activities {
     private var client: FeedsClient!
     private var feed: Feed!
     
-    private func suppressUnusedWarning<T>(_ variable: T) {}
-    
     func creatingActivities() async throws {
         // Add an activity to 1 feed
         let activity = try await feed.addActivity(
