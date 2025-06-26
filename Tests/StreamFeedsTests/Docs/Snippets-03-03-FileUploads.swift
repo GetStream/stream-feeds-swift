@@ -68,4 +68,43 @@ struct Snippets_03_03_FileUploads {
             )
         )
     }
+    
+    func usingYourOwnCDN() async throws {
+        // Your custom implementation of `CDNClient`.
+        class CustomCDN: CDNClient, @unchecked Sendable {
+            static var maxAttachmentSize: Int64 { 20 * 1024 * 1024 }
+            
+            func uploadAttachment(
+                _ attachment: AnyStreamAttachment,
+                progress: (@Sendable (Double) -> Void)?,
+                completion: @Sendable @escaping (Result<URL, Error>) -> Void
+            ) {
+                if let imageAttachment = attachment.attachment(payloadType: ImageAttachmentPayload.self) {
+                    // Your code to handle image uploading.
+                    // Don't forget to call `progress(x)` to report back the uploading progress.
+                    // When the uploading is finished, call the completion block with the result.
+                    
+                } else if let fileAttachment = attachment.attachment(payloadType: FileAttachmentPayload.self) {
+                    // Your code to handle file uploading.
+                    // Don't forget to call `progress(x)` to report back the uploading progress.
+                    // When the uploading is finished, call the completion block with the result.
+                    
+                } else {
+                    // Unsupported attachment type
+                    struct UnsupportedAttachmentType: Error {}
+                    completion(.failure(UnsupportedAttachmentType()))
+                }
+            }
+        }
+        
+        // Assign your custom CDN client to the `FeedsConfig` instance you use
+        // when creating `FeedsClient`.
+        let config = FeedsConfig(customCDNClient: CustomCDN())
+        let client = FeedsClient(
+            apiKey: APIKey("api key"),
+            user: User(id: "user_id"),
+            token: UserToken("my token"),
+            feedsConfig: config
+        )
+    }
 }
