@@ -67,16 +67,21 @@ public struct ActivityFilter: Filter {
 // MARK: - Sorting
 
 public struct ActivitiesSortField: SortField {
-    public let rawValue: String
+    public typealias Model = ActivityData
+    public let comparator: AnySortComparator<Model>
+    public let remote: String
     
-    public static let createdAt: Self = "created_at"
-    public static let popularity: Self = "popularity"
+    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value : Comparable {
+        self.comparator = SortComparator(localValue).toAny()
+        self.remote = remote
+    }
+    
+    public static let createdAt = Self("created_at", localValue: \.createdAt)
+    public static let popularity = Self("popularity", localValue: \.popularity)
 }
 
-extension ActivitiesSortField: ExpressibleByStringLiteral {
-    public init(stringLiteral value: StringLiteralType) {
-        rawValue = value
-    }
+extension Sort where Field == ActivitiesSortField {
+    static let defaultSorting = [Sort(field: .createdAt, direction: .reverse)]
 }
 
 // MARK: -

@@ -58,7 +58,6 @@ extension FeedsFilterField {
     public static let name = Self(codingKey: .name)
     public static let updatedAt = Self(codingKey: .updatedAt)
     public static let visibility = Self(codingKey: .visibility)
-    
 }
 
 public struct FeedsFilter: Filter {
@@ -76,16 +75,24 @@ public struct FeedsFilter: Filter {
 // MARK: - Sorting
 
 public struct FeedsSortField: SortField {
-    public let rawValue: String
+    public typealias Model = FeedData
+    public let comparator: AnySortComparator<Model>
+    public let remote: String
     
-    public static let createdAt: Self = "created_at"
-    public static let popularity: Self = "popularity"
+    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value : Comparable {
+        self.comparator = SortComparator(localValue).toAny()
+        self.remote = remote
+    }
+    
+    public static let createdAt: Self = FeedsSortField("created_at", localValue: \.createdAt)
+    public static let followerCount: Self = FeedsSortField("follower_count", localValue: \.followerCount)
+    public static let followingCount: Self = FeedsSortField("following_count", localValue: \.followingCount)
+    public static let memberCount: Self = FeedsSortField("member_count", localValue: \.memberCount)
+    public static let updatedAt: Self = FeedsSortField("updated_at", localValue: \.updatedAt)
 }
 
-extension FeedsSortField: ExpressibleByStringLiteral {
-    public init(stringLiteral value: StringLiteralType) {
-        rawValue = value
-    }
+extension Sort where Field == FeedsSortField {
+    static let defaultSorting = [Sort(field: .createdAt, direction: .forward)]
 }
 
 // MARK: -

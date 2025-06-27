@@ -14,6 +14,21 @@ struct ArrayExtensions_Tests {
         let value: Int
     }
     
+    // MARK: - Test Sort Field
+    
+    struct TestItemSortField: SortField {
+        public typealias Model = TestItem
+        public let comparator: AnySortComparator<Model>
+        public let remote: String
+        
+        public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value : Comparable {
+            self.comparator = SortComparator(localValue).toAny()
+            self.remote = remote
+        }
+        
+        public static let value = Self("value", localValue: \.value)
+    }
+    
     // MARK: - Non-Sorted Array Tests
     
     @Test("Insert by ID in non-sorted array")
@@ -64,7 +79,7 @@ struct ArrayExtensions_Tests {
     @Test("Sorted insert")
     func testSortedInsert() {
         var array: [TestItem] = []
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         // Test inserting items in random order
         let item3 = TestItem(id: "3", value: 3)
@@ -97,7 +112,7 @@ struct ArrayExtensions_Tests {
             TestItem(id: "2", value: 2),
             TestItem(id: "3", value: 3)
         ]
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         // Test removing middle item
         let itemToRemove = TestItem(id: "2", value: 2)
@@ -117,7 +132,7 @@ struct ArrayExtensions_Tests {
     
     @Test("Sorted merge - empty arrays")
     func testSortedMergeEmptyArrays() {
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         // Both arrays empty
         let empty1: [TestItem] = []
@@ -158,7 +173,7 @@ struct ArrayExtensions_Tests {
             TestItem(id: "4", value: 4),
             TestItem(id: "6", value: 6)
         ]
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         let result = array1.sortedMerge(array2, using: sorting)
         #expect(result.count == 6)
@@ -181,7 +196,7 @@ struct ArrayExtensions_Tests {
             TestItem(id: "4", value: 4),
             TestItem(id: "5", value: 5)
         ]
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         let result = array1.sortedMerge(array2, using: sorting)
         #expect(result.count == 5) // Should have 5 unique items
@@ -204,7 +219,7 @@ struct ArrayExtensions_Tests {
             TestItem(id: "1", value: 10), // Same ID, different value
             TestItem(id: "2", value: 20)  // Same ID, different value
         ]
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         let result = array1.sortedMerge(array2, using: sorting)
         #expect(result.count == 2) // Should have 2 unique items
@@ -226,7 +241,7 @@ struct ArrayExtensions_Tests {
             TestItem(id: "5", value: 5),
             TestItem(id: "6", value: 6)
         ]
-        let sorting: (TestItem, TestItem) -> Bool = { $0.value < $1.value }
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         let result = array1.sortedMerge(array2, using: sorting)
         #expect(result.count == 6)

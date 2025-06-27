@@ -4,8 +4,10 @@
 
 import Foundation
 
+// MARK: - Inserting, Replacing and Removing Elements
+
 extension Array {
-    
+        
     // MARK: - Managing Identifiable Elements in Array Without Sorting
     
     /// Inserts or replaces an element in the non-sorted array based on its ID.
@@ -46,7 +48,7 @@ extension Array {
     /// - Parameters:
     ///   - element: The element to insert or replace.
     ///   - sorting: A closure that defines the sort order between two elements.
-    mutating func sortedInsert(_ element: Element, using sorting: (Element, Element) -> Bool) where Element: Identifiable {
+    mutating func sortedInsert(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
         let insertionIndex = binarySearchInsertionIndex(for: element, using: sorting)
         insert(element, at: insertionIndex)
         // Look for duplicates
@@ -66,6 +68,10 @@ extension Array {
         }
     }
     
+    mutating func sortedInsert<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
+        sortedInsert(element, by: sorting.areInIncreasingOrder())
+    }
+    
     /// Merges two sorted arrays while maintaining the sort order and handling duplicates.
     ///
     /// - Parameters:
@@ -75,7 +81,7 @@ extension Array {
     /// - Note: This function assumes both arrays are already sorted according to the provided sorting closure.
     /// - Important: When elements with the same ID exist in both arrays, the element from the incoming array is preferred.
     /// - Complexity: O(n + m) where n and m are the lengths of the arrays.
-    func sortedMerge(_ incomingElements: [Element], using areInIncreasingOrder: (Element, Element) -> Bool) -> [Element] where Element: Identifiable {
+    func sortedMerge(_ incomingElements: [Element], by areInIncreasingOrder: (Element, Element) -> Bool) -> [Element] where Element: Identifiable {
         let incomingIds = Set<Element.ID>(incomingElements.map(\.id))
         var mergedResult = [Element]()
         mergedResult.reserveCapacity(count + incomingElements.count)
@@ -106,6 +112,10 @@ extension Array {
         return mergedResult
     }
     
+    func sortedMerge<Field>(_ incomingElements: [Element], using sorting: [Sort<Field>]) -> [Element] where Element == Field.Model, Element: Identifiable, Field: SortField {
+        sortedMerge(incomingElements, by: sorting.areInIncreasingOrder())
+    }
+    
     /// Removes an element from the sorted array based on its ID.
     ///
     /// At first it tries to use binary search, but if it fails, does a linear lookup.
@@ -113,13 +123,17 @@ extension Array {
     /// - Parameters:
     ///   - element: The element to remove.
     ///   - sorting: A closure that defines the sort order between two elements.
-    mutating func sortedRemove(_ element: Element, using sorting: (Element, Element) -> Bool) where Element: Identifiable {
+    mutating func sortedRemove(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
         // Binary search succeeds if the element is present and its sorting parameters have not changed.
         if let index = firstSortedIndex(for: element, using: sorting) {
             remove(at: index)
         } else {
             remove(byId: element)
         }
+    }
+    
+    mutating func sortedRemove<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
+        sortedRemove(element, by: sorting.areInIncreasingOrder())
     }
     
     /// Performs a binary search to find an element with the same ID in a sorted array.
@@ -164,5 +178,26 @@ extension Array {
             }
         }
         return left
+    }
+}
+
+// MARK: - Sorting
+
+extension Array {
+    func sorted<Field>(using sorting: [Sort<Field>]) -> [Element] where Field: SortField, Element == Field.Model {
+        sorted(by: { lhs, rhs in
+            for sort in sorting {
+                let result = sort.compare(lhs, rhs)
+                switch result {
+                case .orderedSame:
+                    continue
+                case .orderedAscending:
+                    return true
+                case .orderedDescending:
+                    return false
+                }
+            }
+            return false
+        })
     }
 }

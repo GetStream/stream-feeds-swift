@@ -28,7 +28,7 @@ final class FeedsRepository: Sendable {
         )
         let rawFollowers = response.followers.map { $0.toModel() }
         return GetOrCreateInfo(
-            activities: response.activities.map { $0.toModel() }.sorted(by: ActivityData.defaultSorting),
+            activities: response.activities.map { $0.toModel() }.sorted(using: Sort<ActivitiesSortField>.defaultSorting),
             activitiesPagination: PaginationData(next: response.next, previous: response.prev),
             activitiesQueryConfig: QueryConfiguration(
                 filter: request.filter?.toQueryFilter(),

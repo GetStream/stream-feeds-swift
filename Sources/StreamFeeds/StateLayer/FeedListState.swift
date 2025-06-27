@@ -29,6 +29,13 @@ import Foundation
     
     /// The configuration used for the last activities query.
     private(set) var queryConfig: QueryConfiguration<FeedsFilter, FeedsSortField>?
+    
+    var feedsSorting: [Sort<FeedsSortField>] {
+        if let sort = queryConfig?.sort, !sort.isEmpty {
+            return sort
+        }
+        return Sort<FeedsSortField>.defaultSorting
+    }
 }
 
 // MARK: - Updating the State
@@ -60,7 +67,6 @@ extension FeedListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        // TODO: Convert default sorting to query sorting
-        feeds = feeds.sortedMerge(response.models, using: FeedData.defaultSorting)
+        feeds = feeds.sortedMerge(response.models, using: feedsSorting)
     }
 }

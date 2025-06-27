@@ -76,7 +76,7 @@ extension ActivityState {
                         parentComment.addReply(comment)
                     }
                 } else {
-                    self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
+                    self?.comments.sortedInsert(comment, by: CommentData.defaultSorting)
                 }
             },
             commentDeleted: { [weak self] comment in
@@ -86,7 +86,7 @@ extension ActivityState {
                         parentComment.removeReply(comment)
                     }
                 } else {
-                    self?.comments.sortedRemove(comment, using: CommentData.defaultSorting)
+                    self?.comments.sortedRemove(comment, by: CommentData.defaultSorting)
                 }
             },
             commentUpdated: { [weak self] comment in
@@ -96,7 +96,7 @@ extension ActivityState {
                         parentComment.replaceReply(comment)
                     }
                 } else {
-                    self?.comments.sortedInsert(comment, using: CommentData.defaultSorting)
+                    self?.comments.sortedInsert(comment, by: CommentData.defaultSorting)
                 }
             },
             commentReactionAdded: { [weak self] reaction, comment in

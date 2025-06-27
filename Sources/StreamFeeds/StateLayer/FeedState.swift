@@ -61,6 +61,13 @@ import Foundation
     
     /// The configuration used for the last activities query.
     private(set) var activitiesQueryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>?
+    
+    var activitiesSorting: [Sort<ActivitiesSortField>] {
+        if let sort = activitiesQueryConfig?.sort, !sort.isEmpty {
+            return sort
+        }
+        return Sort<ActivitiesSortField>.defaultSorting
+    }
 }
 
 // MARK: - Updating the State
@@ -91,13 +98,16 @@ extension FeedState {
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
             activityAdded: { [weak self] activity in
-                self?.activities.sortedInsert(activity, using: ActivityData.defaultSorting)
+                guard let sorting = self?.activitiesSorting else { return }
+                self?.activities.sortedInsert(activity, using: sorting)
             },
             activityDeleted: { [weak self] activity in
-                self?.activities.sortedRemove(activity, using: ActivityData.defaultSorting)
+                guard let sorting = self?.activitiesSorting else { return }
+                self?.activities.sortedRemove(activity, using: sorting)
             },
             activityUpdated: { [weak self] activity in
-                self?.activities.sortedInsert(activity, using: ActivityData.defaultSorting)
+                guard let sorting = self?.activitiesSorting else { return }
+                self?.activities.sortedInsert(activity, using: sorting)
             },
             bookmarkAdded: { [weak self] bookmark in
                 self?.updateActivity(with: bookmark.activity.id) { activity in
@@ -225,7 +235,7 @@ extension FeedState {
     ) {
         activitiesPagination = response.pagination
         activitiesQueryConfig = queryConfig
-        activities = activities.sortedMerge(response.models, using: ActivityData.defaultSorting)
+        activities = activities.sortedMerge(response.models, using: activitiesSorting)
     }
 }
 

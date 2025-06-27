@@ -88,12 +88,6 @@ extension ActivityData {
     }
 }
 
-// MARK: - Sorting
-
-extension ActivityData {
-    static let defaultSorting: @Sendable (ActivityData, ActivityData) -> Bool = { $0.createdAt > $1.createdAt }
-}
-
 // MARK: - Model Conversions
 
 extension ActivityResponse {
