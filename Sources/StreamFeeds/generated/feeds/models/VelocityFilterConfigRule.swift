@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum Action: String, Sendable, Codable, CaseIterable {
         case ban
         case flag
         case remove

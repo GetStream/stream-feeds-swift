@@ -2,12 +2,12 @@ import Foundation
 import StreamCore
 
 public final class RankingConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var defaults: [String: RawJSON]
-    public var functions: [String: DecayFunctionConfig]
-    public var score: String
+    public var defaults: [String: RawJSON]?
+    public var functions: [String: DecayFunctionConfig]?
+    public var score: String?
     public var type: String?
 
-    public init(defaults: [String: RawJSON], functions: [String: DecayFunctionConfig], score: String) {
+    public init(defaults: [String: RawJSON]? = nil, functions: [String: DecayFunctionConfig]? = nil, score: String? = nil) {
         self.defaults = defaults
         self.functions = functions
         self.score = score

@@ -4,6 +4,7 @@ import StreamCore
 public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var activities: [ActivityResponse]
     public var aggregatedActivities: [AggregatedActivityResponse]
+    public var created: Bool
     public var duration: String
     public var feed: FeedResponse
     public var followers: [FollowResponse]
@@ -20,9 +21,10 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var pinnedActivities: [ActivityPinResponse]
     public var prev: String?
 
-    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, ownCapabilities: [FeedOwnCapability], ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, ownCapabilities: [FeedOwnCapability], ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
+        self.created = created
         self.duration = duration
         self.feed = feed
         self.followers = followers
@@ -43,6 +45,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case activities
         case aggregatedActivities = "aggregated_activities"
+        case created
         case duration
         case feed
         case followers
@@ -63,6 +66,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public static func == (lhs: GetOrCreateFeedResponse, rhs: GetOrCreateFeedResponse) -> Bool {
         lhs.activities == rhs.activities &&
             lhs.aggregatedActivities == rhs.aggregatedActivities &&
+            lhs.created == rhs.created &&
             lhs.duration == rhs.duration &&
             lhs.feed == rhs.feed &&
             lhs.followers == rhs.followers &&
@@ -83,6 +87,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activities)
         hasher.combine(aggregatedActivities)
+        hasher.combine(created)
         hasher.combine(duration)
         hasher.combine(feed)
         hasher.combine(followers)
