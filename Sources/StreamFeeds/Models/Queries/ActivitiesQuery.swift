@@ -6,14 +6,14 @@ import Foundation
 import StreamCore
 
 public struct ActivitiesQuery: Sendable {
-    let filter: ActivityFilter?
+    let filter: ActivitiesFilter?
     let sort: [Sort<ActivitiesSortField>]?
     let next: String?
     let previous: String?
     let limit: Int?
     
     public init(
-        filter: ActivityFilter?,
+        filter: ActivitiesFilter?,
         sort: [Sort<ActivitiesSortField>] = [],
         next: String? = nil,
         previous: String? = nil,
@@ -29,7 +29,7 @@ public struct ActivitiesQuery: Sendable {
 
 // MARK: - Filters
 
-public struct ActivityFilterField: FilterFieldRepresentable, Sendable {
+public struct ActivitiesFilterField: FilterFieldRepresentable, Sendable {
     public let value: String
     
     public init(value: String) {
@@ -41,7 +41,7 @@ public struct ActivityFilterField: FilterFieldRepresentable, Sendable {
     }
 }
 
-extension ActivityFilterField {
+extension ActivitiesFilterField {
     public static let createdAt = Self(codingKey: .createdAt)
     public static let id = Self(codingKey: .id)
     public static let filterTags = Self(codingKey: .filterTags)
@@ -52,14 +52,14 @@ extension ActivityFilterField {
     public static let userId = Self(value: "user_id")
 }
 
-public struct ActivityFilter: Filter {
-    public init(filterOperator: FilterOperator, field: ActivityFilterField, value: any FilterValue) {
+public struct ActivitiesFilter: Filter {
+    public init(filterOperator: FilterOperator, field: ActivitiesFilterField, value: any FilterValue) {
         self.filterOperator = filterOperator
         self.field = field
         self.value = value
     }
     
-    public let field: ActivityFilterField
+    public let field: ActivitiesFilterField
     public let value: any FilterValue
     public let filterOperator: FilterOperator
 }

@@ -114,7 +114,7 @@ extension FeedsRepository {
     struct GetOrCreateInfo {
         let activities: [ActivityData]
         let activitiesPagination: PaginationData
-        let activitiesQueryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>
+        let activitiesQueryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
         let feed: FeedData
         let followers: [FollowData]
         let following: [FollowData]

@@ -60,7 +60,7 @@ import Foundation
     public var canLoadMoreActivities: Bool { activitiesPagination?.next != nil }
     
     /// The configuration used for the last activities query.
-    private(set) var activitiesQueryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>?
+    private(set) var activitiesQueryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>?
     
     var activitiesSorting: [Sort<ActivitiesSortField>] {
         if let sort = activitiesQueryConfig?.sort, !sort.isEmpty {
@@ -231,7 +231,7 @@ extension FeedState {
     ///   - queryConfig: The query configuration used for this pagination request
     func didPaginateActivities(
         with response: PaginationResult<ActivityData>,
-        for queryConfig: QueryConfiguration<ActivityFilter, ActivitiesSortField>
+        for queryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
     ) {
         activitiesPagination = response.pagination
         activitiesQueryConfig = queryConfig

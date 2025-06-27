@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 public struct FeedQuery: Sendable {
-    public var activityFilter: ActivityFilter?
+    public var activityFilter: ActivitiesFilter?
     public var activityLimit: Int?
     public var activitySelectorOptions: [String: RawJSON]?
     public var data: FeedInput?
@@ -25,7 +25,7 @@ public struct FeedQuery: Sendable {
     /// If true, subscribes to web-socket events for this feed.
     public var watch = true
     
-    public init(group: String, id: String, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, activitySelectorOptions: [String : RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String : RawJSON]? = nil, followerLimit: Int? = nil, followingLimit: Int? = nil, interestWeights: [String : Float]? = nil, memberLimit: Int? = nil, view: String? = nil, watch: Bool = true) {
+    public init(group: String, id: String, activityFilter: ActivitiesFilter? = nil, activityLimit: Int? = nil, activitySelectorOptions: [String : RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String : RawJSON]? = nil, followerLimit: Int? = nil, followingLimit: Int? = nil, interestWeights: [String : Float]? = nil, memberLimit: Int? = nil, view: String? = nil, watch: Bool = true) {
         self.init(
             fid: FeedId(group: group, id: id),
             activityFilter: activityFilter,
@@ -42,7 +42,7 @@ public struct FeedQuery: Sendable {
         )
     }
     
-    public init(fid: FeedId, activityFilter: ActivityFilter? = nil, activityLimit: Int? = nil, activitySelectorOptions: [String : RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String : RawJSON]? = nil, followerLimit: Int? = nil, followingLimit: Int? = nil, interestWeights: [String : Float]? = nil, memberLimit: Int? = nil, view: String? = nil, watch: Bool = true) {
+    public init(fid: FeedId, activityFilter: ActivitiesFilter? = nil, activityLimit: Int? = nil, activitySelectorOptions: [String : RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String : RawJSON]? = nil, followerLimit: Int? = nil, followingLimit: Int? = nil, interestWeights: [String : Float]? = nil, memberLimit: Int? = nil, view: String? = nil, watch: Bool = true) {
         self.activityFilter = activityFilter
         self.activityLimit = activityLimit
         self.activitySelectorOptions = activitySelectorOptions
