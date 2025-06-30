@@ -50,7 +50,7 @@ struct CommentsView: View {
                             },
                             onDelete: {
                                 Task {
-                                    try await activity.deleteComment(commentId: comment.id)
+                                    try await activity.removeComment(commentId: comment.id)
                                 }
                             }
                         )
@@ -77,7 +77,7 @@ struct CommentsView: View {
                                         },
                                         onDelete: {
                                             Task {
-                                                try await activity.deleteComment(commentId: reply.id)
+                                                try await activity.removeComment(commentId: reply.id)
                                             }
                                         }
                                     )
@@ -104,7 +104,7 @@ struct CommentsView: View {
                                                     },
                                                     onDelete: {
                                                         Task {
-                                                            try await activity.deleteComment(commentId: nested.id)
+                                                            try await activity.removeComment(commentId: nested.id)
                                                         }
                                                     }
                                                 )

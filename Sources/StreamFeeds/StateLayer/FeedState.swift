@@ -78,18 +78,18 @@ extension FeedState {
     /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
     struct ChangeHandlers {
         let activityAdded: @MainActor (ActivityData) -> Void
-        let activityDeleted: @MainActor (ActivityData) -> Void
+        let activityRemoved: @MainActor (ActivityData) -> Void
         let activityUpdated: @MainActor (ActivityData) -> Void
         let bookmarkAdded: @MainActor (BookmarkData) -> Void
-        let bookmarkDeleted: @MainActor (BookmarkData) -> Void
+        let bookmarkRemoved: @MainActor (BookmarkData) -> Void
         let commentAdded: @MainActor (CommentData) -> Void
-        let commentDeleted: @MainActor (CommentData) -> Void
+        let commentRemoved: @MainActor (CommentData) -> Void
         let feedUpdated: @MainActor (FeedData) -> Void
         let followAdded: @MainActor (FollowData) -> Void
-        let followDeleted: @MainActor (FollowData) -> Void
+        let followRemoved: @MainActor (FollowData) -> Void
         let followUpdated: @MainActor (FollowData) -> Void
         let reactionAdded: @MainActor (FeedsReactionData) -> Void
-        let reactionDeleted: @MainActor (FeedsReactionData) -> Void
+        let reactionRemoved: @MainActor (FeedsReactionData) -> Void
     }
     
     /// Creates the change handlers for state updates.
@@ -101,7 +101,7 @@ extension FeedState {
                 guard let sorting = self?.activitiesSorting else { return }
                 self?.activities.sortedInsert(activity, using: sorting)
             },
-            activityDeleted: { [weak self] activity in
+            activityRemoved: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }
                 self?.activities.sortedRemove(activity, using: sorting)
             },
@@ -114,7 +114,7 @@ extension FeedState {
                     activity.addBookmark(bookmark)
                 }
             },
-            bookmarkDeleted: { [weak self] bookmark in
+            bookmarkRemoved: { [weak self] bookmark in
                 self?.updateActivity(with: bookmark.activity.id) { activity in
                     activity.deleteBookmark(bookmark)
                 }
@@ -124,7 +124,7 @@ extension FeedState {
                     activity.addComment(comment)
                 }
             },
-            commentDeleted: { [weak self] comment in
+            commentRemoved: { [weak self] comment in
                 self?.updateActivity(with: comment.objectId) { activity in
                     activity.deleteComment(comment)
                 }
@@ -135,7 +135,7 @@ extension FeedState {
             followAdded: { [weak self] follow in
                 self?.addFollow(follow)
             },
-            followDeleted: { [weak self] follow in
+            followRemoved: { [weak self] follow in
                 self?.removeFollow(follow)
             },
             followUpdated: { [weak self] follow in
@@ -146,7 +146,7 @@ extension FeedState {
                     activity.addReaction(reaction)
                 }
             },
-            reactionDeleted: { [weak self] reaction in
+            reactionRemoved: { [weak self] reaction in
                 self?.updateActivity(with: reaction.activityId) { activity in
                     activity.removeReaction(reaction)
                 }

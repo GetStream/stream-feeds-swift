@@ -147,12 +147,12 @@ public final class Activity: Sendable {
         return comments
     }
     
-    /// Deletes a comment from this activity.
+    /// Removes a comment from this activity.
     ///
-    /// - Parameter commentId: The unique identifier of the comment to delete
+    /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteComment(commentId: String) async throws {
-        try await commentsRepository.deleteComment(commentId: commentId)
+    public func removeComment(commentId: String) async throws {
+        try await commentsRepository.removeComment(commentId: commentId)
         // TODO: state update with nesting and id
     }
     
@@ -196,7 +196,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func removeCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.removeCommentReaction(commentId: commentId, type: type)
-        await state.changeHandlers.commentReactionDeleted(result.reaction, result.comment)
+        await state.changeHandlers.commentReactionRemoved(result.reaction, result.comment)
         return result.reaction
     }
     
@@ -315,17 +315,17 @@ public final class Activity: Sendable {
         return option
     }
 
-    /// Deletes a poll option.
+    /// Removes a poll option.
     ///
     /// - Parameters:
-    ///   - optionId: The unique identifier of the option to delete
+    ///   - optionId: The unique identifier of the option to remove
     ///   - userId: Optional user identifier for authorization
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deletePollOption(
+    public func removePollOption(
         optionId: String,
         userId: String?
     ) async throws {
-        try await pollsRepository.deletePollOption(pollId: pollId(), optionId: optionId, userId: userId)
+        try await pollsRepository.removePollOption(pollId: pollId(), optionId: optionId, userId: userId)
         await state.access { $0.poll?.removeOption(withId: optionId) }
     }
 

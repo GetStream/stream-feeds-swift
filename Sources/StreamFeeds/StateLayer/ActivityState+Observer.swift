@@ -33,7 +33,7 @@ extension ActivityState {
                     await handlers.commentAdded(event.comment.toModel())
                 case let event as CommentDeletedEvent:
                     guard event.fid == fid else { return }
-                    await handlers.commentDeleted(event.comment.toModel())
+                    await handlers.commentRemoved(event.comment.toModel())
                 case let event as CommentUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.commentUpdated(event.comment.toModel())
@@ -46,7 +46,7 @@ extension ActivityState {
                     guard event.fid == fid else { return }
                     let comment = event.comment.toModel()
                     let reaction = event.reaction.toModel()
-                    await handlers.commentReactionDeleted(reaction, comment)
+                    await handlers.commentReactionRemoved(reaction, comment)
                 case let event as PollClosedFeedEvent:
                     await handlers.pollClosed(event.poll.toModel())
                 case let event as PollDeletedFeedEvent:

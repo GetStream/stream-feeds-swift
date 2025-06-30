@@ -26,13 +26,13 @@ extension FeedState {
                     await handlers.activityAdded(event.activity.toModel())
                 case let event as ActivityDeletedEvent:
                     guard event.fid == fid else { return }
-                    await handlers.activityDeleted(event.activity.toModel())
+                    await handlers.activityRemoved(event.activity.toModel())
                 case let event as ActivityReactionAddedEvent:
                     guard event.fid == fid else { return }
                     await handlers.reactionAdded(event.reaction.toModel())
                 case let event as ActivityReactionDeletedEvent:
                     guard event.fid == fid else { return }
-                    await handlers.reactionDeleted(event.reaction.toModel())
+                    await handlers.reactionRemoved(event.reaction.toModel())
                 case let event as ActivityUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.activityUpdated(event.activity.toModel())
@@ -43,13 +43,13 @@ extension FeedState {
                 case let event as BookmarkDeletedEvent:
                     // TODO: This is not correct?
                     guard event.bookmark.activity.feeds.contains(fid) else { return }
-                    await handlers.bookmarkDeleted(event.bookmark.toModel())
+                    await handlers.bookmarkRemoved(event.bookmark.toModel())
                 case let event as CommentAddedEvent:
                     guard event.fid == fid else { return }
                     await handlers.commentAdded(event.comment.toModel())
                 case let event as CommentDeletedEvent:
                     guard event.fid == fid else { return }
-                    await handlers.commentDeleted(event.comment.toModel())
+                    await handlers.commentRemoved(event.comment.toModel())
                 case let event as FeedUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.feedUpdated(event.feed.toModel())
@@ -58,7 +58,7 @@ extension FeedState {
                     await handlers.followAdded(event.follow.toModel())
                 case let event as FollowDeletedEvent:
                     guard event.fid == fid else { return }
-                    await handlers.followDeleted(event.follow.toModel())
+                    await handlers.followRemoved(event.follow.toModel())
                 case let event as FollowUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.followUpdated(event.follow.toModel())

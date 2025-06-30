@@ -110,7 +110,7 @@ final class ActivitiesRepository: Sendable {
         return response.bookmark.toModel()
     }
     
-    func deleteBookmark(activityId: String, folderId: String?) async throws -> BookmarkData {
+    func removeBookmark(activityId: String, folderId: String?) async throws -> BookmarkData {
         let response = try await apiClient.deleteBookmark(activityId: activityId, folderId: folderId)
         return response.bookmark.toModel()
     }
@@ -122,7 +122,7 @@ final class ActivitiesRepository: Sendable {
         return response.reaction.toModel()
     }
     
-    func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
+    func removeReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
         return response.reaction.toModel()
     }

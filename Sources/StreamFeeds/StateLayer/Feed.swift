@@ -206,11 +206,11 @@ public final class Feed: Sendable {
     /// - Parameters:
     ///   - activityId: The unique identifier of the activity to remove from bookmarks
     ///   - folderId: Optional folder identifier. If provided, removes the bookmark from the specific folder.
-    /// - Returns: The deleted bookmark data
+    /// - Returns: The removed bookmark data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
-        try await activitiesRepository.deleteBookmark(activityId: activityId, folderId: folderId)
+    public func removeBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
+        try await activitiesRepository.removeBookmark(activityId: activityId, folderId: folderId)
     }
     
     // MARK: - Follows
@@ -337,16 +337,16 @@ public final class Feed: Sendable {
         return reaction
     }
     
-    /// Deletes a reaction from an activity.
+    /// Removes a reaction from an activity.
     ///
     /// - Parameters:
     ///   - activityId: The unique identifier of the activity
-    ///   - type: The type of reaction to delete
-    /// - Returns: The deleted reaction data
+    ///   - type: The type of reaction to remove
+    /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
-        try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
+    public func removeReaction(activityId: String, type: String) async throws -> FeedsReactionData {
+        try await activitiesRepository.removeReaction(activityId: activityId, type: type)
     }
     
     // MARK: - Polls

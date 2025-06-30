@@ -49,10 +49,10 @@ extension ActivityState {
     struct ChangeHandlers: Sendable {
         let activityUpdated: @MainActor (ActivityData) -> Void
         let commentAdded: @MainActor (CommentData) -> Void
-        let commentDeleted: @MainActor (CommentData) -> Void
+        let commentRemoved: @MainActor (CommentData) -> Void
         let commentUpdated: @MainActor (CommentData) -> Void
         let commentReactionAdded: @MainActor (FeedsReactionData, CommentData) -> Void
-        let commentReactionDeleted: @MainActor (FeedsReactionData, CommentData) -> Void
+        let commentReactionRemoved: @MainActor (FeedsReactionData, CommentData) -> Void
         let pollClosed: @MainActor (PollData) -> Void
         let pollDeleted: @MainActor (PollData) -> Void
         let pollUpdated: @MainActor (PollData) -> Void
@@ -79,7 +79,7 @@ extension ActivityState {
                     self?.comments.sortedInsert(comment, by: CommentData.defaultSorting)
                 }
             },
-            commentDeleted: { [weak self] comment in
+            commentRemoved: { [weak self] comment in
                 if let parentId = comment.parentId {
                     // TODO: Deeper nesting
                     self?.updateComment(with: parentId) { parentComment in
@@ -104,7 +104,7 @@ extension ActivityState {
                     comment.addReaction(reaction)
                 }
             },
-            commentReactionDeleted: { [weak self] reaction, comment in
+            commentReactionRemoved: { [weak self] reaction, comment in
                 self?.updateComment(with: comment.id) { comment in
                     comment.removeReaction(reaction)
                 }

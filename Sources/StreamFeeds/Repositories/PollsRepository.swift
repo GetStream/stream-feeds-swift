@@ -58,7 +58,7 @@ final class PollsRepository: Sendable {
         return response.pollOption.toModel()
     }
 
-    func deletePollOption(
+    func removePollOption(
         pollId: String,
         optionId: String,
         userId: String?
