@@ -25,9 +25,7 @@ public final class FeedsClient: Sendable {
     
     nonisolated(unsafe) private var requestEncoder: RequestEncoder
     nonisolated(unsafe) private var connectionProvider: ConnectionProvider?
-    
-    let xStreamClientHeader = "stream-feeds-swift-v0.0.1"
-    
+        
     let connectionRecoveryHandler = AllocatedUnfairLock<ConnectionRecoveryHandler?>(nil)
     let webSocketClient = AllocatedUnfairLock<WebSocketClient?>(nil)
     
@@ -77,13 +75,13 @@ public final class FeedsClient: Sendable {
         self.feedsConfig = feedsConfig
         self.apiTransport = URLSessionTransport(
             urlSession: Self.makeURLSession(),
-            xStreamClientHeader: xStreamClientHeader,
+            xStreamClientHeader: SystemEnvironment.xStreamClientHeader,
             tokenProvider: tokenProvider
         )
         let basePath = "http://\(host):3030"
         let defaultParams = DefaultParams(
             apiKey: apiKey.apiKeyString,
-            xStreamClientHeader: xStreamClientHeader
+            xStreamClientHeader: SystemEnvironment.xStreamClientHeader
         )
         self.apiClient = DefaultAPI(
             basePath: basePath,

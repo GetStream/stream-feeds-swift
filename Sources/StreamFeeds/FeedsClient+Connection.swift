@@ -46,7 +46,7 @@ extension FeedsClient {
         let queryParams = [
             "api_key": apiKey.apiKeyString,
             "stream-auth-type": "jwt",
-            "X-Stream-Client": xStreamClientHeader // TODO: fix this
+            "X-Stream-Client": SystemEnvironment.xStreamClientHeader
         ]
         
         let webSocketClient: WebSocketClient
