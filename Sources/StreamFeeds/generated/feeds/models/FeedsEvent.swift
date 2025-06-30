@@ -6,6 +6,7 @@ private class WSEventMapping: Decodable {
 }
 
 public enum FeedsEvent: Codable, Hashable {
+    case typeAppUpdatedEvent(AppUpdatedEvent)
     case typeActivityAddedEvent(ActivityAddedEvent)
     case typeActivityDeletedEvent(ActivityDeletedEvent)
     case typeActivityMarkEvent(ActivityMarkEvent)
@@ -31,274 +32,315 @@ public enum FeedsEvent: Codable, Hashable {
     case typeFeedMemberAddedEvent(FeedMemberAddedEvent)
     case typeFeedMemberRemovedEvent(FeedMemberRemovedEvent)
     case typeFeedMemberUpdatedEvent(FeedMemberUpdatedEvent)
+    case typeFollowCreatedEvent(FollowCreatedEvent)
+    case typeFollowDeletedEvent(FollowDeletedEvent)
+    case typeFollowUpdatedEvent(FollowUpdatedEvent)
     case typePollClosedFeedEvent(PollClosedFeedEvent)
     case typePollDeletedFeedEvent(PollDeletedFeedEvent)
     case typePollUpdatedFeedEvent(PollUpdatedFeedEvent)
     case typePollVoteCastedFeedEvent(PollVoteCastedFeedEvent)
     case typePollVoteChangedFeedEvent(PollVoteChangedFeedEvent)
     case typePollVoteRemovedFeedEvent(PollVoteRemovedFeedEvent)
-    case typeFollowCreatedEvent(FollowCreatedEvent)
-    case typeFollowDeletedEvent(FollowDeletedEvent)
-    case typeFollowUpdatedEvent(FollowUpdatedEvent)
-    case typePollClosedEvent(PollClosedFeedEvent)
-    case typePollDeletedEvent(PollDeletedFeedEvent)
-    case typePollUpdatedEvent(PollUpdatedFeedEvent)
-    case typeConnectedEvent(ConnectedEvent)
     case typeHealthCheckEvent(HealthCheckEvent)
+    case typeModerationCustomActionEvent(ModerationCustomActionEvent)
+    case typeModerationFlaggedEvent(ModerationFlaggedEvent)
+    case typeModerationMarkReviewedEvent(ModerationMarkReviewedEvent)
+    case typeUserBannedEvent(UserBannedEvent)
+    case typeUserDeactivatedEvent(UserDeactivatedEvent)
+    case typeUserMutedEvent(UserMutedEvent)
+    case typeUserReactivatedEvent(UserReactivatedEvent)
+    case typeUserUpdatedEvent(UserUpdatedEvent)
+    case typeConnectedEvent(ConnectedEvent)
     case typeConnectionErrorEvent(ConnectionErrorEvent)
 
     public var type: String {
-        switch self { 
-        case .typeActivityAddedEvent(let value):
+        switch self {
+        case let .typeAppUpdatedEvent(value):
             return value.type
-        case .typeActivityDeletedEvent(let value):
+        case let .typeActivityAddedEvent(value):
             return value.type
-        case .typeActivityPinnedEvent(let value):
+        case let .typeActivityDeletedEvent(value):
             return value.type
-        case .typeActivityReactionAddedEvent(let value):
+        case let .typeActivityMarkEvent(value):
             return value.type
-        case .typeActivityReactionDeletedEvent(let value):
+        case let .typeActivityPinnedEvent(value):
             return value.type
-        case .typeActivityRemovedFromFeedEvent(let value):
+        case let .typeActivityReactionAddedEvent(value):
             return value.type
-        case .typeActivityUnpinnedEvent(let value):
+        case let .typeActivityReactionDeletedEvent(value):
             return value.type
-        case .typeActivityUpdatedEvent(let value):
+        case let .typeActivityRemovedFromFeedEvent(value):
             return value.type
-        case .typeBookmarkAddedEvent(let value):
+        case let .typeActivityUnpinnedEvent(value):
             return value.type
-        case .typeBookmarkDeletedEvent(let value):
+        case let .typeActivityUpdatedEvent(value):
             return value.type
-        case .typeBookmarkUpdatedEvent(let value):
+        case let .typeBookmarkAddedEvent(value):
             return value.type
-        case .typeCommentAddedEvent(let value):
+        case let .typeBookmarkDeletedEvent(value):
             return value.type
-        case .typeCommentDeletedEvent(let value):
+        case let .typeBookmarkUpdatedEvent(value):
             return value.type
-        case .typeCommentReactionAddedEvent(let value):
+        case let .typeCommentAddedEvent(value):
             return value.type
-        case .typeCommentReactionDeletedEvent(let value):
+        case let .typeCommentDeletedEvent(value):
             return value.type
-        case .typeCommentUpdatedEvent(let value):
+        case let .typeCommentReactionAddedEvent(value):
             return value.type
-        case .typeFeedCreatedEvent(let value):
+        case let .typeCommentReactionDeletedEvent(value):
             return value.type
-        case .typeFeedDeletedEvent(let value):
+        case let .typeCommentUpdatedEvent(value):
             return value.type
-        case .typeFeedUpdatedEvent(let value):
+        case let .typeFeedCreatedEvent(value):
             return value.type
-        case .typeFeedGroupChangedEvent(let value):
+        case let .typeFeedDeletedEvent(value):
             return value.type
-        case .typeFeedGroupDeletedEvent(let value):
+        case let .typeFeedUpdatedEvent(value):
             return value.type
-        case .typeFeedMemberAddedEvent(let value):
+        case let .typeFeedGroupChangedEvent(value):
             return value.type
-        case .typeFeedMemberRemovedEvent(let value):
+        case let .typeFeedGroupDeletedEvent(value):
             return value.type
-        case .typeFeedMemberUpdatedEvent(let value):
+        case let .typeFeedMemberAddedEvent(value):
             return value.type
-        case .typePollClosedFeedEvent(let value):
+        case let .typeFeedMemberRemovedEvent(value):
             return value.type
-        case .typePollDeletedFeedEvent(let value):
+        case let .typeFeedMemberUpdatedEvent(value):
             return value.type
-        case .typePollUpdatedFeedEvent(let value):
+        case let .typeFollowCreatedEvent(value):
             return value.type
-        case .typePollVoteCastedFeedEvent(let value):
+        case let .typeFollowDeletedEvent(value):
             return value.type
-        case .typePollVoteChangedFeedEvent(let value):
+        case let .typeFollowUpdatedEvent(value):
             return value.type
-        case .typePollVoteRemovedFeedEvent(let value):
+        case let .typePollClosedFeedEvent(value):
             return value.type
-        case .typeFollowCreatedEvent(let value):
+        case let .typePollDeletedFeedEvent(value):
             return value.type
-        case .typeFollowDeletedEvent(let value):
+        case let .typePollUpdatedFeedEvent(value):
             return value.type
-        case .typeFollowUpdatedEvent(let value):
+        case let .typePollVoteCastedFeedEvent(value):
             return value.type
-        case .typePollClosedEvent(let value):
+        case let .typePollVoteChangedFeedEvent(value):
             return value.type
-        case .typePollDeletedEvent(let value):
+        case let .typePollVoteRemovedFeedEvent(value):
             return value.type
-        case .typePollUpdatedEvent(let value):
+        case let .typeHealthCheckEvent(value):
             return value.type
-        case .typeConnectedEvent(let value):
+        case let .typeModerationCustomActionEvent(value):
             return value.type
-        case .typeHealthCheckEvent(let value):
+        case let .typeModerationFlaggedEvent(value):
             return value.type
-        case .typeConnectionErrorEvent(let value):
+        case let .typeModerationMarkReviewedEvent(value):
             return value.type
-        case .typeActivityMarkEvent(let value):
+        case let .typeUserBannedEvent(value):
+            return value.type
+        case let .typeUserDeactivatedEvent(value):
+            return value.type
+        case let .typeUserMutedEvent(value):
+            return value.type
+        case let .typeUserReactivatedEvent(value):
+            return value.type
+        case let .typeUserUpdatedEvent(value):
+            return value.type
+        case let .typeConnectedEvent(value):
+            return value.type
+        case let .typeConnectionErrorEvent(value):
             return value.type
         }
     }
 
     public var rawValue: Event {
         switch self {
-        case .typeActivityAddedEvent(let value):
+        case let .typeAppUpdatedEvent(value):
             return value
-        case .typeActivityDeletedEvent(let value):
+        case let .typeActivityAddedEvent(value):
             return value
-        case .typeActivityPinnedEvent(let value):
+        case let .typeActivityDeletedEvent(value):
             return value
-        case .typeActivityReactionAddedEvent(let value):
+        case let .typeActivityMarkEvent(value):
             return value
-        case .typeActivityReactionDeletedEvent(let value):
+        case let .typeActivityPinnedEvent(value):
             return value
-        case .typeActivityRemovedFromFeedEvent(let value):
+        case let .typeActivityReactionAddedEvent(value):
             return value
-        case .typeActivityUnpinnedEvent(let value):
+        case let .typeActivityReactionDeletedEvent(value):
             return value
-        case .typeActivityUpdatedEvent(let value):
+        case let .typeActivityRemovedFromFeedEvent(value):
             return value
-        case .typeBookmarkAddedEvent(let value):
+        case let .typeActivityUnpinnedEvent(value):
             return value
-        case .typeBookmarkDeletedEvent(let value):
+        case let .typeActivityUpdatedEvent(value):
             return value
-        case .typeBookmarkUpdatedEvent(let value):
+        case let .typeBookmarkAddedEvent(value):
             return value
-        case .typeCommentAddedEvent(let value):
+        case let .typeBookmarkDeletedEvent(value):
             return value
-        case .typeCommentDeletedEvent(let value):
+        case let .typeBookmarkUpdatedEvent(value):
             return value
-        case .typeCommentReactionAddedEvent(let value):
+        case let .typeCommentAddedEvent(value):
             return value
-        case .typeCommentReactionDeletedEvent(let value):
+        case let .typeCommentDeletedEvent(value):
             return value
-        case .typeCommentUpdatedEvent(let value):
+        case let .typeCommentReactionAddedEvent(value):
             return value
-        case .typeFeedCreatedEvent(let value):
+        case let .typeCommentReactionDeletedEvent(value):
             return value
-        case .typeFeedDeletedEvent(let value):
+        case let .typeCommentUpdatedEvent(value):
             return value
-        case .typeFeedUpdatedEvent(let value):
+        case let .typeFeedCreatedEvent(value):
             return value
-        case .typeFeedGroupChangedEvent(let value):
+        case let .typeFeedDeletedEvent(value):
             return value
-        case .typeFeedGroupDeletedEvent(let value):
+        case let .typeFeedUpdatedEvent(value):
             return value
-        case .typeFeedMemberAddedEvent(let value):
+        case let .typeFeedGroupChangedEvent(value):
             return value
-        case .typeFeedMemberRemovedEvent(let value):
+        case let .typeFeedGroupDeletedEvent(value):
             return value
-        case .typeFeedMemberUpdatedEvent(let value):
+        case let .typeFeedMemberAddedEvent(value):
             return value
-        case .typePollClosedFeedEvent(let value):
+        case let .typeFeedMemberRemovedEvent(value):
             return value
-        case .typePollDeletedFeedEvent(let value):
+        case let .typeFeedMemberUpdatedEvent(value):
             return value
-        case .typePollUpdatedFeedEvent(let value):
+        case let .typeFollowCreatedEvent(value):
             return value
-        case .typePollVoteCastedFeedEvent(let value):
+        case let .typeFollowDeletedEvent(value):
             return value
-        case .typePollVoteChangedFeedEvent(let value):
+        case let .typeFollowUpdatedEvent(value):
             return value
-        case .typePollVoteRemovedFeedEvent(let value):
+        case let .typePollClosedFeedEvent(value):
             return value
-        case .typeFollowCreatedEvent(let value):
+        case let .typePollDeletedFeedEvent(value):
             return value
-        case .typeFollowDeletedEvent(let value):
+        case let .typePollUpdatedFeedEvent(value):
             return value
-        case .typeFollowUpdatedEvent(let value):
+        case let .typePollVoteCastedFeedEvent(value):
             return value
-        case .typePollClosedEvent(let value):
+        case let .typePollVoteChangedFeedEvent(value):
             return value
-        case .typePollDeletedEvent(let value):
+        case let .typePollVoteRemovedFeedEvent(value):
             return value
-        case .typePollUpdatedEvent(let value):
+        case let .typeHealthCheckEvent(value):
             return value
-        case .typeConnectedEvent(let value):
+        case let .typeModerationCustomActionEvent(value):
             return value
-        case .typeHealthCheckEvent(let value):
+        case let .typeModerationFlaggedEvent(value):
             return value
-        case .typeConnectionErrorEvent(let value):
+        case let .typeModerationMarkReviewedEvent(value):
             return value
-        case .typeActivityMarkEvent(let value):
+        case let .typeUserBannedEvent(value):
+            return value
+        case let .typeUserDeactivatedEvent(value):
+            return value
+        case let .typeUserMutedEvent(value):
+            return value
+        case let .typeUserReactivatedEvent(value):
+            return value
+        case let .typeUserUpdatedEvent(value):
+            return value
+        case let .typeConnectedEvent(value):
+            return value
+        case let .typeConnectionErrorEvent(value):
             return value
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        switch self { 
-        case .typeActivityAddedEvent(let value):
+        switch self {
+        case let .typeAppUpdatedEvent(value):
             try container.encode(value)
-        case .typeActivityDeletedEvent(let value):
+        case let .typeActivityAddedEvent(value):
             try container.encode(value)
-        case .typeActivityPinnedEvent(let value):
+        case let .typeActivityDeletedEvent(value):
             try container.encode(value)
-        case .typeActivityReactionAddedEvent(let value):
+        case let .typeActivityMarkEvent(value):
             try container.encode(value)
-        case .typeActivityReactionDeletedEvent(let value):
+        case let .typeActivityPinnedEvent(value):
             try container.encode(value)
-        case .typeActivityRemovedFromFeedEvent(let value):
+        case let .typeActivityReactionAddedEvent(value):
             try container.encode(value)
-        case .typeActivityUnpinnedEvent(let value):
+        case let .typeActivityReactionDeletedEvent(value):
             try container.encode(value)
-        case .typeActivityUpdatedEvent(let value):
+        case let .typeActivityRemovedFromFeedEvent(value):
             try container.encode(value)
-        case .typeBookmarkAddedEvent(let value):
+        case let .typeActivityUnpinnedEvent(value):
             try container.encode(value)
-        case .typeBookmarkDeletedEvent(let value):
+        case let .typeActivityUpdatedEvent(value):
             try container.encode(value)
-        case .typeBookmarkUpdatedEvent(let value):
+        case let .typeBookmarkAddedEvent(value):
             try container.encode(value)
-        case .typeCommentAddedEvent(let value):
+        case let .typeBookmarkDeletedEvent(value):
             try container.encode(value)
-        case .typeCommentDeletedEvent(let value):
+        case let .typeBookmarkUpdatedEvent(value):
             try container.encode(value)
-        case .typeCommentReactionAddedEvent(let value):
+        case let .typeCommentAddedEvent(value):
             try container.encode(value)
-        case .typeCommentReactionDeletedEvent(let value):
+        case let .typeCommentDeletedEvent(value):
             try container.encode(value)
-        case .typeCommentUpdatedEvent(let value):
+        case let .typeCommentReactionAddedEvent(value):
             try container.encode(value)
-        case .typeFeedCreatedEvent(let value):
+        case let .typeCommentReactionDeletedEvent(value):
             try container.encode(value)
-        case .typeFeedDeletedEvent(let value):
+        case let .typeCommentUpdatedEvent(value):
             try container.encode(value)
-        case .typeFeedUpdatedEvent(let value):
+        case let .typeFeedCreatedEvent(value):
             try container.encode(value)
-        case .typeFeedGroupChangedEvent(let value):
+        case let .typeFeedDeletedEvent(value):
             try container.encode(value)
-        case .typeFeedGroupDeletedEvent(let value):
+        case let .typeFeedUpdatedEvent(value):
             try container.encode(value)
-        case .typeFeedMemberAddedEvent(let value):
+        case let .typeFeedGroupChangedEvent(value):
             try container.encode(value)
-        case .typeFeedMemberRemovedEvent(let value):
+        case let .typeFeedGroupDeletedEvent(value):
             try container.encode(value)
-        case .typeFeedMemberUpdatedEvent(let value):
+        case let .typeFeedMemberAddedEvent(value):
             try container.encode(value)
-        case .typePollClosedFeedEvent(let value):
+        case let .typeFeedMemberRemovedEvent(value):
             try container.encode(value)
-        case .typePollDeletedFeedEvent(let value):
+        case let .typeFeedMemberUpdatedEvent(value):
             try container.encode(value)
-        case .typePollUpdatedFeedEvent(let value):
+        case let .typeFollowCreatedEvent(value):
             try container.encode(value)
-        case .typePollVoteCastedFeedEvent(let value):
+        case let .typeFollowDeletedEvent(value):
             try container.encode(value)
-        case .typePollVoteChangedFeedEvent(let value):
+        case let .typeFollowUpdatedEvent(value):
             try container.encode(value)
-        case .typePollVoteRemovedFeedEvent(let value):
+        case let .typePollClosedFeedEvent(value):
             try container.encode(value)
-        case .typeFollowCreatedEvent(let value):
+        case let .typePollDeletedFeedEvent(value):
             try container.encode(value)
-        case .typeFollowDeletedEvent(let value):
+        case let .typePollUpdatedFeedEvent(value):
             try container.encode(value)
-        case .typeFollowUpdatedEvent(let value):
+        case let .typePollVoteCastedFeedEvent(value):
             try container.encode(value)
-        case .typePollClosedEvent(let value):
+        case let .typePollVoteChangedFeedEvent(value):
             try container.encode(value)
-        case .typePollDeletedEvent(let value):
+        case let .typePollVoteRemovedFeedEvent(value):
             try container.encode(value)
-        case .typePollUpdatedEvent(let value):
+        case let .typeHealthCheckEvent(value):
             try container.encode(value)
-        case .typeConnectedEvent(let value):
+        case let .typeModerationCustomActionEvent(value):
             try container.encode(value)
-        case .typeHealthCheckEvent(let value):
+        case let .typeModerationFlaggedEvent(value):
             try container.encode(value)
-        case .typeConnectionErrorEvent(let value):
+        case let .typeModerationMarkReviewedEvent(value):
             try container.encode(value)
-        case .typeActivityMarkEvent(let value):
+        case let .typeUserBannedEvent(value):
+            try container.encode(value)
+        case let .typeUserDeactivatedEvent(value):
+            try container.encode(value)
+        case let .typeUserMutedEvent(value):
+            try container.encode(value)
+        case let .typeUserReactivatedEvent(value):
+            try container.encode(value)
+        case let .typeUserUpdatedEvent(value):
+            try container.encode(value)
+        case let .typeConnectedEvent(value):
+            try container.encode(value)
+        case let .typeConnectionErrorEvent(value):
             try container.encode(value)
         }
     }
@@ -306,7 +348,10 @@ public enum FeedsEvent: Codable, Hashable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let dto = try container.decode(WSEventMapping.self)
-        if dto.type == "feeds.activity.added" {
+        if dto.type == "app.updated" {
+            let value = try container.decode(AppUpdatedEvent.self)
+            self = .typeAppUpdatedEvent(value)
+        } else if dto.type == "feeds.activity.added" {
             let value = try container.decode(ActivityAddedEvent.self)
             self = .typeActivityAddedEvent(value)
         } else if dto.type == "feeds.activity.deleted" {
@@ -381,6 +426,15 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.feed_member.updated" {
             let value = try container.decode(FeedMemberUpdatedEvent.self)
             self = .typeFeedMemberUpdatedEvent(value)
+        } else if dto.type == "feeds.follow.created" {
+            let value = try container.decode(FollowCreatedEvent.self)
+            self = .typeFollowCreatedEvent(value)
+        } else if dto.type == "feeds.follow.deleted" {
+            let value = try container.decode(FollowDeletedEvent.self)
+            self = .typeFollowDeletedEvent(value)
+        } else if dto.type == "feeds.follow.updated" {
+            let value = try container.decode(FollowUpdatedEvent.self)
+            self = .typeFollowUpdatedEvent(value)
         } else if dto.type == "feeds.poll.closed" {
             let value = try container.decode(PollClosedFeedEvent.self)
             self = .typePollClosedFeedEvent(value)
@@ -399,30 +453,36 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.poll.vote_removed" {
             let value = try container.decode(PollVoteRemovedFeedEvent.self)
             self = .typePollVoteRemovedFeedEvent(value)
-        } else if dto.type == "feeds.follow.created" {
-            let value = try container.decode(FollowCreatedEvent.self)
-            self = .typeFollowCreatedEvent(value)
-        } else if dto.type == "feeds.follow.deleted" {
-            let value = try container.decode(FollowDeletedEvent.self)
-            self = .typeFollowDeletedEvent(value)
-        } else if dto.type == "feeds.follow.updated" {
-            let value = try container.decode(FollowUpdatedEvent.self)
-            self = .typeFollowUpdatedEvent(value)
-        } else if dto.type == "feeds.poll.closed" {
-            let value = try container.decode(PollClosedFeedEvent.self)
-            self = .typePollClosedEvent(value)
-        } else if dto.type == "feeds.poll.deleted" {
-            let value = try container.decode(PollDeletedFeedEvent.self)
-            self = .typePollDeletedEvent(value)
-        } else if dto.type == "feeds.poll.updated" {
-            let value = try container.decode(PollUpdatedFeedEvent.self)
-            self = .typePollUpdatedEvent(value)
-        } else if dto.type == "connection.ok" {
-            let value = try container.decode(ConnectedEvent.self)
-            self = .typeConnectedEvent(value)
         } else if dto.type == "health.check" {
             let value = try container.decode(HealthCheckEvent.self)
             self = .typeHealthCheckEvent(value)
+        } else if dto.type == "moderation.custom_action" {
+            let value = try container.decode(ModerationCustomActionEvent.self)
+            self = .typeModerationCustomActionEvent(value)
+        } else if dto.type == "moderation.flagged" {
+            let value = try container.decode(ModerationFlaggedEvent.self)
+            self = .typeModerationFlaggedEvent(value)
+        } else if dto.type == "moderation.mark_reviewed" {
+            let value = try container.decode(ModerationMarkReviewedEvent.self)
+            self = .typeModerationMarkReviewedEvent(value)
+        } else if dto.type == "user.banned" {
+            let value = try container.decode(UserBannedEvent.self)
+            self = .typeUserBannedEvent(value)
+        } else if dto.type == "user.deactivated" {
+            let value = try container.decode(UserDeactivatedEvent.self)
+            self = .typeUserDeactivatedEvent(value)
+        } else if dto.type == "user.muted" {
+            let value = try container.decode(UserMutedEvent.self)
+            self = .typeUserMutedEvent(value)
+        } else if dto.type == "user.reactivated" {
+            let value = try container.decode(UserReactivatedEvent.self)
+            self = .typeUserReactivatedEvent(value)
+        } else if dto.type == "user.updated" {
+            let value = try container.decode(UserUpdatedEvent.self)
+            self = .typeUserUpdatedEvent(value)
+        } else if dto.type == "connection.ok" {
+            let value = try container.decode(ConnectedEvent.self)
+            self = .typeConnectedEvent(value)
         } else if dto.type == "connection.error" {
             let value = try container.decode(ConnectionErrorEvent.self)
             self = .typeConnectionErrorEvent(value)

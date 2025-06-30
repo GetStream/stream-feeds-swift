@@ -3,9 +3,9 @@ import StreamCore
 
 public final class SubmitActionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var duration: String
-    public var item: ReviewQueueItem?
+    public var item: ReviewQueueItemResponse?
 
-    public init(duration: String, item: ReviewQueueItem? = nil) {
+    public init(duration: String, item: ReviewQueueItemResponse? = nil) {
         self.duration = duration
         self.item = item
     }

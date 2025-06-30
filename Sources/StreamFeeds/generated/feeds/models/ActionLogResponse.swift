@@ -6,14 +6,14 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
     public var custom: [String: RawJSON]
     public var id: String
     public var reason: String
-    public var reviewQueueItem: ReviewQueueItem?
+    public var reviewQueueItem: ReviewQueueItemResponse?
     public var targetUser: UserResponse?
     public var targetUserId: String
     public var type: String
     public var user: UserResponse?
     public var userId: String
 
-    public init(createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItem? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
+    public init(createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
         self.createdAt = createdAt
         self.custom = custom
         self.id = id
