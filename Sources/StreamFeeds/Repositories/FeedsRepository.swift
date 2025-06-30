@@ -70,6 +70,13 @@ final class FeedsRepository: Sendable {
         return response.suggestions.map { $0.toModel() }
     }
     
+    func queryFollows(request: QueryFollowsRequest) async throws -> PaginationResult<FollowData> {
+        let response = try await apiClient.queryFollows(queryFollowsRequest: request)
+        let follows = response.follows.map { $0.toModel() }
+        let pagination = PaginationData(next: response.next, previous: response.prev)
+        return PaginationResult(models: follows, pagination: pagination)
+    }
+    
     func follow(request: SingleFollowRequest) async throws -> FollowData {
         let response = try await apiClient.follow(singleFollowRequest: request)
         return response.follow.toModel()

@@ -45,9 +45,7 @@ struct ProfileView: View {
                                 Spacer()
                                 Button {
                                     Task {
-                                        try await feed.acceptFollow(
-                                            request: .init(sourceFid: request.sourceFeed.fid.rawValue, targetFid: request.targetFeed.fid.rawValue)
-                                        )
+                                        try await feed.acceptFollow(request.sourceFeed.fid)
                                     }
                                 } label: {
                                     Image(systemName: "checkmark.circle.fill")
@@ -56,9 +54,7 @@ struct ProfileView: View {
                                 
                                 Button {
                                     Task {
-                                        try await feed.rejectFollow(
-                                            request: .init(sourceFid: request.sourceFeed.fid.rawValue, targetFid: request.targetFeed.fid.rawValue)
-                                        )
+                                        try await feed.rejectFollow(request.sourceFeed.fid)
                                     }
                                 } label: {
                                     Image(systemName: "xmark.circle.fill")
@@ -76,7 +72,7 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(targetFid: follow.targetFeed.fid)
+                                    try await feed.unfollow(follow.targetFeed.fid)
                                 }
                             } label: {
                                 Text("Unfollow")
@@ -97,7 +93,7 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(sourceFid: follow.sourceFeed.fid, targetFid: follow.targetFeed.fid)
+                                    try await feed.unfollow(follow.sourceFeed.fid)
                                 }
                             } label: {
                                 Text("Remove Follower")
@@ -152,7 +148,7 @@ struct FollowSuggestionView: View {
             Text(owner.name ?? owner.id)
             Button {
                 Task {
-                    try await feed.follow(request: .init(source: feed.fid.rawValue, target: targetFeed.fid.rawValue))
+                    try await feed.follow(targetFeed.fid)
                 }
             } label: {
                 Text("Follow")
@@ -161,7 +157,7 @@ struct FollowSuggestionView: View {
             Button {
                 Task {
                     //TODO: check how request to follow will work.
-                    try await feed.follow(request: .init(source: feed.fid.rawValue, target: targetFeed.fid.rawValue))
+                    try await feed.follow(targetFeed.fid)
                 }
             } label: {
                 Text("Request to follow")

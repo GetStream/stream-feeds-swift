@@ -11,9 +11,6 @@ public final class Feed: Sendable {
     private let feedQuery: FeedQuery
     private let attachmentsUploader: StreamAttachmentUploader
     
-    // TODO: Move?
-    private let user: User
-    
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
@@ -21,10 +18,8 @@ public final class Feed: Sendable {
     
     internal init(
         query: FeedQuery,
-        user: User,
         client: FeedsClient
     ) {
-        self.user = user
         self.activitiesRepository = client.activitiesRepository
         self.commentsRepository = client.commentsRepository
         self.feedsRepository = client.feedsRepository
@@ -48,14 +43,17 @@ public final class Feed: Sendable {
     // MARK: - Creating and Fetching the Feed
     
     /// Fetches or creates the feed based on the current feed query.
-    ///
+    /// 
     /// This method will either retrieve an existing feed or create a new one if it doesn't exist.
     /// The feed state will be updated with the fetched data including activities, followers, and other feed information.
-    ///
+    /// 
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func getOrCreate() async throws {
+    /// - Returns: `FeedData` containing the latest state of the feed.
+    @discardableResult
+    public func getOrCreate() async throws -> FeedData {
         let result = try await feedsRepository.getOrCreateFeed(with: feedQuery)
         await state.didQueryFeed(with: result)
+        return result.feed
     }
     
     // MARK: - Updating the Feed
@@ -228,11 +226,15 @@ public final class Feed: Sendable {
     
     /// Follows another feed.
     ///
-    /// - Parameter request: The follow request containing the source and target feed information
-    /// - Returns: The created follow data
+    /// - Parameters:
+    ///   - targetFid: The target feed id.
+    ///   - custom: Additional data for the request.
+    ///   - pushPreference: Push notification preferences for the follow request.
     /// - Throws: `APIError` if the network request fails or the server returns an error
+    /// - Returns: The data of the follow request.
     @discardableResult
-    public func follow(request: SingleFollowRequest) async throws -> FollowData {
+    public func follow(_ targetFid: FeedId, custom: [String: RawJSON]? = nil, pushPreference: String? = nil) async throws -> FollowData {
+        let request = SingleFollowRequest(custom: custom, pushPreference: pushPreference, source: fid.rawValue, target: targetFid.rawValue)
         let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)
         return follow
@@ -241,25 +243,27 @@ public final class Feed: Sendable {
     /// Unfollows another feed.
     ///
     /// - Parameters:
-    ///   - sourceFid: The source feed identifier. If `nil`, uses the current feed's identifier.
     ///   - targetFid: The target feed identifier to unfollow
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func unfollow(sourceFid: FeedId? = nil, targetFid: FeedId) async throws {
-        try await feedsRepository.unfollow(source: sourceFid ?? self.fid, target: targetFid)
+    public func unfollow(_ targetFid: FeedId) async throws {
+        try await feedsRepository.unfollow(source: fid, target: targetFid)
         // TODO: Review
         await state.access { state in
-            state.followers.removeAll(where: { $0.sourceFeed.fid == sourceFid && $0.targetFeed.fid == targetFid })
-            state.following.removeAll(where: { $0.sourceFeed.fid == sourceFid && $0.targetFeed.fid == targetFid })
+            state.followers.removeAll(where: { $0.sourceFeed.fid == fid && $0.targetFeed.fid == targetFid })
+            state.following.removeAll(where: { $0.sourceFeed.fid == fid && $0.targetFeed.fid == targetFid })
         }
     }
     
     /// Accepts a follow request from another feed.
     ///
-    /// - Parameter request: The accept follow request containing the follow request information
+    /// - Parameters:
+    ///   - sourceFid: The feed if of the requested feed.
+    ///   - role: The role for the requesting feed.
     /// - Returns: The updated follow data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func acceptFollow(request: AcceptFollowRequest) async throws -> FollowData {
+    public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
+        let request = AcceptFollowRequest(followerRole: role, sourceFid: sourceFid.rawValue, targetFid: fid.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
         await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         await state.changeHandlers.followAdded(follow)
@@ -268,11 +272,12 @@ public final class Feed: Sendable {
     
     /// Rejects a follow request from another feed.
     ///
-    /// - Parameter request: The reject follow request containing the follow request information
+    /// - Parameter sourceFid: The feed if of the requested feed.
     /// - Returns: The rejected follow data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func rejectFollow(request: RejectFollowRequest) async throws -> FollowData {
+    public func rejectFollow(_ sourceFid: FeedId) async throws -> FollowData {
+        let request = RejectFollowRequest(sourceFid: sourceFid.rawValue, targetFid: fid.rawValue)
         let follow = try await feedsRepository.rejectFollow(request: request)
         await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         return follow

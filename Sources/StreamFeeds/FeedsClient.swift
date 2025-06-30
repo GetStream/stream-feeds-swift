@@ -209,7 +209,7 @@ public final class FeedsClient: Sendable {
     ///   let feed = client.feed(for: query)
     ///   ```
     public func feed(for query: FeedQuery) -> Feed {
-        Feed(query: query, user: user, client: self)
+        Feed(query: query, client: self)
     }
     
     // MARK: - Feed Lists
@@ -224,6 +224,18 @@ public final class FeedsClient: Sendable {
     /// - Returns: A `FeedList` instance that can be used to interact with the collection of feeds
     public func feedList(for query: FeedsQuery) -> FeedList {
         FeedList(query: query, client: self)
+    }
+    
+    /// Creates a follow list instance based on the provided query.
+    ///
+    /// This method creates a `FollowList` object that represents a collection of follow relationships
+    /// matching the specified query. The follow list can be used to fetch followers, following relationships,
+    /// and manage follow data with pagination support.
+    ///
+    /// - Parameter query: The follows query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `FollowList` instance that can be used to interact with the collection of follow relationships
+    public func followList(for query: FollowsQuery) -> FollowList {
+        FollowList(query: query, client: self)
     }
     
     // MARK: - Events
@@ -301,17 +313,6 @@ public final class FeedsClient: Sendable {
     @discardableResult
     public func removeActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
         try await apiClient.removeActivities(deleteActivitiesRequest: request)
-    }
-    
-    // MARK: - Follows
-    
-    /// Queries follows based on the provided request parameters.
-    ///
-    /// - Parameter request: The query request containing filtering and pagination parameters
-    /// - Returns: A response containing the queried follows
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func queryFollows(request: QueryFollowsRequest) async throws -> QueryFollowsResponse {
-        try await apiClient.queryFollows(queryFollowsRequest: request)
     }
     
     // MARK: - Devices

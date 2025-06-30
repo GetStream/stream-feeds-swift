@@ -20,7 +20,7 @@ public final class FeedList: Sendable {
     
     // MARK: - Accessing the State
     
-    /// An observable object representing the current state of the feed.
+    /// An observable object representing the current state of the feed list.
     @MainActor public var state: FeedListState { stateBuilder.state }
     
     // MARK: - Paginating the List of Feeds
