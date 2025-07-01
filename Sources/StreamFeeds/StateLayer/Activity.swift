@@ -264,11 +264,10 @@ public final class Activity: Sendable {
     /// Deletes a poll.
     ///
     /// - Parameters:
-    ///   - pollId: The unique identifier of the poll to delete
     ///   - userId: Optional user identifier for authorization
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deletePoll(pollId: String, userId: String?) async throws {
-        try await pollsRepository.deletePoll(pollId: pollId, userId: userId)
+    public func deletePoll(userId: String? = nil) async throws {
+        try await pollsRepository.deletePoll(pollId: pollId(), userId: userId)
         // TODO: set to nil?
     }
 
@@ -414,7 +413,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func removePollVote(
         voteId: String,
-        userId: String?
+        userId: String? = nil
     ) async throws -> PollVoteData? {
         let vote = try await pollsRepository.removePollVote(
             activityId: activityId,
