@@ -121,16 +121,6 @@ public final class Feed: Sendable {
     
     // MARK: - Activity Interactions
     
-    /// Adds a new comment to activity with id.
-    ///
-    /// - Parameter request: The request containing the comment data to add
-    /// - Returns: The created comment data
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func addComment(request: AddCommentRequest) async throws -> CommentData {
-        try await commentsRepository.addComment(request: request)
-    }
-    
     /// Marks an activity as read or unread.
     ///
     /// - Parameter request: The request containing the mark activity data
@@ -328,6 +318,16 @@ public final class Feed: Sendable {
             prev: prev,
             next: next
         )
+    }
+    
+    /// Adds a new comment to activity with id.
+    ///
+    /// - Parameter request: The request containing the comment data to add
+    /// - Returns: The created comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func addComment(request: AddCommentRequest) async throws -> CommentData {
+        try await commentsRepository.addComment(request: request)
     }
     
     /// Removes a comment for id.

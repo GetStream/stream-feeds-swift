@@ -89,6 +89,11 @@ final class ActivitiesRepository: Sendable {
     
     // MARK: - Activity Interactions
     
+    func pin(_ flag: Bool, activityId: String, in fid: FeedId) async throws -> ActivityData {
+        let response = try await apiClient.pinActivity(feedGroupId: fid.group, feedId: fid.id, activityId: activityId)
+        return response.activity.toModel()
+    }
+    
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
         _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
     }

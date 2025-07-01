@@ -19,6 +19,9 @@ public final class Activity: Sendable {
     /// The unique identifier of this activity.
     public let activityId: String
     
+    /// The feed id for the activity.
+    public let fid: FeedId
+    
     /// Initializes a new Activity instance.
     ///
     /// - Parameters:
@@ -33,6 +36,7 @@ public final class Activity: Sendable {
         self.activityId = id
         self.activitiesRepository = client.activitiesRepository
         self.commentsRepository = client.commentsRepository
+        self.fid = fid
         self.pollsRepository = client.pollsRepository
         let events = client.eventsMiddleware
         self.stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events) }
@@ -232,6 +236,18 @@ public final class Activity: Sendable {
             comments.forEach { state.changeHandlers.commentUpdated($0) }
         }
         return comments
+    }
+    
+    // MARK: - Pinning
+    
+    public func pin() async throws {
+        let activity = try await activitiesRepository.pin(true, activityId: activityId, in: fid)
+        await state.changeHandlers.activityUpdated(activity)
+    }
+    
+    public func unpin() async throws {
+        let activity = try await activitiesRepository.pin(false, activityId: activityId, in: fid)
+        await state.changeHandlers.activityUpdated(activity)
     }
     
     // MARK: - Polls

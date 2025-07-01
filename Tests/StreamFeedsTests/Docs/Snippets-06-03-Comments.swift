@@ -88,6 +88,8 @@ import StreamFeeds
             )
         )
         let userComments = try await userCommentList.get()
+        
+        suppressUnusedWarning([activityComments, replies, userComments])
     }
     
     func commentReactions() async throws {
@@ -117,5 +119,7 @@ import StreamFeeds
         let replies = try await feed.getCommentReplies(
             commentId: "parent_123"
         )
+        
+        suppressUnusedWarning([comments, replies])
     }
 }
