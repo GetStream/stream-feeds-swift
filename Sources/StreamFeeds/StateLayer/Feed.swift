@@ -12,6 +12,7 @@ public final class Feed: Sendable {
     private let attachmentsUploader: StreamAttachmentUploader
     
     private let activitiesRepository: ActivitiesRepository
+    private let bookmarksRepository: BookmarksRepository
     private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
     private let pollsRepository: PollsRepository
@@ -21,6 +22,7 @@ public final class Feed: Sendable {
         client: FeedsClient
     ) {
         self.activitiesRepository = client.activitiesRepository
+        self.bookmarksRepository = client.bookmarksRepository
         self.commentsRepository = client.commentsRepository
         self.feedsRepository = client.feedsRepository
         self.pollsRepository = client.pollsRepository
@@ -193,12 +195,14 @@ public final class Feed: Sendable {
         
     /// Adds an activity to the user's bookmarks.
     ///
-    /// - Parameter activityId: The unique identifier of the activity to bookmark
+    /// - Parameters:
+    ///   - activityId: The unique identifier of the activity to bookmark
+    ///   - request: Additional details of for the bookmark
     /// - Returns: The created bookmark data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func addBookmark(activityId: String) async throws -> BookmarkData {
-        try await activitiesRepository.addBookmark(activityId: activityId)
+    public func addBookmark(activityId: String, request: AddBookmarkRequest = .init()) async throws -> BookmarkData {
+        try await bookmarksRepository.addBookmark(activityId: activityId, request: request)
     }
     
     /// Removes an activity from the user's bookmarks.
@@ -210,7 +214,42 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func removeBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
-        try await activitiesRepository.removeBookmark(activityId: activityId, folderId: folderId)
+        try await bookmarksRepository.removeBookmark(activityId: activityId, folderId: folderId)
+    }
+    
+    /// Updates an existing bookmark for an activity.
+    ///
+    /// This method allows you to modify the properties of an existing bookmark, such as
+    /// changing the folder it belongs to or updating custom data associated with the bookmark.
+    ///
+    /// - Parameters:
+    ///   - activityId: The unique identifier of the activity whose bookmark should be updated
+    ///   - request: The update request containing the new bookmark properties to apply
+    /// - Returns: The updated bookmark data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   // Move a bookmark to a different folder
+    ///   let updateRequest = UpdateBookmarkRequest(folderId: "new-folder-id")
+    ///   let updatedBookmark = try await feed.updateBookmark(
+    ///       activityId: "activity-123",
+    ///       request: updateRequest
+    ///   )
+    ///   
+    ///   // Update bookmark with custom data
+    ///   let customUpdateRequest = UpdateBookmarkRequest(
+    ///       folderId: "favorites",
+    ///       custom: ["note": "Important article"]
+    ///   )
+    ///   let bookmark = try await feed.updateBookmark(
+    ///       activityId: "activity-456",
+    ///       request: customUpdateRequest
+    ///   )
+    ///   ```
+    @discardableResult
+    public func updateBookmark(activityId: String, request: UpdateBookmarkRequest) async throws -> BookmarkData {
+        try await bookmarksRepository.updateBookmark(activityId: activityId, request: request)
     }
     
     // MARK: - Follows

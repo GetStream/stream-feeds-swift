@@ -30,5 +30,7 @@ import StreamFeeds
         print(feed.state.activities[0].latestReactions)
         // Count of reactions by type
         print(feed.state.activities[0].reactionGroups)
+        
+        suppressUnusedWarning(feedData)
     }
 }

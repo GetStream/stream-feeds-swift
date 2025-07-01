@@ -33,6 +33,7 @@ public final class FeedsClient: Sendable {
     let eventNotificationCenter: EventNotificationCenter
     
     let activitiesRepository: ActivitiesRepository
+    let bookmarksRepository: BookmarksRepository
     let commentsRepository: CommentsRepository
     let devicesRepository: DevicesRepository
     let feedsRepository: FeedsRepository
@@ -106,6 +107,7 @@ public final class FeedsClient: Sendable {
         self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
         
         activitiesRepository = ActivitiesRepository(apiClient: apiClient, attachmentUploader: attachmentsUploader)
+        bookmarksRepository = BookmarksRepository(apiClient: apiClient)
         commentsRepository = CommentsRepository(apiClient: apiClient)
         devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
@@ -313,6 +315,32 @@ public final class FeedsClient: Sendable {
     @discardableResult
     public func removeActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
         try await apiClient.removeActivities(deleteActivitiesRequest: request)
+    }
+    
+    // MARK: - Bookmark Lists
+    
+    /// Creates a bookmark list instance based on the provided query.
+    ///
+    /// This method creates a `BookmarkList` object that represents a collection of bookmarks
+    /// matching the specified query. The bookmark list can be used to fetch user bookmarks,
+    /// manage bookmark folders, and receive real-time updates for bookmark-related events.
+    ///
+    /// - Parameter query: The bookmarks query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `BookmarkList` instance that can be used to interact with the collection of bookmarks
+    public func bookmarkList(for query: BookmarksQuery) -> BookmarkList {
+        BookmarkList(query: query, client: self)
+    }
+    
+    /// Creates a bookmark folder list instance based on the provided query.
+    ///
+    /// This method creates a `BookmarkFolderList` object that represents a collection of bookmark folders
+    /// matching the specified query. The bookmark folder list can be used to fetch user bookmark folders,
+    /// manage folder organization, and receive real-time updates for folder-related events.
+    ///
+    /// - Parameter query: The bookmark folders query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `BookmarkFolderList` instance that can be used to interact with the collection of bookmark folders
+    public func bookmarkFolderList(for query: BookmarkFoldersQuery) -> BookmarkFolderList {
+        BookmarkFolderList(query: query, client: self)
     }
     
     // MARK: - Devices
