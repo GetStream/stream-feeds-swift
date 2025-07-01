@@ -343,6 +343,20 @@ public final class FeedsClient: Sendable {
         BookmarkFolderList(query: query, client: self)
     }
     
+    // MARK: - Comment Lists
+    
+    /// Creates a comment list instance based on the provided query.
+    ///
+    /// This method creates a `CommentList` object that represents a collection of comments
+    /// matching the specified query. The comment list can be used to fetch comments,
+    /// manage comment pagination, and receive real-time updates for comment-related events.
+    ///
+    /// - Parameter query: The comments query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `CommentList` instance that can be used to interact with the collection of comments
+    public func commentList(for query: CommentsQuery) -> CommentList {
+        CommentList(query: query, client: self)
+    }
+    
     // MARK: - Devices
     
     /// Queries all devices associated with the current user.

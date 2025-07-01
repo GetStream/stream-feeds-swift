@@ -16,12 +16,11 @@ final class CommentsRepository: Sendable {
     
     // MARK: - Querying Comments
     
-    func queryComments(request: QueryCommentsRequest) async throws -> QueryCommentsData {
+    func queryComments(request: QueryCommentsRequest) async throws -> PaginationResult<CommentData> {
         let response = try await self.apiClient.queryComments(queryCommentsRequest: request)
-        return QueryCommentsData(
-            comments: response.comments.map { $0.toModel() },
-            next: response.next,
-            prev: response.prev
+        return PaginationResult(
+            models: response.comments.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
         )
     }
     
@@ -107,13 +106,5 @@ final class CommentsRepository: Sendable {
             next: next
         )
         return response.comments.map { $0.toModel() }
-    }
-}
-
-extension CommentsRepository {
-    struct QueryCommentsData {
-        let comments: [CommentData]
-        let next: String?
-        let prev: String?
     }
 }

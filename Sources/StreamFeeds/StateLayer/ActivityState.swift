@@ -169,7 +169,7 @@ extension ActivityState {
     /// This method is called when comments are initially loaded or refreshed.
     ///
     /// - Parameter data: The response containing comments data
-    func update(with data: CommentsRepository.QueryCommentsData) {
-        comments = data.comments.sorted(by: CommentData.defaultSorting)
+    func update(with data: PaginationResult<CommentData>) {
+        comments = data.models.sorted(by: CommentData.defaultSorting)
     }
 }

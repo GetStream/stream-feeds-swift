@@ -56,4 +56,3 @@ public final class BookmarkList: Sendable {
         return result.models
     }
 }
-

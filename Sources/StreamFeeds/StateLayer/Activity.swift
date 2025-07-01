@@ -66,14 +66,12 @@ public final class Activity: Sendable {
     public func queryComments(request: QueryCommentsRequest) async throws -> [CommentData] {
         let data = try await commentsRepository.queryComments(request: request)
         await state.update(with: data)
-        return data.comments
+        return data.models
     }
     
     /// Gets comments for a specific object with optional filtering and pagination.
     ///
     /// - Parameters:
-    ///   - objectId: The unique identifier of the object to get comments for
-    ///   - objectType: The type of object (e.g., "activity", "comment")
     ///   - depth: Optional depth for nested comment retrieval
     ///   - sort: Optional sorting criteria
     ///   - repliesLimit: Optional limit for the number of replies to include
@@ -83,8 +81,6 @@ public final class Activity: Sendable {
     /// - Returns: An array of comment data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComments(
-        objectId: String,
-        objectType: String,
         depth: Int? = nil,
         sort: String? = nil,
         repliesLimit: Int? = nil,
@@ -93,8 +89,8 @@ public final class Activity: Sendable {
         next: String? = nil
     ) async throws -> [CommentData] {
         let comments = try await commentsRepository.getComments(
-            objectId: objectId,
-            objectType: objectType,
+            objectId: activityId,
+            objectType: "activity",
             depth: depth,
             sort: sort,
             repliesLimit: repliesLimit,

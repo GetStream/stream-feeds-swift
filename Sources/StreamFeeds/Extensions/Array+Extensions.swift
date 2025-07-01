@@ -38,6 +38,23 @@ extension Array {
         guard let index = firstIndex(where: { $0.id == element.id }) else { return }
         replaceSubrange(index...index, with: CollectionOfOne(element))
     }
+    
+    /// Appends new unique elements at the end while replacing existing duplicate elements.
+    mutating func appendReplacingDuplicates(byId incomingElements: [Element]) where Element: Identifiable {
+        var incomingLookup = Dictionary<Element.ID, Element>()
+        incomingLookup.merge(incomingElements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new } )
+        
+        var merged = [Element]()
+        merged.reserveCapacity(count + incomingElements.count)
+        for existing in self {
+            if let incoming = incomingLookup[existing.id] {
+                merged.append(incoming)
+            } else {
+                merged.append(existing)
+            }
+        }
+        self = merged
+    }
 
     // MARK: - Managing Identifiable Elements in Sorted Array
     

@@ -196,7 +196,7 @@ struct CommentsView: View {
         }
         .onAppear {
             Task {
-                try await activity.getComments(objectId: activityId, objectType: "activity", depth: 2)
+                try await activity.getComments(depth: 2)
             }
         }
     }

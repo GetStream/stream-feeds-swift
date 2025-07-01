@@ -94,6 +94,6 @@ import StreamFeeds
         )
         let projectFolders = try await projectFolderList.get()
         
-        suppressUnusedWarning([page1, page2, projectFolderList])
+        suppressUnusedWarning([page1, page2, projectFolders])
     }
 }

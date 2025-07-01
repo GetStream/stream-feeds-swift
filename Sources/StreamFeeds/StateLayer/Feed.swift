@@ -252,6 +252,107 @@ public final class Feed: Sendable {
         try await bookmarksRepository.updateBookmark(activityId: activityId, request: request)
     }
     
+    // MARK: - Comments
+    
+    /// Gets comments for a specific object with optional filtering and pagination.
+    ///
+    /// - Parameters:
+    ///   - objectId: The unique identifier of the object to get comments for
+    ///   - objectType: The type of object (e.g., "activity", "comment")
+    ///   - depth: Optional depth for nested comment retrieval
+    ///   - sort: Optional sorting criteria
+    ///   - repliesLimit: Optional limit for the number of replies to include
+    ///   - limit: Optional limit for the number of comments to return
+    ///   - prev: Optional pagination token for previous page
+    ///   - next: Optional pagination token for next page
+    /// - Returns: An array of comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func getComments(
+        objectId: String,
+        objectType: String,
+        depth: Int? = nil,
+        sort: String? = nil,
+        repliesLimit: Int? = nil,
+        limit: Int? = nil,
+        prev: String? = nil,
+        next: String? = nil
+    ) async throws -> [CommentData] {
+        try await commentsRepository.getComments(
+            objectId: objectId,
+            objectType: objectType,
+            depth: depth,
+            sort: sort,
+            repliesLimit: repliesLimit,
+            limit: limit,
+            prev: prev,
+            next: next
+        )
+    }
+    
+    /// Gets a specific comment by its identifier.
+    ///
+    /// - Parameter commentId: The unique identifier of the comment to retrieve
+    /// - Returns: The comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func getComment(commentId: String) async throws -> CommentData {
+        try await commentsRepository.getComment(commentId: commentId)
+    }
+    
+    /// Gets replies to a specific comment with optional filtering and pagination.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the parent comment
+    ///   - depth: Optional depth for nested reply retrieval
+    ///   - sort: Optional sorting criteria
+    ///   - repliesLimit: Optional limit for the number of replies to include
+    ///   - limit: Optional limit for the number of replies to return
+    ///   - prev: Optional pagination token for previous page
+    ///   - next: Optional pagination token for next page
+    /// - Returns: An array of reply comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func getCommentReplies(
+        commentId: String,
+        depth: Int? = nil,
+        sort: String? = nil,
+        repliesLimit: Int? = nil,
+        limit: Int? = nil,
+        prev: String? = nil,
+        next: String? = nil
+    ) async throws -> [CommentData] {
+        try await commentsRepository.getCommentReplies(
+            commentId: commentId,
+            depth: depth,
+            sort: sort,
+            repliesLimit: repliesLimit,
+            limit: limit,
+            prev: prev,
+            next: next
+        )
+    }
+    
+    /// Removes a comment for id.
+    ///
+    /// - Parameter commentId: The unique identifier of the comment to remove
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func removeComment(commentId: String) async throws {
+        try await commentsRepository.removeComment(commentId: commentId)
+    }
+    
+    /// Updates an existing comment with the provided request data.
+    ///
+    /// This method allows you to modify the content and properties of an existing comment.
+    /// You can update the comment text, attachments, or other comment-specific data.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to update
+    ///   - request: The request containing the updated comment data
+    /// - Returns: The updated comment data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
+        try await commentsRepository.updateComment(commentId: commentId, request: request)
+    }
+    
     // MARK: - Follows
     
     /// Queries for feed suggestions that the current user might want to follow.
@@ -386,6 +487,32 @@ public final class Feed: Sendable {
     @discardableResult
     public func removeReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         try await activitiesRepository.removeReaction(activityId: activityId, type: type)
+    }
+    
+    /// Adds a reaction to a comment.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to react to
+    ///   - request: The request containing the reaction data
+    /// - Returns: The created reaction data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
+        let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
+        return result.reaction
+    }
+
+    /// Removes a reaction from a comment.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment
+    ///   - type: The type of reaction to remove
+    /// - Returns: The removed reaction data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func removeCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
+        let result = try await commentsRepository.removeCommentReaction(commentId: commentId, type: type)
+        return result.reaction
     }
     
     // MARK: - Polls
