@@ -1569,6 +1569,31 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func getUserLiveLocations() async throws -> SharedLocationsResponse {
+        let path = "/api/v2/users/live_locations"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(SharedLocationsResponse.self, from: $0)
+        }
+    }
+
+    open func updateLiveLocation(updateLiveLocationRequest: UpdateLiveLocationRequest) async throws -> SharedLocationResponse {
+        let path = "/api/v2/users/live_locations"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PUT",
+            request: updateLiveLocationRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(SharedLocationResponse.self, from: $0)
+        }
+    }
+
     open func unblockUsers(unblockUsersRequest: UnblockUsersRequest) async throws -> UnblockUsersResponse {
         let path = "/api/v2/users/unblock"
 
@@ -1759,6 +1784,10 @@ protocol DefaultAPIEndpoints {
     func getBlockedUsers() async throws -> GetBlockedUsersResponse
 
     func blockUsers(blockUsersRequest: BlockUsersRequest) async throws -> BlockUsersResponse
+
+    func getUserLiveLocations() async throws -> SharedLocationsResponse
+
+    func updateLiveLocation(updateLiveLocationRequest: UpdateLiveLocationRequest) async throws -> SharedLocationResponse
 
     func unblockUsers(unblockUsersRequest: UnblockUsersRequest) async throws -> UnblockUsersResponse
 }

@@ -15,20 +15,17 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
     public var footerIcon: String?
     public var giphy: Images?
     public var imageUrl: String?
-    public var latitude: Float?
-    public var longitude: Float?
     public var ogScrapeUrl: String?
     public var originalHeight: Int?
     public var originalWidth: Int?
     public var pretext: String?
-    public var stoppedSharing: Bool?
     public var text: String?
     public var thumbUrl: String?
     public var title: String?
     public var titleLink: String?
     public var type: String?
 
-    public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, latitude: Float? = nil, longitude: Float? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, stoppedSharing: Bool? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil) {
+    public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil) {
         self.actions = actions
         self.assetUrl = assetUrl
         self.authorIcon = authorIcon
@@ -42,13 +39,10 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
         self.footerIcon = footerIcon
         self.giphy = giphy
         self.imageUrl = imageUrl
-        self.latitude = latitude
-        self.longitude = longitude
         self.ogScrapeUrl = ogScrapeUrl
         self.originalHeight = originalHeight
         self.originalWidth = originalWidth
         self.pretext = pretext
-        self.stoppedSharing = stoppedSharing
         self.text = text
         self.thumbUrl = thumbUrl
         self.title = title
@@ -69,13 +63,10 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
         case footerIcon = "footer_icon"
         case giphy
         case imageUrl = "image_url"
-        case latitude
-        case longitude
         case ogScrapeUrl = "og_scrape_url"
         case originalHeight = "original_height"
         case originalWidth = "original_width"
         case pretext
-        case stoppedSharing = "stopped_sharing"
         case text
         case thumbUrl = "thumb_url"
         case title
@@ -97,13 +88,10 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
             lhs.footerIcon == rhs.footerIcon &&
             lhs.giphy == rhs.giphy &&
             lhs.imageUrl == rhs.imageUrl &&
-            lhs.latitude == rhs.latitude &&
-            lhs.longitude == rhs.longitude &&
             lhs.ogScrapeUrl == rhs.ogScrapeUrl &&
             lhs.originalHeight == rhs.originalHeight &&
             lhs.originalWidth == rhs.originalWidth &&
             lhs.pretext == rhs.pretext &&
-            lhs.stoppedSharing == rhs.stoppedSharing &&
             lhs.text == rhs.text &&
             lhs.thumbUrl == rhs.thumbUrl &&
             lhs.title == rhs.title &&
@@ -125,13 +113,10 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
         hasher.combine(footerIcon)
         hasher.combine(giphy)
         hasher.combine(imageUrl)
-        hasher.combine(latitude)
-        hasher.combine(longitude)
         hasher.combine(ogScrapeUrl)
         hasher.combine(originalHeight)
         hasher.combine(originalWidth)
         hasher.combine(pretext)
-        hasher.combine(stoppedSharing)
         hasher.combine(text)
         hasher.combine(thumbUrl)
         hasher.combine(title)

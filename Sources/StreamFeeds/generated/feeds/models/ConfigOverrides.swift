@@ -2,23 +2,6 @@ import Foundation
 import StreamCore
 
 public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
-        case block
-        case flag
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     public var blocklist: String?
     public var blocklistBehavior: String?
     public var commands: [String]
@@ -27,12 +10,13 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
     public var quotes: Bool?
     public var reactions: Bool?
     public var replies: Bool?
+    public var sharedLocations: Bool?
     public var typingEvents: Bool?
     public var uploads: Bool?
     public var urlEnrichment: Bool?
     public var userMessageReminders: Bool?
 
-    public init(blocklist: String? = nil, blocklistBehavior: String? = nil, commands: [String], grants: [String: [String]], maxMessageLength: Int? = nil, quotes: Bool? = nil, reactions: Bool? = nil, replies: Bool? = nil, typingEvents: Bool? = nil, uploads: Bool? = nil, urlEnrichment: Bool? = nil, userMessageReminders: Bool? = nil) {
+    public init(blocklist: String? = nil, blocklistBehavior: String? = nil, commands: [String], grants: [String: [String]], maxMessageLength: Int? = nil, quotes: Bool? = nil, reactions: Bool? = nil, replies: Bool? = nil, sharedLocations: Bool? = nil, typingEvents: Bool? = nil, uploads: Bool? = nil, urlEnrichment: Bool? = nil, userMessageReminders: Bool? = nil) {
         self.blocklist = blocklist
         self.blocklistBehavior = blocklistBehavior
         self.commands = commands
@@ -41,6 +25,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
         self.quotes = quotes
         self.reactions = reactions
         self.replies = replies
+        self.sharedLocations = sharedLocations
         self.typingEvents = typingEvents
         self.uploads = uploads
         self.urlEnrichment = urlEnrichment
@@ -56,6 +41,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
         case quotes
         case reactions
         case replies
+        case sharedLocations = "shared_locations"
         case typingEvents = "typing_events"
         case uploads
         case urlEnrichment = "url_enrichment"
@@ -71,6 +57,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
             lhs.quotes == rhs.quotes &&
             lhs.reactions == rhs.reactions &&
             lhs.replies == rhs.replies &&
+            lhs.sharedLocations == rhs.sharedLocations &&
             lhs.typingEvents == rhs.typingEvents &&
             lhs.uploads == rhs.uploads &&
             lhs.urlEnrichment == rhs.urlEnrichment &&
@@ -86,6 +73,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(quotes)
         hasher.combine(reactions)
         hasher.combine(replies)
+        hasher.combine(sharedLocations)
         hasher.combine(typingEvents)
         hasher.combine(uploads)
         hasher.combine(urlEnrichment)
