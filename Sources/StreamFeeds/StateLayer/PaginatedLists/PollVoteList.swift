@@ -41,7 +41,7 @@ public final class PollVoteList: Sendable {
                 sort: state.queryConfig?.sort,
                 limit: limit,
                 next: next,
-                previous: nil,
+                previous: nil
             )
         }
         guard let nextQuery else { return [] }

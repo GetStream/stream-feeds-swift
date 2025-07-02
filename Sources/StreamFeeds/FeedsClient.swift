@@ -6,9 +6,6 @@ import Combine
 import Foundation
 @preconcurrency import StreamCore
 
-//NOTE: change this to IP address to test push, for example: 192.168.0.227.
-public let host = "localhost"
-
 public final class FeedsClient: Sendable {
     public let apiKey: APIKey
     public let user: User
@@ -17,6 +14,8 @@ public final class FeedsClient: Sendable {
     public let attachmentsUploader: StreamAttachmentUploader
     
     public let moderation: Moderation
+    
+    static let endpointConfig: EndpointConfig = .localhost
     
     private let apiClient: DefaultAPI
     private let devicesClient: DevicesAPI
@@ -79,7 +78,7 @@ public final class FeedsClient: Sendable {
             xStreamClientHeader: SystemEnvironment.xStreamClientHeader,
             tokenProvider: tokenProvider
         )
-        let basePath = "http://\(host):3030"
+        let basePath = Self.endpointConfig.baseFeedsURL
         let defaultParams = DefaultParams(
             apiKey: apiKey.apiKeyString,
             xStreamClientHeader: SystemEnvironment.xStreamClientHeader
