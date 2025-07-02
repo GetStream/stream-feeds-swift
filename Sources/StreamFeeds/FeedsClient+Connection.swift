@@ -91,7 +91,7 @@ extension FeedsClient {
         // Create a WebSocketClient.
         let webSocketClient = WebSocketClient(
             sessionConfiguration: config,
-            eventDecoder: JsonEventDecoder(),
+            eventDecoder: JSONEventDecoder(),
             eventNotificationCenter: eventNotificationCenter,
             webSocketClientType: .coordinator,
             connectURL: url
