@@ -13,6 +13,7 @@ public enum FeedsEvent: Codable, Hashable {
     case typeActivityPinnedEvent(ActivityPinnedEvent)
     case typeActivityReactionAddedEvent(ActivityReactionAddedEvent)
     case typeActivityReactionDeletedEvent(ActivityReactionDeletedEvent)
+    case typeActivityReactionUpdatedEvent(ActivityReactionUpdatedEvent)
     case typeActivityRemovedFromFeedEvent(ActivityRemovedFromFeedEvent)
     case typeActivityUnpinnedEvent(ActivityUnpinnedEvent)
     case typeActivityUpdatedEvent(ActivityUpdatedEvent)
@@ -23,6 +24,7 @@ public enum FeedsEvent: Codable, Hashable {
     case typeCommentDeletedEvent(CommentDeletedEvent)
     case typeCommentReactionAddedEvent(CommentReactionAddedEvent)
     case typeCommentReactionDeletedEvent(CommentReactionDeletedEvent)
+    case typeCommentReactionUpdatedEvent(CommentReactionUpdatedEvent)
     case typeCommentUpdatedEvent(CommentUpdatedEvent)
     case typeFeedCreatedEvent(FeedCreatedEvent)
     case typeFeedDeletedEvent(FeedDeletedEvent)
@@ -69,6 +71,8 @@ public enum FeedsEvent: Codable, Hashable {
             return value.type
         case let .typeActivityReactionDeletedEvent(value):
             return value.type
+        case let .typeActivityReactionUpdatedEvent(value):
+            return value.type
         case let .typeActivityRemovedFromFeedEvent(value):
             return value.type
         case let .typeActivityUnpinnedEvent(value):
@@ -88,6 +92,8 @@ public enum FeedsEvent: Codable, Hashable {
         case let .typeCommentReactionAddedEvent(value):
             return value.type
         case let .typeCommentReactionDeletedEvent(value):
+            return value.type
+        case let .typeCommentReactionUpdatedEvent(value):
             return value.type
         case let .typeCommentUpdatedEvent(value):
             return value.type
@@ -166,6 +172,8 @@ public enum FeedsEvent: Codable, Hashable {
             return value
         case let .typeActivityReactionDeletedEvent(value):
             return value
+        case let .typeActivityReactionUpdatedEvent(value):
+            return value
         case let .typeActivityRemovedFromFeedEvent(value):
             return value
         case let .typeActivityUnpinnedEvent(value):
@@ -185,6 +193,8 @@ public enum FeedsEvent: Codable, Hashable {
         case let .typeCommentReactionAddedEvent(value):
             return value
         case let .typeCommentReactionDeletedEvent(value):
+            return value
+        case let .typeCommentReactionUpdatedEvent(value):
             return value
         case let .typeCommentUpdatedEvent(value):
             return value
@@ -264,6 +274,8 @@ public enum FeedsEvent: Codable, Hashable {
             try container.encode(value)
         case let .typeActivityReactionDeletedEvent(value):
             try container.encode(value)
+        case let .typeActivityReactionUpdatedEvent(value):
+            try container.encode(value)
         case let .typeActivityRemovedFromFeedEvent(value):
             try container.encode(value)
         case let .typeActivityUnpinnedEvent(value):
@@ -283,6 +295,8 @@ public enum FeedsEvent: Codable, Hashable {
         case let .typeCommentReactionAddedEvent(value):
             try container.encode(value)
         case let .typeCommentReactionDeletedEvent(value):
+            try container.encode(value)
+        case let .typeCommentReactionUpdatedEvent(value):
             try container.encode(value)
         case let .typeCommentUpdatedEvent(value):
             try container.encode(value)
@@ -369,6 +383,9 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.activity.reaction.deleted" {
             let value = try container.decode(ActivityReactionDeletedEvent.self)
             self = .typeActivityReactionDeletedEvent(value)
+        } else if dto.type == "feeds.activity.reaction.updated" {
+            let value = try container.decode(ActivityReactionUpdatedEvent.self)
+            self = .typeActivityReactionUpdatedEvent(value)
         } else if dto.type == "feeds.activity.removed_from_feed" {
             let value = try container.decode(ActivityRemovedFromFeedEvent.self)
             self = .typeActivityRemovedFromFeedEvent(value)
@@ -399,6 +416,9 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.comment.reaction.deleted" {
             let value = try container.decode(CommentReactionDeletedEvent.self)
             self = .typeCommentReactionDeletedEvent(value)
+        } else if dto.type == "feeds.comment.reaction.updated" {
+            let value = try container.decode(CommentReactionUpdatedEvent.self)
+            self = .typeCommentReactionUpdatedEvent(value)
         } else if dto.type == "feeds.comment.updated" {
             let value = try container.decode(CommentUpdatedEvent.self)
             self = .typeCommentUpdatedEvent(value)
