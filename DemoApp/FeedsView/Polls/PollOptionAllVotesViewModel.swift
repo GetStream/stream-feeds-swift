@@ -13,20 +13,29 @@ import SwiftUI
     let activity: Activity
     let feedsClient: FeedsClient
     
-    @Published var pollVotes = [PollVoteData]()
-    @Published var errorShown = false
+    @Published private(set) var pollVotes = [PollVoteData]()
+    @Published var bannerError: Error?
+    @Published private(set) var isLoading = true
     
     private var cancellables = Set<AnyCancellable>()
     private(set) var animateChanges = false
-    private var loadingVotes = false
+    private let voteList: PollVoteList
         
     init(poll: PollData, option: PollOptionData, activity: Activity, feedsClient: FeedsClient) {
         self.poll = poll
         self.option = option
         self.activity = activity
         self.feedsClient = feedsClient
-        refresh()
-        
+        self.voteList = feedsClient.pollVoteList(
+            for: .init(
+                pollId: poll.id,
+                userId: feedsClient.user.id,
+                filter: .equal(.optionId, value: option.id)
+            )
+        )
+        voteList.state.$votes
+            .assignWeakly(to: \.pollVotes, on: self)
+            .store(in: &cancellables)
         // No animation for initial load
         $pollVotes
             .dropFirst()
@@ -35,42 +44,22 @@ import SwiftUI
             .store(in: &cancellables)
     }
     
-    func refresh() {
-        Task { @MainActor in
-            do {
-                self.pollVotes = try await activity.queryPollVotes(
-                    userId: feedsClient.user.id,
-                    request: .init(
-                        filter: ["poll_id": .string(poll.id), "option_id": .string(option.id)]
-                    )
-                )
-                if self.pollVotes.isEmpty {
-                    self.loadVotes()
-                }
-            } catch {
-                self.errorShown = true
-            }
+    func refresh() async {
+        defer { isLoading = false }
+        isLoading = true
+        do {
+            try await voteList.get()
+        } catch {
+            bannerError = error
         }
     }
     
-    func onAppear(vote: PollVoteData) {
-        guard !loadingVotes,
-              let index = pollVotes.firstIndex(where: { $0.id == vote.id }),
-              index > pollVotes.count - 10 else { return }
-        
-        loadVotes()
-    }
-    
-    //TODO: implement pagination
-    private func loadVotes() {
-//        loadingVotes = true
-//
-//        controller.loadMoreVotes { [weak self] error in
-//            guard let self else { return }
-//            self.loadingVotes = false
-//            if error != nil {
-//                self.errorShown = true
-//            }
-//        }
+    func loadMoreVotes() async {
+        guard voteList.state.canLoadMore else { return }
+        do {
+            try await voteList.queryMorePollVotes()
+        } catch {
+            bannerError = error
+        }
     }
 }

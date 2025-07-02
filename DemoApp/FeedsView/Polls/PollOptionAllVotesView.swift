@@ -33,10 +33,17 @@ struct PollOptionAllVotesView: View {
                     option: viewModel.option,
                     votes: viewModel.pollVotes,
                     activity: viewModel.activity,
-                    feedsClient: viewModel.feedsClient,
-                    onVoteAppear: viewModel.onAppear(vote:)
+                    feedsClient: viewModel.feedsClient
                 )
             }
+            .loadingContent(isLoading: viewModel.isLoading)
+            .errorBanner(for: $viewModel.bannerError)
+            .onScrollPaginationChanged(onBottomThreshold: {
+                await viewModel.loadMoreVotes()
+            })
+        }
+        .onLoad {
+            await viewModel.refresh()
         }
         .toolbar {
             ToolbarItem(placement: .principal) {

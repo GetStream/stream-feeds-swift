@@ -37,7 +37,7 @@ import StreamFeeds
         let activities = feed.state.activities
         let members = feed.state.members
         
-        suppressUnusedWarning([feedData, activities, members] as [Any?])
+        suppressUnusedWarning(feedData, activities, members)
     }
     
     func readingAFeed2() async throws {
@@ -58,7 +58,7 @@ import StreamFeeds
         let activities = feed.state.activities
         let feedData = feed.state.feed
         
-        suppressUnusedWarning([feedData, activities] as [Any?])
+        suppressUnusedWarning(feedData, activities)
     }
     
     func feedPagination() async throws {
@@ -78,7 +78,7 @@ import StreamFeeds
         
         let page1And2Activities = feed.state.activities
         
-        suppressUnusedWarning([activities, page2Activities, page1And2Activities])
+        suppressUnusedWarning(activities, page2Activities, page1And2Activities)
     }
     
     func filteringExamples() async throws {
@@ -184,7 +184,7 @@ import StreamFeeds
         
         let page1And2 = feedList.state.feeds
         
-        suppressUnusedWarning([page1, page2, page1And2])
+        suppressUnusedWarning(page1, page2, page1And2)
     }
     
     func queryingFeedsWhereIAmAMember() async throws {
@@ -227,7 +227,7 @@ import StreamFeeds
         let techFeedList = client.feedList(for: techQuery)
         let techFeeds = try await techFeedList.get()
         
-        suppressUnusedWarning([sportsFeeds, techFeeds])
+        suppressUnusedWarning(sportsFeeds, techFeeds)
     }
     
     func queryingFeedsByCreatorName() async throws {

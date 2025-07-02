@@ -31,7 +31,7 @@ import StreamFeeds
             )
         )
         
-        suppressUnusedWarning([comment, reply])
+        suppressUnusedWarning(comment, reply)
     }
     
     func updatingComments() async throws {
@@ -89,7 +89,7 @@ import StreamFeeds
         )
         let userComments = try await userCommentList.get()
         
-        suppressUnusedWarning([activityComments, replies, userComments])
+        suppressUnusedWarning(activityComments, replies, userComments)
     }
     
     func commentReactions() async throws {
@@ -120,6 +120,6 @@ import StreamFeeds
             commentId: "parent_123"
         )
         
-        suppressUnusedWarning([comments, replies])
+        suppressUnusedWarning(comments, replies)
     }
 }

@@ -49,7 +49,7 @@ import StreamFeeds
         let targetList = client.followList(for: targetQuery)
         let targetListPage1 = try await targetList.get()
         
-        suppressUnusedWarning([followsPage1, page1, page2, page1And2, targetListPage1])
+        suppressUnusedWarning(followsPage1, page1, page2, page1And2, targetListPage1)
     }
     
     func followRequests() async throws {

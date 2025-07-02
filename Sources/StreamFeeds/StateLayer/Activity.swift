@@ -334,7 +334,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func removePollOption(
         optionId: String,
-        userId: String?
+        userId: String? = nil
     ) async throws {
         try await pollsRepository.removePollOption(pollId: pollId(), optionId: optionId, userId: userId)
         await state.access { $0.poll?.removeOption(withId: optionId) }
@@ -386,21 +386,6 @@ public final class Activity: Sendable {
             await state.access { $0.poll?.castVote(vote) }
         }
         return vote
-    }
-
-    /// Queries votes for a poll based on the provided request parameters.
-    ///
-    /// - Parameters:
-    ///   - userId: Optional user identifier for user-specific vote data
-    ///   - request: The query request containing filtering and pagination parameters
-    /// - Returns: An array of poll vote data matching the query criteria
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func queryPollVotes(
-        userId: String?,
-        request: QueryPollVotesRequest
-    ) async throws -> [PollVoteData] {
-        try await pollsRepository.queryPollVotes(pollId: pollId(), userId: userId, request: request)
     }
 
     /// Removes a vote from a poll.

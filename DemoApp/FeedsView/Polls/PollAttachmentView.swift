@@ -101,8 +101,10 @@ public struct PollAttachmentView: View {
                 }
                 .fullScreenCover(isPresented: $viewModel.allCommentsShown) {
                     PollCommentsView(
+                        pollId: poll.id,
                         activity: viewModel.activity,
-                        user: viewModel.feedsClient.user
+                        user: viewModel.feedsClient.user,
+                        client: viewModel.feedsClient
                     )
                 }
             }

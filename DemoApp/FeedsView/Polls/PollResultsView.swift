@@ -88,7 +88,6 @@ struct PollOptionResultsView: View {
     var hasMostVotes: Bool = false
     var activity: Activity
     var feedsClient: FeedsClient
-    var onVoteAppear: ((PollVoteData) -> Void)?
     
     var body: some View {
         VStack(spacing: 24) {
@@ -113,9 +112,6 @@ struct PollOptionResultsView: View {
                     Text(vote.user?.name ?? (vote.user?.id ?? "anonymous"))
                     Spacer()
                     PollDateIndicatorView(date: vote.createdAt)
-                }
-                .onAppear {
-                    onVoteAppear?(vote)
                 }
             }
             

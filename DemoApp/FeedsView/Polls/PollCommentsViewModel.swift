@@ -12,22 +12,31 @@ import SwiftUI
     @Published var comments = [PollVoteData]()
     @Published var newCommentText = ""
     @Published var addCommentShown = false
-    @Published var errorShown = false
+    @Published var bannerError: Error?
+    @Published private(set) var isLoading = true
     
     let activity: Activity
     let user: User
         
     private var cancellables = Set<AnyCancellable>()
     private(set) var animateChanges = false
-    private var loadingComments = true
+    private let voteList: PollVoteList
     
     var poll: PollData? { activity.state.poll }
         
-    init(activity: Activity, user: User) {
+    init(pollId: String, activity: Activity, user: User, client: FeedsClient) {
         self.activity = activity
         self.user = user
-        refresh()
-        
+        voteList = client.pollVoteList(
+            for: .init(
+                pollId: pollId,
+                userId: user.id,
+                filter: .equal(.isAnswer, value: true)
+            )
+        )
+        voteList.state.$votes
+            .assignWeakly(to: \.comments, on: self)
+            .store(in: &cancellables)
         // No animation for initial load
         $comments
             .dropFirst()
@@ -37,19 +46,22 @@ import SwiftUI
 
     }
     
-    func refresh() {
-        loadingComments = true
-        Task {
-            do {
-                try await activity.queryPollVotes(
-                    userId: user.id,
-                    request: .init(filter: ["is_answer": .bool(true)])
-                )
-                loadingComments = false
-            } catch {
-                loadingComments = false
-                self.errorShown = true
-            }
+    func refresh() async {
+        defer { isLoading = false }
+        isLoading = true
+        do {
+            try await voteList.get()
+        } catch {
+            bannerError = error
+        }
+    }
+    
+    func loadMoreVotes() async {
+        guard voteList.state.canLoadMore else { return }
+        do {
+            try await voteList.queryMorePollVotes()
+        } catch {
+            bannerError = error
         }
     }
     
@@ -68,25 +80,5 @@ import SwiftUI
             )
         }
         newCommentText = ""
-    }
-    
-    func onAppear(comment: PollVoteData) {
-        guard !loadingComments,
-              let index = comments.firstIndex(where: { $0.id == comment.id }),
-              index > comments.count - 10 else { return }
-        
-        loadComments()
-    }
-    
-    //TODO: pagination
-    private func loadComments() {
-//        guard !loadingComments, !commentsController.hasLoadedAllVotes else { return }
-//        loadingComments = true
-//        commentsController.loadMoreVotes { [weak self] error in
-//            self?.loadingComments = false
-//            if error != nil {
-//                self?.errorShown = true
-//            }
-//        }
     }
 }

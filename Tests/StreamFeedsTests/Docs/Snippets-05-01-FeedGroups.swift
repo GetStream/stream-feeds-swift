@@ -83,7 +83,7 @@ import StreamFeeds
         let forYouFeed = client.feed(group: "timeline", id: "thierry")
         let response = try await forYouFeed.getOrCreate()
         
-        suppressUnusedWarning([timelineConfig, userFeedConfig, response])
+        suppressUnusedWarning(timelineConfig, userFeedConfig, response)
     }
     
     func additionalRanking() async throws {
@@ -175,7 +175,7 @@ import StreamFeeds
             "group_by": ["user_id"]
         ]
         
-        suppressUnusedWarning([countAggregation, timeAggregation, userAggregation])
+        suppressUnusedWarning(countAggregation, timeAggregation, userAggregation)
     }
     
     func notificationFeedExample() async throws {
@@ -192,7 +192,7 @@ import StreamFeeds
         // Read notifications
         let notifications = try await notificationFeed.getOrCreate()
         
-        suppressUnusedWarning([notifications, notificationConfig])
+        suppressUnusedWarning(notifications, notificationConfig)
     }
     
     func markingNotificationsAsRead() async throws {

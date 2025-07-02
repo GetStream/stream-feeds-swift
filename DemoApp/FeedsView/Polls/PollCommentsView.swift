@@ -15,14 +15,18 @@ struct PollCommentsView: View {
     @StateObject var viewModel: PollCommentsViewModel
     
     init(
+        pollId: String,
         activity: Activity,
         user: User,
+        client: FeedsClient,
         viewModel: PollCommentsViewModel? = nil
     ) {
         _viewModel = StateObject(
             wrappedValue: viewModel ?? PollCommentsViewModel(
+                pollId: pollId,
                 activity: activity,
-                user: user
+                user: user,
+                client: client
             )
         )
     }
@@ -46,7 +50,6 @@ struct PollCommentsView: View {
                                 }
                             }
                             .withPollsBackground()
-                            .onAppear { viewModel.onAppear(comment: comment) }
                         }
                     }
                     if viewModel.showsAddCommentButton {
@@ -68,6 +71,11 @@ struct PollCommentsView: View {
                             )
                     }
                 }
+                .loadingContent(isLoading: viewModel.isLoading)
+                .errorBanner(for: $viewModel.bannerError)
+                .onScrollPaginationChanged(onBottomThreshold: {
+                    await viewModel.loadMoreVotes()
+                })
                 .padding()
             }
             .toolbar {

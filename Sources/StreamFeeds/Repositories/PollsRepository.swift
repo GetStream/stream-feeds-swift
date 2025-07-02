@@ -86,6 +86,16 @@ final class PollsRepository: Sendable {
         return response.pollOption.toModel()
     }
 
+    // MARK: - Poll Lists
+    
+    func queryPolls(with query: PollsQuery) async throws -> PaginationResult<PollData> {
+        let response = try await apiClient.queryPolls(userId: nil, queryPollsRequest: query.toRequest())
+        return PaginationResult(
+            models: response.polls.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
+    }
+    
     // MARK: - Poll Votes
     
     func castPollVote(
@@ -103,9 +113,12 @@ final class PollsRepository: Sendable {
         pollId: String,
         userId: String?,
         request: QueryPollVotesRequest
-    ) async throws -> [PollVoteData] {
+    ) async throws -> PaginationResult<PollVoteData> {
         let response = try await apiClient.queryPollVotes(pollId: pollId, userId: userId, queryPollVotesRequest: request)
-        return response.votes.map { $0.toModel() }
+        return PaginationResult(
+            models: response.votes.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
     }
     
     func removePollVote(

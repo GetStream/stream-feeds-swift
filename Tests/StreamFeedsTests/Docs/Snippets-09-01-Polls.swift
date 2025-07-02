@@ -123,4 +123,60 @@ import UIKit
     func deletingPoll() async throws {
         try await activity.deletePoll()
     }
+    
+    func addPollOption() async throws {
+        let pollOption = try await activity.createPollOption(
+            request: .init(
+                custom: ["added_by": "user_123"],
+                text: "Another option"
+            )
+        )
+        
+        suppressUnusedWarning(pollOption)
+    }
+    
+    func updatePollOption() async throws {
+        let updatedPollOption = try await activity.updatePollOption(
+            request: .init(
+                custom: ["my_custom_property": "my_custom_value"],
+                id: "option_789",
+                text: "Updated option"
+            )
+        )
+        
+        suppressUnusedWarning(updatedPollOption)
+    }
+    
+    func deletePollOption() async throws {
+        try await activity.removePollOption(optionId: "option_789")
+    }
+    
+    func queryingVotes() async throws {
+        // Retrieve all votes on either option1Id or option2Id
+        let pollVoteList = client.pollVoteList(
+            for: .init(
+                pollId: "poll_456",
+                filter: .contains(.optionId, value: ["option_789", "option_790"])
+            )
+        )
+        let votesPage1 = try await pollVoteList.get()
+        let votesPage2 = try await pollVoteList.queryMorePollVotes()
+        let votesPage1And2 = pollVoteList.state.votes
+        
+        suppressUnusedWarning(votesPage1, votesPage2, votesPage1And2)
+    }
+    
+    func queringVotes() async throws {
+        // Retrieve all polls that are closed for voting sorted by created_at
+        let pollList = client.pollList(
+            for: .init(
+                filter: .equal(.isClosed, value: true)
+            )
+        )
+        let pollsPage1 = try await pollList.get()
+        let pollsPage2 = try await pollList.queryMorePolls()
+        let pollsPage1And2 = pollList.state.polls
+        
+        suppressUnusedWarning(pollsPage1, pollsPage2, pollsPage1And2)
+    }
 }

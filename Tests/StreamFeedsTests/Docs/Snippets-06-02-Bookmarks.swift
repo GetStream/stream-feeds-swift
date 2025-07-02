@@ -37,7 +37,7 @@ import StreamFeeds
             )
         )
         
-        suppressUnusedWarning([bookmark, bookmarkWithFolder, updatedBookmark, movedBookmark])
+        suppressUnusedWarning(bookmark, bookmarkWithFolder, updatedBookmark, movedBookmark)
     }
     
     func removingBookmarks() async throws {
@@ -74,7 +74,7 @@ import StreamFeeds
         )
         let folderBookmarks = try await folderBookmarkList.get()
         
-        suppressUnusedWarning([page1, page2, activityBookmarks, folderBookmarks])
+        suppressUnusedWarning(page1, page2, activityBookmarks, folderBookmarks)
     }
     
     func queryingBookmarkFolders() async throws {
@@ -94,6 +94,6 @@ import StreamFeeds
         )
         let projectFolders = try await projectFolderList.get()
         
-        suppressUnusedWarning([page1, page2, projectFolders])
+        suppressUnusedWarning(page1, page2, projectFolders)
     }
 }

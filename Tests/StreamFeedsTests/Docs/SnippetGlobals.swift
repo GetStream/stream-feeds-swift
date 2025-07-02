@@ -4,4 +4,4 @@
 
 import Foundation
 
-func suppressUnusedWarning<T>(_ variable: T) {}
+func suppressUnusedWarning(_ variables: Any...) {}
