@@ -370,6 +370,18 @@ public final class FeedsClient: Sendable {
         PollVoteList(query: query, client: self)
     }
     
+    /// Creates a member list instance based on the provided query.
+    ///
+    /// This method creates a `MemberList` object that represents a collection of feed members
+    /// matching the specified query. The member list can be used to fetch feed members,
+    /// manage member pagination, and receive real-time updates for member-related events.
+    ///
+    /// - Parameter query: The members query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `MemberList` instance that can be used to interact with the collection of feed members
+    public func memberList(for query: MembersQuery) -> MemberList {
+        MemberList(query: query, client: self)
+    }
+    
     /// Creates a poll list instance based on the provided query.
     ///
     /// This method creates a `PollList` object that represents a collection of polls
