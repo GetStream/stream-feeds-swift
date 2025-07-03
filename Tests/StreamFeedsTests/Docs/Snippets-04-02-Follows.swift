@@ -25,31 +25,36 @@ import StreamFeeds
     }
     
     func queryingFollows() async throws {
-        // Do I follow a list of feeds
-        let query = FollowsQuery(
+        // All my follows
+        let allQuery = FollowsQuery(
             filter: .equal(.userId, "me"),
             limit: 20
         )
-        let followList = client.followList(for: query)
-        let followsPage1 = try await followList.get()
+        let allFollowList = client.followList(for: allQuery)
+        let allFollowsPage1 = try await allFollowList.get()
+
+        // Do I follow a list of feeds
+        // My feed is timeline:john
+        let followQuery = FollowsQuery(
+            filter: .and([
+                .equal(.sourceFeed, "timeline:john"),
+                .in(.targetFeed, ["user:sara", "user:adam"])
+            ])
+        )
+        let followList = client.followList(for: followQuery)
+        let page1 = try await followList.get()
+        let page2 = try await followList.queryMoreFollows()
+        let page1And2 = followList.state.follows
 
         // Paginating through followers for a feed
+        // My feed is timeline:john
         let followerQuery = FollowsQuery(
-            filter: .equal(.sourceFeed, "timeline:john")
-        )
-        let followerList = client.followList(for: followerQuery)
-        let page1 = try await followerList.get()
-        let page2 = try await followerList.queryMoreFollows()
-        let page1And2 = followerList.state.follows
-
-        // Filter by target
-        let targetQuery = FollowsQuery(
             filter: .equal(.targetFeed, "timeline:john")
         )
-        let targetList = client.followList(for: targetQuery)
-        let targetListPage1 = try await targetList.get()
+        let followerList = client.followList(for: followerQuery)
+        let followerPage1 = try await followerList.get()
         
-        suppressUnusedWarning(followsPage1, page1, page2, page1And2, targetListPage1)
+        suppressUnusedWarning(allFollowsPage1, page1, page2, page1And2, followerPage1)
     }
     
     func followRequests() async throws {
