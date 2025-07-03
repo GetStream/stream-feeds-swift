@@ -10,8 +10,8 @@ extension FeedState {
         private let fid: String
         private let handlers: FeedState.ChangeHandlers
         
-        init(fid: String, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
-            self.fid = fid
+        init(fid: FeedId, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
+            self.fid = fid.rawValue
             self.handlers = handlers
             events.add(subscriber: self)
         }
@@ -37,11 +37,9 @@ extension FeedState {
                     guard event.fid == fid else { return }
                     await handlers.activityUpdated(event.activity.toModel())
                 case let event as BookmarkAddedEvent:
-                    // TODO: This is not correct?
                     guard event.bookmark.activity.feeds.contains(fid) else { return }
                     await handlers.bookmarkAdded(event.bookmark.toModel())
                 case let event as BookmarkDeletedEvent:
-                    // TODO: This is not correct?
                     guard event.bookmark.activity.feeds.contains(fid) else { return }
                     await handlers.bookmarkRemoved(event.bookmark.toModel())
                 case let event as CommentAddedEvent:
@@ -50,6 +48,9 @@ extension FeedState {
                 case let event as CommentDeletedEvent:
                     guard event.fid == fid else { return }
                     await handlers.commentRemoved(event.comment.toModel())
+                case let event as FeedDeletedEvent:
+                    guard event.fid == fid else { return }
+                    await handlers.feedDeleted()
                 case let event as FeedUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.feedUpdated(event.feed.toModel())
@@ -62,6 +63,12 @@ extension FeedState {
                 case let event as FollowUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.followUpdated(event.follow.toModel())
+                case let event as FeedMemberRemovedEvent:
+                    guard event.fid == fid else { return }
+                    await handlers.memberRemoved(event.memberId)
+                case let event as FeedMemberUpdatedEvent:
+                    guard event.fid == fid else { return }
+                    await handlers.memberUpdated(event.member.toModel())
                 default:
                     break
                 }

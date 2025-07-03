@@ -78,6 +78,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteFeed(hardDelete: Bool = false) async throws {
         try await feedsRepository.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete)
+        await state.changeHandlers.feedDeleted()
     }
     
     // MARK: - Activities
@@ -447,9 +448,7 @@ public final class Feed: Sendable {
     /// - Returns: The accepted feed member data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func acceptFeedMember() async throws -> FeedMemberData {
-        let response = try await feedsRepository.acceptFeedMember(feedId: id, feedGroupId: group)
-        // TODO: update state
-        return response
+        try await feedsRepository.acceptFeedMember(feedId: id, feedGroupId: group)
     }
     
     /// Rejects a feed member invitation.
@@ -486,7 +485,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func removeReaction(activityId: String, type: String) async throws -> FeedsReactionData {
-        try await activitiesRepository.removeReaction(activityId: activityId, type: type)
+        let reaction = try await activitiesRepository.removeReaction(activityId: activityId, type: type)
+        await state.changeHandlers.reactionRemoved(reaction)
+        return reaction
     }
     
     /// Adds a reaction to a comment.

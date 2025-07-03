@@ -21,7 +21,7 @@ import Foundation
     init(feedQuery: FeedQuery, events: WSEventsSubscribing) {
         self.fid = feedQuery.fid
         self.feedQuery = feedQuery
-        webSocketObserver = WebSocketObserver(fid: feedQuery.fid.rawValue, subscribing: events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(fid: feedQuery.fid, subscribing: events, handlers: changeHandlers)
     }
     
     /// The unique identifier of the feed.
@@ -84,10 +84,13 @@ extension FeedState {
         let bookmarkRemoved: @MainActor (BookmarkData) -> Void
         let commentAdded: @MainActor (CommentData) -> Void
         let commentRemoved: @MainActor (CommentData) -> Void
+        let feedDeleted: @MainActor () -> Void
         let feedUpdated: @MainActor (FeedData) -> Void
         let followAdded: @MainActor (FollowData) -> Void
         let followRemoved: @MainActor (FollowData) -> Void
         let followUpdated: @MainActor (FollowData) -> Void
+        let memberRemoved: @MainActor (String) -> Void
+        let memberUpdated: @MainActor (FeedMemberData) -> Void
         let reactionAdded: @MainActor (FeedsReactionData) -> Void
         let reactionRemoved: @MainActor (FeedsReactionData) -> Void
     }
@@ -129,6 +132,16 @@ extension FeedState {
                     activity.deleteComment(comment)
                 }
             },
+            feedDeleted: { [weak self] in
+                self?.activities.removeAll()
+                self?.feed = nil
+                self?.followers.removeAll()
+                self?.followers.removeAll()
+                self?.followers.removeAll()
+                self?.members.removeAll()
+                self?.ownCapabilities.removeAll()
+                
+            },
             feedUpdated: { [weak self] feed in
                 self?.feed = feed
             },
@@ -140,6 +153,13 @@ extension FeedState {
             },
             followUpdated: { [weak self] follow in
                 self?.updateFollow(follow)
+            },
+            memberRemoved: { [weak self] memberId in
+                guard let index = self?.members.firstIndex(where: { $0.id == memberId }) else { return }
+                self?.members.remove(at: index)
+            },
+            memberUpdated: { [weak self] member in
+                self?.members.replace(byId: member)
             },
             reactionAdded: { [weak self] reaction in
                 self?.updateActivity(with: reaction.activityId) { activity in
@@ -238,5 +258,3 @@ extension FeedState {
         activities = activities.sortedMerge(response.models, using: activitiesSorting)
     }
 }
-
-extension ActivityResponse: Identifiable {}
