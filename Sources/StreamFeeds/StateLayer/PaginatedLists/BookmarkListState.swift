@@ -4,6 +4,7 @@
 
 import Combine
 import Foundation
+import StreamCore
 
 @MainActor public class BookmarkListState: ObservableObject {
     private var webSocketObserver: WebSocketObserver?

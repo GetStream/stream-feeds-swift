@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import StreamCore
 
 public struct BookmarksQuery: Sendable {
     public var filter: BookmarksFilter?

@@ -4,6 +4,7 @@
 
 import Combine
 import Foundation
+import StreamCore
 
 @MainActor public class MemberListState: ObservableObject {
     private var webSocketObserver: WebSocketObserver?

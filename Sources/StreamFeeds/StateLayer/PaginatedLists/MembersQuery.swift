@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import StreamCore
 
 public struct MembersQuery: Sendable {
     public var fid: FeedId

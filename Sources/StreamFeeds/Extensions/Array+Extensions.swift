@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import StreamCore
 
 // MARK: - Inserting, Replacing and Removing Elements
 
@@ -195,26 +196,5 @@ extension Array {
             }
         }
         return left
-    }
-}
-
-// MARK: - Sorting
-
-extension Array {
-    func sorted<Field>(using sorting: [Sort<Field>]) -> [Element] where Field: SortField, Element == Field.Model {
-        sorted(by: { lhs, rhs in
-            for sort in sorting {
-                let result = sort.compare(lhs, rhs)
-                switch result {
-                case .orderedSame:
-                    continue
-                case .orderedAscending:
-                    return true
-                case .orderedDescending:
-                    return false
-                }
-            }
-            return false
-        })
     }
 }
