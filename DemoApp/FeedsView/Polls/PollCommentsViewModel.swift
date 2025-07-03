@@ -31,7 +31,7 @@ import SwiftUI
             for: .init(
                 pollId: pollId,
                 userId: user.id,
-                filter: .equal(.isAnswer, value: true)
+                filter: .equal(.isAnswer, true)
             )
         )
         voteList.state.$votes

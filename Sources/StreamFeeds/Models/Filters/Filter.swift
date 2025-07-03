@@ -28,48 +28,52 @@ extension FilterFieldRepresentable {
 // MARK: - Filter Building
 
 extension Filter {
-    public static func equal<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .equal, field: field, value: value)
+    public static func equal(_ field: FilterField, _ value: any FilterValue) -> Self {
+        Self(filterOperator: .equal, field: field, value: value)
     }
     
-    public static func greater<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .greater, field: field, value: value)
+    public static func greater(_ field: FilterField, _ value: any FilterValue) -> Self {
+        Self(filterOperator: .greater, field: field, value: value)
     }
     
-    public static func greaterOrEqual<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .greaterOrEqual, field: field, value: value)
+    public static func greaterOrEqual(_ field: FilterField, _ value: any FilterValue) -> Self {
+        Self(filterOperator: .greaterOrEqual, field: field, value: value)
     }
     
-    public static func less<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .less, field: field, value: value)
+    public static func less(_ field: FilterField, _ value: any FilterValue) -> Self {
+        Self(filterOperator: .less, field: field, value: value)
     }
     
-    public static func lessOrEqual<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .lessOrEqual, field: field, value: value)
+    public static func lessOrEqual(_ field: FilterField, _ value: any FilterValue) -> Self {
+        Self(filterOperator: .lessOrEqual, field: field, value: value)
     }
     
-    public static func `in`<F>(_ field: FilterField, values: [F]) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .in, field: field, value: values)
+    public static func `in`<Value>(_ field: FilterField, _ values: [Value]) -> Self where Value: FilterValue {
+        Self(filterOperator: .in, field: field, value: values)
     }
     
-    public static func exists<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .exists, field: field, value: value)
+    public static func exists(_ field: FilterField, _ value: Bool) -> Self {
+        Self(filterOperator: .exists, field: field, value: value)
     }
     
-    public static func contains<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .contains, field: field, value: value)
+    public static func contains(_ field: FilterField, _ value: String) -> Self {
+        Self(filterOperator: .contains, field: field, value: value)
     }
     
-    public static func pathExists<F>(_ field: FilterField, value: String) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .pathExists, field: field, value: value)
+    public static func contains(_ field: FilterField, _ value: [String: RawJSON]) -> Self {
+        Self(filterOperator: .contains, field: field, value: value)
     }
     
-    public static func autocomplete<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .autocomplete, field: field, value: value)
+    public static func pathExists(_ field: FilterField, _ value: String) -> Self {
+        Self(filterOperator: .pathExists, field: field, value: value)
+    }
+    
+    public static func autocomplete(_ field: FilterField, _ value: String) -> Self {
+        Self(filterOperator: .autocomplete, field: field, value: value)
     }
 
-    public static func query<F>(_ field: FilterField, value: any FilterValue) -> F where F: Filter, F.FilterField == FilterField {
-        F(filterOperator: .query, field: field, value: value)
+    public static func query(_ field: FilterField, _ value: String) -> Self {
+        Self(filterOperator: .query, field: field, value: value)
     }
         
     public static func and<F>(_ filters: [F]) -> F where F: Filter, F.FilterField == FilterField {
@@ -94,34 +98,7 @@ extension URL: FilterValue {}
 extension Array: FilterValue where Element: FilterValue {}
 extension Dictionary: FilterValue where Key == String, Value == RawJSON {}
 
-// MARK: - Filter and RawJSON Conversions
-
-extension Dictionary<String, RawJSON> {
-    func toQueryFilter<F>() -> F where F: Filter {
-        // TODO: Review and tests
-        let filters: [F] = compactMap { key, value -> F? in
-            if key.hasPrefix("$") {
-                // and, or
-                return nil
-            } else {
-                switch value {
-                case .dictionary(let operatorValue):
-                    guard let pair = operatorValue.first else { return nil }
-                    guard let filterOperator = FilterOperator(rawValue: pair.key) else { return nil }
-                    guard let filterValue = pair.value as? FilterValue else { return nil }
-                    return F(
-                        filterOperator: filterOperator,
-                        field: F.FilterField(value: key),
-                        value: filterValue
-                    )
-                default:
-                    return nil
-                }
-            }
-        }
-        return filters.first!
-    }
-}
+// MARK: - Filter to RawJSON Conversion
 
 extension Filter {
     func toRawJSON() -> [String: RawJSON] {
@@ -145,8 +122,22 @@ extension Filter {
 extension FilterValue {
     var rawJSON: RawJSON {
         switch self {
+        case let boolValue as Bool:
+            return .bool(boolValue)
+        case let dateValue as Date:
+            return .string(RFC3339DateFormatter.string(from: dateValue))
+        case let doubleValue as Double:
+            return .number(doubleValue)
+        case let intValue as Int:
+            return .number(Double(intValue))
         case let stringValue as String:
             return .string(stringValue)
+        case let urlValue as URL:
+            return .string(urlValue.absoluteString)
+        case let arrayValue as [any FilterValue]:
+            return .array(arrayValue.map { $0.rawJSON })
+        case let dictionaryValue as [String: RawJSON]:
+            return .dictionary(dictionaryValue)
         default:
             fatalError("Unimplemented type: \(self)")
         }

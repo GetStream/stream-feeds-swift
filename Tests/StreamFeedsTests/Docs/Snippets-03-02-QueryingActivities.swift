@@ -11,7 +11,7 @@ struct Snippets_03_02_QueryingActivities {
     
     func activitySearchQueries() async throws {
         let query = ActivitiesQuery(
-            filter: .equal(.type, value: "post"),
+            filter: .equal(.type, "post"),
             sort: [Sort(field: .createdAt, direction: .reverse)],
             limit: 10
         )
@@ -23,7 +23,7 @@ struct Snippets_03_02_QueryingActivities {
     func queryingActivitiesByText() async throws {
         // search for activities where the text includes the word 'popularity'.
         let query = ActivitiesQuery(
-            filter: .query(.text, value: "popularity")
+            filter: .query(.text, "popularity")
         )
         let activities = try await feed.queryActivities(with: query)
         
@@ -34,13 +34,13 @@ struct Snippets_03_02_QueryingActivities {
         // search for activities associated with the campaign ID 'spring-sale-2025'
         let searchValue: [String: RawJSON] = ["campaign": .dictionary(["id": .string("spring-sale-2025")])]
         let query = ActivitiesQuery(
-            filter: .contains(.searchData, value: searchValue)
+            filter: .contains(.searchData, searchValue)
         )
         let activities = try await feed.queryActivities(with: query)
         
         // search for activities where the campaign took place in a mall
         let query2 = ActivitiesQuery(
-            filter: .pathExists(.searchData, value: "campaign.location.mall")
+            filter: .pathExists(.searchData, "campaign.location.mall")
         )
         let activities2 = try await feed.queryActivities(with: query2)
         

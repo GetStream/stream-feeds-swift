@@ -35,10 +35,7 @@ struct Snippets_03_01_Activities {
         let imageActivity = try await feed.addActivity(
             request: .init(
                 attachments: [
-                    Attachment(
-                        imageUrl: "https://example.com/image.jpg",
-                        type: "image"
-                    )
+                    Attachment(imageUrl: "https://example.com/image.jpg", type: "image")
                 ],
                 text: "look at NYC",
                 type: "post"

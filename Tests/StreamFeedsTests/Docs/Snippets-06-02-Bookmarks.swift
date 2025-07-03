@@ -61,7 +61,7 @@ import StreamFeeds
         // Query by activity ID
         let activityBookmarkList = client.bookmarkList(
             for: .init(
-                filter: .equal(.activityId, value: "activity_123")
+                filter: .equal(.activityId, "activity_123")
             )
         )
         let activityBookmarks = try await activityBookmarkList.get()
@@ -69,7 +69,7 @@ import StreamFeeds
         // Query by folder ID
         let folderBookmarkList = client.bookmarkList(
             for: .init(
-                filter: .equal(.folderId, value: "folder_456")
+                filter: .equal(.folderId, "folder_456")
             )
         )
         let folderBookmarks = try await folderBookmarkList.get()
@@ -89,7 +89,7 @@ import StreamFeeds
         // Query by folder name (partial matching)
         let projectFolderList = client.bookmarkFolderList(
             for: .init(
-                filter: .contains(.folderName, value: "project")
+                filter: .contains(.folderName, "project")
             )
         )
         let projectFolders = try await projectFolderList.get()

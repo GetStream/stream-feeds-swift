@@ -156,7 +156,7 @@ import UIKit
         let pollVoteList = client.pollVoteList(
             for: .init(
                 pollId: "poll_456",
-                filter: .contains(.optionId, value: ["option_789", "option_790"])
+                filter: .in(.optionId, ["option_789", "option_790"])
             )
         )
         let votesPage1 = try await pollVoteList.get()
@@ -170,7 +170,7 @@ import UIKit
         // Retrieve all polls that are closed for voting sorted by created_at
         let pollList = client.pollList(
             for: .init(
-                filter: .equal(.isClosed, value: true)
+                filter: .equal(.isClosed, true)
             )
         )
         let pollsPage1 = try await pollList.get()

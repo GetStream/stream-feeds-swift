@@ -30,7 +30,7 @@ import SwiftUI
             for: .init(
                 pollId: poll.id,
                 userId: feedsClient.user.id,
-                filter: .equal(.optionId, value: option.id)
+                filter: .equal(.optionId, option.id)
             )
         )
         voteList.state.$votes

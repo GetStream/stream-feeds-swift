@@ -27,7 +27,7 @@ import StreamFeeds
     func queryingFollows() async throws {
         // Do I follow a list of feeds
         let query = FollowsQuery(
-            filter: .equal(.userId, value: "me"),
+            filter: .equal(.userId, "me"),
             limit: 20
         )
         let followList = client.followList(for: query)
@@ -35,7 +35,7 @@ import StreamFeeds
 
         // Paginating through followers for a feed
         let followerQuery = FollowsQuery(
-            filter: .equal(.sourceFeed, value: "timeline:john")
+            filter: .equal(.sourceFeed, "timeline:john")
         )
         let followerList = client.followList(for: followerQuery)
         let page1 = try await followerList.get()
@@ -44,7 +44,7 @@ import StreamFeeds
 
         // Filter by target
         let targetQuery = FollowsQuery(
-            filter: .equal(.targetFeed, value: "timeline:john")
+            filter: .equal(.targetFeed, "timeline:john")
         )
         let targetList = client.followList(for: targetQuery)
         let targetListPage1 = try await targetList.get()

@@ -44,7 +44,7 @@ import StreamFeeds
         let query = FeedQuery(
             group: "user",
             id: "john",
-            activityFilter: .contains(.filterTags, value: ["green"]), // filter activities with filter tag green
+            activityFilter: .in(.filterTags, ["green"]), // filter activities with filter tag green
             activityLimit: 10,
             externalRanking: ["user_score": 0.8], // additional data used for ranking
             followerLimit: 10,
@@ -91,7 +91,7 @@ import StreamFeeds
             ActivityRequest(fids: [fid.rawValue], filterTags: ["yellow"], text: "fourth", type: "activity")
         ])
         // Now read the feed, this will fetch activity 1 and 2
-        let query = FeedQuery(fid: fid, activityFilter: .contains(.filterTags, value: ["blue"]))
+        let query = FeedQuery(fid: fid, activityFilter: .in(.filterTags, ["blue"]))
         let feed = client.feed(for: query)
         try await feed.getOrCreate()
         let activities = feed.state.activities // contains first and second
@@ -106,12 +106,12 @@ import StreamFeeds
             id: "john",
             activityFilter: .or([
                 .and([
-                    .contains(.filterTags, value: ["green"]),
-                    .equal(.type, value: "post"),
+                    .in(.filterTags, ["green"]),
+                    .equal(.type, "post"),
                 ]),
                 .and([
-                    .contains(.filterTags, value: ["orange"]),
-                    .equal(.type, value: "activity")
+                    .in(.filterTags, ["orange"]),
+                    .equal(.type, "activity")
                 ])
             ])
         )
@@ -170,7 +170,7 @@ import StreamFeeds
     
     func queryingMyFeeds() async throws {        
         let query = FeedsQuery(
-            filter: .equal(.createdById, value: "john"),
+            filter: .equal(.createdById, "john"),
             sort: [Sort(field: .createdAt, direction: .reverse)],
             limit: 10,
             watch: true
@@ -189,7 +189,7 @@ import StreamFeeds
     
     func queryingFeedsWhereIAmAMember() async throws {
         let query = FeedsQuery(
-            filter: .contains(.members, value: "john")
+            filter: .contains(.members, "john")
         )
         let feedList = client.feedList(for: query)
         let feeds = try await feedList.get()
@@ -211,8 +211,8 @@ import StreamFeeds
     func queryingFeedsByNameOrDescription() async throws {
         let sportsQuery = FeedsQuery(
             filter: .and([
-                .equal(.visibility, value: "public"),
-                .query(.name, value: "Sports")
+                .equal(.visibility, "public"),
+                .query(.name, "Sports")
             ])
         )
         let sportsFeedList = client.feedList(for: sportsQuery)
@@ -220,8 +220,8 @@ import StreamFeeds
         
         let techQuery = FeedsQuery(
             filter: .and([
-                .equal(.visibility, value: "public"),
-                .autocomplete(.description, value: "tech")
+                .equal(.visibility, "public"),
+                .autocomplete(.description, "tech")
             ])
         )
         let techFeedList = client.feedList(for: techQuery)
@@ -233,8 +233,8 @@ import StreamFeeds
     func queryingFeedsByCreatorName() async throws {
         let query = FeedsQuery(
             filter: .and([
-                .equal(.visibility, value: "public"),
-                .query(.createdByName, value: "Thompson")
+                .equal(.visibility, "public"),
+                .query(.createdByName, "Thompson")
             ])
         )
         let feedList = client.feedList(for: query)
