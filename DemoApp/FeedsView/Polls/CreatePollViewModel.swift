@@ -74,7 +74,7 @@ import SwiftUI
             .combineLatest($maxVotesEnabled)
             .map { $0 && $1 }
             .removeDuplicates()
-            .assignWeakly(to: \.showsMaxVotesError, on: self)
+            .assign(to: \.showsMaxVotesError, onWeak: self)
             .store(in: &cancellables)
         $options
             .map { options in
@@ -90,7 +90,7 @@ import SwiftUI
                 return errorIndices
             }
             .removeDuplicates()
-            .assignWeakly(to: \.optionsErrorIndices, on: self)
+            .assign(to: \.optionsErrorIndices, onWeak: self)
             .store(in: &cancellables)
     }
         
@@ -193,18 +193,6 @@ public struct PollsConfig {
         self.suggestAnOption = suggestAnOption
         self.addComments = addComments
         self.maxVotesPerPerson = maxVotesPerPerson
-    }
-}
-
-extension Publisher where Failure == Never {
-    /// Assigns each element from a publisher to a property on an object without retaining the object.
-    func assignWeakly<Root: AnyObject>(
-        to keyPath: ReferenceWritableKeyPath<Root, Output>,
-        on root: Root
-    ) -> AnyCancellable {
-        sink { [weak root] in
-            root?[keyPath: keyPath] = $0
-        }
     }
 }
 

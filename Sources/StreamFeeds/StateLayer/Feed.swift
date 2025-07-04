@@ -16,20 +16,28 @@ public final class Feed: Sendable {
     private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
     private let pollsRepository: PollsRepository
+    private let memberList: MemberList
     
     internal init(
         query: FeedQuery,
         client: FeedsClient
     ) {
         self.activitiesRepository = client.activitiesRepository
+        self.attachmentsUploader = client.attachmentsUploader
         self.bookmarksRepository = client.bookmarksRepository
         self.commentsRepository = client.commentsRepository
-        self.feedsRepository = client.feedsRepository
-        self.pollsRepository = client.pollsRepository
         self.feedQuery = query
-        self.attachmentsUploader = client.attachmentsUploader
+        self.feedsRepository = client.feedsRepository
+        self.memberList = client.memberList(for: .init(fid: query.fid))
+        self.pollsRepository = client.pollsRepository
         let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { FeedState(feedQuery: query, events: events) }
+        stateBuilder = StateBuilder { [memberList] in
+            FeedState(
+                feedQuery: query,
+                events: events,
+                memberListState: memberList.state
+            )
+        }
     }
     
     public var fid: FeedId { feedQuery.fid }
@@ -426,21 +434,46 @@ public final class Feed: Sendable {
     
     // MARK: - Members
     
-    /// Queries feed members based on the provided request parameters.
+    /// Fetches the initial list of members based on the current query configuration.
     ///
-    /// - Parameter request: The query request containing filtering and pagination parameters
-    /// - Returns: A response containing the queried feed members
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func queryFeedMembers(request: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse {
-        try await feedsRepository.queryFeedMembers(feedGroupId: group, feedId: id, request: request)
+    /// This method loads the first page of members according to the query's filters,
+    /// sorting, and limit parameters. The results are stored in the state and can
+    /// be accessed through the `state.members` property.
+    ///
+    /// - Returns: An array of `FeedMemberData` representing the fetched members.
+    /// - Throws: An error if the network request fails or the response cannot be parsed.
+    @discardableResult
+    public func queryFeedMembers() async throws -> [FeedMemberData] {
+        try await memberList.get()
+    }
+    
+    /// Loads the next page of members if more are available.
+    ///
+    /// This method fetches additional members using the pagination information
+    /// from the previous request. If no more members are available, an empty
+    /// array is returned.
+    ///
+    /// - Parameter limit: Optional limit for the number of members to fetch.
+    ///   If not specified, uses the limit from the original query.
+    /// - Returns: An array of `FeedMemberData` representing the additional members.
+    ///   Returns an empty array if no more members are available.
+    /// - Throws: An error if the network request fails or the response cannot be parsed.
+    @discardableResult
+    public func queryMoreFeedMembers(limit: Int? = nil) async throws -> [FeedMemberData] {
+        try await memberList.queryMoreMembers(limit: limit)
     }
 
     /// Updates feed members based on the provided request.
     ///
     /// - Parameter request: The update request containing the member changes to apply
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func updateFeedMembers(request: UpdateFeedMembersRequest) async throws {
-        try await feedsRepository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
+    @discardableResult
+    public func updateFeedMembers(request: UpdateFeedMembersRequest) async throws -> ModelUpdates<FeedMemberData> {
+        let updates = try await feedsRepository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
+        await state.access { state in
+            state.memberListState.applyUpdates(updates)
+        }
+        return updates
     }
 
     /// Accepts a feed member invitation.
@@ -457,7 +490,6 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func rejectFeedMember() async throws -> FeedMemberData {
         try await feedsRepository.rejectFeedMember(feedGroupId: group, feedId: id)
-        // TODO: update state
     }
     
     // MARK: - Reactions

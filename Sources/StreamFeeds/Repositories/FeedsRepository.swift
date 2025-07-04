@@ -27,8 +27,10 @@ final class FeedsRepository: Sendable {
         )
         let rawFollowers = response.followers.map { $0.toModel() }
         return GetOrCreateInfo(
-            activities: response.activities.map { $0.toModel() }.sorted(using: Sort<ActivitiesSortField>.defaultSorting),
-            activitiesPagination: PaginationData(next: response.next, previous: response.prev),
+            activities: PaginationResult(
+                models: response.activities.map { $0.toModel() }.sorted(using: Sort<ActivitiesSortField>.defaultSorting),
+                pagination: PaginationData(next: response.next, previous: response.prev)
+            ),
             activitiesQueryConfig: QueryConfiguration(
                 filter: query.activityFilter,
                 sort: Sort<ActivitiesSortField>.defaultSorting
@@ -37,7 +39,10 @@ final class FeedsRepository: Sendable {
             followers: rawFollowers.filter { $0.isFollower(of: fid) },
             following: response.following.map { $0.toModel() }.filter { $0.isFollowing(fid) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
-            members: response.members.map { $0.toModel() },
+            members: PaginationResult(
+                models: response.members.map { $0.toModel() },
+                pagination: response.memberPagination?.toModel() ?? .empty
+            ),
             ownCapabilities: response.ownCapabilities
         )
     }
@@ -97,8 +102,13 @@ final class FeedsRepository: Sendable {
     
     // MARK: - Members
     
-    func updateFeedMembers(feedGroupId: String, feedId: String, request: UpdateFeedMembersRequest) async throws {
-        _ = try await apiClient.updateFeedMembers(feedGroupId: feedGroupId, feedId: feedId, updateFeedMembersRequest: request)
+    func updateFeedMembers(feedGroupId: String, feedId: String, request: UpdateFeedMembersRequest) async throws -> ModelUpdates<FeedMemberData> {
+        let response = try await apiClient.updateFeedMembers(feedGroupId: feedGroupId, feedId: feedId, updateFeedMembersRequest: request)
+        return ModelUpdates(
+            added: response.added.map { $0.toModel() },
+            removedIds: response.removedIds,
+            updated: response.updated.map { $0.toModel() }
+        )
     }
     
     func acceptFeedMember(feedId: String, feedGroupId: String) async throws -> FeedMemberData {
@@ -118,14 +128,13 @@ final class FeedsRepository: Sendable {
 
 extension FeedsRepository {
     struct GetOrCreateInfo {
-        let activities: [ActivityData]
-        let activitiesPagination: PaginationData
+        let activities: PaginationResult<ActivityData>
         let activitiesQueryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
         let feed: FeedData
         let followers: [FollowData]
         let following: [FollowData]
         let followRequests: [FollowData]
-        let members: [FeedMemberData]
+        let members: PaginationResult<FeedMemberData>
         let ownCapabilities: [FeedOwnCapability]
     }
 }

@@ -35,13 +35,13 @@ import SwiftUI
             )
         )
         voteList.state.$votes
-            .assignWeakly(to: \.comments, on: self)
+            .assign(to: \.comments, onWeak: self)
             .store(in: &cancellables)
         // No animation for initial load
         $comments
             .dropFirst()
             .map { _ in true }
-            .assignWeakly(to: \.animateChanges, on: self)
+            .assign(to: \.animateChanges, onWeak: self)
             .store(in: &cancellables)
 
     }

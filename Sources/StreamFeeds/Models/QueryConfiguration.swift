@@ -8,4 +8,6 @@ import StreamCore
 struct QueryConfiguration<F, S> where F: Filter, S: SortField {
     let filter: F?
     let sort: [Sort<S>]?
+    
+    static var empty: Self { Self(filter: nil, sort: nil) }
 }

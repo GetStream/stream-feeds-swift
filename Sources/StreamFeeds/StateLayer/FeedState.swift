@@ -11,18 +11,24 @@ import StreamCore
 /// This class manages the state of a feed including activities, followers, members, and pagination information.
 /// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
 @MainActor public class FeedState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
+    private var cancellables = Set<AnyCancellable>()
+    let memberListState: MemberListState
     lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private var webSocketObserver: WebSocketObserver?
     
     /// Initializes a new FeedState instance.
     ///
     /// - Parameters:
     ///   - feedQuery: The query used to create this feed
     ///   - events: The WebSocket events subscriber for real-time updates
-    init(feedQuery: FeedQuery, events: WSEventsSubscribing) {
+    init(feedQuery: FeedQuery, events: WSEventsSubscribing, memberListState: MemberListState) {
         self.fid = feedQuery.fid
         self.feedQuery = feedQuery
+        self.memberListState = memberListState
         webSocketObserver = WebSocketObserver(fid: feedQuery.fid, subscribing: events, handlers: changeHandlers)
+        memberListState.$members
+            .assign(to: \.members, onWeak: self)
+            .store(in: &cancellables)
     }
     
     /// The unique identifier of the feed.
@@ -47,7 +53,7 @@ import StreamCore
     @Published public internal(set) var followRequests = [FollowData]()
     
     /// The list of members in this feed.
-    @Published public internal(set) var members = [FeedMemberData]()
+    @Published public private(set) var members = [FeedMemberData]()
     
     /// The capabilities that the current user has for this feed.
     @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
@@ -90,8 +96,6 @@ extension FeedState {
         let followAdded: @MainActor (FollowData) -> Void
         let followRemoved: @MainActor (FollowData) -> Void
         let followUpdated: @MainActor (FollowData) -> Void
-        let memberRemoved: @MainActor (String) -> Void
-        let memberUpdated: @MainActor (FeedMemberData) -> Void
         let reactionAdded: @MainActor (FeedsReactionData) -> Void
         let reactionRemoved: @MainActor (FeedsReactionData) -> Void
     }
@@ -154,13 +158,6 @@ extension FeedState {
             },
             followUpdated: { [weak self] follow in
                 self?.updateFollow(follow)
-            },
-            memberRemoved: { [weak self] memberId in
-                guard let index = self?.members.firstIndex(where: { $0.id == memberId }) else { return }
-                self?.members.remove(at: index)
-            },
-            memberUpdated: { [weak self] member in
-                self?.members.replace(byId: member)
             },
             reactionAdded: { [weak self] reaction in
                 self?.updateActivity(with: reaction.activityId) { activity in
@@ -232,15 +229,17 @@ extension FeedState {
     ///
     /// - Parameter response: The response containing feed data, activities, and other information
     func didQueryFeed(with response: FeedsRepository.GetOrCreateInfo) {
-        activities = response.activities
-        activitiesPagination = response.activitiesPagination
+        activities = response.activities.models
+        activitiesPagination = response.activities.pagination
         activitiesQueryConfig = response.activitiesQueryConfig
         feed = response.feed
         followers = response.followers
         following = response.following
         followRequests = response.followRequests
-        members = response.members
         ownCapabilities = response.ownCapabilities
+        
+        // Members are managed by the paginatable list
+        memberListState.didPaginate(with: response.members, for: .empty)
     }
     
     /// Updates the state with paginated activities results.

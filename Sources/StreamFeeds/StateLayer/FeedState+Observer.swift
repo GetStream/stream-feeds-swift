@@ -63,12 +63,10 @@ extension FeedState {
                 case let event as FollowUpdatedEvent:
                     guard event.fid == fid else { return }
                     await handlers.followUpdated(event.follow.toModel())
-                case let event as FeedMemberRemovedEvent:
-                    guard event.fid == fid else { return }
-                    await handlers.memberRemoved(event.memberId)
-                case let event as FeedMemberUpdatedEvent:
-                    guard event.fid == fid else { return }
-                    await handlers.memberUpdated(event.member.toModel())
+                case is FeedMemberRemovedEvent:
+                    break // handled by MemberListState
+                case is FeedMemberUpdatedEvent:
+                    break // handled by MemberListState
                 default:
                     break
                 }
