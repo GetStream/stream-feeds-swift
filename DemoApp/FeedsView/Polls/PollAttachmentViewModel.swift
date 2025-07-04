@@ -173,13 +173,13 @@ import SwiftUI
     
     /// Removes the given vote from the specified option.
     /// - Parameter option: The option user tapped on.
-    public func removePollVote(for option: PollOptionData) {
+    public func deletePollVote(for option: PollOptionData) {
         guard !isCastingVote else { return }
         isCastingVote = true
         guard let vote = currentUserVote(for: option) else { return }
         Task {
             do {
-                try await activity.removePollVote(
+                try await activity.deletePollVote(
                     voteId: vote.id,
                     userId: feedsClient.user.id
                 )

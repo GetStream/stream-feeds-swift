@@ -226,7 +226,7 @@ struct PollOptionView: View {
 
     func togglePollVote() {
         if viewModel.optionVotedByCurrentUser(option) {
-            viewModel.removePollVote(for: option)
+            viewModel.deletePollVote(for: option)
         } else {
             viewModel.castPollVote(for: option)
         }

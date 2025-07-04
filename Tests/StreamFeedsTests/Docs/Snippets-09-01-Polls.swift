@@ -77,7 +77,7 @@ import UIKit
     }
     
     func removingVote() async throws {
-        try await activity.removePollVote(voteId: "vote_789")
+        try await activity.deletePollVote(voteId: "vote_789")
     }
     
     func closingPoll() async throws {
@@ -154,7 +154,7 @@ import UIKit
     }
     
     func deletePollOption() async throws {
-        try await activity.removePollOption(optionId: "option_789")
+        try await activity.deletePollOption(optionId: "option_789")
     }
     
     func queryingVotes() async throws {

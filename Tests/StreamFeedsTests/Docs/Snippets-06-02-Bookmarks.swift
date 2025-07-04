@@ -42,7 +42,10 @@ import StreamFeeds
     
     func removingBookmarks() async throws {
         // Removing a bookmark
-        try await feed.removeBookmark(activityId: "activity_123", folderId: "folder_456")
+        try await feed.deleteBookmark(
+            activityId: "activity_123",
+            folderId: "folder_456"
+        )
 
         // When you read a feed we include the bookmark
         try await feed.getOrCreate()

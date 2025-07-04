@@ -26,7 +26,7 @@ final class BookmarksRepository: Sendable {
         return response.bookmark.toModel()
     }
     
-    func removeBookmark(activityId: String, folderId: String?) async throws -> BookmarkData {
+    func deleteBookmark(activityId: String, folderId: String?) async throws -> BookmarkData {
         let response = try await apiClient.deleteBookmark(activityId: activityId, folderId: folderId)
         return response.bookmark.toModel()
     }

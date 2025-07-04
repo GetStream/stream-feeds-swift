@@ -19,7 +19,7 @@ import StreamFeeds
             )
         )
         // Remove a reaction
-        _ = try await feed.removeReaction(activityId: "activity_123", type: "like")
+        _ = try await feed.deleteReaction(activityId: "activity_123", type: "like")
         
         suppressUnusedWarning(reaction)
     }

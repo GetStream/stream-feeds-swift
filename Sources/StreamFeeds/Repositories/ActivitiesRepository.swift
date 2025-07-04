@@ -115,7 +115,7 @@ final class ActivitiesRepository: Sendable {
         return response.reaction.toModel()
     }
     
-    func removeReaction(activityId: String, type: String) async throws -> FeedsReactionData {
+    func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
         return response.reaction.toModel()
     }

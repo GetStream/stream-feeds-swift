@@ -45,7 +45,7 @@ import StreamFeeds
     }
     
     func removingComments() async throws {
-        try await feed.removeComment(
+        try await feed.deleteComment(
             commentId: "comment_123"
         )
     }
@@ -100,7 +100,7 @@ import StreamFeeds
         )
 
         // Remove a reaction from a comment
-        try await feed.removeCommentReaction(
+        try await feed.deleteCommentReaction(
             commentId: "comment_123",
             type: "like"
         )

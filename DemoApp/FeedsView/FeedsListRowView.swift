@@ -64,7 +64,7 @@ struct FeedsListRowView: View {
                                 if activity.ownReactions.isEmpty {
                                     try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
                                 } else {
-                                    try await feed.removeReaction(activityId: activity.id, type: "heart")
+                                    try await feed.deleteReaction(activityId: activity.id, type: "heart")
                                 }
                             } catch {
                                 print("===== \(error)")
@@ -100,7 +100,7 @@ struct FeedsListRowView: View {
                                 if activity.ownBookmarks.isEmpty {
                                     try await feed.addBookmark(activityId: activity.id)
                                 } else {
-                                    try await feed.removeBookmark(activityId: activity.id)
+                                    try await feed.deleteBookmark(activityId: activity.id)
                                 }
                             } catch {
                                 print("===== \(error)")

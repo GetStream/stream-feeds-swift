@@ -111,7 +111,7 @@ struct Snippets_03_01_Activities {
         try await feed.deleteActivity(id: "123", hardDelete: hardDelete)
 
         // Batch delete activities
-        try await client.removeActivities(
+        try await client.deleteActivities(
             request: .init(
                 activityIds: ["123", "456"],
                 hardDelete: false

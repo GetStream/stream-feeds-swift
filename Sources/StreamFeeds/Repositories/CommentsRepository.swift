@@ -59,7 +59,7 @@ final class CommentsRepository: Sendable {
         return response.comments.map { $0.toModel() }
     }
     
-    func removeComment(commentId: String) async throws {
+    func deleteComment(commentId: String) async throws {
         _ = try await self.apiClient.deleteComment(commentId: commentId)
     }
     

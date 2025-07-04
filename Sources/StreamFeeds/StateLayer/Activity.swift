@@ -151,8 +151,8 @@ public final class Activity: Sendable {
     ///
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func removeComment(commentId: String) async throws {
-        try await commentsRepository.removeComment(commentId: commentId)
+    public func deleteComment(commentId: String) async throws {
+        try await commentsRepository.deleteComment(commentId: commentId)
         // TODO: state update with nesting and id
     }
     
@@ -332,11 +332,11 @@ public final class Activity: Sendable {
     ///   - optionId: The unique identifier of the option to remove
     ///   - userId: Optional user identifier for authorization
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func removePollOption(
+    public func deletePollOption(
         optionId: String,
         userId: String? = nil
     ) async throws {
-        try await pollsRepository.removePollOption(pollId: pollId(), optionId: optionId, userId: userId)
+        try await pollsRepository.deletePollOption(pollId: pollId(), optionId: optionId, userId: userId)
         await state.access { $0.poll?.removeOption(withId: optionId) }
     }
 
@@ -396,11 +396,11 @@ public final class Activity: Sendable {
     /// - Returns: The removed vote data, or `nil` if the vote was not found
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func removePollVote(
+    public func deletePollVote(
         voteId: String,
         userId: String? = nil
     ) async throws -> PollVoteData? {
-        let vote = try await pollsRepository.removePollVote(
+        let vote = try await pollsRepository.deletePollVote(
             activityId: activityId,
             pollId: pollId(),
             voteId: voteId,

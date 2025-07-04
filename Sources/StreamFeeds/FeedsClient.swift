@@ -306,13 +306,13 @@ public final class FeedsClient: Sendable {
         try await activitiesRepository.upsertActivities(activities)
     }
     
-    /// Removes multiple activities from the specified feeds.
+    /// Deletes multiple activities from the specified feeds.
     ///
-    /// - Parameter request: The request containing the activities to remove
-    /// - Returns: A response confirming the removal of activities
+    /// - Parameter request: The request containing the activities to delete
+    /// - Returns: A response confirming the deletion of activities
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func removeActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
+    public func deleteActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
         try await apiClient.removeActivities(deleteActivitiesRequest: request)
     }
     

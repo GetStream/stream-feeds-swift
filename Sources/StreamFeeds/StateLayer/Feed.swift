@@ -233,8 +233,8 @@ public final class Feed: Sendable {
     /// - Returns: The removed bookmark data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func removeBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
-        try await bookmarksRepository.removeBookmark(activityId: activityId, folderId: folderId)
+    public func deleteBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
+        try await bookmarksRepository.deleteBookmark(activityId: activityId, folderId: folderId)
     }
     
     /// Updates an existing bookmark for an activity.
@@ -364,8 +364,8 @@ public final class Feed: Sendable {
     ///
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func removeComment(commentId: String) async throws {
-        try await commentsRepository.removeComment(commentId: commentId)
+    public func deleteComment(commentId: String) async throws {
+        try await commentsRepository.deleteComment(commentId: commentId)
     }
     
     /// Updates an existing comment with the provided request data.
@@ -535,8 +535,8 @@ public final class Feed: Sendable {
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func removeReaction(activityId: String, type: String) async throws -> FeedsReactionData {
-        let reaction = try await activitiesRepository.removeReaction(activityId: activityId, type: type)
+    public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
+        let reaction = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
         await state.changeHandlers.reactionRemoved(reaction)
         return reaction
     }
