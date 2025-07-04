@@ -16,7 +16,7 @@ public struct PollData: Identifiable, Sendable {
     public let description: String
     public let enforceUniqueVote: Bool
     public let id: String
-    public let isClosed: Bool
+    public private(set) var isClosed: Bool
     public let latestAnswers: [PollVoteData]
     public private(set) var latestVotesByOption: [String: [PollVoteData]]
     public let maxVotesAllowed: Int?

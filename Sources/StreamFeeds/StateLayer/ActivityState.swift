@@ -54,7 +54,7 @@ extension ActivityState {
         let commentReactionAdded: @MainActor (FeedsReactionData, CommentData) -> Void
         let commentReactionRemoved: @MainActor (FeedsReactionData, CommentData) -> Void
         let pollClosed: @MainActor (PollData) -> Void
-        let pollDeleted: @MainActor (PollData) -> Void
+        let pollDeleted: @MainActor (String) -> Void
         let pollUpdated: @MainActor (PollData) -> Void
         let pollVoteCasted: @MainActor (PollVoteData, PollData) -> Void
         let pollVoteChanged: @MainActor (PollVoteData, PollData) -> Void
@@ -113,8 +113,8 @@ extension ActivityState {
                 guard poll.id == self?.poll?.id else { return }
                 self?.poll = poll
             },
-            pollDeleted: { [weak self] poll in
-                guard poll.id == self?.poll?.id else { return }
+            pollDeleted: { [weak self] pollId in
+                guard pollId == self?.poll?.id else { return }
                 self?.poll = nil
             },
             pollUpdated: { [weak self] poll in
