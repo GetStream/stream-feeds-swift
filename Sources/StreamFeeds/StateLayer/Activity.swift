@@ -240,11 +240,19 @@ public final class Activity: Sendable {
     
     // MARK: - Pinning
     
+    /// Pins an activity in the feed.
+    ///
+    /// - SeeAlso: ``FeedData/pinnedActivities``
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func pin() async throws {
         let activity = try await activitiesRepository.pin(true, activityId: activityId, in: fid)
         await state.changeHandlers.activityUpdated(activity)
     }
     
+    /// Unpins an activity from the feed.
+    ///
+    /// - SeeAlso: ``FeedData/pinnedActivities``
+    /// - Throws: `APIError` if the network request fails or the server returns an error
     public func unpin() async throws {
         let activity = try await activitiesRepository.pin(false, activityId: activityId, in: fid)
         await state.changeHandlers.activityUpdated(activity)
@@ -258,7 +266,9 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func closePoll() async throws -> PollData {
-        try await updatePollPartial(request: .init(set: ["isClosed": .bool(true)]))
+        let pollData = try await updatePollPartial(request: .init(set: ["isClosed": .bool(true)]))
+        await state.changeHandlers.pollUpdated(pollData)
+        return pollData
     }
     
     /// Deletes a poll.
@@ -267,8 +277,9 @@ public final class Activity: Sendable {
     ///   - userId: Optional user identifier for authorization
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deletePoll(userId: String? = nil) async throws {
-        try await pollsRepository.deletePoll(pollId: pollId(), userId: userId)
-        // TODO: set to nil?
+        let pollId = try await pollId()
+        try await pollsRepository.deletePoll(pollId: pollId, userId: userId)
+        await state.changeHandlers.pollDeleted(pollId)
     }
 
     /// Gets a specific poll by its identifier.
@@ -352,7 +363,9 @@ public final class Activity: Sendable {
         optionId: String,
         userId: String?
     ) async throws -> PollOptionData {
-        try await pollsRepository.getPollOption(pollId: pollId(), optionId: optionId, userId: userId)
+        let pollOption = try await pollsRepository.getPollOption(pollId: pollId(), optionId: optionId, userId: userId)
+        await state.access { $0.poll?.updateOption(pollOption) }
+        return pollOption
     }
     
     /// Updates a poll option.
