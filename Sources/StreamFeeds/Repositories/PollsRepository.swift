@@ -127,7 +127,7 @@ final class PollsRepository: Sendable {
         voteId: String,
         userId: String?
     ) async throws -> PollVoteData? {
-        let response = try await apiClient.removePollVote(
+        let response = try await apiClient.deletePollVote(
             activityId: activityId,
             pollId: pollId,
             voteId: voteId,

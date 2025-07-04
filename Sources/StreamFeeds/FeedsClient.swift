@@ -313,7 +313,7 @@ public final class FeedsClient: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func deleteActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
-        try await apiClient.removeActivities(deleteActivitiesRequest: request)
+        try await apiClient.deleteActivities(deleteActivitiesRequest: request)
     }
     
     // MARK: - Bookmark Lists

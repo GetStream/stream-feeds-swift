@@ -246,7 +246,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
+    open func deleteActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
         let path = "/api/v2/feeds/activities/delete"
 
         let urlRequest = try makeRequest(
@@ -418,7 +418,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse {
+    open func deletePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse {
         var path = "/api/v2/feeds/activities/{activity_id}/polls/{poll_id}/vote/{vote_id}"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
@@ -1629,7 +1629,7 @@ protocol DefaultAPIEndpoints {
 
     func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse
 
-    func removeActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse
+    func deleteActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse
 
     func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
@@ -1649,7 +1649,7 @@ protocol DefaultAPIEndpoints {
 
     func castPollVote(activityId: String, pollId: String, castPollVoteRequest: CastPollVoteRequest) async throws -> PollVoteResponse
 
-    func removePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse
+    func deletePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse
 
     func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
