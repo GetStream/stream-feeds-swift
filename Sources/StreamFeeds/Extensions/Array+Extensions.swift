@@ -32,12 +32,35 @@ extension Array {
         remove(at: index)
     }
     
+    /// Removes elements from the non-sorted array based on ID.
+    ///
+    /// - Parameter ids: Ids of elements to remove.
+    mutating func remove(byIds ids: [Element.ID]) where Element: Identifiable {
+        let lookup = Set(ids)
+        removeAll(where: { lookup.contains($0.id) })
+    }
+    
     /// Replaces an element from the non-sorted array based on its ID.
     ///
     /// - Parameter element: The new element for replacing the existing one.
     mutating func replace(byId element: Element) where Element: Identifiable {
         guard let index = firstIndex(where: { $0.id == element.id }) else { return }
         replaceSubrange(index...index, with: CollectionOfOne(element))
+    }
+    
+    /// Replaces elements from the non-sorted array based on its ID.
+    ///
+    /// - Parameter elements: New elements for replacing existing ones.
+    mutating func replace(byIds elements: [Element]) where Element: Identifiable {
+        var lookup = Dictionary<Element.ID, Element>()
+        lookup.merge(elements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new } )
+        let replacements = enumerated().compactMap { index, existing -> (Index, Element)? in
+            guard let updated = lookup[existing.id] else { return nil }
+            return (index, updated)
+        }
+        for replacement in replacements {
+            replaceSubrange(replacement.0...replacement.0, with: CollectionOfOne(replacement.1))
+        }
     }
     
     /// Appends new unique elements at the end while replacing existing duplicate elements.

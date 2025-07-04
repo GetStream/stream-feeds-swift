@@ -34,13 +34,13 @@ import SwiftUI
             )
         )
         voteList.state.$votes
-            .assignWeakly(to: \.pollVotes, on: self)
+            .assign(to: \.pollVotes, onWeak: self)
             .store(in: &cancellables)
         // No animation for initial load
         $pollVotes
             .dropFirst()
             .map { _ in true }
-            .assignWeakly(to: \.animateChanges, on: self)
+            .assign(to: \.animateChanges, onWeak: self)
             .store(in: &cancellables)
     }
     

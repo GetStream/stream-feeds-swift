@@ -7,6 +7,8 @@ import Foundation
 public struct PaginationData: Sendable {
     public let next: String?
     public let previous: String?
+    
+    static var empty: Self { Self(next: nil, previous: nil) }
 }
 
 struct PaginationResult<Model>: Sendable where Model: Sendable {
