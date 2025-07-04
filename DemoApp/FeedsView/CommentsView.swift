@@ -262,7 +262,7 @@ struct ActivityActionsView: View {
                     if !containsUserReaction {
                         try await activity.addCommentReaction(commentId: comment.id, request: .init(type: "heart"))
                     } else {
-                        try await activity.removeCommentReaction(commentId: comment.id, type: "heart")
+                        try await activity.deleteCommentReaction(commentId: comment.id, type: "heart")
                     }
                 }
             } label: {

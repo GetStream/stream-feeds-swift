@@ -55,7 +55,7 @@ extension MemberListState {
             },
             memberUpdated: { [weak self] member in
                 self?.members.replace(byId: member)
-            },
+            }
         )
     }
     

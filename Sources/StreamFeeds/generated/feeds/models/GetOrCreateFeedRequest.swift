@@ -6,7 +6,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var data: FeedInput?
     public var externalRanking: [String: RawJSON]?
     public var filter: [String: RawJSON]?
-    public var followerPagination: PagerRequest?
+    public var followersPagination: PagerRequest?
     public var followingPagination: PagerRequest?
     public var interestWeights: [String: Float]?
     public var limit: Int?
@@ -16,12 +16,12 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var view: String?
     public var watch: Bool?
 
-    public init(activitySelectorOptions: [String: RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followerPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
+    public init(activitySelectorOptions: [String: RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
         self.activitySelectorOptions = activitySelectorOptions
         self.data = data
         self.externalRanking = externalRanking
         self.filter = filter
-        self.followerPagination = followerPagination
+        self.followersPagination = followersPagination
         self.followingPagination = followingPagination
         self.interestWeights = interestWeights
         self.limit = limit
@@ -37,7 +37,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         case data
         case externalRanking = "external_ranking"
         case filter
-        case followerPagination = "follower_pagination"
+        case followersPagination = "followers_pagination"
         case followingPagination = "following_pagination"
         case interestWeights = "interest_weights"
         case limit
@@ -53,7 +53,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
             lhs.data == rhs.data &&
             lhs.externalRanking == rhs.externalRanking &&
             lhs.filter == rhs.filter &&
-            lhs.followerPagination == rhs.followerPagination &&
+            lhs.followersPagination == rhs.followersPagination &&
             lhs.followingPagination == rhs.followingPagination &&
             lhs.interestWeights == rhs.interestWeights &&
             lhs.limit == rhs.limit &&
@@ -69,7 +69,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         hasher.combine(data)
         hasher.combine(externalRanking)
         hasher.combine(filter)
-        hasher.combine(followerPagination)
+        hasher.combine(followersPagination)
         hasher.combine(followingPagination)
         hasher.combine(interestWeights)
         hasher.combine(limit)

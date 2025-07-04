@@ -671,7 +671,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func removeCommentReaction(commentId: String, type: String) async throws -> DeleteCommentReactionResponse {
+    open func deleteCommentReaction(commentId: String, type: String) async throws -> DeleteCommentReactionResponse {
         var path = "/api/v2/feeds/comments/{comment_id}/reactions/{type}"
 
         let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
@@ -1679,7 +1679,7 @@ protocol DefaultAPIEndpoints {
 
     func queryCommentReactions(commentId: String, queryCommentReactionsRequest: QueryCommentReactionsRequest) async throws -> QueryCommentReactionsResponse
 
-    func removeCommentReaction(commentId: String, type: String) async throws -> DeleteCommentReactionResponse
+    func deleteCommentReaction(commentId: String, type: String) async throws -> DeleteCommentReactionResponse
 
     func getCommentReplies(commentId: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
 

@@ -511,8 +511,8 @@ public final class Feed: Sendable {
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func removeCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
-        let result = try await commentsRepository.removeCommentReaction(commentId: commentId, type: type)
+    public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
+        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
         return result.reaction
     }
     

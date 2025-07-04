@@ -129,7 +129,7 @@ extension FeedQuery {
             data: data,
             externalRanking: externalRanking,
             filter: activityFilter?.toRawJSON(),
-            followerPagination: followerLimit.flatMap { PagerRequest(limit: $0) },
+            followersPagination: followerLimit.flatMap { PagerRequest(limit: $0) },
             followingPagination: followingLimit.flatMap { PagerRequest(limit: $0) },
             interestWeights: interestWeights,
             limit: activityLimit,

@@ -80,8 +80,8 @@ final class CommentsRepository: Sendable {
         return (response.reaction.toModel(), response.comment.toModel())
     }
 
-    func removeCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
-        let response = try await self.apiClient.removeCommentReaction(commentId: commentId, type: type)
+    func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
+        let response = try await self.apiClient.deleteCommentReaction(commentId: commentId, type: type)
         return (response.reaction.toModel(), response.comment.toModel())
     }
     
