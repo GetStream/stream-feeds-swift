@@ -26,9 +26,9 @@ extension Array {
     
     /// Removes an element from the non-sorted array based on its ID.
     ///
-    /// - Parameter element: The element to remove.
-    mutating func remove(byId element: Element) where Element: Identifiable {
-        guard let index = firstIndex(where: { $0.id == element.id }) else { return }
+    /// - Parameter id: The ID of the element to remove.
+    mutating func remove(byId id: Element.ID) where Element: Identifiable {
+        guard let index = firstIndex(where: { $0.id == id }) else { return }
         remove(at: index)
     }
     
@@ -157,22 +157,44 @@ extension Array {
         sortedMerge(incomingElements, by: sorting.areInIncreasingOrder())
     }
     
-    /// Removes an element from the sorted array based on its ID.
+    /// Removes an element from a sorted array while maintaining the sort order.
     ///
-    /// At first it tries to use binary search, but if it fails, does a linear lookup.
+    /// This method efficiently removes an element from a sorted array by first attempting
+    /// a binary search for optimal performance. If the binary search fails (e.g., when
+    /// sorting parameters have changed), it falls back to a linear search by ID.
+    ///
+    /// The method preserves the sorted order of the remaining elements and handles
+    /// cases where the element might not be found in the array.
     ///
     /// - Parameters:
-    ///   - element: The element to remove.
+    ///   - element: The element to remove from the array.
     ///   - sorting: A closure that defines the sort order between two elements.
+    ///     The closure should return `true` if the first element should be ordered
+    ///     before the second element.
+    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
+    ///   when falling back to linear search.
     mutating func sortedRemove(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
         // Binary search succeeds if the element is present and its sorting parameters have not changed.
         if let index = firstSortedIndex(for: element, using: sorting) {
             remove(at: index)
         } else {
-            remove(byId: element)
+            remove(byId: element.id)
         }
     }
     
+    /// Removes an element from a sorted array using a collection of sort fields.
+    ///
+    /// This method is a convenience overload that allows you to specify sorting criteria
+    /// using an array of `Sort<Field>` objects instead of a custom sorting closure.
+    /// It internally converts the sort fields to a sorting closure and delegates to
+    /// the main `sortedRemove(_:by:)` method.
+    ///
+    /// - Parameters:
+    ///   - element: The element to remove from the array.
+    ///   - sorting: An array of sort field configurations that define the sort order.
+    ///     The sort fields are applied in order, with earlier fields taking precedence.
+    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
+    ///   when falling back to linear search.
     mutating func sortedRemove<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
         sortedRemove(element, by: sorting.areInIncreasingOrder())
     }

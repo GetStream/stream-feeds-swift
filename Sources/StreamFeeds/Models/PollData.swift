@@ -72,11 +72,11 @@ extension PollData {
     }
     
     mutating func removeVote(_ vote: PollVoteData) {
-        ownVotes.remove(byId: vote)
+        ownVotes.remove(byId: vote.id)
         let optionVoteCounts = voteCountsByOption[vote.optionId] ?? 0
         voteCountsByOption[vote.optionId] = max(0, optionVoteCounts - 1)
         var optionVotes = latestVotesByOption[vote.optionId] ?? []
-        optionVotes.remove(byId: vote)
+        optionVotes.remove(byId: vote.id)
         latestVotesByOption[vote.optionId] = optionVotes
     }
 }

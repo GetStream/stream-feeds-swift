@@ -39,7 +39,7 @@ extension FeedsReactionData {
         from latestReactions: inout [FeedsReactionData],
         reactionGroups: inout [String: ReactionGroupData]
     ) {
-        latestReactions.remove(byId: reaction)
+        latestReactions.remove(byId: reaction.id)
         if var reactionGroup = reactionGroups[reaction.type] {
             reactionGroup.decrement(with: reaction.createdAt)
             if reactionGroup.count > 0 {

@@ -65,13 +65,13 @@ struct ArrayExtensions_Tests {
         
         // Test removing existing item
         let itemToRemove = TestItem(id: "2", value: 2)
-        array.remove(byId: itemToRemove)
+        array.remove(byId: itemToRemove.id)
         #expect(array.count == 2)
         #expect(!array.contains(where: { $0.id == "2" }))
         
         // Test removing non-existent item
         let nonExistentItem = TestItem(id: "4", value: 4)
-        array.remove(byId: nonExistentItem)
+        array.remove(byId: nonExistentItem.id)
         #expect(array.count == 2) // Count should remain unchanged
     }
     

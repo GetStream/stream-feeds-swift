@@ -58,7 +58,7 @@ extension ActivityData {
     
     mutating func deleteComment(_ comment: CommentData) {
         commentCount = max(0, commentCount - 1)
-        comments.remove(byId: comment)
+        comments.remove(byId: comment.id)
     }
     
     mutating func addBookmark(_ bookmark: BookmarkData) {
@@ -70,7 +70,7 @@ extension ActivityData {
     
     mutating func deleteBookmark(_ bookmark: BookmarkData) {
         bookmarkCount = max(0, bookmarkCount - 1)
-        ownBookmarks.remove(byId: bookmark)
+        ownBookmarks.remove(byId: bookmark.id)
     }
     
     mutating func addReaction(_ reaction: FeedsReactionData) {
@@ -83,7 +83,7 @@ extension ActivityData {
     mutating func removeReaction(_ reaction: FeedsReactionData) {
         FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
         if reaction.user.id == user.id {
-            ownReactions.remove(byId: reaction)
+            ownReactions.remove(byId: reaction.id)
         }
     }
 }

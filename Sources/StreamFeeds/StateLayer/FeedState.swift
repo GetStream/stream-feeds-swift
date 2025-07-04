@@ -209,9 +209,9 @@ extension FeedState {
     ///
     /// - Parameter follow: The follow data to remove
     private func removeFollow(_ follow: FollowData) {
-        following.remove(byId: follow)
-        followers.remove(byId: follow)
-        followRequests.remove(byId: follow)
+        following.remove(byId: follow.id)
+        followers.remove(byId: follow.id)
+        followRequests.remove(byId: follow.id)
     }
     
     /// Updates a follow by removing and re-adding it to the appropriate collection.

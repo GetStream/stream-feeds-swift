@@ -64,7 +64,7 @@ extension CommentData {
     
     mutating func removeReply(_ comment: CommentData) {
         var replies = self.replies ?? []
-        replies.remove(byId: comment)
+        replies.remove(byId: comment.id)
         self.replies = replies
         replyCount = max(0, replyCount - 1)
     }
