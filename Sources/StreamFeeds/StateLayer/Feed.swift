@@ -5,6 +5,22 @@
 import Foundation
 import StreamCore
 
+/// A feed represents a collection of activities and provides methods to interact with them.
+/// 
+/// The `Feed` class is the primary interface for working with feeds in the Stream Feeds SDK.
+/// It provides functionality for:
+/// - Creating and managing feed data
+/// - Adding, updating, and deleting activities
+/// - Managing comments, reactions, and bookmarks
+/// - Handling follows and feed memberships
+/// - Creating polls and managing poll interactions
+/// - Pagination and querying of feed content
+/// 
+/// Each feed instance is associated with a specific feed ID and maintains its own state
+/// that can be observed for real-time updates. The feed state includes activities,
+/// followers, members, and other feed-related data.
+/// 
+/// - Note: This class is thread-safe and can be used from any thread.
 public final class Feed: Sendable {
     @MainActor private let stateBuilder: StateBuilder<FeedState>
     
@@ -40,6 +56,11 @@ public final class Feed: Sendable {
         }
     }
     
+    /// The unique identifier for this feed.
+    /// 
+    /// This property provides access to the feed's identifier, which is used to distinguish
+    /// this feed from other feeds in the system. The feed ID is composed of a group and
+    /// an ID component that together form a unique reference to this specific feed.
     public var fid: FeedId { feedQuery.fid }
     
     private var id: String { fid.id }
@@ -396,9 +417,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func unfollow(_ targetFid: FeedId) async throws {
         try await feedsRepository.unfollow(source: fid, target: targetFid)
-        // TODO: Review
         await state.access { state in
-            state.followers.removeAll(where: { $0.sourceFeed.fid == fid && $0.targetFeed.fid == targetFid })
             state.following.removeAll(where: { $0.sourceFeed.fid == fid && $0.targetFeed.fid == targetFid })
         }
     }
