@@ -24,27 +24,21 @@ final class CommentsRepository: Sendable {
         )
     }
     
-    func getComments(
-        objectId: String,
-        objectType: String,
-        depth: Int?,
-        sort: String?,
-        repliesLimit: Int?,
-        limit: Int?,
-        prev: String?,
-        next: String?
-    ) async throws -> [CommentData] {
+    func getComments(with query: ActivityCommentsQuery) async throws -> PaginationResult<CommentData> {
         let response = try await self.apiClient.getComments(
-            objectId: objectId,
-            objectType: objectType,
-            depth: depth,
-            sort: sort,
-            repliesLimit: repliesLimit,
-            limit: limit,
-            prev: prev,
-            next: next
+            objectId: query.objectId,
+            objectType: query.objectType,
+            depth: query.depth,
+            sort: query.sort,
+            repliesLimit: query.repliesLimit,
+            limit: query.limit,
+            prev: query.previous,
+            next: query.next
         )
-        return response.comments.map { $0.toModel() }
+        return PaginationResult(
+            models: response.comments.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
     }
     
     // MARK: - Adding, Updating, and Removing Comments
@@ -87,24 +81,19 @@ final class CommentsRepository: Sendable {
     
     // MARK: - Comment Replies
     
-    func getCommentReplies(
-        commentId: String,
-        depth: Int?,
-        sort: String?,
-        repliesLimit: Int?,
-        limit: Int?,
-        prev: String?,
-        next: String?
-    ) async throws -> [CommentData] {
+    func getCommentReplies(with query: CommentRepliesQuery) async throws -> PaginationResult<CommentData> {
         let response = try await self.apiClient.getCommentReplies(
-            commentId: commentId,
-            depth: depth,
-            sort: sort,
-            repliesLimit: repliesLimit,
-            limit: limit,
-            prev: prev,
-            next: next
+            commentId: query.commentId,
+            depth: query.depth,
+            sort: query.sort,
+            repliesLimit: query.repliesLimit,
+            limit: query.limit,
+            prev: query.previous,
+            next: query.next
         )
-        return response.comments.map { $0.toModel() }
+        return PaginationResult(
+            models: response.comments.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
     }
 }

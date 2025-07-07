@@ -11,6 +11,7 @@ import StreamCore
 /// managing comments, handling reactions, and working with polls. It maintains an observable
 /// state that automatically updates when WebSocket events are received.
 public final class Activity: Sendable {
+    private let commentList: ActivityCommentList
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
     private let pollsRepository: PollsRepository
@@ -33,13 +34,17 @@ public final class Activity: Sendable {
         fid: FeedId,
         client: FeedsClient
     ) {
+        let commentList = client.activityCommentList(
+            for: .init(objectId: id, objectType: "activity")
+        )
+        self.commentList = commentList
         self.activityId = id
         self.activitiesRepository = client.activitiesRepository
         self.commentsRepository = client.commentsRepository
         self.fid = fid
         self.pollsRepository = client.pollsRepository
         let events = client.eventsMiddleware
-        self.stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events) }
+        self.stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events, commentListState: commentList.state) }
     }
     
     // MARK: - Accessing the State
@@ -61,52 +66,31 @@ public final class Activity: Sendable {
     
     // MARK: - Querying the List of Comments
     
-    /// Queries comments for this activity based on the provided request parameters.
+    /// Queries comments for this activity.
     ///
-    /// - Parameter request: The query request containing filtering and pagination parameters
     /// - Returns: An array of comment data matching the query criteria
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func queryComments(request: QueryCommentsRequest) async throws -> [CommentData] {
-        let data = try await commentsRepository.queryComments(request: request)
-        await state.update(with: data)
-        return data.models
+    public func queryComments() async throws -> [CommentData] {
+        try await commentList.get()
     }
     
-    /// Gets comments for a specific object with optional filtering and pagination.
+    /// Loads the next page of comments if more are available.
     ///
-    /// - Parameters:
-    ///   - depth: Optional depth for nested comment retrieval
-    ///   - sort: Optional sorting criteria
-    ///   - repliesLimit: Optional limit for the number of replies to include
-    ///   - limit: Optional limit for the number of comments to return
-    ///   - prev: Optional pagination token for previous page
-    ///   - next: Optional pagination token for next page
-    /// - Returns: An array of comment data
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func getComments(
-        depth: Int? = nil,
-        sort: String? = nil,
-        repliesLimit: Int? = nil,
-        limit: Int? = nil,
-        prev: String? = nil,
-        next: String? = nil
-    ) async throws -> [CommentData] {
-        let comments = try await commentsRepository.getComments(
-            objectId: activityId,
-            objectType: "activity",
-            depth: depth,
-            sort: sort,
-            repliesLimit: repliesLimit,
-            limit: limit,
-            prev: prev,
-            next: next
-        )
-        // TODO: Pagination support
-        await state.access { $0.comments = comments }
-        return comments
+    /// This method fetches additional comments using the pagination information
+    /// from the previous request. If no more comments are available, an empty
+    /// array is returned.
+    ///
+    /// - Parameter limit: Optional limit for the number of comments to fetch.
+    ///   If not specified, uses the limit from the original query.
+    /// - Returns: An array of `CommentData` representing the additional comments.
+    ///   Returns an empty array if no more comments are available.
+    /// - Throws: An error if the network request fails or the response cannot be parsed.
+    @discardableResult
+    public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
+        try await commentList.queryMoreReplies(limit: limit)
     }
-    
+        
     /// Gets a specific comment by its identifier.
     ///
     /// - Parameter commentId: The unique identifier of the comment to retrieve
@@ -114,7 +98,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
         let comment = try await commentsRepository.getComment(commentId: commentId)
-        await state.changeHandlers.commentUpdated(comment)
+        await commentList.state.changeHandlers.commentUpdated(comment)
         return comment
     }
     
@@ -128,7 +112,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addComment(request: ActivityAddCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.addComment(request: request.withActivityId(activityId))
-        await state.changeHandlers.commentAdded(comment)
+        await commentList.state.changeHandlers.commentAdded(comment)
         return comment
     }
     
@@ -141,7 +125,7 @@ public final class Activity: Sendable {
     public func addCommentsBatch(requests: [ActivityAddCommentRequest]) async throws -> [CommentData] {
         let request = AddCommentsBatchRequest(comments: requests.map { $0.withActivityId(activityId) })
         let comments = try await commentsRepository.addCommentsBatch(request: request)
-        await state.access { state in
+        await commentList.state.access { state in
             comments.forEach { state.changeHandlers.commentAdded($0) }
         }
         return comments
@@ -153,7 +137,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteComment(commentId: String) async throws {
         try await commentsRepository.deleteComment(commentId: commentId)
-        // TODO: state update with nesting and id
+        await commentList.state.changeHandlers.commentRemoved(commentId)
     }
     
     /// Updates an existing comment.
@@ -166,7 +150,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.updateComment(commentId: commentId, request: request)
-        await state.changeHandlers.commentUpdated(comment)
+        await commentList.state.changeHandlers.commentUpdated(comment)
         return comment
     }
     
@@ -182,7 +166,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
-        await state.changeHandlers.commentReactionAdded(result.reaction, result.comment)
+        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.comment)
         return result.reaction
     }
 
@@ -196,46 +180,8 @@ public final class Activity: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
-        await state.changeHandlers.commentReactionRemoved(result.reaction, result.comment)
+        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.comment)
         return result.reaction
-    }
-    
-    // MARK: - Comment Replies
-    
-    /// Gets replies to a specific comment with optional filtering and pagination.
-    ///
-    /// - Parameters:
-    ///   - commentId: The unique identifier of the parent comment
-    ///   - depth: Optional depth for nested reply retrieval
-    ///   - sort: Optional sorting criteria
-    ///   - repliesLimit: Optional limit for the number of replies to include
-    ///   - limit: Optional limit for the number of replies to return
-    ///   - prev: Optional pagination token for previous page
-    ///   - next: Optional pagination token for next page
-    /// - Returns: An array of reply comment data
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func getCommentReplies(
-        commentId: String,
-        depth: Int? = nil,
-        sort: String? = nil,
-        repliesLimit: Int? = nil,
-        limit: Int? = nil,
-        prev: String? = nil,
-        next: String? = nil
-    ) async throws -> [CommentData] {
-        let comments = try await commentsRepository.getCommentReplies(
-            commentId: commentId,
-            depth: depth,
-            sort: sort,
-            repliesLimit: repliesLimit,
-            limit: limit,
-            prev: prev,
-            next: next
-        )
-        await state.access { state in
-            comments.forEach { state.changeHandlers.commentUpdated($0) }
-        }
-        return comments
     }
     
     // MARK: - Pinning

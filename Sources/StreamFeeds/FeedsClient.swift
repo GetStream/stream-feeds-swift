@@ -356,6 +356,30 @@ public final class FeedsClient: Sendable {
         CommentList(query: query, client: self)
     }
     
+    /// Creates an activity comment list instance based on the provided query.
+    ///
+    /// This method creates an `ActivityCommentList` object that represents a collection of comments
+    /// for a specific activity. The activity comment list can be used to fetch comments for an activity,
+    /// manage comment pagination, and receive real-time updates for comment-related events.
+    ///
+    /// - Parameter query: The activity comments query containing the activity identifier and pagination parameters
+    /// - Returns: An `ActivityCommentList` instance that can be used to interact with the collection of activity comments
+    public func activityCommentList(for query: ActivityCommentsQuery) -> ActivityCommentList {
+        ActivityCommentList(query: query, client: self)
+    }
+    
+    /// Creates a comment reply list instance based on the provided query.
+    ///
+    /// This method creates a `CommentReplyList` object that represents a collection of replies
+    /// for a specific comment. The comment reply list can be used to fetch replies to a comment,
+    /// manage reply pagination, and receive real-time updates for reply-related events.
+    ///
+    /// - Parameter query: The comment replies query containing the comment identifier and pagination parameters
+    /// - Returns: A `CommentReplyList` instance that can be used to interact with the collection of comment replies
+    public func commentReplyList(for query: CommentRepliesQuery) -> CommentReplyList {
+        CommentReplyList(query: query, client: self)
+    }
+    
     // MARK: - Poll Vote Lists
     
     /// Creates a poll vote list instance based on the provided query.

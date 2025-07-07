@@ -11,7 +11,9 @@ import StreamCore
 /// This class manages the state of a single activity including its comments, poll data, and real-time updates.
 /// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
 @MainActor public class ActivityState: ObservableObject {
+    private var cancellables = Set<AnyCancellable>()
     private(set) lazy var changeHandlers = makeChangeHandlers()
+    private let commentListState: ActivityCommentListState
     private var webSocketObserver: WebSocketObserver?
     
     /// Initializes a new ActivityState instance.
@@ -20,7 +22,8 @@ import StreamCore
     ///   - activityId: The unique identifier of the activity
     ///   - fid: The identifier of the feed containing this activity
     ///   - events: The WebSocket events subscriber for real-time updates
-    init(activityId: String, fid: FeedId, events: WSEventsSubscribing) {
+    init(activityId: String, fid: FeedId, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
+        self.commentListState = commentListState
         let webSocketObserver = WebSocketObserver(
             activityId: activityId,
             fid: fid,
@@ -28,6 +31,10 @@ import StreamCore
             handlers: changeHandlers
         )
         self.webSocketObserver = webSocketObserver
+        
+        commentListState.$comments
+            .assign(to: \.comments, onWeak: self)
+            .store(in: &cancellables)
     }
     
     /// The current activity data.
@@ -48,11 +55,6 @@ extension ActivityState {
     /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
     struct ChangeHandlers: Sendable {
         let activityUpdated: @MainActor (ActivityData) -> Void
-        let commentAdded: @MainActor (CommentData) -> Void
-        let commentRemoved: @MainActor (CommentData) -> Void
-        let commentUpdated: @MainActor (CommentData) -> Void
-        let commentReactionAdded: @MainActor (FeedsReactionData, CommentData) -> Void
-        let commentReactionRemoved: @MainActor (FeedsReactionData, CommentData) -> Void
         let pollClosed: @MainActor (PollData) -> Void
         let pollDeleted: @MainActor (String) -> Void
         let pollUpdated: @MainActor (PollData) -> Void
@@ -68,46 +70,6 @@ extension ActivityState {
         ChangeHandlers(
             activityUpdated: { [weak self] activity in
                 self?.updateActivity(activity)
-            },
-            commentAdded: { [weak self] comment in
-                if let parentId = comment.parentId {
-                    // TODO: Deeper nesting
-                    self?.updateComment(with: parentId) { parentComment in
-                        parentComment.addReply(comment)
-                    }
-                } else {
-                    self?.comments.sortedInsert(comment, by: CommentData.defaultSorting)
-                }
-            },
-            commentRemoved: { [weak self] comment in
-                if let parentId = comment.parentId {
-                    // TODO: Deeper nesting
-                    self?.updateComment(with: parentId) { parentComment in
-                        parentComment.removeReply(comment)
-                    }
-                } else {
-                    self?.comments.sortedRemove(comment, by: CommentData.defaultSorting)
-                }
-            },
-            commentUpdated: { [weak self] comment in
-                if let parentId = comment.parentId {
-                    // TODO: Deeper nesting
-                    self?.updateComment(with: parentId) { parentComment in
-                        parentComment.replaceReply(comment)
-                    }
-                } else {
-                    self?.comments.sortedInsert(comment, by: CommentData.defaultSorting)
-                }
-            },
-            commentReactionAdded: { [weak self] reaction, comment in
-                self?.updateComment(with: comment.id) { comment in
-                    comment.addReaction(reaction)
-                }
-            },
-            commentReactionRemoved: { [weak self] reaction, comment in
-                self?.updateComment(with: comment.id) { comment in
-                    comment.removeReaction(reaction)
-                }
             },
             pollClosed: { [weak self] poll in
                 guard poll.id == self?.poll?.id else { return }
@@ -136,23 +98,14 @@ extension ActivityState {
         )
     }
     
-    /// Updates a specific comment in the comments array.
-    ///
-    /// - Parameters:
-    ///   - id: The unique identifier of the comment to update
-    ///   - changes: A closure that receives the comment and can modify it
-    private func updateComment(with id: String, changes: (inout CommentData) -> Void) {
-        guard let index = comments.firstIndex(where: { $0.id == id }) else { return }
-        var comment = comments[index]
-        changes(&comment)
-        self.comments[index] = comment
-    }
-    
     /// Updates the activity data and associated poll.
     ///
     /// - Parameter activity: The updated activity data
     func updateActivity(_ activity: ActivityData) {
         self.activity = activity
+        if commentListState.comments.isEmpty {
+            commentListState.comments = activity.comments
+        }
         self.poll = activity.poll
     }
     

@@ -13,6 +13,8 @@ struct ArrayExtensions_Tests {
     struct TestItem: Identifiable, Equatable {
         let id: String
         let value: Int
+        var parentId: String?
+        var subitems: [TestItem]?
     }
     
     // MARK: - Test Sort Field
@@ -251,5 +253,75 @@ struct ArrayExtensions_Tests {
         for i in 0..<result.count {
             #expect(result[i].value == i + 1)
         }
+    }
+    
+    // MARK: - Nested Update
+    
+    private func makeNestedItems() -> [TestItem] {
+        (0...2).map { level1Id in
+            var item = TestItem(id: "\(level1Id)", value: level1Id, subitems: nil)
+            if level1Id == 1 {
+                item.subitems = [TestItem(
+                    id: "\(level1Id)-1",
+                    value: level1Id * 10 + 1,
+                    parentId: "\(level1Id)",
+                    subitems: (0...4).map { TestItem(id: "\(level1Id)-1-\($0)", value: level1Id * 100 + 10 + $0, parentId: "\(level1Id)-1") }
+                )]
+            }
+            if level1Id == 2 {
+                item.subitems = (0...1).map { TestItem(id: "\(level1Id)-\($0)", value: level1Id * 10 + $0, parentId: "\(level1Id)") }
+            }
+            return item
+        }
+    }
+    
+    private func nestedSortedIdentifiers(_ items: [TestItem]?) -> [String] {
+        guard let items else { return [] }
+        var result = [String]()
+        for item in items {
+            result.append(item.id)
+            if let subitems = item.subitems {
+                result.append(contentsOf: nestedSortedIdentifiers(subitems))
+            }
+        }
+        return result.sorted()
+    }
+    
+    @Test("Nested update - delete")
+    func testNestedUpdateDeletion() {
+        let items = makeNestedItems()
+
+        var result = items
+        result.remove(byId: "1-2", nesting: \.subitems)
+        
+        let resultIds = nestedSortedIdentifiers(result)
+        var expectedIds = nestedSortedIdentifiers(items)
+        expectedIds.removeAll(where: { $0 == "1-2" })
+        
+        #expect(expectedIds.count == resultIds.count)
+        #expect(expectedIds == resultIds)
+    }
+    
+    @Test("Nested update - replace subitem")
+    func testNestedUpdateReplaceSubitem() {
+        let items = makeNestedItems()
+        
+        let updatedItem = TestItem(id: "2-0", value: 5000)
+        var result = items
+        result.replace(byId: updatedItem, nesting: \.subitems)
+        
+        let resultValue = result[2].subitems?[0].value
+        #expect(updatedItem.value == resultValue)
+    }
+    
+    @Test("Nested update - add subitem")
+    func testNestedUpdateAddSubitem() {
+        let items = makeNestedItems()
+        
+        let incomingItem = TestItem(id: "ADDED", value: -1, parentId: "0")
+        var result = items
+        result.insert(byId: incomingItem, parentId: \.parentId, nesting: \.subitems)
+        
+        #expect("ADDED" == result[0].subitems?.first?.id)
     }
 }

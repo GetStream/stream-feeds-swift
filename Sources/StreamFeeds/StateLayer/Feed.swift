@@ -274,41 +274,6 @@ public final class Feed: Sendable {
     
     // MARK: - Comments
     
-    /// Gets comments for a specific object with optional filtering and pagination.
-    ///
-    /// - Parameters:
-    ///   - objectId: The unique identifier of the object to get comments for
-    ///   - objectType: The type of object (e.g., "activity", "comment")
-    ///   - depth: Optional depth for nested comment retrieval
-    ///   - sort: Optional sorting criteria
-    ///   - repliesLimit: Optional limit for the number of replies to include
-    ///   - limit: Optional limit for the number of comments to return
-    ///   - prev: Optional pagination token for previous page
-    ///   - next: Optional pagination token for next page
-    /// - Returns: An array of comment data
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func getComments(
-        objectId: String,
-        objectType: String,
-        depth: Int? = nil,
-        sort: String? = nil,
-        repliesLimit: Int? = nil,
-        limit: Int? = nil,
-        prev: String? = nil,
-        next: String? = nil
-    ) async throws -> [CommentData] {
-        try await commentsRepository.getComments(
-            objectId: objectId,
-            objectType: objectType,
-            depth: depth,
-            sort: sort,
-            repliesLimit: repliesLimit,
-            limit: limit,
-            prev: prev,
-            next: next
-        )
-    }
-    
     /// Gets a specific comment by its identifier.
     ///
     /// - Parameter commentId: The unique identifier of the comment to retrieve
@@ -316,38 +281,6 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
         try await commentsRepository.getComment(commentId: commentId)
-    }
-    
-    /// Gets replies to a specific comment with optional filtering and pagination.
-    ///
-    /// - Parameters:
-    ///   - commentId: The unique identifier of the parent comment
-    ///   - depth: Optional depth for nested reply retrieval
-    ///   - sort: Optional sorting criteria
-    ///   - repliesLimit: Optional limit for the number of replies to include
-    ///   - limit: Optional limit for the number of replies to return
-    ///   - prev: Optional pagination token for previous page
-    ///   - next: Optional pagination token for next page
-    /// - Returns: An array of reply comment data
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func getCommentReplies(
-        commentId: String,
-        depth: Int? = nil,
-        sort: String? = nil,
-        repliesLimit: Int? = nil,
-        limit: Int? = nil,
-        prev: String? = nil,
-        next: String? = nil
-    ) async throws -> [CommentData] {
-        try await commentsRepository.getCommentReplies(
-            commentId: commentId,
-            depth: depth,
-            sort: sort,
-            repliesLimit: repliesLimit,
-            limit: limit,
-            prev: prev,
-            next: next
-        )
     }
     
     /// Adds a new comment to activity with id.

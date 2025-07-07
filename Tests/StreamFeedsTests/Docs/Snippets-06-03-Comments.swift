@@ -107,18 +107,23 @@ import StreamFeeds
     }
     
     func commentThreading() async throws {
-        let comments = try await feed.getComments(
-            objectId: "activity_123",
-            objectType: "activity",
-            // Depth of the threaded comments
-            depth: 3,
-            limit: 20,
+        let commentList = client.activityCommentList(
+            for: .init(
+                objectId: "activity_123",
+                objectType: "activity",
+                depth: 3,
+                limit: 20
+            )
         )
+        let comments = try await commentList.get()
         
         // Get replies of a specific parent comment
-        let replies = try await feed.getCommentReplies(
-            commentId: "parent_123"
+        let replyList = client.commentReplyList(
+            for: .init(
+                commentId: "parent_123"
+            )
         )
+        let replies = try await replyList.get()
         
         suppressUnusedWarning(comments, replies)
     }

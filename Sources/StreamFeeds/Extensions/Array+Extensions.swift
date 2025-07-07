@@ -243,3 +243,123 @@ extension Array {
         return left
     }
 }
+
+// MARK: - Nested Updates
+
+extension Array where Element: Identifiable {
+    /// Inserts or replaces an element in a nested array structure based on its ID and parent relationship.
+    ///
+    /// This method handles hierarchical data structures where elements can have parent-child relationships.
+    /// If the new element has a parent ID, it will be inserted into the parent's nested collection.
+    /// If no parent ID is provided, the element will be inserted at the top level of the array.
+    ///
+    /// - Parameters:
+    ///   - newElement: The element to insert or replace.
+    ///   - parentIdKeyPath: A key path to the optional parent ID property of the element.
+    ///     This determines whether the element should be nested under a parent.
+    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
+    ///     This specifies where child elements are stored within each parent element.
+    ///
+    /// - Note: If an element with the same ID already exists at the appropriate level
+    ///   (either top-level or within a parent's nested collection), it will be replaced.
+    ///   Otherwise, the new element will be inserted at the beginning of the appropriate collection.
+    ///
+    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
+    mutating func insert(byId newElement: Element, parentId parentIdKeyPath: KeyPath<Element, Element.ID?>, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) {
+        if let parentId = newElement[keyPath: parentIdKeyPath] {
+            self = updated(byId: parentId, nesting: nestingKeyPath, updates: { parent in
+                var updatedParent = parent
+                var subitems = updatedParent[keyPath: nestingKeyPath] ?? []
+                subitems.insert(byId: newElement)
+                updatedParent[keyPath: nestingKeyPath] = subitems
+                return updatedParent
+            })
+        } else {
+            insert(byId: newElement)
+        }
+    }
+    
+    /// Replaces an element in a nested array structure based on its ID.
+    ///
+    /// This method searches for an element with the specified ID throughout the entire
+    /// nested structure and replaces it with the provided updated element. The search
+    /// includes both top-level elements and all nested collections.
+    ///
+    /// - Parameters:
+    ///   - updatedElement: The new element to replace the existing one.
+    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
+    ///     This specifies where child elements are stored within each parent element.
+    ///
+    /// - Note: If no element with the specified ID is found, no changes will be made.
+    ///   The method searches recursively through all nested levels.
+    ///
+    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
+    mutating func replace(byId updatedElement: Element, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) {
+        self = updated(byId: updatedElement.id, nesting: nestingKeyPath, updates: { _ in updatedElement })
+    }
+    
+    /// Removes an element from a nested array structure based on its ID.
+    ///
+    /// This method searches for an element with the specified ID throughout the entire
+    /// nested structure and removes it. The search includes both top-level elements
+    /// and all nested collections at any depth.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the element to remove.
+    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
+    ///     This specifies where child elements are stored within each parent element.
+    ///
+    /// - Note: If no element with the specified ID is found, no changes will be made.
+    ///   The method searches recursively through all nested levels and removes the
+    ///   first occurrence found.
+    ///
+    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
+    mutating func remove(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) where Element: Identifiable {
+        self = updated(byId: id, nesting: nestingKeyPath, updates: { _ in nil })
+    }
+    
+    /// Updates an element in a nested array structure based on its ID using a closure.
+    ///
+    /// This method searches for an element with the specified ID throughout the entire
+    /// nested structure and applies the provided update closure to it. The search
+    /// includes both top-level elements and all nested collections at any depth.
+    ///
+    /// - Parameters:
+    ///   - id: The ID of the element to update.
+    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
+    ///     This specifies where child elements are stored within each parent element.
+    ///   - updates: A closure that receives the element to be updated as an `inout` parameter.
+    ///     You can modify any properties of the element within this closure.
+    ///
+    /// - Note: If no element with the specified ID is found, no changes will be made.
+    ///   The method searches recursively through all nested levels and updates the
+    ///   first occurrence found.
+    ///
+    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
+    mutating func update(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (inout Element) -> Void) where Element: Identifiable {
+        self = updated(byId: id, nesting: nestingKeyPath) { element in
+            var updatedElement = element
+            updates(&updatedElement)
+            return updatedElement
+        }
+    }
+    
+    private func updated(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (Element) -> Element?) -> Self {
+        var updatedElements = self
+        for (index, element) in updatedElements.enumerated() {
+            if element.id == id {
+                if let updated = updates(element) {
+                    updatedElements[index] = updated
+                } else {
+                    updatedElements.remove(at: index)
+                }
+            }
+            if let nestedElements = element[keyPath: nestingKeyPath], !nestedElements.isEmpty {
+                var updatedElement = element
+                updatedElement[keyPath: nestingKeyPath] = nestedElements.updated(byId: id, nesting: nestingKeyPath, updates: updates)
+                updatedElements[index] = updatedElement
+            }
+        }
+        return updatedElements
+    }
+}
