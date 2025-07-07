@@ -16,6 +16,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var moderation: ModerationV2Response?
     public var objectId: String
     public var objectType: String
+    public var ownReactions: [FeedsReactionResponse]
     public var parentId: String?
     public var reactionCount: Int
     public var reactionGroups: [String: ReactionGroupResponse?]?
@@ -28,7 +29,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var upvoteCount: Int
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
@@ -43,6 +44,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         self.moderation = moderation
         self.objectId = objectId
         self.objectType = objectType
+        self.ownReactions = ownReactions
         self.parentId = parentId
         self.reactionCount = reactionCount
         self.reactionGroups = reactionGroups
@@ -71,6 +73,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         case moderation
         case objectId = "object_id"
         case objectType = "object_type"
+        case ownReactions = "own_reactions"
         case parentId = "parent_id"
         case reactionCount = "reaction_count"
         case reactionGroups = "reaction_groups"
@@ -99,6 +102,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
             lhs.moderation == rhs.moderation &&
             lhs.objectId == rhs.objectId &&
             lhs.objectType == rhs.objectType &&
+            lhs.ownReactions == rhs.ownReactions &&
             lhs.parentId == rhs.parentId &&
             lhs.reactionCount == rhs.reactionCount &&
             lhs.reactionGroups == rhs.reactionGroups &&
@@ -127,6 +131,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         hasher.combine(moderation)
         hasher.combine(objectId)
         hasher.combine(objectType)
+        hasher.combine(ownReactions)
         hasher.combine(parentId)
         hasher.combine(reactionCount)
         hasher.combine(reactionGroups)

@@ -15,6 +15,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable,
     public var moderation: ModerationV2Response?
     public var objectId: String
     public var objectType: String
+    public var ownReactions: [FeedsReactionResponse]
     public var parentId: String?
     public var reactionCount: Int
     public var reactionGroups: [String: ReactionGroupResponse?]?
@@ -26,7 +27,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable,
     public var upvoteCount: Int
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
@@ -40,6 +41,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable,
         self.moderation = moderation
         self.objectId = objectId
         self.objectType = objectType
+        self.ownReactions = ownReactions
         self.parentId = parentId
         self.reactionCount = reactionCount
         self.reactionGroups = reactionGroups
@@ -66,6 +68,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable,
         case moderation
         case objectId = "object_id"
         case objectType = "object_type"
+        case ownReactions = "own_reactions"
         case parentId = "parent_id"
         case reactionCount = "reaction_count"
         case reactionGroups = "reaction_groups"
@@ -92,6 +95,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable,
             lhs.moderation == rhs.moderation &&
             lhs.objectId == rhs.objectId &&
             lhs.objectType == rhs.objectType &&
+            lhs.ownReactions == rhs.ownReactions &&
             lhs.parentId == rhs.parentId &&
             lhs.reactionCount == rhs.reactionCount &&
             lhs.reactionGroups == rhs.reactionGroups &&
@@ -118,6 +122,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(moderation)
         hasher.combine(objectId)
         hasher.combine(objectType)
+        hasher.combine(ownReactions)
         hasher.combine(parentId)
         hasher.combine(reactionCount)
         hasher.combine(reactionGroups)
