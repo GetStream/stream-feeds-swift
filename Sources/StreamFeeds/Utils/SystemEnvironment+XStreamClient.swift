@@ -67,8 +67,3 @@ extension SystemEnvironment {
         #endif
     }
 }
-
-extension SystemEnvironment {
-  /// A Stream Chat version.
-  public static let version: String = "0.1.0"
-}

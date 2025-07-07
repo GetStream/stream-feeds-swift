@@ -1,0 +1,231 @@
+default_platform :ios
+skip_docs
+
+require 'json'
+require 'net/http'
+import 'Sonarfile'
+
+xcode_version = ENV['XCODE_VERSION'] || '16.4'
+xcode_project = 'StreamFeeds.xcodeproj'
+sdk_names = ['StreamFeeds']
+github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-feeds-swift'
+derived_data_path = 'derived_data'
+source_packages_path = 'spm_cache'
+swift_environment_path = File.absolute_path("../Sources/#{sdk_names.first}/Utils/SystemEnvironment+Version.swift")
+is_localhost = !is_ci
+@force_check = false
+
+before_all do |lane|
+  if is_ci
+    setup_ci
+    setup_git_config
+    select_xcode(version: xcode_version) unless [:sonar_upload, :allure_launch, :allure_upload, :copyright, :merge_main].include?(lane)
+  end
+end
+
+desc 'Start a new release'
+lane :release do |options|
+  extra_changes = lambda do |release_version|
+    # Set the framework version in SystemEnvironment+Version.swift
+    old_content = File.read(swift_environment_path)
+    current_version = old_content[/version: String = "([^"]+)"/, 1]
+    new_content = old_content.gsub(current_version, release_version)
+    File.open(swift_environment_path, 'w') { |f| f.puts(new_content) }
+  end
+
+  match_me
+  release_ios_sdk(
+    version: options[:version],
+    bump_type: options[:type],
+    sdk_names: sdk_names,
+    github_repo: github_repo,
+    extra_changes: extra_changes,
+    create_pull_request: true
+  )
+end
+
+lane :merge_release do |options|
+  merge_release_to_main(author: options[:author])
+  sh('gh workflow run release-publish.yml --ref main')
+end
+
+lane :merge_main do
+  merge_main_to_develop
+  update_release_version_to_snapshot(file_path: swift_environment_path)
+  ensure_git_branch(branch: 'develop')
+  sh("git add #{swift_environment_path}")
+  sh("git commit -m 'Update release version to snapshot'")
+  sh('git push')
+end
+
+desc 'Completes an SDK Release'
+lane :publish_release do |options|
+  release_version = get_sdk_version_from_environment
+  UI.user_error!("Release #{release_version} has already been published.") if git_tag_exists(tag: release_version, remote: true)
+  UI.user_error!('Release version cannot be empty') if release_version.to_s.empty?
+
+  ensure_git_branch(branch: 'main')
+  clean_products
+
+  publish_ios_sdk(
+    skip_git_status_check: false,
+    version: release_version,
+    github_repo: github_repo,
+    upload_assets: ['Products/StreamFeeds.zip']
+  )
+
+  sh('gh workflow run merge-main-to-develop.yml --ref main')
+end
+
+lane :get_sdk_version_from_environment do
+  File.read(swift_environment_path).match(/String\s+=\s+"([\d.]+).*"/)[1]
+end
+
+private_lane :appstore_api_key do
+  @appstore_api_key ||= app_store_connect_api_key(
+    key_id: 'MT3PRT8TB7',
+    issuer_id: '69a6de96-0738-47e3-e053-5b8c7c11a4d1',
+    key_content: ENV.fetch('APPSTORE_API_KEY', nil),
+    in_house: false
+  )
+end
+
+desc "If `readonly: true` (by default), installs all Certs and Profiles necessary for development and ad-hoc.\nIf `readonly: false`, recreates all Profiles necessary for development and ad-hoc, updates them locally and remotely."
+lane :match_me do |options|
+  app_identifiers = [
+    'io.getstream.StreamFeeds',
+    'io.getstream.feeds.DemoApp'
+  ]
+  custom_match(
+    api_key: appstore_api_key,
+    app_identifier: app_identifiers,
+    readonly: options[:readonly],
+    register_device: options[:register_device]
+  )
+end
+
+desc 'Runs LLC tests'
+lane :test do |options|
+  next unless is_check_required(sources: sources_matrix[:unit], force_check: @force_check)
+
+  update_testplan_on_ci(path: "StreamFeedsTests/StreamFeeds.xctestplan")
+
+  scan_options = {
+    project: xcode_project,
+    scheme: 'StreamFeeds',
+    testplan: 'StreamFeeds',
+    clean: is_localhost,
+    derived_data_path: derived_data_path,
+    cloned_source_packages_path: source_packages_path,
+    devices: options[:device],
+    number_of_retries: 3,
+    skip_build: options[:skip_build],
+    build_for_testing: options[:build_for_testing]
+  }
+
+  begin
+    scan(scan_options)
+  rescue StandardError => e
+    UI.user_error!(e) unless options[:cron]
+
+    failed_tests = retreive_failed_tests
+    UI.important("Re-running #{failed_tests.size} failed tests ⌛️")
+    scan(scan_options.merge(only_testing: failed_tests))
+  end
+
+  slather unless options[:build_for_testing]
+end
+
+private_lane :update_testplan_on_ci do |options|
+  update_testplan(path: options[:path], env_vars: { key: 'CI', value: 'TRUE' }) if is_ci || options[:force]
+end
+
+desc 'Builds the latest version of Demo app and uploads it to TestFlight'
+lane :swiftui_testflight_build do |options|
+  is_manual_upload = is_localhost || !options[:configuration].to_s.empty?
+  configuration = options[:configuration].to_s.empty? ? 'Release' : options[:configuration]
+
+  match_me
+
+  sdk_version = get_sdk_version_from_environment
+  UI.important("[TestFlight] Uploading DemoApp version: #{sdk_version}")
+
+  testflight_build(
+    api_key: appstore_api_key,
+    xcode_project: xcode_project,
+    sdk_target: 'StreamFeeds',
+    app_target: 'DemoApp',
+    app_version: sdk_version,
+    app_identifier: 'io.getstream.feeds.DemoApp',
+    configuration: configuration,
+    use_changelog: false,
+    is_manual_upload: is_manual_upload
+  )
+end
+
+lane :build_demo do |options|
+  options[:scheme] = 'DemoApp'
+  build_example_app(options)
+end
+
+private_lane :build_example_app do |options|
+  next unless is_check_required(sources: sources_matrix[:sample_apps], force_check: @force_check)
+
+  scan(
+    project: xcode_project,
+    scheme: options[:scheme],
+    clean: is_localhost,
+    derived_data_path: derived_data_path,
+    cloned_source_packages_path: source_packages_path,
+    build_for_testing: true,
+    devices: options[:device]
+  )
+end
+
+desc 'Run fastlane linting'
+lane :rubocop do
+  next unless is_check_required(sources: sources_matrix[:ruby], force_check: @force_check)
+
+  sh('bundle exec rubocop')
+end
+
+desc 'Run PR linting'
+lane :lint_pr do
+  danger(dangerfile: 'Dangerfile') if is_ci
+end
+
+desc 'Run source code formatting/linting'
+lane :run_swift_format do |options|
+  Dir.chdir('..') do
+    action = options[:lint] ? "--lint" : ""
+    sources_matrix[:swiftformat].each do |path|
+      sh("mint run swiftformat #{action} --config .swiftformat --exclude #{sources_matrix[:swiftformat_exclude].join(',')} #{path}")
+      sh("mint run swiftlint lint --config .swiftlint.yml --progress --quiet --reporter json #{path}")
+    end
+  end
+end
+
+lane :install_runtime do |options|
+  install_ios_runtime(version: options[:ios], custom_script: 'Scripts/install_ios_runtime.sh')
+end
+
+lane :sources_matrix do
+  {
+    unit: ['Sources', 'Tests/StreamFeedsTests', 'Tests/Shared', xcode_project],
+    sample_apps: ['Sources', 'DemoApp', xcode_project],
+    ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
+    size: ['Sources', xcode_project],
+    swiftformat: ['Sources', 'DemoApp', 'Tests'],
+    swiftformat_exclude: ["**/Generated", "**/generated", "**/protobuf", "**/OpenApi"]
+  }
+end
+
+lane :copyright do
+  update_copyright(ignore: [derived_data_path, source_packages_path, 'vendor/'])
+  next unless is_ci
+
+  pr_create(
+    title: '[CI] Update Copyright',
+    head_branch: "ci/update-copyright-#{Time.now.to_i}"
+  )
+end

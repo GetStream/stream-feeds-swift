@@ -153,7 +153,7 @@ extension ActivityCommentListState {
                 self?.comments.update(byId: comment.id, nesting: \.replies) { existingComment in
                     existingComment.removeReaction(reaction)
                 }
-            },
+            }
         )
     }
     

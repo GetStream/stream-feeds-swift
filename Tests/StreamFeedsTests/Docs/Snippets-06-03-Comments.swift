@@ -17,7 +17,7 @@ import StreamFeeds
                 comment: "So great!",
                 custom: ["sentiment": "positive"],
                 objectId: "activity_123",
-                objectType: "activity",
+                objectType: "activity"
             )
         )
         
