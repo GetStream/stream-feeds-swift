@@ -1,8 +1,5 @@
 //
-//  DemoAppApp.swift
-//  DemoApp
-//
-//  Created by Martin Mitrevski on 24.4.25.
+// Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
 import SwiftUI
