@@ -31,7 +31,7 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
         }
     }
 
-    func compressAsset(at url: URL, type: AssetType, completion: @escaping (URL?) -> Void) {
+    func compressAsset(at url: URL, type: AssetType, completion: @escaping @Sendable (URL?) -> Void) {
         if type == .video {
             let compressedURL = NSURL.fileURL(withPath: NSTemporaryDirectory() + UUID().uuidString + ".mp4")
             compressVideo(inputURL: url, outputURL: compressedURL) { exportSession in
@@ -57,7 +57,7 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
     private func compressVideo(
         inputURL: URL,
         outputURL: URL,
-        handler: @escaping (_ exportSession: AVAssetExportSession?) -> Void
+        handler: @escaping @Sendable(_ exportSession: AVAssetExportSession?) -> Void
     ) {
         let urlAsset = AVURLAsset(url: inputURL, options: nil)
 
@@ -68,11 +68,11 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
             handler(nil)
             return
         }
-
+        nonisolated(unsafe) let unsafeExportSession = exportSession
         exportSession.outputURL = outputURL
         exportSession.outputFileType = .mp4
         exportSession.exportAsynchronously {
-            handler(exportSession)
+            handler(unsafeExportSession)
         }
     }
 
