@@ -105,7 +105,7 @@ struct FeedsListView: View {
                         )
                         activityName = ""
                     } catch {
-                        print("======= \(error)")
+                        log.error("Error posting an activity \(error)")
                     }
                 }
             }
@@ -128,7 +128,7 @@ struct FeedsListView: View {
                             )
                             activityToUpdate = nil
                         } catch {
-                            print("======= \(error)")
+                            log.error("Error updating an activity \(error)")
                         }
                     }
                 }
@@ -149,7 +149,7 @@ struct FeedsListView: View {
                             _ = try await feed.deleteActivity(id: activity.id)
                             activityToDelete = nil
                         } catch {
-                            print("======= \(error)")
+                            log.error("Error deleting an activity \(error)")
                         }
                     }
                 }

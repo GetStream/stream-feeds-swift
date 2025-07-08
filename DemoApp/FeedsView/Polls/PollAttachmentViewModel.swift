@@ -150,7 +150,7 @@ import SwiftUI
                 try await Task.sleep(nanoseconds: 300_000_000)
                 self.isCastingVote = false
             } catch {
-                print("========= \(error)")
+                log.error("Error casting poll vote \(error)")
                 try await Task.sleep(nanoseconds: 300_000_000)
                 self.isCastingVote = false
             }

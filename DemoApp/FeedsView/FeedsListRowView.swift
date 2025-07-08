@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import StreamCore
 import StreamFeeds
 import SwiftUI
 
@@ -67,7 +68,7 @@ struct FeedsListRowView: View {
                                     try await feed.deleteReaction(activityId: activity.id, type: "heart")
                                 }
                             } catch {
-                                print("===== \(error)")
+                                log.error("Error adding a reaction \(error)")
                             }
                         }
                     } label: {
@@ -83,7 +84,7 @@ struct FeedsListRowView: View {
                             do {
                                 try await feed.repost(activityId: activity.id, text: nil)
                             } catch {
-                                print("===== \(error)")
+                                log.error("Error reposting a post \(error)")
                             }
                         }
                     } label: {
@@ -103,7 +104,7 @@ struct FeedsListRowView: View {
                                     try await feed.deleteBookmark(activityId: activity.id)
                                 }
                             } catch {
-                                print("===== \(error)")
+                                log.error("Error adding a bookmark \(error)")
                             }
                         }
                     } label: {
