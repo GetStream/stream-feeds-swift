@@ -143,7 +143,7 @@ import SwiftUI
 }
 
 /// Config for individual poll entry.
-public struct PollsEntryConfig {
+public struct PollsEntryConfig: Sendable {
     /// Indicates whether the poll entry is configurable.
     public var configurable: Bool
     /// Indicates the default value of the poll entry.

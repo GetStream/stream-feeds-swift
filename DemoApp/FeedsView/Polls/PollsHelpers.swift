@@ -39,7 +39,7 @@ struct PollDateIndicatorView: View {
     }
 }
 
-class PollsDateFormatter {
+class PollsDateFormatter: @unchecked Sendable {
     
     static let shared = PollsDateFormatter()
     

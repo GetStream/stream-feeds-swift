@@ -56,7 +56,7 @@ extension FeedsClient {
     }
 }
 
-class AppState: ObservableObject {
+@MainActor class AppState: ObservableObject {
     
     static let shared = AppState()
     

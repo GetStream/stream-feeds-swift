@@ -14,7 +14,7 @@ extension View {
         message: String = "",
         text: Binding<String>,
         placeholder: String = "",
-        validation: @escaping (String) -> Bool = UIAlertControllerView.defaultActionValidation,
+        validation: @escaping (String) -> Bool = { UIAlertControllerView.defaultActionValidation($0) },
         cancel: String = "Cancel",
         accept: String,
         action: @escaping () -> Void
