@@ -1,0 +1,93 @@
+excluded:
+  - Scripts
+  - Package.swift
+  - Dependencies
+  - Sources/StreamFeeds/Generated
+  - Sources/StreamFeeds/generated
+  - vendor
+  - UISDKdocumentation
+  - Tests
+  - TestTools
+  - Pods
+  - .build
+  - spm_cache
+  - vendor/bundle
+  - .ruby-lsp
+  - derived_data
+
+disabled_rules:
+  - large_tuple
+  - multiple_closures_with_trailing_closure
+  - todo
+  - function_parameter_count
+  - type_name
+  - nesting
+  - identifier_name
+  - file_length
+  - type_body_length
+  - opening_brace
+  - line_length
+  - switch_case_alignment
+  - notification_center_detachment
+
+  # TODO: https://github.com/GetStream/ios-issues-tracking/issues/538
+  - attributes # it should be included in `opt_in_rules`
+  - orphaned_doc_comment
+  - void_function_in_ternary
+  - unneeded_synthesized_initializer
+  - ns_number_init_as_function_reference
+  - for_where
+
+opt_in_rules:
+  - convenience_type
+  - empty_string
+  - fatal_error_message
+  - first_where
+  - toggle_bool
+  - identical_operands
+  - joined_default_parameter
+  - unavailable_function
+  - explicit_init
+  - redundant_optional_initialization
+  - syntactic_sugar
+  - multiline_arguments
+  - multiline_function_chains
+  - file_name_no_space
+
+analyzer_rules:
+  - unused_import
+
+multiline_arguments:
+  only_enforce_after_first_closure_on_first_line: true
+
+# TODO: https://github.com/GetStream/ios-issues-tracking/issues/538
+# attributes:
+#   always_on_same_line: ["@IBAction", "@NSManaged", "@objc"]
+#   always_on_line_above: ["@discardableResult"]
+
+trailing_whitespace:
+  ignores_empty_lines: true
+
+function_body_length:
+  warning: 150
+  error: 200
+
+file_name_no_space:
+  severity: error
+
+identifier_name:
+  excluded:
+    [r, g, b, a, x, y, z, dx, dy, dz, i, j, k, id, op, or, me, at, to, in]
+  allowed_symbols: ["_"]
+  validates_start_with_lowercase: "warning"
+
+cyclomatic_complexity:
+  ignores_case_statements: true
+  warning: 25
+  error: 30
+
+custom_rules:
+  coredata_date_forbidden:
+    included: "Sources/StreamFeeds/Database/DTOs"
+    regex: "@NSManaged(| \\S*)* var \\S*: (NS)?Date"
+    message: "Please define dates as DBDate instead of Date or NSDate. Check the definition of DBDate for more information"
