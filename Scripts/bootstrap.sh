@@ -20,7 +20,7 @@ trap "echo ; echo ❌ The Bootstrap script failed to finish without error. See t
 
 source ./Githubfile
 
-if [ "${GITHUB_ACTIONS}" != "true" ]; then
+if [ "${GITHUB_ACTIONS:-}" != "true" ]; then
   puts "Set up git hooks"
   bundle install
   bundle exec lefthook install
