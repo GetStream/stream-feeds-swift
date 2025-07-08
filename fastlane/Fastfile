@@ -197,7 +197,7 @@ lane :run_swift_format do |options|
   Dir.chdir('..') do
     swift_format_action = options[:lint] ? '--lint' : ''
     swiftlint_lint_parameter = options[:lint] ? '--strict' : '--fix'
-    sources_matrix[:swiftformat].each do |path|
+    sources_matrix[:swiftformat_include].each do |path|
       sh("mint run swiftformat #{swift_format_action} --config .swiftformat --exclude #{sources_matrix[:swiftformat_exclude].join(',')} #{path}")
       sh("mint run swiftlint lint --config .swiftlint.yml #{swiftlint_lint_parameter} --progress --quiet --reporter json #{path}")
     end
@@ -214,7 +214,7 @@ lane :sources_matrix do
     sample_apps: ['Sources', 'DemoApp', xcode_project],
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
-    swiftformat: ['Sources', 'DemoApp', 'Tests'],
+    swiftformat_include: ['Sources', 'DemoApp', 'Tests'],
     swiftformat_exclude: ["**/Generated", "**/generated", "**/protobuf", "**/OpenApi"]
   }
 end
