@@ -1,8 +1,5 @@
 //
-//  PickerHelpers.swift
-//  DemoApp
-//
-//  Created by Martin Mitrevski on 30.5.25.
+// Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
 import Foundation
