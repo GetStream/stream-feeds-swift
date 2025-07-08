@@ -11,9 +11,7 @@ import IOKit
 #endif
 
 extension SystemEnvironment {
-    static let xStreamClientHeader: String = {
-        "stream-feeds-\(sdkIdentifier)-v\(version)|app=\(appName)|app_version=\(appVersion)|os=\(os) \(osVersion)|device_model=\(model)"
-    }()
+    static let xStreamClientHeader: String = "stream-feeds-\(sdkIdentifier)-v\(version)|app=\(appName)|app_version=\(appVersion)|os=\(os) \(osVersion)|device_model=\(model)"
 
     private static var sdkIdentifier: String {
         "swift"

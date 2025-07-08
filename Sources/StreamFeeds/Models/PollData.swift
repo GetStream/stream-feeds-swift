@@ -32,7 +32,6 @@ public struct PollData: Identifiable, Sendable {
 // MARK: - Mutating the Data
 
 extension PollData {
-    
     // MARK: - Options
     
     mutating func addOption(_ option: PollOptionData) {
@@ -53,7 +52,7 @@ extension PollData {
     mutating func castVote(_ vote: PollVoteData) {
         // TODO: Review
         if enforceUniqueVote {
-            for ownVote in self.ownVotes {
+            for ownVote in ownVotes {
                 removeVote(ownVote)
             }
             ownVotes = [vote]
@@ -68,7 +67,7 @@ extension PollData {
         optionVotes.insert(byId: vote)
         latestVotesByOption[vote.optionId] = optionVotes
         
-        voteCount = voteCountsByOption.reduce(0, { $0 + $1.value })
+        voteCount = voteCountsByOption.reduce(0) { $0 + $1.value }
     }
     
     mutating func removeVote(_ vote: PollVoteData) {

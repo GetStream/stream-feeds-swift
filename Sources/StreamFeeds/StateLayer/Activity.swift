@@ -38,13 +38,13 @@ public final class Activity: Sendable {
             for: .init(objectId: id, objectType: "activity")
         )
         self.commentList = commentList
-        self.activityId = id
-        self.activitiesRepository = client.activitiesRepository
-        self.commentsRepository = client.commentsRepository
+        activityId = id
+        activitiesRepository = client.activitiesRepository
+        commentsRepository = client.commentsRepository
         self.fid = fid
-        self.pollsRepository = client.pollsRepository
+        pollsRepository = client.pollsRepository
         let events = client.eventsMiddleware
-        self.stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events, commentListState: commentList.state) }
+        stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events, commentListState: commentList.state) }
     }
     
     // MARK: - Accessing the State

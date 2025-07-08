@@ -52,7 +52,7 @@ public final class ActivityCommentList: Sendable {
     private let commentsRepository: CommentsRepository
     
     init(query: ActivityCommentsQuery, client: FeedsClient) {
-        self.commentsRepository = client.commentsRepository
+        commentsRepository = client.commentsRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { ActivityCommentListState(query: query, events: events) }
@@ -161,4 +161,4 @@ public final class ActivityCommentList: Sendable {
         await state.didPaginate(with: result)
         return result.models
     }
-} 
+}

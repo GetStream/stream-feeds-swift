@@ -60,4 +60,4 @@ extension PollVoteListState {
         self.queryConfig = queryConfig
         votes = votes.sortedMerge(response.models, using: pollVotesSorting)
     }
-} 
+}

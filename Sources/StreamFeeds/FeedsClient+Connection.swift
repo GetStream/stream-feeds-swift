@@ -15,7 +15,7 @@ extension FeedsClient {
             return
         }
 
-        //TODO: check guest users support.
+        // TODO: check guest users support.
         connectTask.value = Task {
             do {
                 try Task.checkCancellation()
@@ -32,7 +32,7 @@ extension FeedsClient {
             log.debug("Waiting for already running connect task")
             _ = await connectTask.value?.result
         }
-        if case .connected(healthCheckInfo: _) = webSocketClient.value?.connectionState {
+        if case .connected = webSocketClient.value?.connectionState {
             return
         }
         if user.type == .anonymous {
@@ -70,7 +70,7 @@ extension FeedsClient {
             log.debug("WS connected")
         }
 
-        while (!connected && !timeout) {
+        while !connected && !timeout {
             try await Task.sleep(nanoseconds: 100_000)
         }
         
@@ -154,7 +154,7 @@ extension FeedsClient {
         }
         log.debug("Waiting for connection id")
 
-        while (loadConnectionIdFromHealthcheck() == nil && !timeout) {
+        while loadConnectionIdFromHealthcheck() == nil && !timeout {
             try? await Task.sleep(nanoseconds: 100_000)
         }
         
@@ -175,7 +175,7 @@ extension FeedsClient {
         return nil
     }
     
-    internal static func makeURLSession() -> URLSession {
+    static func makeURLSession() -> URLSession {
         let config = URLSessionConfiguration.default
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         config.urlCache = nil
@@ -183,4 +183,3 @@ extension FeedsClient {
         return urlSession
     }
 }
-

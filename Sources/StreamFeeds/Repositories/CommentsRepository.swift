@@ -17,7 +17,7 @@ final class CommentsRepository: Sendable {
     // MARK: - Querying Comments
     
     func queryComments(request: QueryCommentsRequest) async throws -> PaginationResult<CommentData> {
-        let response = try await self.apiClient.queryComments(queryCommentsRequest: request)
+        let response = try await apiClient.queryComments(queryCommentsRequest: request)
         return PaginationResult(
             models: response.comments.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -25,7 +25,7 @@ final class CommentsRepository: Sendable {
     }
     
     func getComments(with query: ActivityCommentsQuery) async throws -> PaginationResult<CommentData> {
-        let response = try await self.apiClient.getComments(
+        let response = try await apiClient.getComments(
             objectId: query.objectId,
             objectType: query.objectType,
             depth: query.depth,
@@ -44,45 +44,45 @@ final class CommentsRepository: Sendable {
     // MARK: - Adding, Updating, and Removing Comments
     
     func addComment(request: AddCommentRequest) async throws -> CommentData {
-        let response = try await self.apiClient.addComment(addCommentRequest: request)
+        let response = try await apiClient.addComment(addCommentRequest: request)
         return response.comment.toModel()
     }
     
     func addCommentsBatch(request: AddCommentsBatchRequest) async throws -> [CommentData] {
-        let response = try await self.apiClient.addCommentsBatch(addCommentsBatchRequest: request)
+        let response = try await apiClient.addCommentsBatch(addCommentsBatchRequest: request)
         return response.comments.map { $0.toModel() }
     }
     
     func deleteComment(commentId: String) async throws {
-        _ = try await self.apiClient.deleteComment(commentId: commentId)
+        _ = try await apiClient.deleteComment(commentId: commentId)
     }
     
     func getComment(commentId: String) async throws -> CommentData {
-        let response = try await self.apiClient.getComment(commentId: commentId)
+        let response = try await apiClient.getComment(commentId: commentId)
         return response.comment.toModel()
     }
     
     func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
-        let response = try await self.apiClient.updateComment(commentId: commentId, updateCommentRequest: request)
+        let response = try await apiClient.updateComment(commentId: commentId, updateCommentRequest: request)
         return response.comment.toModel()
     }
     
     // MARK: - Comment Reactions
     
     func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
-        let response = try await self.apiClient.addCommentReaction(commentId: commentId, addCommentReactionRequest: request)
+        let response = try await apiClient.addCommentReaction(commentId: commentId, addCommentReactionRequest: request)
         return (response.reaction.toModel(), response.comment.toModel())
     }
 
     func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
-        let response = try await self.apiClient.deleteCommentReaction(commentId: commentId, type: type)
+        let response = try await apiClient.deleteCommentReaction(commentId: commentId, type: type)
         return (response.reaction.toModel(), response.comment.toModel())
     }
     
     // MARK: - Comment Replies
     
     func getCommentReplies(with query: CommentRepliesQuery) async throws -> PaginationResult<CommentData> {
-        let response = try await self.apiClient.getCommentReplies(
+        let response = try await apiClient.getCommentReplies(
             commentId: query.commentId,
             depth: query.depth,
             sort: query.sort,

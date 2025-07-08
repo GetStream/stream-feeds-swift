@@ -37,7 +37,7 @@ public struct ActivitiesFilterField: FilterFieldRepresentable, Sendable {
     }
     
     init(codingKey: ActivityResponse.CodingKeys) {
-        self.value = codingKey.rawValue
+        value = codingKey.rawValue
     }
 }
 
@@ -71,8 +71,8 @@ public struct ActivitiesSortField: SortField {
     public let comparator: AnySortComparator<Model>
     public let remote: String
     
-    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value : Comparable {
-        self.comparator = SortComparator(localValue).toAny()
+    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+        comparator = SortComparator(localValue).toAny()
         self.remote = remote
     }
     

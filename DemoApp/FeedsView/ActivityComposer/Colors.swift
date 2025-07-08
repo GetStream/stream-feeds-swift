@@ -7,7 +7,6 @@ import UIKit
 
 /// Provides the colors used throughout the SDK.
 public struct Colors {
-    
     @MainActor public static let shared = Colors()
     
     private init() {

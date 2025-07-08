@@ -9,7 +9,6 @@ import SwiftUI
 
 /// View model for the `PollAttachmentView`.
 @MainActor public class PollAttachmentViewModel: ObservableObject {
-    
     static let numberOfVisibleOptionsShown = 10
     private var isCastingVote = false
     @Published private var isClosingPoll = false
@@ -125,7 +124,7 @@ import SwiftUI
         self.poll = poll
         self.activityInfo = activityInfo
         createdByCurrentUser = poll.createdBy?.id == feedsClient.user.id
-        self.currentUserVotes = poll.ownVotes
+        currentUserVotes = poll.ownVotes
         Task { @MainActor in
             activity.state.$poll.sink { [weak self] poll in
                 if let poll {

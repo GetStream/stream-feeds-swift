@@ -33,7 +33,6 @@ struct AsyncButton<Label>: View where Label: View & Sendable {
                     ProgressView()
                 }
             }
-            
         }
         .disabled(isLoading)
     }

@@ -42,7 +42,7 @@ extension FeedsReactionData {
         latestReactions.remove(byId: reaction.id)
         if var reactionGroup = reactionGroups[reaction.type] {
             reactionGroup.decrement(with: reaction.createdAt)
-            if reactionGroup.count > 0 {
+            if !reactionGroup.isEmpty {
                 reactionGroups[reaction.type] = reactionGroup
             } else {
                 reactionGroups.removeValue(forKey: reaction.type)

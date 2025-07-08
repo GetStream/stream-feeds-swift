@@ -7,7 +7,6 @@ import SwiftUI
 
 /// Helper class that loads assets from the photo library.
 public class PhotoAssetLoader: NSObject, ObservableObject {
-
     @Published var loadedImages = [String: UIImage]()
 
     /// Loads an image from the provided asset.
@@ -50,14 +49,14 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
     }
 
     func assetExceedsAllowedSize(url: URL?) -> Bool {
-        //TODO: implement this.
-        return false
+        // TODO: implement this.
+        false
     }
 
     private func compressVideo(
         inputURL: URL,
         outputURL: URL,
-        handler: @escaping @Sendable(_ exportSession: AVAssetExportSession?) -> Void
+        handler: @escaping @Sendable (_ exportSession: AVAssetExportSession?) -> Void
     ) {
         let urlAsset = AVURLAsset(url: inputURL, options: nil)
 

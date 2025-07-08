@@ -8,7 +8,6 @@ import StreamCore
 // MARK: - Inserting, Replacing and Removing Elements
 
 extension Array {
-        
     // MARK: - Managing Identifiable Elements in Array Without Sorting
     
     /// Inserts or replaces an element in the non-sorted array based on its ID.
@@ -52,8 +51,8 @@ extension Array {
     ///
     /// - Parameter elements: New elements for replacing existing ones.
     mutating func replace(byIds elements: [Element]) where Element: Identifiable {
-        var lookup = Dictionary<Element.ID, Element>()
-        lookup.merge(elements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new } )
+        var lookup = [Element.ID: Element]()
+        lookup.merge(elements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
         let replacements = enumerated().compactMap { index, existing -> (Index, Element)? in
             guard let updated = lookup[existing.id] else { return nil }
             return (index, updated)
@@ -65,8 +64,8 @@ extension Array {
     
     /// Appends new unique elements at the end while replacing existing duplicate elements.
     mutating func appendReplacingDuplicates(byId incomingElements: [Element]) where Element: Identifiable {
-        var incomingLookup = Dictionary<Element.ID, Element>()
-        incomingLookup.merge(incomingElements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new } )
+        var incomingLookup = [Element.ID: Element]()
+        incomingLookup.merge(incomingElements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
         
         var merged = [Element]()
         merged.reserveCapacity(count + incomingElements.count)
@@ -95,12 +94,12 @@ extension Array {
         // Look for duplicates
         var distance = 1
         while insertionIndex + distance < endIndex || insertionIndex - distance >= startIndex {
-            let nextIndex = self.index(insertionIndex, offsetBy: distance)
+            let nextIndex = index(insertionIndex, offsetBy: distance)
             if nextIndex < endIndex, self[nextIndex].id == element.id {
                 remove(at: nextIndex)
                 break
             }
-            let previousIndex = self.index(insertionIndex, offsetBy: -distance)
+            let previousIndex = index(insertionIndex, offsetBy: -distance)
             if previousIndex >= startIndex, self[previousIndex].id == element.id {
                 remove(at: previousIndex)
                 break
@@ -134,7 +133,7 @@ extension Array {
                 if !incomingIds.contains(self[currentIndex].id) {
                     mergedResult.append(self[currentIndex])
                 }
-                currentIndex = self.index(after: currentIndex)
+                currentIndex = index(after: currentIndex)
             } else {
                 mergedResult.append(incomingElements[otherIndex])
                 otherIndex = incomingElements.index(after: otherIndex)
@@ -145,7 +144,7 @@ extension Array {
             if !incomingIds.contains(self[currentIndex].id) {
                 mergedResult.append(self[currentIndex])
             }
-            currentIndex = self.index(after: currentIndex)
+            currentIndex = index(after: currentIndex)
         }
         if otherIndex < incomingElements.endIndex {
             mergedResult.append(contentsOf: incomingElements[otherIndex...])
@@ -233,7 +232,7 @@ extension Array {
         var left = startIndex
         var right = endIndex
         while left < right {
-            let mid = index(left, offsetBy: distance(from: left , to: right) / 2)
+            let mid = index(left, offsetBy: distance(from: left, to: right) / 2)
             if sorting(self[mid], element) {
                 left = index(after: mid)
             } else {

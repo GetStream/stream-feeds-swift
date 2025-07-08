@@ -18,7 +18,8 @@ final class BookmarksRepository: Sendable {
         let response = try await apiClient.queryBookmarks(queryBookmarksRequest: query.toRequest())
         return PaginationResult(
             models: response.bookmarks.map { $0.toModel() },
-            pagination: PaginationData(next: response.next, previous: response.prev))
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
     }
     
     func addBookmark(activityId: String, request: AddBookmarkRequest) async throws -> BookmarkData {
@@ -42,6 +43,7 @@ final class BookmarksRepository: Sendable {
         let response = try await apiClient.queryBookmarkFolders(queryBookmarkFoldersRequest: query.toRequest())
         return PaginationResult(
             models: response.bookmarkFolders.map { $0.toModel() },
-            pagination: PaginationData(next: response.next, previous: response.prev))
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
     }
 }

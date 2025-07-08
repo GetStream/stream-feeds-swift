@@ -8,7 +8,6 @@ import StreamFeeds
 import SwiftUI
 
 @MainActor class PollCommentsViewModel: ObservableObject {
-    
     @Published var comments = [PollVoteData]()
     @Published var newCommentText = ""
     @Published var addCommentShown = false
@@ -43,7 +42,6 @@ import SwiftUI
             .map { _ in true }
             .assign(to: \.animateChanges, onWeak: self)
             .store(in: &cancellables)
-
     }
     
     func refresh() async {

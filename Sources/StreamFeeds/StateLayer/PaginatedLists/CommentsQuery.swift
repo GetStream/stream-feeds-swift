@@ -51,7 +51,7 @@ public typealias CommentsSort = QueryCommentsRequest.string
 
 extension CommentsQuery {
     func toRequest() -> QueryCommentsRequest {
-        let filterPairs = self.filter
+        let filterPairs = filter
             .map { keyValue in
                 let rawJSONArray = keyValue.value.map { RawJSON.string($0) }
                 return (keyValue.key.value, RawJSON.array(rawJSONArray))
@@ -65,4 +65,4 @@ extension CommentsQuery {
             sort: sort?.rawValue
         )
     }
-} 
+}

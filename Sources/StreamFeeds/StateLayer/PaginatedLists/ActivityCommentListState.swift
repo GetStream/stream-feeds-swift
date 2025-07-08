@@ -166,4 +166,4 @@ extension ActivityCommentListState {
         // Can't locally sort for all the sorting keys
         comments.appendReplacingDuplicates(byId: response.models)
     }
-} 
+}

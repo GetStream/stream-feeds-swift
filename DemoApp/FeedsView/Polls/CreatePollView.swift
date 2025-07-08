@@ -7,7 +7,6 @@ import StreamFeeds
 import SwiftUI
 
 public struct CreatePollView: View {
-    
     private let colors = Colors.shared
         
     @StateObject var viewModel: CreatePollViewModel
@@ -18,9 +17,9 @@ public struct CreatePollView: View {
     
     @State private var listId = UUID()
     
-    var onDismiss: () -> ()
+    var onDismiss: () -> Void
     
-    public init(feed: Feed, onDismiss: @escaping () -> ()) {
+    public init(feed: Feed, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(
             wrappedValue: CreatePollViewModel(feed: feed)
         )
@@ -194,7 +193,6 @@ public struct CreatePollView: View {
 }
 
 struct CreatePollItemModifier: ViewModifier {
-    
     func body(content: Content) -> some View {
         content
             .modifier(ListRowModifier())
@@ -204,7 +202,6 @@ struct CreatePollItemModifier: ViewModifier {
 }
 
 struct ListRowModifier: ViewModifier {
-
     let colors = Colors.shared
 
     func body(content: Content) -> some View {

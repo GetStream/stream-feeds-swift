@@ -3,11 +3,10 @@
 //
 
 import StreamCore
-import Testing
 @testable import StreamFeeds
+import Testing
 
 struct ArrayExtensions_Tests {
-    
     // MARK: - Test Data
     
     struct TestItem: Identifiable, Equatable {
@@ -24,8 +23,8 @@ struct ArrayExtensions_Tests {
         public let comparator: AnySortComparator<Model>
         public let remote: String
         
-        public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value : Comparable {
-            self.comparator = SortComparator(localValue).toAny()
+        public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+            comparator = SortComparator(localValue).toAny()
             self.remote = remote
         }
         
@@ -35,7 +34,7 @@ struct ArrayExtensions_Tests {
     // MARK: - Non-Sorted Array Tests
     
     @Test("Insert by ID in non-sorted array")
-    func testInsertById() {
+    func insertById() {
         var array: [TestItem] = []
         
         // Test inserting new item
@@ -58,7 +57,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Remove by ID in non-sorted array")
-    func testRemoveById() {
+    func removeById() {
         var array: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "2", value: 2),
@@ -134,7 +133,7 @@ struct ArrayExtensions_Tests {
     // MARK: - Sorted Merge Tests
     
     @Test("Sorted merge - empty arrays")
-    func testSortedMergeEmptyArrays() {
+    func sortedMergeEmptyArrays() {
         let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
         // Both arrays empty
@@ -165,7 +164,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted merge - no duplicates")
-    func testSortedMergeNoDuplicates() {
+    func sortedMergeNoDuplicates() {
         let array1: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "3", value: 3),
@@ -188,7 +187,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted merge - with duplicates")
-    func testSortedMergeWithDuplicates() {
+    func sortedMergeWithDuplicates() {
         let array1: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "2", value: 2),
@@ -213,14 +212,14 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted merge - all duplicates")
-    func testSortedMergeAllDuplicates() {
+    func sortedMergeAllDuplicates() {
         let array1: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "2", value: 2)
         ]
         let array2: [TestItem] = [
             TestItem(id: "1", value: 10), // Same ID, different value
-            TestItem(id: "2", value: 20)  // Same ID, different value
+            TestItem(id: "2", value: 20) // Same ID, different value
         ]
         let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
@@ -233,7 +232,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted merge - different sizes")
-    func testSortedMergeDifferentSizes() {
+    func sortedMergeDifferentSizes() {
         let array1: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "3", value: 3)
@@ -288,7 +287,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Nested update - delete")
-    func testNestedUpdateDeletion() {
+    func nestedUpdateDeletion() {
         let items = makeNestedItems()
 
         var result = items
@@ -303,7 +302,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Nested update - replace subitem")
-    func testNestedUpdateReplaceSubitem() {
+    func nestedUpdateReplaceSubitem() {
         let items = makeNestedItems()
         
         let updatedItem = TestItem(id: "2-0", value: 5000)
@@ -315,13 +314,13 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Nested update - add subitem")
-    func testNestedUpdateAddSubitem() {
+    func nestedUpdateAddSubitem() {
         let items = makeNestedItems()
         
         let incomingItem = TestItem(id: "ADDED", value: -1, parentId: "0")
         var result = items
         result.insert(byId: incomingItem, parentId: \.parentId, nesting: \.subitems)
         
-        #expect("ADDED" == result[0].subitems?.first?.id)
+        #expect(result[0].subitems?.first?.id == "ADDED")
     }
 }

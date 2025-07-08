@@ -22,7 +22,7 @@ import StreamCore
     ///   - feedQuery: The query used to create this feed
     ///   - events: The WebSocket events subscriber for real-time updates
     init(feedQuery: FeedQuery, events: WSEventsSubscribing, memberListState: MemberListState) {
-        self.fid = feedQuery.fid
+        fid = feedQuery.fid
         self.feedQuery = feedQuery
         self.memberListState = memberListState
         webSocketObserver = WebSocketObserver(fid: feedQuery.fid, subscribing: events, handlers: changeHandlers)
@@ -189,7 +189,7 @@ extension FeedState {
         guard let index = activities.firstIndex(where: { $0.id == id }) else { return }
         var activity = activities[index]
         changes(&activity)
-        self.activities[index] = activity
+        activities[index] = activity
     }
     
     /// Adds a follow to the appropriate collection based on its type.

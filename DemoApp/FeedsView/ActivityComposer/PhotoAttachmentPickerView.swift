@@ -3,12 +3,11 @@
 //
 
 import Photos
-import SwiftUI
 import StreamCore
+import SwiftUI
 
 /// View for the photo attachment picker.
 public struct PhotoAttachmentPickerView: View {
-        
     @StateObject var assetLoader = PhotoAssetLoader()
     
     var assets: PHFetchResultCollection
@@ -152,24 +151,24 @@ public struct PhotoAttachmentCell: View {
             .id(idOverlay)
         )
         .onAppear {
-            self.loading = false
+            loading = false
             
             assetLoader.loadImage(from: asset)
             
-            if self.assetURL != nil {
+            if assetURL != nil {
                 return
             }
             
             let options = PHContentEditingInputRequestOptions()
             options.isNetworkAccessAllowed = true
-            self.loading = true
+            loading = true
             
-            self.requestId = asset.requestContentEditingInput(with: options) { input, _ in
-                self.loading = false
+            requestId = asset.requestContentEditingInput(with: options) { input, _ in
+                loading = false
                 if asset.mediaType == .image {
-                    self.assetURL = input?.fullSizeImageURL
+                    assetURL = input?.fullSizeImageURL
                 } else if let url = (input?.audiovisualAsset as? AVURLAsset)?.url {
-                    self.assetURL = url
+                    assetURL = url
                 }
                 
                 // Check file size.
@@ -178,13 +177,13 @@ public struct PhotoAttachmentCell: View {
                     assetLoader.compressAsset(at: assetURL, type: assetType) { url in
                         Task { @MainActor in
                             self.assetURL = url
-                            self.compressing = false
+                            compressing = false
                         }
                     }
                 }
             }
         }
-        .onDisappear() {
+        .onDisappear {
             if let requestId = requestId {
                 asset.cancelContentEditingInputRequest(requestId)
                 self.requestId = nil

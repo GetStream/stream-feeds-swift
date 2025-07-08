@@ -7,7 +7,7 @@ import Foundation
 import StreamCore
 
 /// An observable state object that manages the current state of a member list.
-/// 
+///
 /// `MemberListState` maintains the current list of members, pagination information,
 /// and provides real-time updates when members are added, removed, or modified.
 /// It automatically handles WebSocket events to keep the member list synchronized.
@@ -21,13 +21,13 @@ import StreamCore
     }
     
     /// The original query configuration used to fetch members.
-    /// 
+    ///
     /// This contains the feed ID, filters, and sorting options that were used
     /// to create the initial member list.
     public let query: MembersQuery
     
     /// All the paginated members currently loaded.
-    /// 
+    ///
     /// This array contains all members that have been fetched across multiple
     /// pagination requests. The members are automatically sorted according to
     /// the current sorting configuration.
@@ -36,19 +36,19 @@ import StreamCore
     // MARK: - Pagination State
     
     /// Last pagination information from the most recent request.
-    /// 
+    ///
     /// Contains the `next` and `previous` cursor values that can be used
     /// to fetch additional pages of members.
     public private(set) var pagination: PaginationData?
     
     /// Indicates whether there are more members available to load.
-    /// 
+    ///
     /// Returns `true` if there are additional members that can be fetched
     /// using the pagination information, `false` otherwise.
     public var canLoadMore: Bool { pagination?.next != nil }
     
     /// The configuration used for the last query.
-    /// 
+    ///
     /// Contains the filter and sort parameters that were applied to the
     /// most recent member fetch operation.
     private(set) var queryConfig: QueryConfiguration<MembersFilter, MembersSortField>?
@@ -99,4 +99,4 @@ extension MemberListState {
         self.queryConfig = queryConfig
         members = members.sortedMerge(response.models, using: membersSorting)
     }
-} 
+}

@@ -12,6 +12,8 @@ public struct ReactionGroupData: Sendable {
 }
 
 extension ReactionGroupData {
+    var isEmpty: Bool { count <= 0 }
+    
     mutating func decrement(with date: Date) {
         guard date >= firstReactionAt || date <= lastReactionAt else { return }
         count = max(0, count - 1)

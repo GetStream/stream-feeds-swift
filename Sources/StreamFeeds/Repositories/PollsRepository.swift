@@ -81,7 +81,7 @@ final class PollsRepository: Sendable {
     ) async throws -> PollOptionData {
         let response = try await apiClient.updatePollOption(
             pollId: pollId,
-            updatePollOptionRequest:         request
+            updatePollOptionRequest: request
         )
         return response.pollOption.toModel()
     }

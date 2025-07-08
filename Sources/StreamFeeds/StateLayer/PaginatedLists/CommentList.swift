@@ -10,7 +10,7 @@ public final class CommentList: Sendable {
     private let commentsRepository: CommentsRepository
     
     init(query: CommentsQuery, client: FeedsClient) {
-        self.commentsRepository = client.commentsRepository
+        commentsRepository = client.commentsRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { CommentListState(query: query, events: events) }
@@ -56,4 +56,4 @@ public final class CommentList: Sendable {
         )
         return result.models
     }
-} 
+}

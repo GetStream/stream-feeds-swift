@@ -10,7 +10,7 @@ public final class BookmarkFolderList: Sendable {
     private let bookmarksRepository: BookmarksRepository
     
     init(query: BookmarkFoldersQuery, client: FeedsClient) {
-        self.bookmarksRepository = client.bookmarksRepository
+        bookmarksRepository = client.bookmarksRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { BookmarkFolderListState(query: query, events: events) }
@@ -56,4 +56,3 @@ public final class BookmarkFolderList: Sendable {
         return result.models
     }
 }
-

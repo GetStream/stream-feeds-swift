@@ -134,4 +134,3 @@ struct Snippets_01_01_Quickstart {
         }
     }
 }
-

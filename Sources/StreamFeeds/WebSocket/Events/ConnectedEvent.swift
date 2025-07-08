@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class ConnectedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    
     public var connectionId: String
     public var createdAt: Date
     public var me: OwnUserResponse
@@ -45,7 +44,6 @@ public final class ConnectedEvent: @unchecked Sendable, Event, Codable, JSONEnco
 }
 
 public final class OwnUserResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    
     public var blockedUserIds: [String]?
     public var createdAt: Date
     public var custom: [String: RawJSON]
@@ -158,7 +156,6 @@ public final class OwnUserResponse: @unchecked Sendable, Codable, JSONEncodable,
 }
 
 public final class PushNotificationSettingsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    
     public var disabled: Bool?
     public var disabledUntil: Date?
 
@@ -184,7 +181,6 @@ public final class PushNotificationSettingsResponse: @unchecked Sendable, Codabl
 }
 
 public final class HealthCheckEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable, HealthCheck {
-    
     public var cid: String?
     public var connectionId: String
     public var createdAt: Date
@@ -228,7 +224,6 @@ public final class HealthCheckEvent: @unchecked Sendable, Event, Codable, JSONEn
 }
 
 public final class ConnectionErrorEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    
     public var connectionId: String
     public var createdAt: Date
     public var error: APIError

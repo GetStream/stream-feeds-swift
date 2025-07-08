@@ -175,7 +175,6 @@ public struct CommentData: Identifiable, Sendable {
 // MARK: - Mutating the Data
 
 extension CommentData {
-    
     // MARK: - Comments
     
     mutating func addReaction(_ reaction: FeedsReactionData) {
@@ -195,21 +194,21 @@ extension CommentData {
     // MARK: - Replies
     
     mutating func addReply(_ comment: CommentData) {
-        var replies = self.replies ?? []
+        var replies = replies ?? []
         replies.insert(byId: comment)
         self.replies = replies
         replyCount += 1
     }
     
     mutating func removeReply(_ comment: CommentData) {
-        var replies = self.replies ?? []
+        var replies = replies ?? []
         replies.remove(byId: comment.id)
         self.replies = replies
         replyCount = max(0, replyCount - 1)
     }
     
     mutating func replaceReply(_ comment: CommentData) {
-        var replies = self.replies ?? []
+        var replies = replies ?? []
         replies.replace(byId: comment)
         self.replies = replies
     }

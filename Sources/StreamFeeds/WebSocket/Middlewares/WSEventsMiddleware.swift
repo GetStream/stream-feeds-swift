@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 final class WSEventsMiddleware: EventMiddleware, WSEventsSubscribing {
-    
     private let subscribers = AllocatedUnfairLock(NSHashTable<AnyObject>.weakObjects())
 
     func handle(event: Event) -> Event? {

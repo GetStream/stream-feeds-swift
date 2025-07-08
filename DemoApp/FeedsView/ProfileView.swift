@@ -2,12 +2,11 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
-import SwiftUI
 import StreamCore
 import StreamFeeds
+import SwiftUI
 
 struct ProfileView: View {
-    
     @AppStorage("userId") var userId: String = ""
     
     let feed: Feed
@@ -19,7 +18,7 @@ struct ProfileView: View {
     init(feed: Feed, client: FeedsClient) {
         self.feed = feed
         self.client = client
-        self.state = feed.state
+        state = feed.state
     }
     
     var body: some View {
@@ -134,7 +133,6 @@ struct ProfileView: View {
 }
 
 struct FollowSuggestionView: View {
-    
     let owner: UserData
     let feed: Feed
     let targetFeed: FeedData
@@ -153,7 +151,7 @@ struct FollowSuggestionView: View {
             
             Button {
                 Task {
-                    //TODO: check how request to follow will work.
+                    // TODO: check how request to follow will work.
                     try await feed.follow(targetFeed.fid)
                 }
             } label: {

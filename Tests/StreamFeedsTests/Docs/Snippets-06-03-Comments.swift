@@ -71,7 +71,6 @@ import StreamFeeds
         )
         let activityComments = try await activityCommentList.get()
         
-
         // All replies to a parent comment
         let replyList = client.commentList(
             for: .init(

@@ -36,7 +36,7 @@ struct Snippets_03_03_FileUploads {
                             file: attachmentFile
                         )
                     )
-            }
+                }
             return try await attachmentUploader.upload(dataAttachments, progress: nil)
                 .map { uploadedAttachment in
                     Attachment(
