@@ -21,6 +21,7 @@ struct FeedsListRowView: View {
                 Text("\(activity.user.name ?? activity.user.id) reposted")
                 ActivityView(
                     user: parent.user,
+                    ownCapabilities: feed.state.ownCapabilities,
                     text: parent.text ?? "",
                     attachments: parent.attachments,
                     activity: activity,
@@ -37,6 +38,7 @@ struct FeedsListRowView: View {
             } else {
                 ActivityView(
                     user: activity.user,
+                    ownCapabilities: feed.state.ownCapabilities,
                     text: activity.text ?? "",
                     attachments: activity.attachments,
                     activity: activity,

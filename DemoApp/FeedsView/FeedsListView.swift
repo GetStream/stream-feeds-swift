@@ -11,7 +11,6 @@ struct FeedsListView: View {
     let feed: Feed
     @ObservedObject var state: FeedState
     
-    @State var showAddActivity = false
     @State var commentsActivity: ActivityData?
     @State var activityName = ""
     @State var comment = ""
@@ -82,31 +81,7 @@ struct FeedsListView: View {
             } else {
                 ActivityComposerView(feed: feed, feedsClient: client)
             }
-        })
-        .alert("Add activity", isPresented: $showAddActivity) {
-            TextField("Activity name", text: $activityName)
-            Button("Cancel", role: .cancel) { }
-            Button("Add") {
-                Task {
-                    do {
-                        var attachments = [Attachment]()
-                        if addImage {
-                            let url = "https://morethandigital.info/wp-content/uploads/2017/03/10-Top-Webseiten-für-gratis-lizenzfreie-Bilder-1024x682.jpeg"
-                            let attachment = Attachment(assetUrl: url, custom: [:], imageUrl: url)
-                            attachments.append(attachment)
-                        }
-                        _ = try await feed.addActivity(
-                            request: .init(
-                                attachments: attachments, text: activityName, type: "activity"
-                            )
-                        )
-                        activityName = ""
-                    } catch {
-                        log.error("Error posting an activity \(error)")
-                    }
-                }
-            }
-        }
+        })        
         .alert("Update activity", isPresented: .init(
             get: { activityToUpdate != nil },
             set: { if !$0 { activityToUpdate = nil } }
@@ -176,6 +151,7 @@ struct UserAvatar: View {
 struct ActivityView: View {
     
     let user: UserData
+    let ownCapabilities: [FeedOwnCapability]
     let text: String
     var attachments: [Attachment]?
     var activity: ActivityData
