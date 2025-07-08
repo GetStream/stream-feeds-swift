@@ -202,9 +202,9 @@ public final class Feed: Sendable {
             return ActivitiesQuery(
                 filter: state.activitiesQueryConfig?.filter,
                 sort: state.activitiesQueryConfig?.sort ?? [],
+                limit: limit,
                 next: next,
-                previous: nil,
-                limit: limit
+                previous: nil
             )
         }
         guard let nextQuery else { return [] }

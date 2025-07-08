@@ -15,9 +15,9 @@ public struct ActivitiesQuery: Sendable {
     public init(
         filter: ActivitiesFilter?,
         sort: [Sort<ActivitiesSortField>] = [],
+        limit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil,
-        limit: Int? = nil
+        previous: String? = nil
     ) {
         self.filter = filter
         self.sort = sort
