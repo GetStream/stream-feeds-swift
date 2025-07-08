@@ -106,6 +106,9 @@ public struct CommentData: Identifiable, Sendable {
     /// The type of object this comment belongs to (e.g., "activity").
     public let objectType: String
     
+    /// All the reactions from the current user.
+    public private(set) var ownReactions: [FeedsReactionData]
+    
     /// The ID of the parent comment, if this is a reply.
     ///
     /// If this comment is a reply to another comment, this property contains
@@ -176,11 +179,15 @@ extension CommentData {
     // MARK: - Comments
     
     mutating func addReaction(_ reaction: FeedsReactionData) {
+        if reaction.user.id == user.id {
+            ownReactions.append(reaction)
+        }
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
     }
     
     mutating func removeReaction(_ reaction: FeedsReactionData) {
+        ownReactions.remove(byId: reaction.id)
         FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
     }
@@ -232,6 +239,7 @@ extension CommentResponse {
             meta: nil,
             objectId: objectId,
             objectType: objectType,
+            ownReactions: ownReactions.map { $0.toModel() },
             parentId: parentId,
             reactionCount: reactionCount,
             reactionGroups: reactionGroups?.compactMapValues { $0?.toModel() } ?? [:],
@@ -269,6 +277,7 @@ extension ThreadedCommentResponse {
             meta: meta,
             objectId: objectId,
             objectType: objectType,
+            ownReactions: ownReactions.map { $0.toModel() },
             parentId: parentId,
             reactionCount: reactionCount,
             reactionGroups: reactionGroups?.compactMapValues { $0?.toModel() } ?? [:],
