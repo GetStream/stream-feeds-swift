@@ -65,7 +65,6 @@ lane :publish_release do |options|
   UI.user_error!('Release version cannot be empty') if release_version.to_s.empty?
 
   ensure_git_branch(branch: 'main')
-  clean_products
 
   publish_ios_sdk(
     skip_git_status_check: false,
@@ -158,7 +157,7 @@ lane :swiftui_testflight_build do |options|
     app_version: sdk_version,
     app_identifier: 'io.getstream.feeds.DemoApp',
     configuration: configuration,
-    use_changelog: false,
+    use_changelog: true,
     is_manual_upload: is_manual_upload
   )
 end
