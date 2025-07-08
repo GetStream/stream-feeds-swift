@@ -5,6 +5,7 @@
 //  Created by Martin Mitrevski on 30.5.25.
 //
 
+import StreamCore
 import StreamFeeds
 import SwiftUI
 
@@ -30,7 +31,7 @@ struct ActivityComposerView: View {
                             try await viewModel.publishPost()
                             dismiss()
                         } catch {
-                            print("======= \(error)")
+                            log.error("Error publishing a post \(error)")
                         }
                     }
                 } label: {

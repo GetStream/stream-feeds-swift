@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import StreamCore
 import StreamFeeds
 
 struct CommentsView: View {
@@ -150,7 +151,7 @@ struct CommentsView: View {
                         )
                         comment = ""
                     } catch {
-                        print("======= \(error)")
+                        log.error("Error adding a comment \(error)")
                     }
                 }
             }
@@ -169,7 +170,7 @@ struct CommentsView: View {
                         )
                         comment = ""
                     } catch {
-                        print("======= \(error)")
+                        log.error("Error adding a reply \(error)")
                     }
                 }
             }
@@ -189,7 +190,7 @@ struct CommentsView: View {
                         editCommentId = nil
                         comment = ""
                     } catch {
-                        print("======= \(error)")
+                        log.error("Error editing a comment \(error)")
                     }
                 }
             }
