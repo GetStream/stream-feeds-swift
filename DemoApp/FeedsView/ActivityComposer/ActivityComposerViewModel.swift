@@ -21,15 +21,17 @@ import SwiftUI
     }
     
     func askForPhotosPermission() {
-        PHPhotoLibrary.requestAuthorization { [weak self] (status) in
+        PHPhotoLibrary.requestAuthorization { @Sendable [weak self] (status) in
             guard let self else { return }
             switch status {
             case .authorized, .limited:
                 log.debug("Access to photos granted.")
-                self.fetchAssets()
+                Task { @MainActor in
+                    self.fetchAssets()
+                }
             case .denied, .restricted, .notDetermined:
-                DispatchQueue.main.async { [weak self] in
-                    self?.imageAssets = PHFetchResult<PHAsset>()
+                Task { @MainActor in
+                    self.imageAssets = PHFetchResult<PHAsset>()
                 }
                 log.debug("Access to photos is denied or not determined, showing the no permissions screen.")
             @unknown default:
