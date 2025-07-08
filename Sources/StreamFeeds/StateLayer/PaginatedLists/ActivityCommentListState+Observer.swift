@@ -20,31 +20,29 @@ extension ActivityCommentListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [handlers, objectId, objectType] in
-                switch event {
-                case let event as CommentAddedEvent:
-                    guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                    await handlers.commentAdded(event.comment.toModel())
-                case let event as CommentDeletedEvent:
-                    guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                    await handlers.commentRemoved(event.comment.id)
-                case let event as CommentUpdatedEvent:
-                    guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                    await handlers.commentUpdated(event.comment.toModel())
-                case let event as CommentReactionAddedEvent:
-                    guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                    let comment = event.comment.toModel()
-                    let reaction = event.reaction.toModel()
-                    await handlers.commentReactionAdded(reaction, comment)
-                case let event as CommentReactionDeletedEvent:
-                    guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                    let comment = event.comment.toModel()
-                    let reaction = event.reaction.toModel()
-                    await handlers.commentReactionRemoved(reaction, comment)
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as CommentAddedEvent:
+                guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
+                await handlers.commentAdded(event.comment.toModel())
+            case let event as CommentDeletedEvent:
+                guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
+                await handlers.commentRemoved(event.comment.id)
+            case let event as CommentUpdatedEvent:
+                guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
+                await handlers.commentUpdated(event.comment.toModel())
+            case let event as CommentReactionAddedEvent:
+                guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
+                let comment = event.comment.toModel()
+                let reaction = event.reaction.toModel()
+                await handlers.commentReactionAdded(reaction, comment)
+            case let event as CommentReactionDeletedEvent:
+                guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
+                let comment = event.comment.toModel()
+                let reaction = event.reaction.toModel()
+                await handlers.commentReactionRemoved(reaction, comment)
+            default:
+                break
             }
         }
     }

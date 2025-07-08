@@ -16,14 +16,12 @@ extension CommentListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [handlers] in
-                switch event {
-                case let event as CommentUpdatedEvent:
-                    await handlers.commentUpdated(event.comment.toModel())
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as CommentUpdatedEvent:
+                await handlers.commentUpdated(event.comment.toModel())
+            default:
+                break
             }
         }
     }

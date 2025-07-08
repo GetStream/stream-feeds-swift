@@ -16,14 +16,12 @@ extension BookmarkListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [handlers] in
-                switch event {
-                case let event as BookmarkUpdatedEvent:
-                    await handlers.bookmarkUpdated(event.bookmark.toModel())
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as BookmarkUpdatedEvent:
+                await handlers.bookmarkUpdated(event.bookmark.toModel())
+            default:
+                break
             }
         }
     }

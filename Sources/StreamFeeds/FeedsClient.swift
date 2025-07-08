@@ -489,8 +489,7 @@ extension FeedsClient: ConnectionStateDelegate {
 }
 
 extension FeedsClient: WSEventsSubscriber {
-    
-    func onEvent(_ event: any Event) {
+    func onEvent(_ event: any Event) async {
         eventSubject.send(event)
     }
 }

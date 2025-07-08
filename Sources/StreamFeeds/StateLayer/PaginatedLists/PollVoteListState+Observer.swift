@@ -17,7 +17,7 @@ extension PollVoteListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
+        func onEvent(_ event: any Event) async {
             Task {
                 switch event {
                 default:

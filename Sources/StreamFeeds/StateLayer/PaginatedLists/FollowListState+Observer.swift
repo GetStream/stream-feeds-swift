@@ -16,14 +16,12 @@ extension FollowListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [handlers] in
-                switch event {
-                case let event as FollowUpdatedEvent:
-                    await handlers.followUpdated(event.follow.toModel())
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as FollowUpdatedEvent:
+                await handlers.followUpdated(event.follow.toModel())
+            default:
+                break
             }
         }
     }

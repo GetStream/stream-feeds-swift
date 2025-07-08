@@ -16,14 +16,12 @@ extension PollListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [handlers] in
-                switch event {
-                case let event as PollUpdatedFeedEvent:
-                    await handlers.pollUpdated(event.poll.toModel())
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as PollUpdatedFeedEvent:
+                await handlers.pollUpdated(event.poll.toModel())
+            default:
+                break
             }
         }
     }

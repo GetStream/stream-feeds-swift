@@ -18,15 +18,13 @@ extension CommentReplyListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [handlers, parentId] in
-                switch event {
-                case let event as CommentUpdatedEvent:
-                    guard parentId == event.comment.parentId else { return }
-                    await handlers.commentUpdated(event.comment.toModel())
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as CommentUpdatedEvent:
+                guard parentId == event.comment.parentId else { return }
+                await handlers.commentUpdated(event.comment.toModel())
+            default:
+                break
             }
         }
     }

@@ -18,18 +18,16 @@ extension MemberListState {
         
         // MARK: - Event Subscription
         
-        func onEvent(_ event: any Event) {
-            Task { [fid, handlers] in
-                switch event {
-                case let event as FeedMemberRemovedEvent:
-                    guard event.fid == fid else { return }
-                    await handlers.memberRemoved(event.memberId)
-                case let event as FeedMemberUpdatedEvent:
-                    guard event.fid == fid else { return }
-                    await handlers.memberUpdated(event.member.toModel())
-                default:
-                    break
-                }
+        func onEvent(_ event: any Event) async {
+            switch event {
+            case let event as FeedMemberRemovedEvent:
+                guard event.fid == fid else { return }
+                await handlers.memberRemoved(event.memberId)
+            case let event as FeedMemberUpdatedEvent:
+                guard event.fid == fid else { return }
+                await handlers.memberUpdated(event.member.toModel())
+            default:
+                break
             }
         }
     }
