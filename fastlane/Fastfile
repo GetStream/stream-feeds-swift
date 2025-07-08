@@ -69,8 +69,7 @@ lane :publish_release do |options|
   publish_ios_sdk(
     skip_git_status_check: false,
     version: release_version,
-    github_repo: github_repo,
-    upload_assets: ['Products/StreamFeeds.zip']
+    github_repo: github_repo
   )
 
   sh('gh workflow run merge-main-to-develop.yml --ref main')
