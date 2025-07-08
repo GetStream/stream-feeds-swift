@@ -41,7 +41,7 @@ jobs:
         APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_PR_NUM: ${{ github.event.number }}
-      run: bundle exec fastlane swiftui_testflight_build configuration:"${{ github.event.inputs.release }}"
+      run: bundle exec fastlane swiftui_testflight_build configuration:"${{ github.event.inputs.release }}" --verbose
     - uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
