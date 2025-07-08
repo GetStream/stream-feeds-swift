@@ -197,10 +197,11 @@ end
 desc 'Run source code formatting/linting'
 lane :run_swift_format do |options|
   Dir.chdir('..') do
-    action = options[:lint] ? "--lint" : ""
+    swift_format_action = options[:lint] ? '--lint' : ''
+    swiftlint_lint_parameter = options[:lint] ? '--strict' : '--fix'
     sources_matrix[:swiftformat].each do |path|
-      sh("mint run swiftformat #{action} --config .swiftformat --exclude #{sources_matrix[:swiftformat_exclude].join(',')} #{path}")
-      sh("mint run swiftlint lint --config .swiftlint.yml --progress --quiet --reporter json #{path}")
+      sh("mint run swiftformat #{swift_format_action} --config .swiftformat --exclude #{sources_matrix[:swiftformat_exclude].join(',')} #{path}")
+      sh("mint run swiftlint lint --config .swiftlint.yml #{swiftlint_lint_parameter} --progress --quiet --reporter json #{path}")
     end
   end
 end

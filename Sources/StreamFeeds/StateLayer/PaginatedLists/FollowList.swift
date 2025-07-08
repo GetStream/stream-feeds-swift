@@ -10,7 +10,7 @@ public final class FollowList: Sendable {
     private let feedsRepository: FeedsRepository
     
     init(query: FollowsQuery, client: FeedsClient) {
-        self.feedsRepository = client.feedsRepository
+        feedsRepository = client.feedsRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { FollowListState(query: query, events: events) }

@@ -71,4 +71,3 @@ extension BookmarkListState {
         bookmarks = bookmarks.sortedMerge(response.models, using: bookmarkFoldersSorting)
     }
 }
-

@@ -5,7 +5,6 @@
 import SwiftUI
 
 private struct PollsBackgroundModifier: ViewModifier {
-    
     let colors = Colors.shared
     
     func body(content: Content) -> some View {
@@ -23,7 +22,6 @@ extension View {
 }
 
 struct PollDateIndicatorView: View {
-    
     let colors = Colors.shared
     
     var dateFormatter: (Date) -> String {
@@ -40,7 +38,6 @@ struct PollDateIndicatorView: View {
 }
 
 class PollsDateFormatter: @unchecked Sendable {
-    
     static let shared = PollsDateFormatter()
     
     let dateFormatter: DateFormatter = {

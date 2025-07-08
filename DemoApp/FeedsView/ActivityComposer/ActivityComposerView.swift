@@ -7,7 +7,6 @@ import StreamFeeds
 import SwiftUI
 
 struct ActivityComposerView: View {
-    
     @StateObject var viewModel: ActivityComposerViewModel
     
     @Environment(\.dismiss) var dismiss

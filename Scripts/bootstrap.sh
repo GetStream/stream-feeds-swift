@@ -20,6 +20,12 @@ trap "echo ; echo ❌ The Bootstrap script failed to finish without error. See t
 
 source ./Githubfile
 
+if [ "${GITHUB_ACTIONS:-}" != "true" ]; then
+  puts "Set up git hooks"
+  bundle install
+  bundle exec lefthook install
+fi
+
 if [ "${SKIP_MINT_BOOTSTRAP:-}" != true ]; then
   puts "Bootstrap Mint dependencies"
   git clone https://github.com/yonaskolb/Mint.git fastlane/mint

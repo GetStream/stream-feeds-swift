@@ -3,11 +3,10 @@
 //
 
 import Foundation
-import UIKit
 import StreamCore
+import UIKit
 
 public struct AddedAsset: Identifiable, Equatable {
-    
     public static func == (lhs: AddedAsset, rhs: AddedAsset) -> Bool {
         lhs.id == rhs.id
     }

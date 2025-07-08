@@ -8,7 +8,6 @@ import StreamFeeds
 import SwiftUI
 
 @MainActor class CreatePollViewModel: ObservableObject {
-        
     @Published var question = ""
     
     @Published var options: [String] = [""]
@@ -104,17 +103,17 @@ import SwiftUI
             do {
                 try await feed.createPoll(
                     request:
-                        .init(
-                            allowAnswers: allowComments,
-                            allowUserSuggestedOptions: suggestAnOption,
-                            custom: [:],
-                            description: nil,
-                            enforceUniqueVote: !multipleAnswers,
-                            maxVotesAllowed: maxVotesAllowed,
-                            name: question.trimmed,
-                            options: pollOptions,
-                            votingVisibility: anonymousPoll ? .anonymous : .public
-                        ),
+                    .init(
+                        allowAnswers: allowComments,
+                        allowUserSuggestedOptions: suggestAnOption,
+                        custom: [:],
+                        description: nil,
+                        enforceUniqueVote: !multipleAnswers,
+                        maxVotesAllowed: maxVotesAllowed,
+                        name: question.trimmed,
+                        options: pollOptions,
+                        votingVisibility: anonymousPoll ? .anonymous : .public
+                    ),
                     activityType: "activity"
                 )
                 completion()

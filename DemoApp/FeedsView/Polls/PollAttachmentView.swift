@@ -7,7 +7,6 @@ import StreamFeeds
 import SwiftUI
 
 public struct PollAttachmentView: View {
-    
     private let colors = Colors.shared
         
     private let activity: ActivityData
@@ -164,7 +163,6 @@ public struct PollAttachmentView: View {
 }
 
 struct PollOptionView: View {
-    
     @ObservedObject var viewModel: PollAttachmentViewModel
     
     let option: PollOptionData
@@ -234,7 +232,6 @@ struct PollOptionView: View {
 }
 
 struct PollVotesIndicatorView: View {
-    
     let colors = Colors.shared
     
     let alternativeStyle: Bool

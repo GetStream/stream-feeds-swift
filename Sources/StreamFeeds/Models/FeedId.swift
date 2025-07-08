@@ -15,7 +15,6 @@ import Foundation
 ///
 /// This type is thread-safe and can be used across different execution contexts.
 public struct FeedId: Sendable {
-    
     /// The feed group identifier that categorizes the type of feed.
     ///
     /// Common group IDs include:
@@ -52,7 +51,7 @@ public struct FeedId: Sendable {
     public init(group: String, id: String) {
         self.group = group
         self.id = id
-        self.rawValue = "\(group):\(id)"
+        rawValue = "\(group):\(id)"
     }
     
     /// Creates a feed identifier from a raw string value.

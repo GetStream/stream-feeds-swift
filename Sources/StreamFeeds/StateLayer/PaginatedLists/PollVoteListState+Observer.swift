@@ -26,4 +26,4 @@ extension PollVoteListState {
             }
         }
     }
-} 
+}

@@ -107,7 +107,7 @@ import StreamFeeds
             activityFilter: .or([
                 .and([
                     .in(.filterTags, ["green"]),
-                    .equal(.type, "post"),
+                    .equal(.type, "post")
                 ]),
                 .and([
                     .in(.filterTags, ["orange"]),
@@ -168,7 +168,7 @@ import StreamFeeds
         _ = try await feed.rejectFeedMember()
     }
     
-    func queryingMyFeeds() async throws {        
+    func queryingMyFeeds() async throws {
         let query = FeedsQuery(
             filter: .equal(.createdById, "john"),
             sort: [Sort(field: .createdAt, direction: .reverse)],
@@ -204,7 +204,7 @@ import StreamFeeds
 //        )
 //        let feedList = client.feedList(for: query)
 //        let feeds = try await feedList.get()
-//        
+//
 //        suppressUnusedWarning(feeds)
     }
     

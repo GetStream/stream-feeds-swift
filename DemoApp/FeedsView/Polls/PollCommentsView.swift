@@ -7,7 +7,6 @@ import StreamFeeds
 import SwiftUI
 
 struct PollCommentsView: View {
-    
     let colors = Colors.shared
     
     @Environment(\.presentationMode) var presentationMode
@@ -60,15 +59,15 @@ struct PollCommentsView: View {
                                 .bold()
                                 .foregroundColor(colors.tintColor)
                         })
-                            .frame(maxWidth: .infinity)
-                            .withPollsBackground()
-                            .uiAlert(
-                                title: commentButtonTitle,
-                                isPresented: $viewModel.addCommentShown,
-                                text: $viewModel.newCommentText,
-                                accept: "Add",
-                                action: { viewModel.add(comment: viewModel.newCommentText) }
-                            )
+                        .frame(maxWidth: .infinity)
+                        .withPollsBackground()
+                        .uiAlert(
+                            title: commentButtonTitle,
+                            isPresented: $viewModel.addCommentShown,
+                            text: $viewModel.newCommentText,
+                            accept: "Add",
+                            action: { viewModel.add(comment: viewModel.newCommentText) }
+                        )
                     }
                 }
                 .loadingContent(isLoading: viewModel.isLoading)

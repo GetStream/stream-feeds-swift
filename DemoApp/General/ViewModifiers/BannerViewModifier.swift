@@ -10,7 +10,7 @@ private struct ErrorBanner: View {
     
     init(message: String, isPresented: Binding<Bool>) {
         self.message = message
-        self._presented = isPresented
+        _presented = isPresented
     }
     
     var body: some View {
@@ -56,7 +56,7 @@ private struct BannerModifier: ViewModifier {
 
 extension View {
     func errorBanner(isPresented: Binding<Bool>, message: String) -> some View {
-        self.modifier(BannerModifier(isPresented: isPresented, message: message))
+        modifier(BannerModifier(isPresented: isPresented, message: message))
     }
     
     func errorBanner(for activeError: Binding<Error?>) -> some View {
@@ -68,7 +68,7 @@ extension View {
             }
         }
         let message = activeError.wrappedValue?.localizedDescription ?? ""
-        return self.modifier(BannerModifier(isPresented: isPresented, message: message))
+        return modifier(BannerModifier(isPresented: isPresented, message: message))
     }
 }
 

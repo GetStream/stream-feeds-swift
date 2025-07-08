@@ -22,8 +22,8 @@ public final class FeedsClient: Sendable {
     private let apiTransport: DefaultAPITransport
     private let cdnClient: CDNClient
     
-    nonisolated(unsafe) private var requestEncoder: RequestEncoder
-    nonisolated(unsafe) private var connectionProvider: ConnectionProvider?
+    private nonisolated(unsafe) var requestEncoder: RequestEncoder
+    private nonisolated(unsafe) var connectionProvider: ConnectionProvider?
         
     let connectionRecoveryHandler = AllocatedUnfairLock<ConnectionRecoveryHandler?>(nil)
     let webSocketClient = AllocatedUnfairLock<WebSocketClient?>(nil)
@@ -47,13 +47,12 @@ public final class FeedsClient: Sendable {
     
     let connectTask = AllocatedUnfairLock<Task<Void, Error>?>(nil)
     
-    nonisolated(unsafe) private let eventSubject: PassthroughSubject<Event, Never> = .init()
+    private nonisolated(unsafe) let eventSubject: PassthroughSubject<Event, Never> = .init()
     public var eventPublisher: AnyPublisher<Event, Never> {
         eventSubject
             .eraseToAnyPublisher()
     }
 
-    
     /// Initializes a new FeedsClient instance.
     ///
     /// - Parameters:
@@ -73,7 +72,7 @@ public final class FeedsClient: Sendable {
         self.user = user
         self.token = token
         self.feedsConfig = feedsConfig
-        self.apiTransport = URLSessionTransport(
+        apiTransport = URLSessionTransport(
             urlSession: Self.makeURLSession(),
             xStreamClientHeader: SystemEnvironment.xStreamClientHeader,
             tokenProvider: tokenProvider
@@ -83,27 +82,27 @@ public final class FeedsClient: Sendable {
             apiKey: apiKey.apiKeyString,
             xStreamClientHeader: SystemEnvironment.xStreamClientHeader
         )
-        self.apiClient = DefaultAPI(
+        apiClient = DefaultAPI(
             basePath: basePath,
             transport: apiTransport,
             middlewares: [defaultParams]
         )
-        self.devicesClient = DevicesAPI(
+        devicesClient = DevicesAPI(
             basePath: basePath,
             transport: apiTransport,
             middlewares: [defaultParams]
         )
-        self.eventNotificationCenter = EventNotificationCenter()
-        self.requestEncoder = DefaultRequestEncoder(
+        eventNotificationCenter = EventNotificationCenter()
+        requestEncoder = DefaultRequestEncoder(
             baseURL: URL(string: basePath)!,
             apiKey: apiKey
         )
-        self.cdnClient = feedsConfig.customCDNClient ?? StreamCDNClient(
+        cdnClient = feedsConfig.customCDNClient ?? StreamCDNClient(
             encoder: requestEncoder,
             decoder: DefaultRequestDecoder(),
             sessionConfiguration: .default
         )
-        self.attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
+        attachmentsUploader = StreamAttachmentUploader(cdnClient: cdnClient)
         
         activitiesRepository = ActivitiesRepository(apiClient: apiClient, attachmentUploader: attachmentsUploader)
         bookmarksRepository = BookmarksRepository(apiClient: apiClient)
@@ -112,7 +111,7 @@ public final class FeedsClient: Sendable {
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
         
-        self.moderation = Moderation(apiClient: apiClient)
+        moderation = Moderation(apiClient: apiClient)
         
         eventsMiddleware.add(subscriber: self)
         eventNotificationCenter.add(middlewares: [eventsMiddleware])
@@ -136,13 +135,13 @@ public final class FeedsClient: Sendable {
                 }
                 return await self.loadConnectionId()
             }
-            self._userAuth.withLock { $0 = userAuth }
+            _userAuth.withLock { $0 = userAuth }
             let connectionId = try await userAuth.connectionId()
             connectionProvider = ConnectionProvider(
                 connectionId: connectionId,
                 token: token
             )
-            self.requestEncoder.connectionDetailsProviderDelegate = connectionProvider
+            requestEncoder.connectionDetailsProviderDelegate = connectionProvider
             apiClient.middlewares.append(userAuth)
             devicesClient.middlewares.append(userAuth)
         } else {
@@ -431,7 +430,7 @@ public final class FeedsClient: Sendable {
     /// Creates a new device for push notifications.
     ///
     /// - Parameter id: The unique identifier for the device
-    /// - Throws: 
+    /// - Throws:
     ///   - `ClientError` if the device ID is empty
     ///   - `ClientError` if the push provider is invalid
     ///   - `APIError` if the network request fails or the server returns an error
@@ -460,7 +459,7 @@ public final class FeedsClient: Sendable {
     /// - Parameter url: The full CDN URL of the file to delete.
     /// - Throws: An error if the request fails or the file could not be deleted.
     public func deleteFile(url: String) async throws {
-        _ = try await self.apiClient.deleteFile(url: url)
+        _ = try await apiClient.deleteFile(url: url)
     }
 
     /// Deletes a previously uploaded image from the CDN.
@@ -471,12 +470,11 @@ public final class FeedsClient: Sendable {
     /// - Parameter url: The full CDN URL of the image to delete.
     /// - Throws: An error if the request fails or the image could not be deleted.
     public func deleteImage(url: String) async throws {
-        _ = try await self.apiClient.deleteImage(url: url)
+        _ = try await apiClient.deleteImage(url: url)
     }
 }
 
 extension FeedsClient: ConnectionStateDelegate {
-    
     /// Called when the WebSocket connection state changes.
     ///
     /// - Parameters:

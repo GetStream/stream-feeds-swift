@@ -2,11 +2,11 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
+import Photos
 import StreamCore
 import StreamFeeds
 import SwiftUI
-import Combine
-import Photos
 
 @MainActor class ActivityComposerViewModel: ObservableObject {
     @Published public private(set) var imageAssets: PHFetchResult<PHAsset>?
@@ -107,7 +107,7 @@ public enum GallerySupportedTypes {
 
 extension AddedAsset {
     func toAttachmentPayload() throws -> AnyAttachmentPayload {
-        return try AnyAttachmentPayload(
+        try AnyAttachmentPayload(
             localFileURL: url,
             attachmentType: type == .video ? .video : .image,
             extraData: extraData

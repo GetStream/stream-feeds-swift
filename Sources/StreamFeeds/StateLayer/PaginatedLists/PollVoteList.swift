@@ -10,7 +10,7 @@ public final class PollVoteList: Sendable {
     private let pollsRepository: PollsRepository
     
     init(query: PollVotesQuery, client: FeedsClient) {
-        self.pollsRepository = client.pollsRepository
+        pollsRepository = client.pollsRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { PollVoteListState(query: query, events: events) }
@@ -62,4 +62,4 @@ public final class PollVoteList: Sendable {
         )
         return result.models
     }
-} 
+}

@@ -2,12 +2,11 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
-import SwiftUI
 import StreamCore
 import StreamFeeds
+import SwiftUI
 
 struct CommentsView: View {
-    
     let activityId: String
     let userId: String
     
@@ -28,7 +27,7 @@ struct CommentsView: View {
         let activity = feedsClient.activity(for: activityId, in: fid)
         _activity = State(initialValue: activity)
         _state = StateObject(wrappedValue: activity.state)
-        self.userId = feedsClient.user.id
+        userId = feedsClient.user.id
     }
     
     var body: some View {
@@ -131,7 +130,7 @@ struct CommentsView: View {
             .padding()
             .frame(maxWidth: .infinity)
         }
-        .onChange(of: expandedCommentRepliesId, perform: { value in
+        .onChange(of: expandedCommentRepliesId, perform: { _ in
             if expandedCommentRepliesId == nil {
                 nestedCommentRepliesId = nil
             }
@@ -139,7 +138,7 @@ struct CommentsView: View {
         .modifier(AddButtonModifier(addItemShown: $addCommentShown, buttonShown: true))
         .alert("Add Comment", isPresented: $addCommentShown) {
             TextField("Insert comment", text: $comment)
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Add") {
                 Task {
                     do {
@@ -155,7 +154,7 @@ struct CommentsView: View {
         }
         .alert("Add Reply", isPresented: $addCommentRepliesShown) {
             TextField("Insert reply", text: $comment)
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Add") {
                 Task {
                     do {
@@ -174,7 +173,7 @@ struct CommentsView: View {
         }
         .alert("Edit comment", isPresented: $editCommentShown) {
             TextField("Edit comment", text: $comment)
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Edit") {
                 Task {
                     do {
@@ -201,18 +200,17 @@ struct CommentsView: View {
 }
 
 extension CommentData {
-    //TODO: maybe expose own reactions.
+    // TODO: maybe expose own reactions.
     func containsUserReaction(with id: String) -> Bool {
         latestReactions.contains(where: { $0.user.id == id })
     }
 }
 
 struct CommentView: View {
-    
     var user: UserData
     var text: String
-    var onEdit: () -> ()
-    var onDelete: () -> ()
+    var onEdit: () -> Void
+    var onDelete: () -> Void
     
     var body: some View {
         HStack {
@@ -220,7 +218,7 @@ struct CommentView: View {
                 Text(user.name ?? user.id)
                     .font(.headline)
                 Text(text)
-                //TODO: attachments
+                // TODO: attachments
             }
             Spacer()
         }
@@ -228,7 +226,7 @@ struct CommentView: View {
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(16)
         .contextMenu {
-            //TODO: permissions / capabilities
+            // TODO: permissions / capabilities
             Button {
                 onEdit()
             } label: {
@@ -245,7 +243,6 @@ struct CommentView: View {
 }
 
 struct ActivityActionsView: View {
-    
     var comment: CommentData
     var activity: Activity
     var userId: String
@@ -290,7 +287,6 @@ struct ActivityActionsView: View {
                 } label: {
                     Text("Replies (\(comment.replyCount))")
                 }
-
             }
             
             Image(systemName: containsUserReaction ? "heart.fill" : "heart")

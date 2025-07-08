@@ -83,15 +83,15 @@ extension ActivityState {
                 guard poll.id == self?.poll?.id else { return }
                 self?.poll = poll
             },
-            pollVoteCasted: { [weak self] pollVote, poll in
+            pollVoteCasted: { [weak self] _, poll in
                 guard poll.id == self?.poll?.id else { return }
                 self?.poll = poll
             },
-            pollVoteChanged: { [weak self] pollVote, poll in
+            pollVoteChanged: { [weak self] _, poll in
                 guard poll.id == self?.poll?.id else { return }
                 self?.poll = poll
             },
-            pollVoteRemoved: { [weak self] pollVote, poll in
+            pollVoteRemoved: { [weak self] _, poll in
                 guard poll.id == self?.poll?.id else { return }
                 self?.poll = poll
             }
@@ -106,7 +106,7 @@ extension ActivityState {
         if commentListState.comments.isEmpty {
             commentListState.comments = activity.comments
         }
-        self.poll = activity.poll
+        poll = activity.poll
     }
     
     /// Provides thread-safe access to the state for modifications.

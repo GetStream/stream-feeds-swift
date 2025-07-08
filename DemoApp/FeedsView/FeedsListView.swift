@@ -2,9 +2,9 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
-import SwiftUI
 import StreamCore
 import StreamFeeds
+import SwiftUI
 
 struct FeedsListView: View {
     let client: FeedsClient
@@ -81,7 +81,7 @@ struct FeedsListView: View {
             } else {
                 ActivityComposerView(feed: feed, feedsClient: client)
             }
-        })        
+        })
         .alert("Update activity", isPresented: .init(
             get: { activityToUpdate != nil },
             set: { if !$0 { activityToUpdate = nil } }
@@ -93,7 +93,7 @@ struct FeedsListView: View {
             Button("Update") {
                 if let activity = activityToUpdate {
                     Task {
-                        do {                            
+                        do {
                             _ = try await feed.updateActivity(
                                 id: activity.id,
                                 request: .init(attachments: activity.attachments, text: updatedActivityText)
@@ -131,7 +131,6 @@ struct FeedsListView: View {
 }
 
 struct UserAvatar: View {
-    
     let url: URL?
     var size: CGFloat = 36
     
@@ -149,7 +148,6 @@ struct UserAvatar: View {
 }
 
 struct ActivityView: View {
-    
     let user: UserData
     let ownCapabilities: [FeedOwnCapability]
     let text: String
@@ -199,7 +197,6 @@ struct ActivityView: View {
 }
 
 struct AddButtonModifier: ViewModifier {
-    
     @Binding var addItemShown: Bool
     var buttonShown: Bool
     
@@ -237,7 +234,6 @@ struct AddButtonView: View {
 }
 
 struct PresentationDetentModifier: ViewModifier {
-    
     func body(content: Content) -> some View {
         if #available(iOS 16.0, *) {
             content.presentationDetents([.medium])

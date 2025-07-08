@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// A feed represents a collection of activities and provides methods to interact with them.
-/// 
+///
 /// The `Feed` class is the primary interface for working with feeds in the Stream Feeds SDK.
 /// It provides functionality for:
 /// - Creating and managing feed data
@@ -15,11 +15,11 @@ import StreamCore
 /// - Handling follows and feed memberships
 /// - Creating polls and managing poll interactions
 /// - Pagination and querying of feed content
-/// 
+///
 /// Each feed instance is associated with a specific feed ID and maintains its own state
 /// that can be observed for real-time updates. The feed state includes activities,
 /// followers, members, and other feed-related data.
-/// 
+///
 /// - Note: This class is thread-safe and can be used from any thread.
 public final class Feed: Sendable {
     @MainActor private let stateBuilder: StateBuilder<FeedState>
@@ -34,18 +34,18 @@ public final class Feed: Sendable {
     private let pollsRepository: PollsRepository
     private let memberList: MemberList
     
-    internal init(
+    init(
         query: FeedQuery,
         client: FeedsClient
     ) {
-        self.activitiesRepository = client.activitiesRepository
-        self.attachmentsUploader = client.attachmentsUploader
-        self.bookmarksRepository = client.bookmarksRepository
-        self.commentsRepository = client.commentsRepository
-        self.feedQuery = query
-        self.feedsRepository = client.feedsRepository
-        self.memberList = client.memberList(for: .init(fid: query.fid))
-        self.pollsRepository = client.pollsRepository
+        activitiesRepository = client.activitiesRepository
+        attachmentsUploader = client.attachmentsUploader
+        bookmarksRepository = client.bookmarksRepository
+        commentsRepository = client.commentsRepository
+        feedQuery = query
+        feedsRepository = client.feedsRepository
+        memberList = client.memberList(for: .init(fid: query.fid))
+        pollsRepository = client.pollsRepository
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { [memberList] in
             FeedState(
@@ -57,7 +57,7 @@ public final class Feed: Sendable {
     }
     
     /// The unique identifier for this feed.
-    /// 
+    ///
     /// This property provides access to the feed's identifier, which is used to distinguish
     /// this feed from other feeds in the system. The feed ID is composed of a group and
     /// an ID component that together form a unique reference to this specific feed.
@@ -74,10 +74,10 @@ public final class Feed: Sendable {
     // MARK: - Creating and Fetching the Feed
     
     /// Fetches or creates the feed based on the current feed query.
-    /// 
+    ///
     /// This method will either retrieve an existing feed or create a new one if it doesn't exist.
     /// The feed state will be updated with the fetched data including activities, followers, and other feed information.
-    /// 
+    ///
     /// - Throws: `APIError` if the network request fails or the server returns an error
     /// - Returns: `FeedData` containing the latest state of the feed.
     @discardableResult
@@ -185,7 +185,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func queryActivities(with query: ActivitiesQuery) async throws -> [ActivityData] {
         let result = try await activitiesRepository.queryActivities(with: query)
-        let queryConfig =  QueryConfiguration(filter: query.filter, sort: query.sort)
+        let queryConfig = QueryConfiguration(filter: query.filter, sort: query.sort)
         await state.didPaginateActivities(with: result, for: queryConfig)
         return result.models
     }
@@ -256,7 +256,7 @@ public final class Feed: Sendable {
     ///       activityId: "activity-123",
     ///       request: updateRequest
     ///   )
-    ///   
+    ///
     ///   // Update bookmark with custom data
     ///   let customUpdateRequest = UpdateBookmarkRequest(
     ///       folderId: "favorites",

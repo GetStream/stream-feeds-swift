@@ -57,7 +57,7 @@ final class ActivitiesRepository: Sendable {
                 return StreamAttachment<Data>(
                     id: AttachmentId(
                         fid: fid.rawValue,
-                        activityId: UUID().uuidString, //TODO: how do we know this?
+                        activityId: UUID().uuidString, // TODO: how do we know this?
                         index: index
                     ),
                     type: attachment.type,
@@ -69,7 +69,7 @@ final class ActivitiesRepository: Sendable {
                         file: attachmentFile
                     )
                 )
-        }
+            }
         return try await attachmentUploader.upload(dataAttachments, progress: nil)
             .map { uploadedAttachment in
                 Attachment(

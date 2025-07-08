@@ -6,7 +6,6 @@ import StreamFeeds
 import SwiftUI
 
 struct PollOptionAllVotesView: View {
-
     @StateObject var viewModel: PollOptionAllVotesViewModel
     
     init(

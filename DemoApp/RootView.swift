@@ -57,7 +57,6 @@ extension FeedsClient {
 }
 
 @MainActor class AppState: ObservableObject {
-    
     static let shared = AppState()
     
     private init() {}
@@ -69,15 +68,16 @@ extension FeedsClient {
             }
         }
     }
+
     @Published var viewState: ViewState = .loggedOut
     @Published var client: FeedsClient? {
         didSet {
             if client != nil {
                 didUpdate(pushToken: pushToken)
             }
-
         }
     }
+
     @Published var showsLoginAlert = false
         
     private func didUpdate(pushToken: String?) {

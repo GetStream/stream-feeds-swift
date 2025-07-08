@@ -6,7 +6,6 @@ import Foundation
 import SwiftUI
 
 public struct VideoIndicatorView: View {
-
     public init() {}
 
     public var body: some View {

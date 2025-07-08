@@ -53,6 +53,7 @@ extension ScrollViewPaginationViewModifier {
     enum PaginationState: Equatable {
         case idle, loading, scheduled
     }
+
     enum ScrollArea: Equatable {
         case content
         case threshold

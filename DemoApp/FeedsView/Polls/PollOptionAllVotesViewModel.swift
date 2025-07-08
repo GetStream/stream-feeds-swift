@@ -7,7 +7,6 @@ import StreamFeeds
 import SwiftUI
 
 @MainActor class PollOptionAllVotesViewModel: ObservableObject {
-    
     let poll: PollData
     let option: PollOptionData
     let activity: Activity
@@ -26,7 +25,7 @@ import SwiftUI
         self.option = option
         self.activity = activity
         self.feedsClient = feedsClient
-        self.voteList = feedsClient.pollVoteList(
+        voteList = feedsClient.pollVoteList(
             for: .init(
                 pollId: poll.id,
                 userId: feedsClient.user.id,

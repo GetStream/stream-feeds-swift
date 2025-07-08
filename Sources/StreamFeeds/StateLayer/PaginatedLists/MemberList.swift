@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// A class that manages a paginated list of feed members.
-/// 
+///
 /// `MemberList` provides functionality to query and paginate through members of a specific feed.
 /// It maintains the current state of the member list and provides methods to load more members
 /// when available.
@@ -15,14 +15,14 @@ public final class MemberList: Sendable {
     private let feedsRepository: FeedsRepository
     
     init(query: MembersQuery, client: FeedsClient) {
-        self.feedsRepository = client.feedsRepository
+        feedsRepository = client.feedsRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { MemberListState(query: query, events: events) }
     }
 
     /// The query configuration used to fetch members.
-    /// 
+    ///
     /// This contains the feed ID, filters, sorting options, and pagination parameters
     /// that define which members are retrieved and how they are ordered.
     public let query: MembersQuery
@@ -30,7 +30,7 @@ public final class MemberList: Sendable {
     // MARK: - Accessing the State
     
     /// An observable object representing the current state of the member list.
-    /// 
+    ///
     /// This property provides access to the current members, pagination state,
     /// and other state information. The state is automatically updated when
     /// new members are loaded or when real-time updates are received.
@@ -39,11 +39,11 @@ public final class MemberList: Sendable {
     // MARK: - Paginating the List of Members
     
     /// Fetches the initial list of members based on the current query configuration.
-    /// 
+    ///
     /// This method loads the first page of members according to the query's filters,
     /// sorting, and limit parameters. The results are stored in the state and can
     /// be accessed through the `state.members` property.
-    /// 
+    ///
     /// - Returns: An array of `FeedMemberData` representing the fetched members.
     /// - Throws: An error if the network request fails or the response cannot be parsed.
     @discardableResult
@@ -52,11 +52,11 @@ public final class MemberList: Sendable {
     }
     
     /// Loads the next page of members if more are available.
-    /// 
+    ///
     /// This method fetches additional members using the pagination information
     /// from the previous request. If no more members are available, an empty
     /// array is returned.
-    /// 
+    ///
     /// - Parameter limit: Optional limit for the number of members to fetch.
     ///   If not specified, uses the limit from the original query.
     /// - Returns: An array of `FeedMemberData` representing the additional members.
@@ -96,4 +96,4 @@ public final class MemberList: Sendable {
         )
         return result.models
     }
-} 
+}

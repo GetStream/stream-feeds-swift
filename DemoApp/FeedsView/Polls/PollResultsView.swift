@@ -6,7 +6,6 @@ import StreamFeeds
 import SwiftUI
 
 struct PollResultsView: View {
-    
     @Environment(\.presentationMode) var presentationMode
     
     @ObservedObject var viewModel: PollAttachmentViewModel
@@ -45,11 +44,11 @@ struct PollResultsView: View {
                         option: option,
                         votes: Array(
                             []
-                            //TODO: we should expose this?
+                            // TODO: we should expose this?
 //                            option.latestVotes
 //                                .prefix(numberOfItemsShown)
                         ),
-                        allButtonShown: true, //TODO: option.latestVotes.count > numberOfItemsShown,
+                        allButtonShown: true, // TODO: option.latestVotes.count > numberOfItemsShown,
                         hasMostVotes: viewModel.hasMostVotes(for: option),
                         activity: viewModel.activity,
                         feedsClient: viewModel.feedsClient
@@ -78,7 +77,6 @@ struct PollResultsView: View {
 }
 
 struct PollOptionResultsView: View {
-    
     let colors = Colors.shared
     
     var poll: PollData

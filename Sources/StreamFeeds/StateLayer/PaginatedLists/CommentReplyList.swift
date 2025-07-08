@@ -57,7 +57,7 @@ public final class CommentReplyList: Sendable {
     ///   - query: The query configuration for fetching replies
     ///   - client: The feeds client instance
     init(query: CommentRepliesQuery, client: FeedsClient) {
-        self.commentsRepository = client.commentsRepository
+        commentsRepository = client.commentsRepository
         self.query = query
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { CommentReplyListState(query: query, events: events) }
@@ -161,4 +161,4 @@ public final class CommentReplyList: Sendable {
         await state.didPaginate(with: result)
         return result.models
     }
-} 
+}

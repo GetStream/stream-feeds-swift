@@ -61,4 +61,4 @@ extension CommentListState {
         // Can't locally sort for all the sorting keys
         comments.appendReplacingDuplicates(byId: response.models)
     }
-} 
+}

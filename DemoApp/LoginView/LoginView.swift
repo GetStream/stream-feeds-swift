@@ -2,12 +2,12 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
-import SwiftUI
 import StreamCore
 import StreamFeeds
+import SwiftUI
 
 struct LoginView: View {
-    let onCredentialsTapped: (UserCredentials) -> ()
+    let onCredentialsTapped: (UserCredentials) -> Void
 
     @State private var showsConfiguration = false
     
@@ -83,7 +83,6 @@ extension LoginView {
             }
         }
     }
-
 }
 
 #Preview {
