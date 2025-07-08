@@ -3,3 +3,4 @@ pre-commit:
   jobs:
     - run: bundle exec fastlane run_swift_format
       glob: "*.{swift}"
+      stage_fixed: true
