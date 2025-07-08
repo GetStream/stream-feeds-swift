@@ -6,4 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 🔄 Changed
 
+# [0.0.1](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.0.1)
+_July 08, 2025_
+
+### 🔄 Changed
+
 - Testing release
