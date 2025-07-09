@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class BodyguardSeverityRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum Action: String, Sendable, Codable, CaseIterable {
+    public enum BodyguardSeverityRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
         case bounceRemove = "bounce_remove"
@@ -14,16 +14,15 @@ public final class BodyguardSeverityRule: @unchecked Sendable, Codable, JSONEnco
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
             }
         }
     }
-
-    public enum Severity: String, Sendable, Codable, CaseIterable {
+    
+    public enum BodyguardSeverityRuleSeverity: String, Sendable, Codable, CaseIterable {
         case critical
         case high
         case low
@@ -33,8 +32,7 @@ public final class BodyguardSeverityRule: @unchecked Sendable, Codable, JSONEnco
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -42,10 +40,10 @@ public final class BodyguardSeverityRule: @unchecked Sendable, Codable, JSONEnco
         }
     }
 
-    public var action: String
-    public var severity: String
+    public var action: BodyguardSeverityRuleAction
+    public var severity: BodyguardSeverityRuleSeverity
 
-    public init(action: String, severity: String) {
+    public init(action: BodyguardSeverityRuleAction, severity: BodyguardSeverityRuleSeverity) {
         self.action = action
         self.severity = severity
     }

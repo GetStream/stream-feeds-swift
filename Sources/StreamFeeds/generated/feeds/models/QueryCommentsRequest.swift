@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum QueryCommentsRequestSort: String, Sendable, Codable, CaseIterable {
         case best
         case controversial
         case first
@@ -13,8 +13,7 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -26,9 +25,9 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
     public var limit: Int?
     public var next: String?
     public var prev: String?
-    public var sort: String?
+    public var sort: QueryCommentsRequestSort?
 
-    public init(filter: [String: RawJSON], limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: String? = nil) {
+    public init(filter: [String: RawJSON], limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: QueryCommentsRequestSort? = nil) {
         self.filter = filter
         self.limit = limit
         self.next = next

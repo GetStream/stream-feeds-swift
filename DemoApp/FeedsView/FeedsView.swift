@@ -16,7 +16,7 @@ struct FeedsView: View {
             fid: FeedId(group: "user", id: client.user.id),
             data: .init(
                 members: [.init(userId: client.user.id)],
-                visibility: "public"
+                visibility: .public
             )
         )
         _feed = State(initialValue: client.feed(for: query))

@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum SubmitActionRequestActionType: String, Sendable, Codable, CaseIterable {
         case ban
         case custom
         case deleteActivity = "delete_activity"
@@ -21,8 +21,7 @@ public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncoda
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -30,7 +29,7 @@ public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncoda
         }
     }
 
-    public var actionType: String
+    public var actionType: SubmitActionRequestActionType
     public var ban: BanActionRequest?
     public var custom: CustomActionRequest?
     public var deleteActivity: DeleteActivityRequest?
@@ -40,7 +39,7 @@ public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncoda
     public var itemId: String
     public var markReviewed: MarkReviewedRequest?
 
-    public init(actionType: String, ban: BanActionRequest? = nil, custom: CustomActionRequest? = nil, deleteActivity: DeleteActivityRequest? = nil, deleteMessage: DeleteMessageRequest? = nil, deleteReaction: DeleteReactionRequest? = nil, deleteUser: DeleteUserRequest? = nil, itemId: String, markReviewed: MarkReviewedRequest? = nil) {
+    public init(actionType: SubmitActionRequestActionType, ban: BanActionRequest? = nil, custom: CustomActionRequest? = nil, deleteActivity: DeleteActivityRequest? = nil, deleteMessage: DeleteMessageRequest? = nil, deleteReaction: DeleteReactionRequest? = nil, deleteUser: DeleteUserRequest? = nil, itemId: String, markReviewed: MarkReviewedRequest? = nil) {
         self.actionType = actionType
         self.ban = ban
         self.custom = custom

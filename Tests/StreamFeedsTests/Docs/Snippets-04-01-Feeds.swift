@@ -21,7 +21,7 @@ import StreamFeeds
             data: .init(
                 description: "My personal feed",
                 name: "jack",
-                visibility: "public"
+                visibility: .public
             )
         )
         let feed2 = client.feed(for: query)

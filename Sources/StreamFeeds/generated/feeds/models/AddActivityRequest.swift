@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
+    public enum AddActivityRequestVisibility: String, Sendable, Codable, CaseIterable {
         case `private`
         case `public`
         case tag
@@ -11,8 +11,7 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -34,10 +33,10 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
     public var searchData: [String: RawJSON]?
     public var text: String?
     public var type: String
-    public var visibility: ActivityVisibility?
+    public var visibility: AddActivityRequestVisibility?
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: AddActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt

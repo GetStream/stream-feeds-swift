@@ -2,7 +2,23 @@ import Foundation
 import StreamCore
 
 public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum FollowStatus: String, Sendable, Codable, CaseIterable {
+    public enum FollowResponsePushPreference: String, Sendable, Codable, CaseIterable {
+        case all
+        case none
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+    
+    public enum FollowResponseStatus: String, Sendable, Codable, CaseIterable {
         case accepted
         case pending
         case rejected
@@ -11,8 +27,7 @@ public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable, 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -23,15 +38,15 @@ public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable, 
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var followerRole: String
-    public var pushPreference: String
+    public var pushPreference: FollowResponsePushPreference
     public var requestAcceptedAt: Date?
     public var requestRejectedAt: Date?
     public var sourceFeed: FeedResponse
-    public var status: String
+    public var status: FollowResponseStatus
     public var targetFeed: FeedResponse
     public var updatedAt: Date
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, followerRole: String, pushPreference: String, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, sourceFeed: FeedResponse, status: String, targetFeed: FeedResponse, updatedAt: Date) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, followerRole: String, pushPreference: FollowResponsePushPreference, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, sourceFeed: FeedResponse, status: FollowResponseStatus, targetFeed: FeedResponse, updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
         self.followerRole = followerRole

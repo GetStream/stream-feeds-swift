@@ -32,7 +32,7 @@ extension FeedMemberResponse {
             inviteAcceptedAt: inviteAcceptedAt,
             inviteRejectedAt: inviteRejectedAt,
             role: role,
-            status: status,
+            status: status.rawValue,
             updatedAt: updatedAt,
             user: user.toModel()
         )

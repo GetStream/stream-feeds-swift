@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class BlockListOptions: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum BlockListOptionsBehavior: String, Sendable, Codable, CaseIterable {
         case block
         case flag
         case shadowBlock = "shadow_block"
@@ -11,8 +11,7 @@ public final class BlockListOptions: @unchecked Sendable, Codable, JSONEncodable
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -20,10 +19,10 @@ public final class BlockListOptions: @unchecked Sendable, Codable, JSONEncodable
         }
     }
 
-    public var behavior: String
+    public var behavior: BlockListOptionsBehavior
     public var blocklist: String
 
-    public init(behavior: String, blocklist: String) {
+    public init(behavior: BlockListOptionsBehavior, blocklist: String) {
         self.behavior = behavior
         self.blocklist = blocklist
     }

@@ -2,8 +2,24 @@ import Foundation
 import StreamCore
 
 public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public enum ConfigOverridesBlocklistBehavior: String, Sendable, Codable, CaseIterable {
+        case block
+        case flag
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var blocklist: String?
-    public var blocklistBehavior: String?
+    public var blocklistBehavior: ConfigOverridesBlocklistBehavior?
     public var commands: [String]
     public var grants: [String: [String]]
     public var maxMessageLength: Int?
@@ -16,7 +32,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
     public var urlEnrichment: Bool?
     public var userMessageReminders: Bool?
 
-    public init(blocklist: String? = nil, blocklistBehavior: String? = nil, commands: [String], grants: [String: [String]], maxMessageLength: Int? = nil, quotes: Bool? = nil, reactions: Bool? = nil, replies: Bool? = nil, sharedLocations: Bool? = nil, typingEvents: Bool? = nil, uploads: Bool? = nil, urlEnrichment: Bool? = nil, userMessageReminders: Bool? = nil) {
+    public init(blocklist: String? = nil, blocklistBehavior: ConfigOverridesBlocklistBehavior? = nil, commands: [String], grants: [String: [String]], maxMessageLength: Int? = nil, quotes: Bool? = nil, reactions: Bool? = nil, replies: Bool? = nil, sharedLocations: Bool? = nil, typingEvents: Bool? = nil, uploads: Bool? = nil, urlEnrichment: Bool? = nil, userMessageReminders: Bool? = nil) {
         self.blocklist = blocklist
         self.blocklistBehavior = blocklistBehavior
         self.commands = commands

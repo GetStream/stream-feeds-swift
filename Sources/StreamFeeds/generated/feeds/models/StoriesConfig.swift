@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class StoriesConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum StoriesVisibility: String, Sendable, Codable, CaseIterable {
+    public enum StoriesConfigExpirationBehaviour: String, Sendable, Codable, CaseIterable {
         case hideForEveryone = "hide_for_everyone"
         case visibleForAuthor = "visible_for_author"
         case unknown = "_unknown"
@@ -10,8 +10,7 @@ public final class StoriesConfig: @unchecked Sendable, Codable, JSONEncodable, H
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -19,10 +18,10 @@ public final class StoriesConfig: @unchecked Sendable, Codable, JSONEncodable, H
         }
     }
 
-    public var expirationBehaviour: String?
+    public var expirationBehaviour: StoriesConfigExpirationBehaviour?
     public var skipWatched: Bool?
 
-    public init(expirationBehaviour: String? = nil, skipWatched: Bool? = nil) {
+    public init(expirationBehaviour: StoriesConfigExpirationBehaviour? = nil, skipWatched: Bool? = nil) {
         self.expirationBehaviour = expirationBehaviour
         self.skipWatched = skipWatched
     }

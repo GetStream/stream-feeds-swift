@@ -123,7 +123,7 @@ extension ActivityResponse {
             type: type,
             updatedAt: updatedAt,
             user: user.toModel(),
-            visibility: visibility,
+            visibility: visibility.rawValue,
             visibilityTag: visibilityTag,
             _parent: BoxedAny(parent?.toModel())
         )

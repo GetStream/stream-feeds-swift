@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum Action: String, Sendable, Codable, CaseIterable {
+    public enum VelocityFilterConfigRuleAction: String, Sendable, Codable, CaseIterable {
         case ban
         case flag
         case remove
@@ -12,8 +12,25 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+    
+    public enum VelocityFilterConfigRuleCascadingAction: String, Sendable, Codable, CaseIterable {
+        case ban
+        case flag
+        case remove
+        case shadow
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -21,9 +38,9 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
         }
     }
 
-    public var action: String
+    public var action: VelocityFilterConfigRuleAction
     public var banDuration: Int
-    public var cascadingAction: String
+    public var cascadingAction: VelocityFilterConfigRuleCascadingAction
     public var cascadingThreshold: Int
     public var checkMessageContext: Bool
     public var fastSpamThreshold: Int
@@ -36,7 +53,7 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
     public var slowSpamTtl: Int
     public var urlOnly: Bool
 
-    public init(action: String, banDuration: Int, cascadingAction: String, cascadingThreshold: Int, checkMessageContext: Bool, fastSpamThreshold: Int, fastSpamTtl: Int, ipBan: Bool, probationPeriod: Int, shadowBan: Bool, slowSpamBanDuration: Int? = nil, slowSpamThreshold: Int, slowSpamTtl: Int, urlOnly: Bool) {
+    public init(action: VelocityFilterConfigRuleAction, banDuration: Int, cascadingAction: VelocityFilterConfigRuleCascadingAction, cascadingThreshold: Int, checkMessageContext: Bool, fastSpamThreshold: Int, fastSpamTtl: Int, ipBan: Bool, probationPeriod: Int, shadowBan: Bool, slowSpamBanDuration: Int? = nil, slowSpamThreshold: Int, slowSpamTtl: Int, urlOnly: Bool) {
         self.action = action
         self.banDuration = banDuration
         self.cascadingAction = cascadingAction

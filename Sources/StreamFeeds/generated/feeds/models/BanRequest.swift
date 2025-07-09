@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum BanRequestDeleteMessages: String, Sendable, Codable, CaseIterable {
         case hard
         case pruning
         case soft
@@ -11,8 +11,7 @@ public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable, Hash
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -23,14 +22,14 @@ public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable, Hash
     public var bannedBy: UserRequest?
     public var bannedById: String?
     public var channelCid: String?
-    public var deleteMessages: String?
+    public var deleteMessages: BanRequestDeleteMessages?
     public var ipBan: Bool?
     public var reason: String?
     public var shadow: Bool?
     public var targetUserId: String
     public var timeout: Int?
 
-    public init(bannedBy: UserRequest? = nil, bannedById: String? = nil, channelCid: String? = nil, deleteMessages: String? = nil, ipBan: Bool? = nil, reason: String? = nil, shadow: Bool? = nil, targetUserId: String, timeout: Int? = nil) {
+    public init(bannedBy: UserRequest? = nil, bannedById: String? = nil, channelCid: String? = nil, deleteMessages: BanRequestDeleteMessages? = nil, ipBan: Bool? = nil, reason: String? = nil, shadow: Bool? = nil, targetUserId: String, timeout: Int? = nil) {
         self.bannedBy = bannedBy
         self.bannedById = bannedById
         self.channelCid = channelCid

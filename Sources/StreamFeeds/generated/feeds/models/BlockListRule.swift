@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum BlockListRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
         case bounceRemove = "bounce_remove"
@@ -15,8 +15,7 @@ public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable, H
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -24,11 +23,11 @@ public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable, H
         }
     }
 
-    public var action: String
+    public var action: BlockListRuleAction
     public var name: String
     public var team: String
 
-    public init(action: String, name: String, team: String) {
+    public init(action: BlockListRuleAction, name: String, team: String) {
         self.action = action
         self.name = name
         self.team = team

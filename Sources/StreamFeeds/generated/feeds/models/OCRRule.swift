@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum OCRRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
         case bounceRemove = "bounce_remove"
@@ -14,8 +14,7 @@ public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -23,10 +22,10 @@ public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         }
     }
 
-    public var action: String
+    public var action: OCRRuleAction
     public var label: String
 
-    public init(action: String, label: String) {
+    public init(action: OCRRuleAction, label: String) {
         self.action = action
         self.label = label
     }

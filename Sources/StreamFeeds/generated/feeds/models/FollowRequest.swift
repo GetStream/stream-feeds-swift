@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum FollowRequestPushPreference: String, Sendable, Codable, CaseIterable {
         case all
         case none
         case unknown = "_unknown"
@@ -10,8 +10,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -20,11 +19,11 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
     }
 
     public var custom: [String: RawJSON]?
-    public var pushPreference: String?
+    public var pushPreference: FollowRequestPushPreference?
     public var source: String
     public var target: String
 
-    public init(custom: [String: RawJSON]? = nil, pushPreference: String? = nil, source: String, target: String) {
+    public init(custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, source: String, target: String) {
         self.custom = custom
         self.pushPreference = pushPreference
         self.source = source

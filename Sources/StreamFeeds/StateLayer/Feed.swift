@@ -336,7 +336,11 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     /// - Returns: The data of the follow request.
     @discardableResult
-    public func follow(_ targetFid: FeedId, custom: [String: RawJSON]? = nil, pushPreference: String? = nil) async throws -> FollowData {
+    public func follow(
+        _ targetFid: FeedId,
+        custom: [String: RawJSON]? = nil,
+        pushPreference: SingleFollowRequest.SingleFollowRequestPushPreference? = nil
+    ) async throws -> FollowData {
         let request = SingleFollowRequest(custom: custom, pushPreference: pushPreference, source: fid.rawValue, target: targetFid.rawValue)
         let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)

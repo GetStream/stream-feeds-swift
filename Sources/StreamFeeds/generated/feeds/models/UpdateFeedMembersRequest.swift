@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum Operation: String, Sendable, Codable, CaseIterable {
+    public enum UpdateFeedMembersRequestOperation: String, Sendable, Codable, CaseIterable {
         case remove
         case set
         case upsert
@@ -11,8 +11,7 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -23,10 +22,10 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
     public var limit: Int?
     public var members: [FeedMemberRequest]?
     public var next: String?
-    public var operation: Operation
+    public var operation: UpdateFeedMembersRequestOperation
     public var prev: String?
 
-    public init(limit: Int? = nil, members: [FeedMemberRequest]? = nil, next: String? = nil, operation: Operation, prev: String? = nil) {
+    public init(limit: Int? = nil, members: [FeedMemberRequest]? = nil, next: String? = nil, operation: UpdateFeedMembersRequestOperation, prev: String? = nil) {
         self.limit = limit
         self.members = members
         self.next = next

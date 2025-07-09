@@ -37,8 +37,7 @@ public enum FeedOwnCapability: String, Sendable, Codable, CaseIterable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let decodedValue = try? container.decode(String.self),
-           let value = FeedOwnCapability(rawValue: decodedValue)
-        {
+           let value = FeedOwnCapability(rawValue: decodedValue) {
             self = value
         } else {
             self = .unknown

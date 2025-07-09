@@ -2,13 +2,29 @@ import Foundation
 import StreamCore
 
 public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public enum UpdateFollowRequestPushPreference: String, Sendable, Codable, CaseIterable {
+        case all
+        case none
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var custom: [String: RawJSON]?
     public var followerRole: String?
-    public var pushPreference: String?
+    public var pushPreference: UpdateFollowRequestPushPreference?
     public var source: String
     public var target: String
 
-    public init(custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: String? = nil, source: String, target: String) {
+    public init(custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
         self.custom = custom
         self.followerRole = followerRole
         self.pushPreference = pushPreference

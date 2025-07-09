@@ -28,7 +28,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
     ) async throws -> Response {
         // TODO: make this a bit nicer and create an API error to make it easier to handle stuff
         func makeError(_ error: Error) -> Error {
-            return error
+            error
         }
 
         func wrappingErrors<R>(
@@ -112,8 +112,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/blocklists"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
-
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -146,8 +145,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let namePostEscape = namePreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "name"), with: namePostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
-
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -181,8 +179,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/devices"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "id": (wrappedValue: id.encodeToJSON(), isExplode: true),
-
+            "id": (wrappedValue: id.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -279,8 +276,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
-
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -350,8 +346,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "folder_id": (wrappedValue: folderId?.encodeToJSON(), isExplode: true),
-
+            "folder_id": (wrappedValue: folderId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -431,8 +426,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let voteIdPostEscape = voteIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "vote_id"), with: voteIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -535,8 +529,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             "replies_limit": (wrappedValue: repliesLimit?.encodeToJSON(), isExplode: true),
             "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
             "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
-            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true),
-
+            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -702,8 +695,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             "replies_limit": (wrappedValue: repliesLimit?.encodeToJSON(), isExplode: true),
             "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
             "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
-            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true),
-
+            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -726,8 +718,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
-
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -929,8 +920,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
-
+            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1112,8 +1102,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let keyPostEscape = keyPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "key"), with: keyPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
-
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1133,8 +1122,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let keyPostEscape = keyPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "key"), with: keyPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
-
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1216,8 +1204,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/og"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "url": (wrappedValue: url.encodeToJSON(), isExplode: true),
-
+            "url": (wrappedValue: url.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1260,8 +1247,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/polls/query"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1282,8 +1268,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1303,8 +1288,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1378,8 +1362,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let optionIdPostEscape = optionIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "option_id"), with: optionIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1402,8 +1385,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let optionIdPostEscape = optionIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "option_id"), with: optionIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1423,8 +1405,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true),
-
+            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1442,8 +1423,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/uploads/file"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "url": (wrappedValue: url?.encodeToJSON(), isExplode: true),
-
+            "url": (wrappedValue: url?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1473,8 +1453,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/uploads/image"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "url": (wrappedValue: url?.encodeToJSON(), isExplode: true),
-
+            "url": (wrappedValue: url?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -1504,8 +1483,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let path = "/api/v2/users"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "payload": (wrappedValue: payload?.encodeToJSON(), isExplode: true),
-
+            "payload": (wrappedValue: payload?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(

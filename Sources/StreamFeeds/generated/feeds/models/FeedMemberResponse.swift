@@ -2,16 +2,33 @@ import Foundation
 import StreamCore
 
 public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public enum FeedMemberResponseStatus: String, Sendable, Codable, CaseIterable {
+        case member
+        case pending
+        case rejected
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var inviteAcceptedAt: Date?
     public var inviteRejectedAt: Date?
     public var role: String
-    public var status: String
+    public var status: FeedMemberResponseStatus
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, role: String, status: String, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.inviteAcceptedAt = inviteAcceptedAt

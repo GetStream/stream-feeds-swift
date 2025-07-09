@@ -25,7 +25,7 @@ public struct FeedAddActivityRequest: Sendable {
         searchData: [String: RawJSON]? = nil,
         text: String? = nil,
         type: String,
-        visibility: AddActivityRequest.ActivityVisibility? = nil,
+        visibility: AddActivityRequest.AddActivityRequestVisibility? = nil,
         visibilityTag: String? = nil
     ) {
         self.attachmentUploads = attachmentUploads

@@ -45,7 +45,7 @@ extension CommentsFilterField {
 
 // MARK: - Sorting
 
-public typealias CommentsSort = QueryCommentsRequest.string
+public typealias CommentsSort = QueryCommentsRequest.QueryCommentsRequestSort
 
 // MARK: -
 
@@ -62,7 +62,7 @@ extension CommentsQuery {
             limit: limit,
             next: next,
             prev: previous,
-            sort: sort?.rawValue
+            sort: sort
         )
     }
 }

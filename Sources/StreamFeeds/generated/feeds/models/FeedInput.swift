@@ -2,19 +2,18 @@ import Foundation
 import StreamCore
 
 public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum FeedVisibility: String, Sendable, Codable, CaseIterable {
-        case followers
-        case members
+    public enum FeedInputVisibility: String, Sendable, Codable, CaseIterable {
         case `private`
         case `public`
+        case followers
+        case members
         case visible
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -26,9 +25,9 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
     public var description: String?
     public var members: [FeedMemberRequest]?
     public var name: String?
-    public var visibility: String?
+    public var visibility: FeedInputVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: String? = nil) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.members = members

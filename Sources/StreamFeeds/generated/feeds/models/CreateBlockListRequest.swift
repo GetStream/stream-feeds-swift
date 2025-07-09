@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum CreateBlockListRequestType: String, Sendable, Codable, CaseIterable {
         case domain
         case domainAllowlist = "domain_allowlist"
         case email
@@ -13,8 +13,7 @@ public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -24,7 +23,7 @@ public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
 
     public var name: String
     public var team: String?
-    public var type: String?
+    public var type: CreateBlockListRequestType?
     public var words: [String]
 
     public init(name: String, team: String? = nil, words: [String]) {

@@ -2,7 +2,7 @@ import Foundation
 import StreamCore
 
 public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum string: String, Sendable, Codable, CaseIterable {
+    public enum AutomodSemanticFiltersRuleAction: String, Sendable, Codable, CaseIterable {
         case flag
         case remove
         case shadow
@@ -11,8 +11,7 @@ public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSO
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue)
-            {
+               let value = Self(rawValue: decodedValue) {
                 self = value
             } else {
                 self = .unknown
@@ -20,11 +19,11 @@ public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSO
         }
     }
 
-    public var action: String
+    public var action: AutomodSemanticFiltersRuleAction
     public var name: String
     public var threshold: Float
 
-    public init(action: String, name: String, threshold: Float) {
+    public init(action: AutomodSemanticFiltersRuleAction, name: String, threshold: Float) {
         self.action = action
         self.name = name
         self.threshold = threshold

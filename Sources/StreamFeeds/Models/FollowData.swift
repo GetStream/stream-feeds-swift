@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 public struct FollowData: Sendable {
-    public typealias FollowStatus = FollowResponse.FollowStatus
+    public typealias FollowStatus = FollowResponse.FollowResponseStatus
     
     public let createdAt: Date
     public let custom: [String: RawJSON]?
@@ -55,11 +55,11 @@ extension FollowResponse {
             createdAt: createdAt,
             custom: custom,
             followerRole: followerRole,
-            pushPreference: pushPreference,
+            pushPreference: pushPreference.rawValue,
             requestAcceptedAt: requestAcceptedAt,
             requestRejectedAt: requestRejectedAt,
             sourceFeed: sourceFeed.toModel(),
-            status: FollowData.FollowStatus(rawValue: status) ?? .unknown,
+            status: FollowData.FollowStatus(rawValue: status.rawValue) ?? .unknown,
             targetFeed: targetFeed.toModel(),
             updatedAt: updatedAt
         )
