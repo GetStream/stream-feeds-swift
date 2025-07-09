@@ -21,28 +21,28 @@ jobs:
     strategy:
       matrix:
         include:
-          - ios: 26.0
-            xcode: 26.0
+          - ios: "26.0"
+            xcode: "26.0"
             os: macos-15
             device: "iPhone 16 Pro"
             setup_runtime: false
-          - ios: 18.5
-            xcode: 16.4
+          - ios: "18.5"
+            xcode: "16.4"
             os: macos-15
             device: "iPhone 16 Pro"
             setup_runtime: false
-          - ios: 17.5
-            xcode: 15.4
+          - ios: "17.5"
+            xcode: "15.4"
             os: macos-14
             device: "iPhone 15 Pro"
             setup_runtime: false
-          - ios: 16.4
-            xcode: 15.3
+          - ios: "16.4"
+            xcode: "15.3"
             os: macos-14
             device: "iPhone 14 Pro"
             setup_runtime: true
-          - ios: 15.5
-            xcode: 15.3
+          - ios: "15.5"
+            xcode: "15.3"
             os: macos-14
             device: "iPhone 13 Pro"
             setup_runtime: true
@@ -83,11 +83,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: 26.0
+          - xcode: "26.0"
             os: macos-15
-          - xcode: 16.4
+          - xcode: "16.4"
             os: macos-15
-          - xcode: 16.0
+          - xcode: "16.0"
             os: macos-15
       fail-fast: false
     runs-on: ${{ matrix.os }}
