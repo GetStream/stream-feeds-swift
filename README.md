@@ -80,7 +80,8 @@ import StreamFeeds
 let client = FeedsClient(
     apiKey: APIKey("<your_api_key>"),
     user: User(id: "john"),
-    token: "<user_token>"
+    token: UserToken("<user_token>"),
+    tokenProvider: nil // used to refresh expiring tokens
 )
 
 // Create a feed (or get its data if exists)
