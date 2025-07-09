@@ -51,7 +51,7 @@ struct FeedsView: View {
                 }
             })
         }
-        .sheet(item: $presentedSheet, content: makeSheet)
+        .sheet(item: $presentedSheet, content: { makeSheet($0) })
     }
     
     @ViewBuilder
