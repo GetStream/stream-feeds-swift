@@ -63,32 +63,42 @@ import StreamFeeds
     }
     
     func queryingComments() async throws {
+        // Search in comment texts
+        let list1 = client.commentList(
+            for: .init(
+                filter: .query(.commentText, "oat")
+            )
+        )
+        let comments1 = try await list1.get()
+        
         // All comments for an activity
-        let activityCommentList = client.commentList(
+        let list2 = client.commentList(
             for: .init(
-                filter: [.activityIds: ["activity_123"]]
+                filter: .and([
+                    .equal(.objectId, "activity_123"),
+                    .equal(.objectType, "activity")
+                ])
             )
         )
-        let activityComments = try await activityCommentList.get()
+        let comments2 = try await list2.get()
         
-        // All replies to a parent comment
-        let replyList = client.commentList(
+        // Replies to a parent activity
+        let list3 = client.commentList(
             for: .init(
-                filter: [.parentIds: ["comment_456"]]
+                filter: .equal(.parentId, "parent_id")
             )
         )
-        let replies = try await replyList.get()
-
-        // All comments by a certain user
-        let userCommentList = client.commentList(
-            for: .init(
-                filter: [.userIds: ["john"]],
-                limit: 100
-            )
-        )
-        let userComments = try await userCommentList.get()
+        let comments3 = try await list3.get()
         
-        suppressUnusedWarning(activityComments, replies, userComments)
+        // Comments from an user
+        let list4 = client.commentList(
+            for: .init(
+                filter: .equal(.userId, "jane")
+            )
+        )
+        let comments4 = try await list4.get()
+        
+        suppressUnusedWarning(comments1, comments2, comments3, comments4)
     }
     
     func commentReactions() async throws {

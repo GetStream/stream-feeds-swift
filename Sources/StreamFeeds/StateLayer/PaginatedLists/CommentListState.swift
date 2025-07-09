@@ -28,7 +28,7 @@ import Foundation
     public var canLoadMore: Bool { pagination?.next != nil }
     
     /// The configuration used for the last query.
-    private(set) var queryConfig: (filter: [CommentsFilterField: [String]], sort: CommentsSort?)?
+    private(set) var queryConfig: (filter: CommentsFilter?, sort: CommentsSort?)?
 }
 
 // MARK: - Updating the State
@@ -53,7 +53,7 @@ extension CommentListState {
     
     func didPaginate(
         with response: PaginationResult<CommentData>,
-        filter: [CommentsFilterField: [String]],
+        filter: CommentsFilter?,
         sort: CommentsSort?
     ) {
         pagination = response.pagination

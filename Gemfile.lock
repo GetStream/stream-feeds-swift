@@ -205,12 +205,12 @@ GEM
       bundler
       fastlane
       pry
-    fastlane-plugin-stream_actions (0.3.86)
+    fastlane-plugin-stream_actions (0.3.87)
       xctest_list (= 1.2.1)
     fastlane-plugin-versioning (0.7.1)
     fastlane-sirp (1.0.0)
       sysrandom (~> 1.0)
-    ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2)
     fourflusher (2.3.1)
     fuzzy_match (2.0.4)
     gh_inspector (1.1.3)
@@ -273,6 +273,7 @@ GEM
     method_source (1.1.0)
     mini_magick (4.13.2)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (5.25.5)
     molinillo (0.8.0)
     multi_json (1.15.0)
@@ -283,7 +284,8 @@ GEM
     naturally (2.3.0)
     netrc (0.11.0)
     nkf (0.2.0)
-    nokogiri (1.18.8-arm64-darwin)
+    nokogiri (1.18.8)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     octokit (10.0.0)
       faraday (>= 1, < 3)
@@ -393,7 +395,7 @@ DEPENDENCIES
   danger-commit_lint
   fastlane
   fastlane-plugin-lizard
-  fastlane-plugin-stream_actions (= 0.3.86)
+  fastlane-plugin-stream_actions (= 0.3.87)
   fastlane-plugin-versioning
   json
   lefthook
