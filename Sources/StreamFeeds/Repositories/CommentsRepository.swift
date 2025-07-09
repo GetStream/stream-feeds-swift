@@ -29,7 +29,7 @@ final class CommentsRepository: Sendable {
             objectId: query.objectId,
             objectType: query.objectType,
             depth: query.depth,
-            sort: query.sort,
+            sort: query.sort?.rawValue,
             repliesLimit: query.repliesLimit,
             limit: query.limit,
             prev: query.previous,
@@ -85,7 +85,7 @@ final class CommentsRepository: Sendable {
         let response = try await apiClient.getCommentReplies(
             commentId: query.commentId,
             depth: query.depth,
-            sort: query.sort,
+            sort: query.sort?.rawValue,
             repliesLimit: query.repliesLimit,
             limit: query.limit,
             prev: query.previous,

@@ -11,27 +11,6 @@ import StreamCore
 /// including pagination settings, sorting options, and depth configuration for
 /// nested reply structures.
 ///
-/// ## Usage
-///
-/// ```swift
-/// // Create a basic query for comment replies
-/// let query = CommentRepliesQuery(
-///     commentId: "comment-123"
-/// )
-///
-/// // Create a query with custom parameters
-/// let query = CommentRepliesQuery(
-///     commentId: "comment-123",
-///     sort: "created_at",
-///     depth: 2,
-///     limit: 20,
-///     repliesLimit: 5
-/// )
-///
-/// // Use the query to create a reply list
-/// let replyList = client.commentReplyList(for: query)
-/// ```
-///
 /// ## Features
 ///
 /// - **Pagination**: Supports `next` and `previous` cursors for efficient pagination
@@ -83,18 +62,7 @@ public struct CommentRepliesQuery: Sendable {
     public var repliesLimit: Int?
     
     /// The sorting criteria for replies.
-    ///
-    /// This parameter determines the order in which replies are returned.
-    /// Common sorting options include:
-    ///
-    /// - `"created_at"`: Sort by creation time (newest first)
-    /// - `"-created_at"`: Sort by creation time (oldest first)
-    /// - `"updated_at"`: Sort by last update time
-    /// - `"score"`: Sort by reply score
-    /// - `"reaction_count"`: Sort by number of reactions
-    ///
-    /// - `nil`: Use server default sorting
-    public var sort: CommentRepliesSort?
+    public var sort: CommentsSort?
     
     /// Initializes a new CommentRepliesQuery instance.
     ///
@@ -106,29 +74,9 @@ public struct CommentRepliesQuery: Sendable {
     ///   - repliesLimit: Optional maximum number of nested replies per reply
     ///   - next: Optional pagination cursor for next page
     ///   - previous: Optional pagination cursor for previous page
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// // Basic query
-    /// let query = CommentRepliesQuery(
-    ///     commentId: "comment-123"
-    /// )
-    ///
-    /// // Advanced query with all parameters
-    /// let query = CommentRepliesQuery(
-    ///     commentId: "comment-123",
-    ///     sort: "created_at",
-    ///     depth: 2,
-    ///     limit: 25,
-    ///     repliesLimit: 10,
-    ///     next: "cursor-123",
-    ///     previous: nil
-    /// )
-    /// ```
     public init(
         commentId: String,
-        sort: String? = nil,
+        sort: CommentsSort? = nil,
         depth: Int? = nil,
         limit: Int? = nil,
         repliesLimit: Int? = nil,
@@ -144,26 +92,3 @@ public struct CommentRepliesQuery: Sendable {
         self.previous = previous
     }
 }
-
-// MARK: - Sorting
-
-/// A type alias for reply sorting criteria.
-///
-/// This type represents the sorting string used to order replies in the response.
-/// Common values include:
-///
-/// - `"created_at"`: Sort by creation time (newest first)
-/// - `"-created_at"`: Sort by creation time (oldest first)
-/// - `"updated_at"`: Sort by last update time
-/// - `"score"`: Sort by reply score
-/// - `"reaction_count"`: Sort by number of reactions
-///
-/// ## Example
-///
-/// ```swift
-/// let query = CommentRepliesQuery(
-///     commentId: "comment-123",
-///     sort: "created_at"  // Newest replies first
-/// )
-/// ```
-public typealias CommentRepliesSort = String

@@ -11,29 +11,6 @@ import StreamCore
 /// including pagination settings, sorting options, and depth configuration for
 /// threaded comments.
 ///
-/// ## Usage
-///
-/// ```swift
-/// // Create a basic query for activity comments
-/// let query = ActivityCommentsQuery(
-///     objectId: "activity-123",
-///     objectType: "activity"
-/// )
-///
-/// // Create a query with custom parameters
-/// let query = ActivityCommentsQuery(
-///     objectId: "activity-123",
-///     objectType: "activity",
-///     sort: "created_at",
-///     depth: 3,
-///     limit: 20,
-///     repliesLimit: 5
-/// )
-///
-/// // Use the query to create a comment list
-/// let commentList = client.activityCommentList(for: query)
-/// ```
-///
 /// ## Features
 ///
 /// - **Pagination**: Supports `next` and `previous` cursors for efficient pagination
@@ -93,18 +70,7 @@ public struct ActivityCommentsQuery: Sendable {
     public var repliesLimit: Int?
     
     /// The sorting criteria for comments.
-    ///
-    /// This parameter determines the order in which comments are returned.
-    /// Common sorting options include:
-    ///
-    /// - `"created_at"`: Sort by creation time (newest first)
-    /// - `"-created_at"`: Sort by creation time (oldest first)
-    /// - `"updated_at"`: Sort by last update time
-    /// - `"score"`: Sort by comment score
-    /// - `"reaction_count"`: Sort by number of reactions
-    ///
-    /// - `nil`: Use server default sorting
-    public var sort: CommentRepliesSort?
+    public var sort: CommentsSort?
     
     /// Initializes a new ActivityCommentsQuery instance.
     ///
@@ -117,32 +83,10 @@ public struct ActivityCommentsQuery: Sendable {
     ///   - repliesLimit: Optional maximum number of replies per comment
     ///   - next: Optional pagination cursor for next page
     ///   - previous: Optional pagination cursor for previous page
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// // Basic query
-    /// let query = ActivityCommentsQuery(
-    ///     objectId: "activity-123",
-    ///     objectType: "activity"
-    /// )
-    ///
-    /// // Advanced query with all parameters
-    /// let query = ActivityCommentsQuery(
-    ///     objectId: "activity-123",
-    ///     objectType: "activity",
-    ///     sort: "created_at",
-    ///     depth: 3,
-    ///     limit: 25,
-    ///     repliesLimit: 10,
-    ///     next: "cursor-123",
-    ///     previous: nil
-    /// )
-    /// ```
     public init(
         objectId: String,
         objectType: String,
-        sort: ActivityCommentsSort? = nil,
+        sort: CommentsSort? = nil,
         depth: Int? = nil,
         limit: Int? = nil,
         repliesLimit: Int? = nil,
@@ -159,27 +103,3 @@ public struct ActivityCommentsQuery: Sendable {
         self.previous = previous
     }
 }
-
-// MARK: - Sorting
-
-/// A type alias for comment sorting criteria.
-///
-/// This type represents the sorting string used to order comments in the response.
-/// Common values include:
-///
-/// - `"created_at"`: Sort by creation time (newest first)
-/// - `"-created_at"`: Sort by creation time (oldest first)
-/// - `"updated_at"`: Sort by last update time
-/// - `"score"`: Sort by comment score
-/// - `"reaction_count"`: Sort by number of reactions
-///
-/// ## Example
-///
-/// ```swift
-/// let query = ActivityCommentsQuery(
-///     objectId: "activity-123",
-///     objectType: "activity",
-///     sort: "created_at"  // Newest comments first
-/// )
-/// ```
-public typealias ActivityCommentsSort = String

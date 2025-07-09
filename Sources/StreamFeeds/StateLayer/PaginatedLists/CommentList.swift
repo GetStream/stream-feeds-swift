@@ -34,7 +34,7 @@ public final class CommentList: Sendable {
         let nextQuery: CommentsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return CommentsQuery(
-                filter: state.queryConfig?.filter ?? [:],
+                filter: state.queryConfig?.filter,
                 sort: state.queryConfig?.sort,
                 limit: limit,
                 next: next,

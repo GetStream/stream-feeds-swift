@@ -25,14 +25,6 @@ import StreamFeeds
     }
     
     func queryingFollows() async throws {
-        // All my follows
-        let allQuery = FollowsQuery(
-            filter: .equal(.userId, "me"),
-            limit: 20
-        )
-        let allFollowList = client.followList(for: allQuery)
-        let allFollowsPage1 = try await allFollowList.get()
-
         // Do I follow a list of feeds
         // My feed is timeline:john
         let followQuery = FollowsQuery(
@@ -54,7 +46,7 @@ import StreamFeeds
         let followerList = client.followList(for: followerQuery)
         let followerPage1 = try await followerList.get()
         
-        suppressUnusedWarning(allFollowsPage1, page1, page2, page1And2, followerPage1)
+        suppressUnusedWarning(page1, page2, page1And2, followerPage1)
     }
     
     func followRequests() async throws {
