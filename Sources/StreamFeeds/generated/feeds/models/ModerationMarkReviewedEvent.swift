@@ -1,4 +1,8 @@
 import Foundation
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
 import StreamCore
 
 public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
