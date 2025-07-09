@@ -21,33 +21,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - ios: "26.0"
-            xcode: "26.0"
-            os: macos-15
-            device: "iPhone 16 Pro"
-            setup_runtime: false
           - ios: "18.5"
             xcode: "16.4"
-            os: macos-15
             device: "iPhone 16 Pro"
             setup_runtime: false
           - ios: "17.5"
-            xcode: "15.4"
-            os: macos-14
+            xcode: "16.0"
             device: "iPhone 15 Pro"
-            setup_runtime: false
+            setup_runtime: true
           - ios: "16.4"
-            xcode: "15.3"
-            os: macos-14
+            xcode: "16.0"
             device: "iPhone 14 Pro"
             setup_runtime: true
           - ios: "15.5"
-            xcode: "15.3"
-            os: macos-14
+            xcode: "16.0"
             device: "iPhone 13 Pro"
             setup_runtime: true
       fail-fast: false
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-15
     env:
       XCODE_VERSION: ${{ matrix.xcode }}
     steps:
@@ -83,14 +74,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: "26.0"
-            os: macos-15
-          - xcode: "16.4"
-            os: macos-15
-          - xcode: "16.0"
-            os: macos-15
+          - xcode: "16.3" # swift 6.1
+          - xcode: "16.0" # swift 6.0
       fail-fast: false
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-15
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
