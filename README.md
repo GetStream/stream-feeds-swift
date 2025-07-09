@@ -2,6 +2,8 @@
 
 This is the official iOS SDK for StreamFeeds, a platform for building apps with activity feeds support. The repository includes a low-level SDK that communicates with Stream's backend, as well as a demo app that showcases how to use it.
 
+For detailed examples and supported features, please check out our [docs](https://getstream.io/activity-feeds/docs/ios/).
+
 Note: Activity Feeds V3 is in closed alpha — do not use it in production (just yet).
 
 ## What is Stream?
