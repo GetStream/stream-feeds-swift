@@ -12,7 +12,7 @@ import StreamCore
     
     init(query: PollVotesQuery, events: WSEventsSubscribing) {
         self.query = query
-        webSocketObserver = WebSocketObserver(subscribing: events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(pollId: query.pollId, subscribing: events, handlers: changeHandlers)
     }
     
     public let query: PollVotesQuery
@@ -42,10 +42,21 @@ import StreamCore
 // MARK: - Updating the State
 
 extension PollVoteListState {
-    struct ChangeHandlers {}
+    struct ChangeHandlers {
+        let pollVoteRemoved: @MainActor (String) -> Void
+        let pollVoteUpdated: @MainActor (PollVoteData) -> Void
+    }
     
     private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers()
+        ChangeHandlers(
+            pollVoteRemoved: { [weak self] voteId in
+                self?.votes.remove(byId: voteId)
+            },
+            pollVoteUpdated: { [weak self] pollVote in
+                guard let sorting = self?.pollVotesSorting else { return }
+                self?.votes.sortedReplace(pollVote, using: sorting)
+            }
+        )
     }
     
     func access<T>(_ actions: @MainActor (PollVoteListState) -> T) -> T {

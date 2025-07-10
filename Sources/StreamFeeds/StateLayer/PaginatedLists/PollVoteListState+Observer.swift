@@ -8,21 +8,26 @@ import StreamCore
 extension PollVoteListState {
     final class WebSocketObserver: WSEventsSubscriber {
         private let handlers: PollVoteListState.ChangeHandlers
+        private let pollId: String
         
-        init(subscribing events: WSEventsSubscribing, handlers: PollVoteListState.ChangeHandlers) {
+        init(pollId: String, subscribing events: WSEventsSubscribing, handlers: PollVoteListState.ChangeHandlers) {
             self.handlers = handlers
-            // TODO: Review events
-            // events.add(subscriber: self)
+            self.pollId = pollId
+            events.add(subscriber: self)
         }
         
         // MARK: - Event Subscription
         
         func onEvent(_ event: any Event) async {
-            Task {
-                switch event {
-                default:
-                    break
-                }
+            switch event {
+            case let event as PollVoteChangedFeedEvent:
+                guard event.poll.id == pollId else { return }
+                await handlers.pollVoteUpdated(event.pollVote.toModel())
+            case let event as PollVoteRemovedFeedEvent:
+                guard event.poll.id == pollId else { return }
+                await handlers.pollVoteRemoved(event.pollVote.id)
+            default:
+                break
             }
         }
     }

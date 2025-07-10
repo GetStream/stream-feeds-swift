@@ -130,6 +130,148 @@ struct ArrayExtensions_Tests {
         #expect(array.count == 2) // Count should remain unchanged
     }
     
+    @Test("Sorted replace - existing element")
+    func testSortedReplace() {
+        var array: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2),
+            TestItem(id: "3", value: 3)
+        ]
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
+        
+        // Test replacing with same sort position
+        let item2Updated = TestItem(id: "2", value: 2) // Same value, should stay in same position
+        array.sortedReplace(item2Updated, using: sorting)
+        #expect(array.count == 3)
+        #expect(array[1].id == "2")
+        #expect(array[1].value == 2)
+        
+        // Test replacing with different sort position (moves to end)
+        let item2Moved = TestItem(id: "2", value: 5)
+        array.sortedReplace(item2Moved, using: sorting)
+        #expect(array.count == 3)
+        #expect(array[0].value == 1)
+        #expect(array[1].value == 3)
+        #expect(array[2].value == 5)
+        #expect(array[2].id == "2")
+        
+        // Test replacing with different sort position (moves to beginning)
+        let item2MovedToStart = TestItem(id: "2", value: 0)
+        array.sortedReplace(item2MovedToStart, using: sorting)
+        #expect(array.count == 3)
+        #expect(array[0].value == 0)
+        #expect(array[0].id == "2")
+        #expect(array[1].value == 1)
+        #expect(array[2].value == 3)
+    }
+    
+    @Test("Sorted replace - non-existent element")
+    func testSortedReplaceNonExistent() {
+        var array: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2),
+            TestItem(id: "3", value: 3)
+        ]
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
+        
+        // Test replacing non-existent element
+        let nonExistentItem = TestItem(id: "4", value: 4)
+        array.sortedReplace(nonExistentItem, using: sorting)
+        #expect(array.count == 3) // Count should remain unchanged
+        #expect(array[0].value == 1)
+        #expect(array[1].value == 2)
+        #expect(array[2].value == 3)
+    }
+    
+    @Test("Sorted replace - empty array")
+    func testSortedReplaceEmptyArray() {
+        var array: [TestItem] = []
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
+        
+        // Test replacing in empty array
+        let item = TestItem(id: "1", value: 1)
+        array.sortedReplace(item, using: sorting)
+        #expect(array.isEmpty) // Should remain empty
+    }
+    
+    @Test("Sorted replace - single element array")
+    func testSortedReplaceSingleElement() {
+        var array: [TestItem] = [TestItem(id: "1", value: 1)]
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
+        
+        // Test replacing with same value
+        let item1Same = TestItem(id: "1", value: 1)
+        array.sortedReplace(item1Same, using: sorting)
+        #expect(array.count == 1)
+        #expect(array[0].id == "1")
+        #expect(array[0].value == 1)
+        
+        // Test replacing with different value
+        let item1Different = TestItem(id: "1", value: 5)
+        array.sortedReplace(item1Different, using: sorting)
+        #expect(array.count == 1)
+        #expect(array[0].id == "1")
+        #expect(array[0].value == 5)
+    }
+    
+    @Test("Sorted replace - multiple replacements")
+    func testSortedReplaceMultiple() {
+        var array: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2),
+            TestItem(id: "3", value: 3)
+        ]
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
+        
+        // Replace multiple elements in sequence
+        let item1Updated = TestItem(id: "1", value: 5)
+        let item3Updated = TestItem(id: "3", value: 0)
+        
+        array.sortedReplace(item1Updated, using: sorting)
+        array.sortedReplace(item3Updated, using: sorting)
+        
+        #expect(array.count == 3)
+        #expect(array[0].value == 0) // item3 moved to start
+        #expect(array[0].id == "3")
+        #expect(array[1].value == 2) // item2 unchanged
+        #expect(array[1].id == "2")
+        #expect(array[2].value == 5) // item1 moved to end
+        #expect(array[2].id == "1")
+    }
+    
+    @Test("Sorted replace - maintains sort order")
+    func testSortedReplaceMaintainsSortOrder() {
+        var array: [TestItem] = [
+            TestItem(id: "1", value: 1),
+            TestItem(id: "2", value: 2),
+            TestItem(id: "3", value: 3),
+            TestItem(id: "4", value: 4),
+            TestItem(id: "5", value: 5)
+        ]
+        let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
+        
+        // Replace elements and verify sort order is maintained
+        let item2Updated = TestItem(id: "2", value: 6)
+        let item4Updated = TestItem(id: "4", value: 0)
+        
+        array.sortedReplace(item2Updated, using: sorting)
+        array.sortedReplace(item4Updated, using: sorting)
+        
+        #expect(array.count == 5)
+        
+        // Verify sort order is maintained
+        for i in 0..<array.count - 1 {
+            #expect(array[i].value <= array[i + 1].value)
+        }
+        
+        // Verify specific positions
+        #expect(array[0].value == 0) // item4
+        #expect(array[1].value == 1) // item1
+        #expect(array[2].value == 3) // item3
+        #expect(array[3].value == 5) // item5
+        #expect(array[4].value == 6) // item2
+    }
+    
     // MARK: - Sorted Merge Tests
     
     @Test("Sorted merge - empty arrays")

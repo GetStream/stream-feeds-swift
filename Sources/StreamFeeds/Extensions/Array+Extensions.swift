@@ -198,6 +198,68 @@ extension Array {
         sortedRemove(element, by: sorting.areInIncreasingOrder())
     }
     
+    
+    /// Replaces an element in a sorted array while maintaining the sort order.
+    ///
+    /// This method efficiently replaces an element in a sorted array by first attempting
+    /// a binary search for optimal performance. If the binary search fails (e.g., when
+    /// sorting parameters have changed), it falls back to a linear search by ID.
+    ///
+    /// The method preserves the sorted order of the array by:
+    /// 1. Finding the existing element using binary search or linear search
+    /// 2. Removing the existing element from its current position
+    /// 3. Finding the correct insertion position for the new element using binary search
+    /// 4. Inserting the new element at the appropriate position to maintain sort order
+    ///
+    /// - Important: If no element with the specified ID is found, no changes will be made.
+    ///   The method will silently return without modifying the array.
+    ///
+    /// - Parameters:
+    ///   - element: The new element to replace the existing one.
+    ///   - sorting: A closure that defines the sort order between two elements.
+    ///     The closure should return `true` if the first element should be ordered
+    ///     before the second element.
+    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
+    ///   when falling back to linear search.
+    /// - Note: This method assumes the array is already sorted according to the provided
+    ///   sorting closure. If the array is not sorted, the behavior is undefined.
+    mutating func sortedReplace(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
+        let existingIndex: Index? = {
+            // Binary search succeeds if the element is present and its sorting parameters have not changed.
+            if let index = firstSortedIndex(for: element, using: sorting) {
+                return index
+            }
+            return firstIndex(where: { $0.id == element.id })
+        }()
+        guard let existingIndex else { return }
+        // Element was present, replace it and keep the sorted order
+        remove(at: existingIndex)
+        let insertionIndex = binarySearchInsertionIndex(for: element, using: sorting)
+        insert(element, at: insertionIndex)
+    }
+    
+    /// Replaces an element in a sorted array using a collection of sort fields.
+    ///
+    /// This method is a convenience overload that allows you to specify sorting criteria
+    /// using an array of `Sort<Field>` objects instead of a custom sorting closure.
+    /// It internally converts the sort fields to a sorting closure and delegates to
+    /// the main `sortedReplace(_:by:)` method.
+    ///
+    /// - Important: If no element with the specified ID is found, no changes will be made.
+    ///   The method will silently return without modifying the array.
+    ///
+    /// - Parameters:
+    ///   - element: The new element to replace the existing one.
+    ///   - sorting: An array of sort field configurations that define the sort order.
+    ///     The sort fields are applied in order, with earlier fields taking precedence.
+    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
+    ///   when falling back to linear search.
+    /// - Note: This method assumes the array is already sorted according to the provided
+    ///   sort fields. If the array is not sorted, the behavior is undefined.
+    mutating func sortedReplace<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
+        sortedReplace(element, by: sorting.areInIncreasingOrder())
+    }
+    
     /// Performs a binary search to find an element with the same ID in a sorted array.
     ///
     /// - Important: Only works if sorting parameters have not changed.
