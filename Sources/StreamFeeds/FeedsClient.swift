@@ -285,6 +285,18 @@ public final class FeedsClient: Sendable {
         Activity(id: activityId, fid: fid, client: self)
     }
     
+    /// Creates an activity reaction list instance based on the provided query.
+    ///
+    /// This method creates an `ActivityReactionList` object that represents a collection of reactions
+    /// for a specific activity. The activity reaction list can be used to fetch reactions for an activity,
+    /// manage reaction pagination, and receive real-time updates for reaction-related events.
+    ///
+    /// - Parameter query: The activity reactions query containing the activity identifier and pagination parameters
+    /// - Returns: An `ActivityReactionList` instance that can be used to interact with the collection of activity reactions
+    public func activityReactionList(for query: ActivityReactionsQuery) -> ActivityReactionList {
+        ActivityReactionList(query: query, client: self)
+    }
+    
     /// Adds a new activity to the specified feeds.
     ///
     /// - Parameter request: The request containing the activity data to add

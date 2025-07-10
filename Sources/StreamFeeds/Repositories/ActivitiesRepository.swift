@@ -119,4 +119,14 @@ final class ActivitiesRepository: Sendable {
         let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
         return response.reaction.toModel()
     }
+    
+    // MARK: - Activity Reactions Pagination
+    
+    func queryActivityReactions(request: QueryActivityReactionsRequest, activityId: String) async throws -> PaginationResult<FeedsReactionData> {
+        let response = try await apiClient.queryActivityReactions(activityId: activityId, queryActivityReactionsRequest: request)
+        return PaginationResult(
+            models: response.reactions.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
+    }
 }
