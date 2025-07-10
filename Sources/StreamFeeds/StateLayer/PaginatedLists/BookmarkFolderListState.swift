@@ -42,13 +42,20 @@ import StreamCore
 // MARK: - Updating the State
 
 extension BookmarkFolderListState {
-    /// Handlers for various state change events.
-    ///
-    /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
-    struct ChangeHandlers {}
+    struct ChangeHandlers {
+        let bookmarkFolderRemoved: @MainActor (String) -> Void
+        let bookmarkFolderUpdated: @MainActor (BookmarkFolderData) -> Void
+    }
     
     private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers()
+        ChangeHandlers(
+            bookmarkFolderRemoved: { [weak self] id in
+                self?.folders.remove(byId: id)
+            },
+            bookmarkFolderUpdated: { [weak self] folder in
+                self?.folders.replace(byId: folder)
+            }
+        )
     }
     
     func access<T>(_ actions: @MainActor (BookmarkFolderListState) -> T) -> T {

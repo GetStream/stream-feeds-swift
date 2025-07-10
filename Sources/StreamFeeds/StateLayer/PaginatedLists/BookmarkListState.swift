@@ -46,16 +46,31 @@ extension BookmarkListState {
     ///
     /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
     struct ChangeHandlers {
+        let bookmarkFolderRemoved: @MainActor (String) -> Void
+        let bookmarkFolderUpdated: @MainActor (BookmarkFolderData) -> Void
         let bookmarkUpdated: @MainActor (BookmarkData) -> Void
     }
     
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
+            bookmarkFolderRemoved: { [weak self] folderId in
+                self?.updateBookmarkFolder(with: folderId, changes: { $0.folder = nil })
+            },
+            bookmarkFolderUpdated: { [weak self] folder in
+                self?.updateBookmarkFolder(with: folder.id, changes: { $0.folder = folder })
+            },
             bookmarkUpdated: { [weak self] feed in
                 // Only update, do not insert
                 self?.bookmarks.replace(byId: feed)
             }
         )
+    }
+    
+    private func updateBookmarkFolder(with id: String, changes: (inout BookmarkData) -> Void) {
+        guard let index = bookmarks.firstIndex(where: { $0.folder?.id == id }) else { return }
+        var bookmark = bookmarks[index]
+        changes(&bookmark)
+        bookmarks[index] = bookmark
     }
     
     func access<T>(_ actions: @MainActor (BookmarkListState) -> T) -> T {

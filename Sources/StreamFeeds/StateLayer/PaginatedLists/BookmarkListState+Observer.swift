@@ -18,6 +18,10 @@ extension BookmarkListState {
         
         func onEvent(_ event: any Event) async {
             switch event {
+            case let event as BookmarkFolderDeletedEvent:
+                await handlers.bookmarkFolderRemoved(event.bookmarkFolder.id)
+            case let event as BookmarkFolderUpdatedEvent:
+                await handlers.bookmarkFolderUpdated(event.bookmarkFolder.toModel())
             case let event as BookmarkUpdatedEvent:
                 await handlers.bookmarkUpdated(event.bookmark.toModel())
             default:

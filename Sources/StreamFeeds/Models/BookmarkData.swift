@@ -9,7 +9,7 @@ public struct BookmarkData: Sendable {
     public let activity: ActivityData
     public let createdAt: Date
     public let custom: [String: RawJSON]?
-    public let folder: BookmarkFolderResponse?
+    public internal(set) var folder: BookmarkFolderData?
     public let updatedAt: Date
     public let user: UserData
 }
@@ -28,7 +28,7 @@ extension BookmarkResponse {
             activity: activity.toModel(),
             createdAt: createdAt,
             custom: custom,
-            folder: folder,
+            folder: folder?.toModel(),
             updatedAt: updatedAt,
             user: user.toModel()
         )
