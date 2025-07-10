@@ -80,22 +80,22 @@ public struct FollowsFilterField: FilterFieldRepresentable, Sendable {
 
 extension FollowsFilterField {
     /// Filter by the source feed ID (the feed that is following).
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let sourceFeed = Self(codingKey: .sourceFeed)
     
     /// Filter by the target feed ID (the feed being followed).
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let targetFeed = Self(codingKey: .targetFeed)
     
     /// Filter by the status of the follow relationship (e.g., "accepted", "pending").
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let status = Self(value: "status")
     
     /// Filter by the creation timestamp of the follow relationship.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(value: "created_at")
 }
@@ -106,11 +106,11 @@ extension FollowsFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`sourceFeed`, `targetFeed`, `status`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Date fields** (`createdAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date

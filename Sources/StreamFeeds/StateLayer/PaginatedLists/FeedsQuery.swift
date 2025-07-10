@@ -100,87 +100,87 @@ public struct FeedsFilterField: FilterFieldRepresentable, Sendable {
 
 extension FeedsFilterField {
     /// Filter by the unique identifier of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let id = Self(codingKey: .id)
     
     /// Filter by the group ID of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let groupId = Self(codingKey: .groupId)
     
     /// Filter by the feed ID (fid) of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let fid = Self(codingKey: .fid)
     
     /// Filter by the creation timestamp of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(codingKey: .createdAt)
     
     /// Filter by the ID of the user who created the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let createdById = Self(value: "created_by_id")
     
     /// Filter by the name of the user who created the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.customQ`, `.customAutocomplete`
     public static let createdByName = Self(value: "created_by.name")
     
     /// Filter by the description of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.customQ`, `.customAutocomplete`
     public static let description = Self(codingKey: .description)
     
     /// Filter by the number of followers the feed has.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let followerCount = Self(codingKey: .followerCount)
     
     /// Filter by the number of feeds this feed is following.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let followingCount = Self(codingKey: .followingCount)
     
     /// Filter by the number of members in the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let memberCount = Self(codingKey: .memberCount)
     
     /// Filter by specific members in the feed.
-    /// 
+    ///
     /// **Supported operators:** `.in`
     public static let members = Self(value: "members")
     
     /// Filter by the name of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.customQ`, `.customAutocomplete`
     public static let name = Self(codingKey: .name)
     
     /// Filter by the last update timestamp of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let updatedAt = Self(codingKey: .updatedAt)
     
     /// Filter by the visibility setting of the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let visibility = Self(codingKey: .visibility)
     
     /// Filter by users that the feed is following.
-    /// 
+    ///
     /// **Supported operators:** `.in`
     public static let followingUsers = Self(value: "following_users")
     
     /// Filter by feeds that this feed is following.
-    /// 
+    ///
     /// **Supported operators:** `.in`
     public static let followingFeeds = Self(value: "following_feeds")
     
     /// Filter by filter tags associated with the feed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`, `.customContains`
     public static let filterTags = Self(value: "filter_tags")
 }
@@ -191,16 +191,16 @@ extension FeedsFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`id`, `groupId`, `fid`, `createdById`, `visibility`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Text search fields** (`name`, `description`, `createdByName`):
 /// - `.equal` - Exact match
 /// - `.q` - Full-text search query
 /// - `.autocomplete` - Autocomplete search
-/// 
+///
 /// **Number fields** (`followerCount`, `followingCount`, `memberCount`):
 /// - `.equal` - Exact match
 /// - `.notEqual` - Not equal to the specified value
@@ -208,17 +208,17 @@ extension FeedsFilterField {
 /// - `.lessThan` - Less than the specified value
 /// - `.greaterThanOrEqual` - Greater than or equal to the specified value
 /// - `.lessThanOrEqual` - Less than or equal to the specified value
-/// 
+///
 /// **Date fields** (`createdAt`, `updatedAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date
 /// - `.lessThan` - Before the specified date
 /// - `.greaterThanOrEqual` - On or after the specified date
 /// - `.lessThanOrEqual` - On or before the specified date
-/// 
+///
 /// **Array fields** (`members`, `followingUsers`, `followingFeeds`):
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Tag fields** (`filterTags`):
 /// - `.equal` - Exact match (array)
 /// - `.in` - Match any value in a list

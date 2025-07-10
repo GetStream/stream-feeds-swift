@@ -80,27 +80,27 @@ public struct BookmarkFoldersFilterField: FilterFieldRepresentable, Sendable {
 
 extension BookmarkFoldersFilterField {
     /// Filter by the unique identifier of the bookmark folder.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let folderId = Self(value: "folder_id")
     
     /// Filter by the name of the bookmark folder.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`, `.contains`
     public static let folderName = Self(value: "folder_name")
     
     /// Filter by the user ID who owns the bookmark folder.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let userId = Self(value: "user_id")
     
     /// Filter by the creation timestamp of the bookmark folder.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(value: "created_at")
     
     /// Filter by the last update timestamp of the bookmark folder.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let updatedAt = Self(value: "updated_at")
 }
@@ -111,16 +111,16 @@ extension BookmarkFoldersFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`folderId`, `userId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Text search fields** (`folderName`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
 /// - `.contains` - Case-insensitive substring search
-/// 
+///
 /// **Date fields** (`createdAt`, `updatedAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date

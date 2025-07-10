@@ -80,52 +80,52 @@ public struct PollsFilterField: FilterFieldRepresentable, Sendable {
 
 extension PollsFilterField {
     /// Filter by whether the poll allows answers.
-    /// 
+    ///
     /// **Supported operators:** `.equal`
     public static let allowAnswers = Self(codingKey: .allowAnswers)
     
     /// Filter by whether the poll allows user-suggested options.
-    /// 
+    ///
     /// **Supported operators:** `.equal`
     public static let allowUserSuggestedOptions = Self(codingKey: .allowUserSuggestedOptions)
     
     /// Filter by the creation timestamp of the poll.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(codingKey: .createdAt)
     
     /// Filter by the ID of the user who created the poll.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let createdById = Self(value: "created_by_id")
     
     /// Filter by the unique identifier of the poll.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let id = Self(codingKey: .id)
     
     /// Filter by whether the poll is closed.
-    /// 
+    ///
     /// **Supported operators:** `.equal`
     public static let isClosed = Self(codingKey: .isClosed)
     
     /// Filter by the maximum number of votes allowed per user.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let maxVotesAllowed = Self(codingKey: .maxVotesAllowed)
     
     /// Filter by the name of the poll.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let name = Self(codingKey: .name)
     
     /// Filter by the last update timestamp of the poll.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let updatedAt = Self(codingKey: .updatedAt)
     
     /// Filter by the voting visibility setting of the poll.
-    /// 
+    ///
     /// **Supported operators:** `.equal`
     public static let votingVisibility = Self(codingKey: .votingVisibility)
 }
@@ -136,14 +136,14 @@ extension PollsFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`id`, `name`, `createdById`, `votingVisibility`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Boolean fields** (`allowAnswers`, `allowUserSuggestedOptions`, `isClosed`):
 /// - `.equal` - Exact match (true/false)
-/// 
+///
 /// **Number fields** (`maxVotesAllowed`):
 /// - `.equal` - Exact match
 /// - `.notEqual` - Not equal to the specified value
@@ -151,7 +151,7 @@ extension PollsFilterField {
 /// - `.lessThan` - Less than the specified value
 /// - `.greaterThanOrEqual` - Greater than or equal to the specified value
 /// - `.lessThanOrEqual` - Less than or equal to the specified value
-/// 
+///
 /// **Date fields** (`createdAt`, `updatedAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date

@@ -80,27 +80,27 @@ public struct BookmarksFilterField: FilterFieldRepresentable, Sendable {
 
 extension BookmarksFilterField {
     /// Filter by the unique identifier of the activity that was bookmarked.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let activityId = Self(value: "activity_id")
     
     /// Filter by the unique identifier of the bookmark folder.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`, `.exists`
     public static let folderId = Self(value: "folder_id")
     
     /// Filter by the user ID who created the bookmark.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let userId = Self(value: "user_id")
     
     /// Filter by the creation timestamp of the bookmark.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(value: "created_at")
     
     /// Filter by the last update timestamp of the bookmark.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let updatedAt = Self(value: "updated_at")
 }
@@ -111,16 +111,16 @@ extension BookmarksFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`activityId`, `userId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Folder fields** (`folderId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
 /// - `.exists` - Field exists (not null)
-/// 
+///
 /// **Date fields** (`createdAt`, `updatedAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date

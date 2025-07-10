@@ -22,7 +22,7 @@ import StreamCore
 ///     sort: .best,
 ///     limit: 20
 /// )
-/// 
+///
 /// // Complex query with multiple filters
 /// let complexQuery = CommentsQuery(
 ///     filter: CommentsFilter(
@@ -39,14 +39,14 @@ import StreamCore
 /// ```
 public struct CommentsQuery: Sendable {
     /// Filter criteria for the comments query.
-    /// 
+    ///
     /// This filter can be a simple single filter or a complex combination of multiple filters
     /// using logical operators (`.and`, `.or`). The filter determines which comments are
     /// included in the query results based on field values and comparison operators.
     public var filter: CommentsFilter?
     
     /// The sorting strategy to apply to the comments.
-    /// 
+    ///
     /// Available options:
     /// - `.first` - Chronological order (oldest first)
     /// - `.last` - Reverse chronological order (newest first)
@@ -110,72 +110,72 @@ public struct CommentsFilterField: FilterFieldRepresentable, Hashable, Sendable 
 
 extension CommentsFilterField {
     /// Filter by the unique identifier of the comment.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let id = Self(value: "id")
     
     /// Filter by the user ID who created the comment.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let userId = Self(value: "user_id")
     
     /// Filter by the type of object the comment belongs to (e.g., "activity", "post").
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.in`
     public static let objectType = Self(value: "object_type")
     
     /// Filter by the ID of the object the comment belongs to.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let objectId = Self(value: "object_id")
     
     /// Filter by the ID of the parent comment (for replies).
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let parentId = Self(value: "parent_id")
     
     /// Filter by the text content of the comment.
-    /// 
+    ///
     /// **Supported operators:** `.q` (full-text search)
     public static let commentText = Self(value: "comment_text")
     
     /// Filter by the status of the comment (e.g., "active", "deleted", "moderated").
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let status = Self(value: "status")
     
     /// Filter by the number of upvotes the comment has received.
-    /// 
+    ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let upvoteCount = Self(value: "upvote_count")
     
     /// Filter by the number of downvotes the comment has received.
-    /// 
+    ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let downvoteCount = Self(value: "downvote_count")
     
     /// Filter by the number of replies the comment has received.
-    /// 
+    ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let replyCount = Self(value: "reply_count")
     
     /// Filter by the score of the comment.
-    /// 
+    ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let score = Self(value: "score")
     
     /// Filter by the confidence score of the comment.
-    /// 
+    ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let confidenceScore = Self(value: "confidence_score")
     
     /// Filter by the controversy score of the comment.
-    /// 
+    ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let controversyScore = Self(value: "controversy_score")
     
     /// Filter by the creation timestamp of the comment.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(value: "created_at")
 }
@@ -187,28 +187,28 @@ extension CommentsFilterField {
 /// way to build complex queries for retrieving comments from the Stream Feeds API.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`id`, `userId`, `objectId`, `parentId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Object type fields** (`objectType`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Text search fields** (`commentText`):
 /// - `.q` - Full-text search query
-/// 
+///
 /// **Status fields** (`status`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Number fields** (`upvoteCount`, `downvoteCount`, `replyCount`, `score`, `confidenceScore`, `controversyScore`):
 /// - `.greaterThan` - Greater than the specified value
 /// - `.lessThan` - Less than the specified value
 /// - `.greaterThanOrEqual` - Greater than or equal to the specified value
 /// - `.lessThanOrEqual` - Less than or equal to the specified value
-/// 
+///
 /// **Date fields** (`createdAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date
@@ -281,7 +281,7 @@ extension CommentsQuery {
     /// This method transforms the filter dictionary into the format expected by the API,
     /// converting string arrays to RawJSON arrays for each filter field. The conversion
     /// handles different field types appropriately:
-    /// 
+    ///
     /// - **String fields**: Converted to exact match or "in" list filters
     /// - **Text fields**: Converted to full-text search queries
     /// - **Number fields**: Converted to range comparison filters
@@ -291,7 +291,7 @@ extension CommentsQuery {
     /// ```swift
     /// // Input filter
     /// filter: [.activityIds: ["activity-123"]]
-    /// 
+    ///
     /// // Converted to API format
     /// filter: ["activity_ids": ["activity-123"]]
     /// ```
@@ -310,6 +310,6 @@ extension CommentsQuery {
 
 extension CommentsSort {
     var toQueryCommentsRequestSort: QueryCommentsRequest.QueryCommentsRequestSort? {
-        QueryCommentsRequest.QueryCommentsRequestSort(rawValue: self.rawValue)
+        QueryCommentsRequest.QueryCommentsRequestSort(rawValue: rawValue)
     }
 }

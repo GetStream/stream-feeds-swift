@@ -92,37 +92,37 @@ public struct PollVotesFilterField: FilterFieldRepresentable, Sendable {
 
 extension PollVotesFilterField {
     /// Filter by the creation timestamp of the poll vote.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(codingKey: .createdAt)
     
     /// Filter by the unique identifier of the poll vote.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let id = Self(codingKey: .id)
     
     /// Filter by whether the vote is an answer (true/false).
-    /// 
+    ///
     /// **Supported operators:** `.equal`
     public static let isAnswer = Self(value: "is_answer")
     
     /// Filter by the option ID that was voted for.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`, `.exists`
     public static let optionId = Self(value: "option_id")
     
     /// Filter by the user ID who cast the vote.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let userId = Self(value: "user_id")
     
     /// Filter by the poll ID that the vote belongs to.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let pollId = Self(value: "poll_id")
     
     /// Filter by the last update timestamp of the poll vote.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let updatedAt = Self(value: "updated_at")
 }
@@ -133,15 +133,15 @@ extension PollVotesFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`id`, `pollId`, `userId`, `optionId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
 /// - `.exists` - Field exists (only for `optionId`)
-/// 
+///
 /// **Boolean fields** (`isAnswer`):
 /// - `.equal` - Exact match (true/false)
-/// 
+///
 /// **Date fields** (`createdAt`, `updatedAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date

@@ -80,42 +80,42 @@ public struct ActivitiesFilterField: FilterFieldRepresentable, Sendable {
 
 extension ActivitiesFilterField {
     /// Filter by the creation timestamp of the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(codingKey: .createdAt)
     
     /// Filter by the unique identifier of the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let id = Self(codingKey: .id)
     
     /// Filter by the filter tags associated with the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`, `.contains`
     public static let filterTags = Self(codingKey: .filterTags)
     
     /// Filter by the popularity score of the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let popularity = Self(codingKey: .popularity)
     
     /// Filter by the search data content of the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.q`, `.autocomplete`
     public static let searchData = Self(codingKey: .searchData)
     
     /// Filter by the text content of the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.q`, `.autocomplete`
     public static let text = Self(codingKey: .text)
     
     /// Filter by the type of activity (e.g., "post", "comment", "reaction").
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let type = Self(codingKey: .type)
     
     /// Filter by the user ID who created the activity.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let userId = Self(value: "user_id")
 }
@@ -126,11 +126,11 @@ extension ActivitiesFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`id`, `type`, `userId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Text search fields** (`text`, `searchData`):
 /// - `.equal` - Exact match
 /// - `.q` - Full-text search query
@@ -142,14 +142,14 @@ extension ActivitiesFilterField {
 /// - `.lessThan` - Less than the specified value
 /// - `.greaterThanOrEqual` - Greater than or equal to the specified value
 /// - `.lessThanOrEqual` - Less than or equal to the specified value
-/// 
+///
 /// **Date fields** (`createdAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date
 /// - `.lessThan` - Before the specified date
 /// - `.greaterThanOrEqual` - On or after the specified date
 /// - `.lessThanOrEqual` - On or before the specified date
-/// 
+///
 /// **Tag fields** (`filterTags`):
 /// - `.equal` - Exact match (array)
 /// - `.in` - Match any value in a list
