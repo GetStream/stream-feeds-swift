@@ -391,6 +391,18 @@ public final class FeedsClient: Sendable {
         CommentReplyList(query: query, client: self)
     }
     
+    /// Creates a comment reaction list instance based on the provided query.
+    ///
+    /// This method creates a `CommentReactionList` object that represents a collection of reactions
+    /// for a specific comment. The comment reaction list can be used to fetch reactions for a comment,
+    /// manage reaction pagination, and receive real-time updates for reaction-related events.
+    ///
+    /// - Parameter query: The comment reactions query containing the comment identifier and pagination parameters
+    /// - Returns: A `CommentReactionList` instance that can be used to interact with the collection of comment reactions
+    public func commentReactionList(for query: CommentReactionsQuery) -> CommentReactionList {
+        CommentReactionList(query: query, client: self)
+    }
+    
     // MARK: - Poll Vote Lists
     
     /// Creates a poll vote list instance based on the provided query.

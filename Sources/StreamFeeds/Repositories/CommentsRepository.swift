@@ -79,6 +79,16 @@ final class CommentsRepository: Sendable {
         return (response.reaction.toModel(), response.comment.toModel())
     }
     
+    // MARK: - Comment Reactions Pagination
+    
+    func queryCommentReactions(request: QueryCommentReactionsRequest, commentId: String) async throws -> PaginationResult<FeedsReactionData> {
+        let response = try await apiClient.queryCommentReactions(commentId: commentId, queryCommentReactionsRequest: request)
+        return PaginationResult(
+            models: response.reactions.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
+    }
+    
     // MARK: - Comment Replies
     
     func getCommentReplies(with query: CommentRepliesQuery) async throws -> PaginationResult<CommentData> {
