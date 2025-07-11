@@ -11,7 +11,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var custom: [String: RawJSON]?
     public var deletedAt: Date?
     public var description: String
-    public var fid: String
+    public var feedId: String
     public var filterTags: [String]?
     public var followerCount: Int
     public var followingCount: Int
@@ -23,13 +23,13 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var updatedAt: Date
     public var visibility: String?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, fid: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feedId: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
         self.deletedAt = deletedAt
         self.description = description
-        self.fid = fid
+        self.feedId = feedId
         self.filterTags = filterTags
         self.followerCount = followerCount
         self.followingCount = followingCount
@@ -48,7 +48,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case custom
         case deletedAt = "deleted_at"
         case description
-        case fid
+        case feedId = "feed_id"
         case filterTags = "filter_tags"
         case followerCount = "follower_count"
         case followingCount = "following_count"
@@ -67,7 +67,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
             lhs.custom == rhs.custom &&
             lhs.deletedAt == rhs.deletedAt &&
             lhs.description == rhs.description &&
-            lhs.fid == rhs.fid &&
+            lhs.feedId == rhs.feedId &&
             lhs.filterTags == rhs.filterTags &&
             lhs.followerCount == rhs.followerCount &&
             lhs.followingCount == rhs.followingCount &&
@@ -86,7 +86,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         hasher.combine(custom)
         hasher.combine(deletedAt)
         hasher.combine(description)
-        hasher.combine(fid)
+        hasher.combine(feedId)
         hasher.combine(filterTags)
         hasher.combine(followerCount)
         hasher.combine(followingCount)
