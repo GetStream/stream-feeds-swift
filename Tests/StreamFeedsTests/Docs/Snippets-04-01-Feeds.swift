@@ -85,10 +85,10 @@ import StreamFeeds
         // Add a few activities
         let fid = FeedId(group: "user", id: "john")
         try await client.upsertActivities([
-            ActivityRequest(feedIds: [fid.rawValue], filterTags: ["green", "blue"], text: "first", type: "post"),
-            ActivityRequest(feedIds: [fid.rawValue], filterTags: ["yellow", "blue"], text: "second", type: "post"),
-            ActivityRequest(feedIds: [fid.rawValue], filterTags: ["orange"], text: "third", type: "activity"),
-            ActivityRequest(feedIds: [fid.rawValue], filterTags: ["yellow"], text: "fourth", type: "activity")
+            ActivityRequest(fids: [fid.rawValue], filterTags: ["green", "blue"], text: "first", type: "post"),
+            ActivityRequest(fids: [fid.rawValue], filterTags: ["yellow", "blue"], text: "second", type: "post"),
+            ActivityRequest(fids: [fid.rawValue], filterTags: ["orange"], text: "third", type: "activity"),
+            ActivityRequest(fids: [fid.rawValue], filterTags: ["yellow"], text: "fourth", type: "activity")
         ])
         // Now read the feed, this will fetch activity 1 and 2
         let query = FeedQuery(fid: fid, activityFilter: .in(.filterTags, ["blue"]))

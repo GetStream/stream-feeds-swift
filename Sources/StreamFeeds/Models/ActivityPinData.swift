@@ -37,7 +37,7 @@ extension PinActivityResponse {
         ActivityPinData(
             activity: activity.toModel(),
             createdAt: createdAt,
-            fid: FeedId(rawValue: feedId),
+            fid: FeedId(rawValue: fid),
             updatedAt: createdAt, // no updatedAt
             userId: userId
         )

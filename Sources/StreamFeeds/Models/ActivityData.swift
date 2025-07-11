@@ -105,7 +105,7 @@ extension ActivityResponse {
             deletedAt: deletedAt,
             editedAt: editedAt,
             expiresAt: expiresAt,
-            feeds: feedIds,
+            feeds: feeds,
             filterTags: filterTags,
             id: id,
             interestTags: interestTags,

@@ -30,7 +30,7 @@ extension FeedResponse {
             createdBy: createdBy.toModel(),
             custom: custom,
             deletedAt: deletedAt,
-            fid: FeedId(rawValue: feedId),
+            fid: FeedId(rawValue: fid),
             followerCount: followerCount,
             followingCount: followingCount,
             groupId: groupId,
