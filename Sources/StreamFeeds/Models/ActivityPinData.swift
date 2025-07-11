@@ -5,11 +5,17 @@
 import Foundation
 
 public struct ActivityPinData: Sendable {
-    public let activity: ActivityData
+    public internal(set) var activity: ActivityData
     public let createdAt: Date
     public let fid: FeedId
     public let updatedAt: Date
-    public let user: UserData
+    public let userId: String
+}
+
+extension ActivityPinData: Identifiable {
+    public var id: String {
+        fid.rawValue + activity.id + userId
+    }
 }
 
 // MARK: - Model Conversions
@@ -21,7 +27,19 @@ extension ActivityPinResponse {
             createdAt: createdAt,
             fid: FeedId(rawValue: feed),
             updatedAt: updatedAt,
-            user: user.toModel()
+            userId: user.id
+        )
+    }
+}
+
+extension PinActivityResponse {
+    func toModel() -> ActivityPinData {
+        ActivityPinData(
+            activity: activity.toModel(),
+            createdAt: createdAt,
+            fid: FeedId(rawValue: fid),
+            updatedAt: createdAt, // no updatedAt
+            userId: userId
         )
     }
 }

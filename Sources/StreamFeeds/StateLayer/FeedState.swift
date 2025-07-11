@@ -58,6 +58,9 @@ import StreamCore
     /// The capabilities that the current user has for this feed.
     @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
     
+    /// The list of pinned activities and its pinning state.
+    @Published public private(set) var pinnedActivities = [ActivityPinData]()
+    
     // MARK: - Pagination State
     
     /// Pagination information for activities queries.
@@ -87,6 +90,8 @@ extension FeedState {
         let activityAdded: @MainActor (ActivityData) -> Void
         let activityRemoved: @MainActor (ActivityData) -> Void
         let activityUpdated: @MainActor (ActivityData) -> Void
+        let activityPinned: @MainActor (ActivityPinData) -> Void
+        let activityUnpinned: @MainActor (String) -> Void
         let bookmarkAdded: @MainActor (BookmarkData) -> Void
         let bookmarkRemoved: @MainActor (BookmarkData) -> Void
         let commentAdded: @MainActor (CommentData) -> Void
@@ -116,26 +121,41 @@ extension FeedState {
             activityUpdated: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }
                 self?.activities.sortedInsert(activity, using: sorting)
+                self?.pinnedActivities.updateFirstElement(
+                    where: { $0.activity.id == activity.id },
+                    changes: { $0.activity = activity }
+                )
+            },
+            activityPinned: { [weak self] pinned in
+                self?.pinnedActivities.insert(byId: pinned)
+            },
+            activityUnpinned: { [weak self] activityId in
+                guard let index = self?.pinnedActivities.firstIndex(where: { $0.activity.id == activityId }) else { return }
+                self?.pinnedActivities.remove(at: index)
             },
             bookmarkAdded: { [weak self] bookmark in
-                self?.updateActivity(with: bookmark.activity.id) { activity in
-                    activity.addBookmark(bookmark)
-                }
+                self?.activities.updateFirstElement(
+                    where: { $0.id == bookmark.activity.id },
+                    changes: { $0.addBookmark(bookmark) }
+                )
             },
             bookmarkRemoved: { [weak self] bookmark in
-                self?.updateActivity(with: bookmark.activity.id) { activity in
-                    activity.deleteBookmark(bookmark)
-                }
+                self?.activities.updateFirstElement(
+                    where: { $0.id == bookmark.activity.id },
+                    changes: { $0.deleteBookmark(bookmark) }
+                )
             },
             commentAdded: { [weak self] comment in
-                self?.updateActivity(with: comment.objectId) { activity in
-                    activity.addComment(comment)
-                }
+                self?.activities.updateFirstElement(
+                    where: { $0.id == comment.objectId },
+                    changes: { $0.addComment(comment) }
+                )
             },
             commentRemoved: { [weak self] comment in
-                self?.updateActivity(with: comment.objectId) { activity in
-                    activity.deleteComment(comment)
-                }
+                self?.activities.updateFirstElement(
+                    where: { $0.id == comment.objectId },
+                    changes: { $0.deleteComment(comment) }
+                )
             },
             feedDeleted: { [weak self] in
                 self?.activities.removeAll()
@@ -160,41 +180,24 @@ extension FeedState {
                 self?.updateFollow(follow)
             },
             reactionAdded: { [weak self] reaction in
-                self?.updateActivity(with: reaction.activityId) { activity in
-                    activity.addReaction(reaction)
-                }
+                self?.activities.updateFirstElement(
+                    where: { $0.id == reaction.activityId },
+                    changes: { $0.addReaction(reaction) }
+                )
             },
             reactionRemoved: { [weak self] reaction in
-                self?.updateActivity(with: reaction.activityId) { activity in
-                    activity.removeReaction(reaction)
-                }
+                self?.activities.updateFirstElement(
+                    where: { $0.id == reaction.activityId },
+                    changes: { $0.removeReaction(reaction) }
+                )
             }
         )
     }
     
-    /// Provides thread-safe access to the state for modifications.
-    ///
-    /// - Parameter actions: A closure that receives the current state and can modify it
-    /// - Returns: The result of the actions closure
     func access<T>(_ actions: @MainActor (FeedState) -> T) -> T {
         actions(self)
     }
-        
-    /// Updates a specific activity in the activities array.
-    ///
-    /// - Parameters:
-    ///   - id: The unique identifier of the activity to update
-    ///   - changes: A closure that receives the activity and can modify it
-    private func updateActivity(with id: String, changes: (inout ActivityData) -> Void) {
-        guard let index = activities.firstIndex(where: { $0.id == id }) else { return }
-        var activity = activities[index]
-        changes(&activity)
-        activities[index] = activity
-    }
     
-    /// Adds a follow to the appropriate collection based on its type.
-    ///
-    /// - Parameter follow: The follow data to add
     private func addFollow(_ follow: FollowData) {
         if follow.isFollowRequest {
             followRequests.insert(byId: follow)
@@ -205,29 +208,18 @@ extension FeedState {
         }
     }
     
-    /// Removes a follow from all collections.
-    ///
-    /// - Parameter follow: The follow data to remove
     private func removeFollow(_ follow: FollowData) {
         following.remove(byId: follow.id)
         followers.remove(byId: follow.id)
         followRequests.remove(byId: follow.id)
     }
     
-    /// Updates a follow by removing and re-adding it to the appropriate collection.
-    ///
-    /// - Parameter follow: The follow data to update
     private func updateFollow(_ follow: FollowData) {
         // Review: currently simplified
         removeFollow(follow)
         addFollow(follow)
     }
     
-    /// Updates the state with feed query results.
-    ///
-    /// This method is called when a feed is initially queried or refreshed.
-    ///
-    /// - Parameter response: The response containing feed data, activities, and other information
     func didQueryFeed(with response: FeedsRepository.GetOrCreateInfo) {
         activities = response.activities.models
         activitiesPagination = response.activities.pagination
@@ -237,18 +229,12 @@ extension FeedState {
         following = response.following
         followRequests = response.followRequests
         ownCapabilities = response.ownCapabilities
+        pinnedActivities = response.pinnedActivities
         
         // Members are managed by the paginatable list
         memberListState.didPaginate(with: response.members, for: .empty)
     }
     
-    /// Updates the state with paginated activities results.
-    ///
-    /// This method is called when additional activities are loaded through pagination.
-    ///
-    /// - Parameters:
-    ///   - response: The pagination response containing new activities
-    ///   - queryConfig: The query configuration used for this pagination request
     func didPaginateActivities(
         with response: PaginationResult<ActivityData>,
         for queryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>

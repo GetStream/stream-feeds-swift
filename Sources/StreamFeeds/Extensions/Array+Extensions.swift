@@ -198,7 +198,6 @@ extension Array {
         sortedRemove(element, by: sorting.areInIncreasingOrder())
     }
     
-    
     /// Replaces an element in a sorted array while maintaining the sort order.
     ///
     /// This method efficiently replaces an element in a sorted array by first attempting
@@ -302,6 +301,17 @@ extension Array {
             }
         }
         return left
+    }
+}
+
+// MARK: - Updating Element's Property
+
+extension Array {
+    mutating func updateFirstElement(where predicate: (Element) -> Bool, changes: (inout Element) -> Void) {
+        guard let index = firstIndex(where: predicate) else { return }
+        var updatedElement = self[index]
+        changes(&updatedElement)
+        self[index] = updatedElement
     }
 }
 

@@ -22,7 +22,7 @@ import StreamFeeds
     }
     
     func overview2() async throws {
-        let feedData = try await feed.getOrCreate()
-        print(feedData.pinnedActivities)
+        try await feed.getOrCreate()
+        print(feed.state.pinnedActivities)
     }
 }

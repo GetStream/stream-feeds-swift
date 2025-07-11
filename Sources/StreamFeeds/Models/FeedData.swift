@@ -17,7 +17,6 @@ public struct FeedData: Identifiable, Sendable {
     public let id: String
     public let memberCount: Int
     public let pinCount: Int
-    public let pinnedActivities: [ActivityPinData]
     public let updatedAt: Date
     public let visibility: String?
 }
@@ -38,7 +37,6 @@ extension FeedResponse {
             id: id,
             memberCount: memberCount,
             pinCount: pinCount,
-            pinnedActivities: [], // TODO: missing from codegen?
             updatedAt: updatedAt,
             visibility: visibility
         )
