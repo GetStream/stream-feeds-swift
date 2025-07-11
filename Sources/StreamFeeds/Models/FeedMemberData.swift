@@ -11,10 +11,12 @@ public struct FeedMemberData: Sendable {
     public let inviteAcceptedAt: Date?
     public let inviteRejectedAt: Date?
     public let role: String
-    public let status: String
+    public let status: FeedMemberStatus
     public let updatedAt: Date
     public let user: UserData
 }
+
+public typealias FeedMemberStatus = FeedMemberResponse.FeedMemberResponseStatus
 
 extension FeedMemberData: Identifiable {
     public var id: String {
@@ -32,7 +34,7 @@ extension FeedMemberResponse {
             inviteAcceptedAt: inviteAcceptedAt,
             inviteRejectedAt: inviteRejectedAt,
             role: role,
-            status: status.rawValue,
+            status: status,
             updatedAt: updatedAt,
             user: user.toModel()
         )

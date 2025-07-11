@@ -241,75 +241,18 @@ public struct CommentsFilter: Filter {
 // MARK: - Sorting
 
 /// Represents sorting options for comments queries.
-public struct CommentsSort: RawRepresentable, Sendable {
-    /// The raw string value representing the sort option in the API.
-    public let rawValue: String
-    
-    /// Creates a new sort option with the specified raw value.
-    ///
-    /// - Parameter rawValue: The raw string value representing the sort option.
-    public init(rawValue: String) {
-        self.rawValue = rawValue
-    }
-    
-    /// Sort by creation date (oldest first).
-    /// This is useful for displaying comments in chronological order.
-    public static let first = Self(rawValue: "first")
-    
-    /// Sort by creation date (newest first).
-    /// This is useful for displaying the most recent comments first.
-    public static let last = Self(rawValue: "last")
-    
-    /// Sort by upvote count (highest first).
-    /// This is useful for displaying the most popular comments first.
-    public static let top = Self(rawValue: "top")
-    
-    /// Sort by quality score (best quality first).
-    /// This uses a combination of factors to determine comment quality.
-    public static let best = Self(rawValue: "best")
-    
-    /// Sort by controversy level (most controversial first).
-    /// This is useful for highlighting discussions with mixed opinions.
-    public static let controversial = Self(rawValue: "controversial")
-}
+public typealias CommentsSort = QueryCommentsRequest.QueryCommentsRequestSort
 
 // MARK: -
 
 extension CommentsQuery {
-    /// Converts the query to a raw API request format.
-    ///
-    /// This method transforms the filter dictionary into the format expected by the API,
-    /// converting string arrays to RawJSON arrays for each filter field. The conversion
-    /// handles different field types appropriately:
-    ///
-    /// - **String fields**: Converted to exact match or "in" list filters
-    /// - **Text fields**: Converted to full-text search queries
-    /// - **Number fields**: Converted to range comparison filters
-    /// - **Date fields**: Converted to date range filters
-    ///
-    /// ## Filter Conversion Examples
-    /// ```swift
-    /// // Input filter
-    /// filter: [.activityIds: ["activity-123"]]
-    ///
-    /// // Converted to API format
-    /// filter: ["activity_ids": ["activity-123"]]
-    /// ```
-    ///
-    /// - Returns: A `QueryCommentsRequest` object that can be sent to the API.
     func toRequest() -> QueryCommentsRequest {
         QueryCommentsRequest(
             filter: filter?.toRawJSON() ?? [:],
             limit: limit,
             next: next,
             prev: previous,
-            sort: sort?.toQueryCommentsRequestSort
+            sort: sort
         )
-    }
-}
-
-extension CommentsSort {
-    var toQueryCommentsRequestSort: QueryCommentsRequest.QueryCommentsRequestSort? {
-        QueryCommentsRequest.QueryCommentsRequestSort(rawValue: rawValue)
     }
 }

@@ -37,7 +37,7 @@ public struct ActivityData: Identifiable, Sendable {
     public let type: String
     public let updatedAt: Date
     public let user: UserData
-    public let visibility: String
+    public let visibility: ActivityDataVisibility
     public let visibilityTag: String?
     
     // Additional
@@ -47,6 +47,8 @@ public struct ActivityData: Identifiable, Sendable {
     
     fileprivate let _parent: BoxedAny?
 }
+
+public typealias ActivityDataVisibility = ActivityResponse.ActivityResponseVisibility
 
 // MARK: - Mutating the Data
 
@@ -123,7 +125,7 @@ extension ActivityResponse {
             type: type,
             updatedAt: updatedAt,
             user: user.toModel(),
-            visibility: visibility.rawValue,
+            visibility: visibility,
             visibilityTag: visibilityTag,
             _parent: BoxedAny(parent?.toModel())
         )

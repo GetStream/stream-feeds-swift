@@ -6,8 +6,6 @@ import Foundation
 import StreamCore
 
 public struct FollowData: Sendable {
-    public typealias FollowStatus = FollowResponse.FollowResponseStatus
-    
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let followerRole: String
@@ -40,6 +38,8 @@ public struct FollowData: Sendable {
     }
 }
 
+public typealias FollowStatus = FollowResponse.FollowResponseStatus
+
 extension FollowData: Identifiable {
     public var id: String {
         "\(sourceFeed.fid)\(targetFeed.fid)\(createdAt.timeIntervalSince1970)"
@@ -58,7 +58,7 @@ extension FollowResponse {
             requestAcceptedAt: requestAcceptedAt,
             requestRejectedAt: requestRejectedAt,
             sourceFeed: sourceFeed.toModel(),
-            status: FollowData.FollowStatus(rawValue: status.rawValue) ?? .unknown,
+            status: status,
             targetFeed: targetFeed.toModel(),
             updatedAt: updatedAt
         )
