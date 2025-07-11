@@ -12,6 +12,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var deletedAt: Date?
     public var description: String
     public var fid: String
+    public var filterTags: [String]?
     public var followerCount: Int
     public var followingCount: Int
     public var groupId: String
@@ -22,13 +23,14 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var updatedAt: Date
     public var visibility: String?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, fid: String, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, fid: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
         self.deletedAt = deletedAt
         self.description = description
         self.fid = fid
+        self.filterTags = filterTags
         self.followerCount = followerCount
         self.followingCount = followingCount
         self.groupId = groupId
@@ -47,6 +49,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case deletedAt = "deleted_at"
         case description
         case fid
+        case filterTags = "filter_tags"
         case followerCount = "follower_count"
         case followingCount = "following_count"
         case groupId = "group_id"
@@ -65,6 +68,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
             lhs.deletedAt == rhs.deletedAt &&
             lhs.description == rhs.description &&
             lhs.fid == rhs.fid &&
+            lhs.filterTags == rhs.filterTags &&
             lhs.followerCount == rhs.followerCount &&
             lhs.followingCount == rhs.followingCount &&
             lhs.groupId == rhs.groupId &&
@@ -83,6 +87,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         hasher.combine(deletedAt)
         hasher.combine(description)
         hasher.combine(fid)
+        hasher.combine(filterTags)
         hasher.combine(followerCount)
         hasher.combine(followingCount)
         hasher.combine(groupId)

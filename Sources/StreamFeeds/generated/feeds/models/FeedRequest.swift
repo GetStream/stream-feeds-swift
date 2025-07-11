@@ -30,16 +30,18 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
     public var description: String?
     public var feedGroupId: String
     public var feedId: String
+    public var filterTags: [String]?
     public var members: [FeedMemberRequest]?
     public var name: String?
     public var visibility: FeedRequestVisibility?
 
-    public init(createdById: String? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
+    public init(createdById: String? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
         self.createdById = createdById
         self.custom = custom
         self.description = description
         self.feedGroupId = feedGroupId
         self.feedId = feedId
+        self.filterTags = filterTags
         self.members = members
         self.name = name
         self.visibility = visibility
@@ -51,6 +53,7 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
         case description
         case feedGroupId = "feed_group_id"
         case feedId = "feed_id"
+        case filterTags = "filter_tags"
         case members
         case name
         case visibility
@@ -62,6 +65,7 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
             lhs.description == rhs.description &&
             lhs.feedGroupId == rhs.feedGroupId &&
             lhs.feedId == rhs.feedId &&
+            lhs.filterTags == rhs.filterTags &&
             lhs.members == rhs.members &&
             lhs.name == rhs.name &&
             lhs.visibility == rhs.visibility
@@ -73,6 +77,7 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
         hasher.combine(description)
         hasher.combine(feedGroupId)
         hasher.combine(feedId)
+        hasher.combine(filterTags)
         hasher.combine(members)
         hasher.combine(name)
         hasher.combine(visibility)

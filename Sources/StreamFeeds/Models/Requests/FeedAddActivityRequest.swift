@@ -33,7 +33,7 @@ public struct FeedAddActivityRequest: Sendable {
             attachments: attachments,
             custom: custom,
             expiresAt: expiresAt,
-            fids: [],
+            feedIds: [],
             filterTags: filterTags,
             id: id,
             interestTags: interestTags,
@@ -49,10 +49,10 @@ public struct FeedAddActivityRequest: Sendable {
         )
     }
     
-    var fidString: String? { request.fids.first }
+    var fidString: String? { request.feedIds.first }
     
     func withFid(_ fid: FeedId, uploadedAttachments: [Attachment]) -> AddActivityRequest {
-        request.fids = [fid.rawValue]
+        request.feedIds = [fid.rawValue]
         
         let attachments = (request.attachments ?? []) + uploadedAttachments
         request.attachments = attachments.isEmpty ? nil : attachments

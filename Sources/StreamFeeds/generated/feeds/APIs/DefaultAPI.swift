@@ -1,3 +1,7 @@
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
 import Foundation
 import StreamCore
 
@@ -502,6 +506,39 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryBookmarkFoldersResponse.self, from: $0)
+        }
+    }
+
+    open func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse {
+        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
+
+        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
+        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteBookmarkFolderResponse.self, from: $0)
+        }
+    }
+
+    open func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse {
+        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
+
+        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
+        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateBookmarkFolderRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateBookmarkFolderResponse.self, from: $0)
         }
     }
 
@@ -1066,6 +1103,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(CreateGuestResponse.self, from: $0)
+        }
+    }
+
+    open func longPoll(json: WSAuthMessage?) async throws {
+        let path = "/api/v2/longpoll"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "json": (wrappedValue: json?.encodeToJSON(), isExplode: true)
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        _ = try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(EmptyResponse.self, from: $0)
         }
     }
 
@@ -1637,6 +1691,10 @@ protocol DefaultAPIEndpoints {
 
     func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse
 
+    func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse
+
+    func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse
+
     func queryBookmarks(queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
 
     func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse
@@ -1702,6 +1760,8 @@ protocol DefaultAPIEndpoints {
     func unfollow(source: String, target: String) async throws -> UnfollowResponse
 
     func createGuest(createGuestRequest: CreateGuestRequest) async throws -> CreateGuestResponse
+
+    func longPoll(json: WSAuthMessage?) async throws
 
     func ban(banRequest: BanRequest) async throws -> BanResponse
 

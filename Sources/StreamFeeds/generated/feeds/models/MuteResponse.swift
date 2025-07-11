@@ -9,9 +9,9 @@ public final class MuteResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var duration: String
     public var mutes: [UserMute]?
     public var nonExistingUsers: [String]?
-    public var ownUser: OwnUserResponse?
+    public var ownUser: OwnUser?
 
-    public init(duration: String, mutes: [UserMute]? = nil, nonExistingUsers: [String]? = nil, ownUser: OwnUserResponse? = nil) {
+    public init(duration: String, mutes: [UserMute]? = nil, nonExistingUsers: [String]? = nil, ownUser: OwnUser? = nil) {
         self.duration = duration
         self.mutes = mutes
         self.nonExistingUsers = nonExistingUsers

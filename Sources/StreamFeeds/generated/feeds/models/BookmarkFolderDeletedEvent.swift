@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class BookmarkFolderDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    
     public var bookmarkFolder: BookmarkFolderResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
@@ -21,8 +20,8 @@ public final class BookmarkFolderDeletedEvent: @unchecked Sendable, Event, Codab
         self.receivedAt = receivedAt
         self.user = user
     }
-    
-    public enum CodingKeys: String, CodingKey, CaseIterable { 
+
+    public enum CodingKeys: String, CodingKey, CaseIterable {
         case bookmarkFolder = "bookmark_folder"
         case createdAt = "created_at"
         case custom
@@ -30,14 +29,14 @@ public final class BookmarkFolderDeletedEvent: @unchecked Sendable, Event, Codab
         case type
         case user
     }
-    
+
     public static func == (lhs: BookmarkFolderDeletedEvent, rhs: BookmarkFolderDeletedEvent) -> Bool {
         lhs.bookmarkFolder == rhs.bookmarkFolder &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.custom == rhs.custom &&
-        lhs.receivedAt == rhs.receivedAt &&
-        lhs.type == rhs.type &&
-        lhs.user == rhs.user
+            lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.type == rhs.type &&
+            lhs.user == rhs.user
     }
 
     public func hash(into hasher: inout Hasher) {
