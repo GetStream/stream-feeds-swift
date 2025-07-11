@@ -36,6 +36,7 @@ public final class FeedsClient: Sendable {
     let commentsRepository: CommentsRepository
     let devicesRepository: DevicesRepository
     let feedsRepository: FeedsRepository
+    let moderationRepository: ModerationRepository
     let pollsRepository: PollsRepository
     
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
@@ -110,6 +111,7 @@ public final class FeedsClient: Sendable {
         devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
         pollsRepository = PollsRepository(apiClient: apiClient)
+        moderationRepository = ModerationRepository(apiClient: apiClient)
         
         moderation = Moderation(apiClient: apiClient)
         
@@ -403,19 +405,7 @@ public final class FeedsClient: Sendable {
         CommentReactionList(query: query, client: self)
     }
     
-    // MARK: - Poll Vote Lists
-    
-    /// Creates a poll vote list instance based on the provided query.
-    ///
-    /// This method creates a `PollVoteList` object that represents a collection of poll votes
-    /// matching the specified query. The poll vote list can be used to fetch poll votes,
-    /// manage vote pagination, and receive real-time updates for vote-related events.
-    ///
-    /// - Parameter query: The poll votes query containing filtering, sorting, and pagination parameters
-    /// - Returns: A `PollVoteList` instance that can be used to interact with the collection of poll votes
-    public func pollVoteList(for query: PollVotesQuery) -> PollVoteList {
-        PollVoteList(query: query, client: self)
-    }
+    // MARK: - Member Lists
     
     /// Creates a member list instance based on the provided query.
     ///
@@ -429,6 +419,20 @@ public final class FeedsClient: Sendable {
         MemberList(query: query, client: self)
     }
     
+    // MARK: - Poll Lists
+    
+    /// Creates a poll vote list instance based on the provided query.
+    ///
+    /// This method creates a `PollVoteList` object that represents a collection of poll votes
+    /// matching the specified query. The poll vote list can be used to fetch poll votes,
+    /// manage vote pagination, and receive real-time updates for vote-related events.
+    ///
+    /// - Parameter query: The poll votes query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `PollVoteList` instance that can be used to interact with the collection of poll votes
+    public func pollVoteList(for query: PollVotesQuery) -> PollVoteList {
+        PollVoteList(query: query, client: self)
+    }
+    
     /// Creates a poll list instance based on the provided query.
     ///
     /// This method creates a `PollList` object that represents a collection of polls
@@ -439,6 +443,20 @@ public final class FeedsClient: Sendable {
     /// - Returns: A `PollList` instance that can be used to interact with the collection of polls
     public func pollList(for query: PollsQuery) -> PollList {
         PollList(query: query, client: self)
+    }
+    
+    // MARK: - Moderation Lists
+    
+    /// Creates a moderation configuration list instance based on the provided query.
+    ///
+    /// This method creates a `ModerationConfigList` object that represents a collection of moderation configurations
+    /// matching the specified query. The moderation configuration list can be used to fetch configurations,
+    /// manage configuration pagination, and receive real-time updates for configuration-related events.
+    ///
+    /// - Parameter query: The moderation configurations query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `ModerationConfigList` instance that can be used to interact with the collection of moderation configurations
+    public func moderationConfigList(for query: ModerationConfigsQuery) -> ModerationConfigList {
+        ModerationConfigList(query: query, client: self)
     }
     
     // MARK: - Devices
