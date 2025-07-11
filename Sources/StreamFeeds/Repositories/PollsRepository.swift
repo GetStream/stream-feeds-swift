@@ -104,7 +104,6 @@ final class PollsRepository: Sendable {
         request: CastPollVoteRequest
     ) async throws -> PollVoteData? {
         let response = try await apiClient.castPollVote(activityId: activityId, pollId: pollId, castPollVoteRequest: request)
-        // TODO: Optional
         guard let vote = response.vote else { return nil }
         return vote.toModel()
     }
@@ -133,7 +132,6 @@ final class PollsRepository: Sendable {
             voteId: voteId,
             userId: userId
         )
-        // TODO: Optional
         guard let vote = response.vote else { return nil }
         return vote.toModel()
     }

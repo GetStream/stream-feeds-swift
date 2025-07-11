@@ -41,7 +41,6 @@ public struct FollowData: Sendable {
 }
 
 extension FollowData: Identifiable {
-    // TODO: Review
     public var id: String {
         "\(sourceFeed.fid)\(targetFeed.fid)\(createdAt.timeIntervalSince1970)"
     }

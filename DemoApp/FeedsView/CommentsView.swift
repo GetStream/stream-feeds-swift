@@ -58,7 +58,7 @@ struct CommentsView: View {
                             userId: userId,
                             expandedCommentRepliesId: $expandedCommentRepliesId,
                             addCommentRepliesShown: $addCommentRepliesShown,
-                            containsUserReaction: comment.containsUserReaction(with: userId)
+                            containsUserReaction: !comment.ownReactions.isEmpty
                         )
                         
                         if comment.id == expandedCommentRepliesId, let replies = comment.replies {
@@ -85,7 +85,7 @@ struct CommentsView: View {
                                         userId: userId,
                                         expandedCommentRepliesId: $nestedCommentRepliesId,
                                         addCommentRepliesShown: $addCommentRepliesShown,
-                                        containsUserReaction: reply.containsUserReaction(with: userId)
+                                        containsUserReaction: !reply.ownReactions.isEmpty
                                     )
                                     
                                     if reply.id == nestedCommentRepliesId, let nestedReplies = reply.replies {
@@ -112,7 +112,7 @@ struct CommentsView: View {
                                                     userId: userId,
                                                     expandedCommentRepliesId: $nestedCommentRepliesId,
                                                     addCommentRepliesShown: $addCommentRepliesShown,
-                                                    containsUserReaction: nested.containsUserReaction(with: userId)
+                                                    containsUserReaction: !nested.ownReactions.isEmpty
                                                 )
                                             }
                                             .padding(.leading, 40)
@@ -196,13 +196,6 @@ struct CommentsView: View {
                 try await activity.get()
             }
         }
-    }
-}
-
-extension CommentData {
-    // TODO: maybe expose own reactions.
-    func containsUserReaction(with id: String) -> Bool {
-        latestReactions.contains(where: { $0.user.id == id })
     }
 }
 

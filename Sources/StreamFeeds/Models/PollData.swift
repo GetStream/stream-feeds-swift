@@ -50,7 +50,6 @@ extension PollData {
     // MARK: - Votes
     
     mutating func castVote(_ vote: PollVoteData) {
-        // TODO: Review
         if enforceUniqueVote {
             for ownVote in ownVotes {
                 removeVote(ownVote)
