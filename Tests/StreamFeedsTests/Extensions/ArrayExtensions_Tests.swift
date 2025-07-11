@@ -166,7 +166,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted replace - non-existent element")
-    func testSortedReplaceNonExistent() {
+    func sortedReplaceNonExistent() {
         var array: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "2", value: 2),
@@ -184,7 +184,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted replace - empty array")
-    func testSortedReplaceEmptyArray() {
+    func sortedReplaceEmptyArray() {
         var array: [TestItem] = []
         let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
@@ -195,7 +195,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted replace - single element array")
-    func testSortedReplaceSingleElement() {
+    func sortedReplaceSingleElement() {
         var array: [TestItem] = [TestItem(id: "1", value: 1)]
         let sorting: [Sort<TestItemSortField>] = [Sort(field: .value, direction: .forward)]
         
@@ -215,7 +215,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted replace - multiple replacements")
-    func testSortedReplaceMultiple() {
+    func sortedReplaceMultiple() {
         var array: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "2", value: 2),
@@ -240,7 +240,7 @@ struct ArrayExtensions_Tests {
     }
     
     @Test("Sorted replace - maintains sort order")
-    func testSortedReplaceMaintainsSortOrder() {
+    func sortedReplaceMaintainsSortOrder() {
         var array: [TestItem] = [
             TestItem(id: "1", value: 1),
             TestItem(id: "2", value: 2),

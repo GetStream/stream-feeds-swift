@@ -79,17 +79,17 @@ public struct ActivityReactionsFilterField: FilterFieldRepresentable, Sendable {
 
 extension ActivityReactionsFilterField {
     /// Filter by the reaction type (e.g., "like", "love", "angry").
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let reactionType = Self(value: "reaction_type")
     
     /// Filter by the user ID who created the reaction.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.in`
     public static let userId = Self(value: "user_id")
     
     /// Filter by the creation timestamp of the reaction.
-    /// 
+    ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(value: "created_at")
 }
@@ -100,11 +100,11 @@ extension ActivityReactionsFilterField {
 /// based on specific field values and operators.
 ///
 /// ## Supported Operators by Field Type
-/// 
+///
 /// **String fields** (`reactionType`, `userId`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
-/// 
+///
 /// **Date fields** (`createdAt`):
 /// - `.equal` - Exact match
 /// - `.greaterThan` - After the specified date
@@ -183,4 +183,4 @@ extension ActivityReactionsQuery {
             sort: sort?.map { $0.toRequest() }
         )
     }
-} 
+}

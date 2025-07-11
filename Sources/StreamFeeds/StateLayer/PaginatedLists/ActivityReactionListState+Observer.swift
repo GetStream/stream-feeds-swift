@@ -28,4 +28,4 @@ extension ActivityReactionListState {
             }
         }
     }
-} 
+}

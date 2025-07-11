@@ -16,15 +16,15 @@ import StreamCore
 /// ```swift
 /// let query = ActivityReactionsQuery(activityId: "activity-123")
 /// let reactionList = client.activityReactionList(for: query)
-/// 
+///
 /// // Fetch initial reactions
 /// let reactions = try await reactionList.get()
-/// 
+///
 /// // Load more reactions if available
 /// if reactionList.state.canLoadMore {
 ///     let moreReactions = try await reactionList.queryMoreReactions()
 /// }
-/// 
+///
 /// // Observe state changes
 /// reactionList.state.$reactions
 ///     .sink { reactions in
@@ -134,4 +134,4 @@ public final class ActivityReactionList: Sendable {
         )
         return result.models
     }
-} 
+}

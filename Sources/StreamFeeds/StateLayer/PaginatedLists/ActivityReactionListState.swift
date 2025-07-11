@@ -121,4 +121,4 @@ extension ActivityReactionListState {
         self.queryConfig = queryConfig
         reactions = reactions.sortedMerge(response.models, using: reactionsSorting)
     }
-} 
+}
