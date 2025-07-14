@@ -179,20 +179,10 @@ import StreamFeeds
     }
     
     func notificationFeedExample() async throws {
-        // Create a notification feed with aggregation
         let notificationFeed = client.feed(group: "notification", id: "john")
-
-        // Configure it with aggregation
-        let notificationConfig = [
-            "aggregation": countAggregation,
-            "ranking": ["type": "time", "direction": "desc"]
-        ]
-        // TODO: How?
-
-        // Read notifications
         let notifications = try await notificationFeed.getOrCreate()
         
-        suppressUnusedWarning(notifications, notificationConfig)
+        suppressUnusedWarning(notifications)
     }
     
     func markingNotificationsAsRead() async throws {
