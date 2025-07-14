@@ -49,10 +49,10 @@ class PollsDateFormatter: @unchecked Sendable {
     func dateString(for date: Date) -> String {
         // Check if the date is today
         if Calendar.current.isDateInToday(date) {
-            return "Today"
+            "Today"
         } else {
             // If it's not today, format the date normally
-            return dateFormatter.string(from: date)
+            dateFormatter.string(from: date)
         }
     }
 }

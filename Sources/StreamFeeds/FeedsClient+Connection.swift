@@ -98,18 +98,18 @@ extension FeedsClient {
         
         webSocketClient.connectionStateDelegate = self
         webSocketClient.onWSConnectionEstablished = { [weak self, weak webSocketClient] in
-            guard let self = self, let webSocketClient else { return }
+            guard let self, let webSocketClient else { return }
 
             let connectUserRequest = ConnectUserDetailsRequest(
-                custom: self.user.customData,
-                id: self.user.id,
-                image: self.user.imageURL?.absoluteString,
-                name: self.user.originalName
+                custom: user.customData,
+                id: user.id,
+                image: user.imageURL?.absoluteString,
+                name: user.originalName
             )
             
             let authRequest = WSAuthMessageRequest(
                 products: ["feeds"],
-                token: self.token.rawValue,
+                token: token.rawValue,
                 userDetails: connectUserRequest
             )
 

@@ -172,7 +172,7 @@ public struct PhotoAttachmentCell: View {
                 }
                 
                 // Check file size.
-                if let assetURL = assetURL, assetLoader.assetExceedsAllowedSize(url: assetURL) {
+                if let assetURL, assetLoader.assetExceedsAllowedSize(url: assetURL) {
                     compressing = true
                     assetLoader.compressAsset(at: assetURL, type: assetType) { url in
                         Task { @MainActor in
@@ -184,7 +184,7 @@ public struct PhotoAttachmentCell: View {
             }
         }
         .onDisappear {
-            if let requestId = requestId {
+            if let requestId {
                 asset.cancelContentEditingInputRequest(requestId)
                 self.requestId = nil
                 loading = false
@@ -196,7 +196,7 @@ public struct PhotoAttachmentCell: View {
     /// This makes sure that the photo is converted to JPG.
     /// This way it is more compatible with other platforms.
     private func assetJpgURL() -> URL? {
-        guard let assetURL = assetURL else { return nil }
+        guard let assetURL else { return nil }
         guard let assetData = try? Data(contentsOf: assetURL) else { return nil }
         return try? UIImage(data: assetData)?.saveAsJpgToTemporaryUrl()
     }

@@ -377,9 +377,9 @@ public final class Activity: Sendable {
 private extension Activity {
     func ensureLocalStateFetched() async throws -> ActivityData {
         if let activity = await state.activity {
-            return activity
+            activity
         } else {
-            return try await get()
+            try await get()
         }
     }
     

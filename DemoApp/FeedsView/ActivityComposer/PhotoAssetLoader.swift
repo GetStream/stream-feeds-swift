@@ -25,8 +25,8 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
             contentMode: .aspectFit,
             options: options
         ) { [weak self] image, _ in
-            guard let self = self, let image = image else { return }
-            self.loadedImages[asset.localIdentifier] = image
+            guard let self, let image else { return }
+            loadedImages[asset.localIdentifier] = image
         }
     }
 

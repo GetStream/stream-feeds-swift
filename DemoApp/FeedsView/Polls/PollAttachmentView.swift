@@ -153,11 +153,11 @@ public struct PollAttachmentView: View {
     
     private var subtitleText: String {
         if poll.isClosed == true {
-            return "Vote Ended"
+            "Vote Ended"
         } else if poll.enforceUniqueVote == true {
-            return "Select one"
+            "Select one"
         } else {
-            return "Select one or more"
+            "Select one or more"
         }
     }
 }

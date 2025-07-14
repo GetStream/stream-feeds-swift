@@ -135,7 +135,7 @@ public final class FeedsClient: Sendable {
                 guard let self else {
                     throw ClientError.Unexpected()
                 }
-                return await self.loadConnectionId()
+                return await loadConnectionId()
             }
             _userAuth.withLock { $0 = userAuth }
             let connectionId = try await userAuth.connectionId()
