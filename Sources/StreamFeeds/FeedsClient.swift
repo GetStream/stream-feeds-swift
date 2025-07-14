@@ -12,7 +12,6 @@ public final class FeedsClient: Sendable {
     public let token: UserToken
 
     public let attachmentsUploader: StreamAttachmentUploader
-    
     public let moderation: Moderation
     
     static let endpointConfig: EndpointConfig = .localhost
@@ -22,6 +21,7 @@ public final class FeedsClient: Sendable {
     private let apiTransport: DefaultAPITransport
     private let cdnClient: CDNClient
     
+    private let appData = AllocatedUnfairLock<AppData?>(nil)
     private nonisolated(unsafe) var requestEncoder: RequestEncoder
     private nonisolated(unsafe) var connectionProvider: ConnectionProvider?
         
@@ -33,6 +33,7 @@ public final class FeedsClient: Sendable {
     
     let activitiesRepository: ActivitiesRepository
     let bookmarksRepository: BookmarksRepository
+    let clientRepository: ClientRepository
     let commentsRepository: CommentsRepository
     let devicesRepository: DevicesRepository
     let feedsRepository: FeedsRepository
@@ -107,6 +108,7 @@ public final class FeedsClient: Sendable {
         
         activitiesRepository = ActivitiesRepository(apiClient: apiClient, attachmentUploader: attachmentsUploader)
         bookmarksRepository = BookmarksRepository(apiClient: apiClient)
+        clientRepository = ClientRepository(apiClient: apiClient)
         commentsRepository = CommentsRepository(apiClient: apiClient)
         devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
@@ -457,6 +459,44 @@ public final class FeedsClient: Sendable {
     /// - Returns: A `ModerationConfigList` instance that can be used to interact with the collection of moderation configurations
     public func moderationConfigList(for query: ModerationConfigsQuery) -> ModerationConfigList {
         ModerationConfigList(query: query, client: self)
+    }
+    
+    // MARK: - App
+    
+    /// Retrieves the application configuration and settings.
+    ///
+    /// This method fetches the current application data including configuration settings,
+    /// file upload configurations, and feature flags.
+    ///
+    /// The returned `AppData` contains:
+    /// - **Async URL Enrichment**: Whether automatic URL enrichment is enabled
+    /// - **Auto Translation**: Whether automatic translation is enabled
+    /// - **File Upload Config**: Configuration for file uploads including allowed extensions, MIME types, and size limits
+    /// - **Image Upload Config**: Configuration for image uploads including allowed extensions, MIME types, and size limits
+    /// - **Application Name**: The name of the application
+    ///
+    /// - Important: The result is cached after the first successful request to avoid unnecessary API calls.
+    /// - Returns: An `AppData` instance containing the application configuration
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    ///
+    /// - Example:
+    ///   ```swift
+    ///   do {
+    ///       let appConfig = try await client.getApp()
+    ///       print("App name: \(appConfig.name)")
+    ///       print("File upload size limit: \(appConfig.fileUploadConfig.sizeLimit)")
+    ///       print("Auto translation enabled: \(appConfig.autoTranslationEnabled)")
+    ///   } catch {
+    ///       print("Failed to get app configuration: \(error)")
+    ///   }
+    ///   ```
+    public func getApp() async throws -> AppData {
+        if let app = appData.value {
+            return app
+        }
+        let appData = try await clientRepository.getApp()
+        self.appData.value = appData
+        return appData
     }
     
     // MARK: - Devices
