@@ -14,7 +14,7 @@ public final class FeedsClient: Sendable {
     public let attachmentsUploader: StreamAttachmentUploader
     public let moderation: Moderation
     
-    static let endpointConfig: EndpointConfig = .localhost
+    static let endpointConfig: EndpointConfig = .staging
     
     private let apiClient: DefaultAPI
     private let devicesClient: DevicesAPI

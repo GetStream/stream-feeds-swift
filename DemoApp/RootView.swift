@@ -49,7 +49,7 @@ extension FeedsClient {
     static func client(for credentials: UserCredentials) -> FeedsClient {
         LogConfig.level = .debug
         return FeedsClient(
-            apiKey: .init("892s22ypvt6m"),
+            apiKey: .init("pd67s34fzpgw"),
             user: credentials.user,
             token: credentials.token
         )

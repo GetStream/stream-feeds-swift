@@ -17,4 +17,9 @@ extension EndpointConfig {
         hostname: "http://localhost:3030",
         wsEndpoint: "ws://localhost:8800/api/v2/connect"
     )
+    
+    static let staging = EndpointConfig(
+        hostname: "https://chat-edge-frankfurt-ce1.stream-io-api.com",
+        wsEndpoint: "wss://chat-edge-frankfurt-ce1.stream-io-api.com/api/v2/connect"
+    )
 }

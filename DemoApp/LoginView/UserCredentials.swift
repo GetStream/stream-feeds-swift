@@ -15,6 +15,7 @@ struct UserCredentials: Identifiable {
 
 extension UserCredentials {
     static let builtIn: [UserCredentials] = [
+        .luke,
         .martin,
         .tommaso,
         .thierry,
@@ -23,6 +24,11 @@ extension UserCredentials {
         .toomas
     ].sorted(by: { $0.user.name.localizedCaseInsensitiveCompare($1.user.name) == .orderedAscending })
     
+    static let luke = UserCredentials(
+        user: .init(id: "luke_skywalker", name: "Luke Skywalker", imageURL: URL(string: "https://vignette.wikia.nocookie.net/starwars/images/2/20/LukeTLJ.jpg")),
+        token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIifQ.hZ59SWtp_zLKVV9ShkqkTsCGi_jdPHly7XNCf5T_Ev0")
+    )
+
     static let martin = UserCredentials(
         user: .init(id: "martin", name: "Martin", imageURL: URL(string: "https://getstream.io/static/2796a305dd07651fcceb4721a94f4505/802d2/martin-mitrevski.webp")),
         token: UserToken(rawValue: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFydGluIn0.-8mL49OqMdlvzXR_1IgYboVXXuXFc04r0EvYgko-X8I")
