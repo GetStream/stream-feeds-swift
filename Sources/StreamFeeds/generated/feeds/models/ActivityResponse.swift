@@ -46,6 +46,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
     public var parent: ActivityResponse?
     public var poll: PollResponseData?
     public var popularity: Int
+    public var reactionCount: Int
     public var reactionGroups: [String: ReactionGroupResponse?]
     public var score: Float
     public var searchData: [String: RawJSON]
@@ -57,7 +58,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
     public var visibility: ActivityResponseVisibility
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionGroups: [String: ReactionGroupResponse?], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -81,6 +82,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         self.parent = parent
         self.poll = poll
         self.popularity = popularity
+        self.reactionCount = reactionCount
         self.reactionGroups = reactionGroups
         self.score = score
         self.searchData = searchData
@@ -117,6 +119,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         case parent
         case poll
         case popularity
+        case reactionCount = "reaction_count"
         case reactionGroups = "reaction_groups"
         case score
         case searchData = "search_data"
@@ -153,6 +156,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
             lhs.parent == rhs.parent &&
             lhs.poll == rhs.poll &&
             lhs.popularity == rhs.popularity &&
+            lhs.reactionCount == rhs.reactionCount &&
             lhs.reactionGroups == rhs.reactionGroups &&
             lhs.score == rhs.score &&
             lhs.searchData == rhs.searchData &&
@@ -189,6 +193,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         hasher.combine(parent)
         hasher.combine(poll)
         hasher.combine(popularity)
+        hasher.combine(reactionCount)
         hasher.combine(reactionGroups)
         hasher.combine(score)
         hasher.combine(searchData)
