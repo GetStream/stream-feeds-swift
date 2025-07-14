@@ -104,7 +104,7 @@ end
 
 desc 'Runs LLC tests'
 lane :test do |options|
-  next unless is_check_required(sources: sources_matrix[:unit], force_check: @force_check)
+  next unless is_check_required(sources: sources_matrix[:llc], force_check: @force_check)
 
   update_testplan_on_ci(path: "Tests/StreamFeedsTests/StreamFeeds.xctestplan")
 
@@ -210,7 +210,7 @@ end
 
 lane :sources_matrix do
   {
-    unit: ['Sources', 'Tests/StreamFeedsTests', 'Tests/Shared', xcode_project],
+    llc: ['Sources/StreamFeeds', 'Tests/StreamFeedsTests', 'Tests/Shared', xcode_project],
     sample_apps: ['Sources', 'DemoApp', xcode_project],
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
