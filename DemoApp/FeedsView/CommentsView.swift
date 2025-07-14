@@ -8,6 +8,7 @@ import SwiftUI
 
 struct CommentsView: View {
     let activityId: String
+    let feed: Feed
     let userId: String
     
     @State var expandedCommentRepliesId: String?
@@ -22,9 +23,10 @@ struct CommentsView: View {
     @State var editCommentId: String?
     @State var comment = ""
     
-    init(activityId: String, fid: FeedId, feedsClient: FeedsClient) {
+    init(activityId: String, feed: Feed, feedsClient: FeedsClient) {
         self.activityId = activityId
-        let activity = feedsClient.activity(for: activityId, in: fid)
+        self.feed = feed
+        let activity = feedsClient.activity(for: activityId, in: feed.fid)
         _activity = State(initialValue: activity)
         _state = StateObject(wrappedValue: activity.state)
         userId = feedsClient.user.id
@@ -40,11 +42,13 @@ struct CommentsView: View {
                         CommentView(
                             user: comment.user,
                             text: comment.text ?? "",
+                            canEdit: feed.state.ownCapabilities.contains(.updateComment),
                             onEdit: {
                                 editCommentId = comment.id
                                 editCommentShown = true
                                 self.comment = comment.text ?? ""
                             },
+                            canDelete: feed.state.ownCapabilities.contains(.deleteComment),
                             onDelete: {
                                 Task {
                                     try await activity.deleteComment(commentId: comment.id)
@@ -67,11 +71,13 @@ struct CommentsView: View {
                                     CommentView(
                                         user: reply.user,
                                         text: reply.text ?? "",
+                                        canEdit: feed.state.ownCapabilities.contains(.updateComment),
                                         onEdit: {
                                             editCommentId = reply.id
                                             editCommentShown = true
                                             self.comment = reply.text ?? ""
                                         },
+                                        canDelete: feed.state.ownCapabilities.contains(.deleteComment),
                                         onDelete: {
                                             Task {
                                                 try await activity.deleteComment(commentId: reply.id)
@@ -94,11 +100,13 @@ struct CommentsView: View {
                                                 CommentView(
                                                     user: nested.user,
                                                     text: nested.text ?? "",
+                                                    canEdit: feed.state.ownCapabilities.contains(.updateComment),
                                                     onEdit: {
                                                         editCommentId = nested.id
                                                         editCommentShown = true
                                                         self.comment = nested.text ?? ""
                                                     },
+                                                    canDelete: feed.state.ownCapabilities.contains(.deleteComment),
                                                     onDelete: {
                                                         Task {
                                                             try await activity.deleteComment(commentId: nested.id)
@@ -200,10 +208,12 @@ struct CommentsView: View {
 }
 
 struct CommentView: View {
-    var user: UserData
-    var text: String
-    var onEdit: () -> Void
-    var onDelete: () -> Void
+    let user: UserData
+    let text: String
+    let canEdit: Bool
+    let onEdit: () -> Void
+    let canDelete: Bool
+    let onDelete: () -> Void
     
     var body: some View {
         HStack {
@@ -219,17 +229,19 @@ struct CommentView: View {
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(16)
         .contextMenu {
-            // TODO: permissions / capabilities
-            Button {
-                onEdit()
-            } label: {
-                Label("Edit", systemImage: "pencil")
+            if canEdit {
+                Button {
+                    onEdit()
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
             }
-            
-            Button(role: .destructive) {
-                onDelete()
-            } label: {
-                Label("Delete", systemImage: "trash")
+            if canDelete {
+                Button(role: .destructive) {
+                    onDelete()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
             }
         }
     }

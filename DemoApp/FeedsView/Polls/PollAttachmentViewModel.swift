@@ -272,6 +272,11 @@ public extension PollData {
         let optionsWithMostVotes = voteCountsByOption.filter { $0.value == currentMaximumVoteCount }
         return optionsWithMostVotes[option.id] != nil
     }
+    
+    func latestVotes(for option: PollOptionData) -> [PollVoteData] {
+        guard let votes = latestVotesByOption[option.id] else { return [] }
+        return votes
+    }
 
     /// The vote count for the given option.
     func voteCount(for option: PollOptionData) -> Int {

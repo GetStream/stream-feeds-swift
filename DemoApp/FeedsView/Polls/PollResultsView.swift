@@ -42,13 +42,8 @@ struct PollResultsView: View {
                     PollOptionResultsView(
                         poll: viewModel.poll,
                         option: option,
-                        votes: Array(
-                            []
-                            // TODO: we should expose this?
-//                            option.latestVotes
-//                                .prefix(numberOfItemsShown)
-                        ),
-                        allButtonShown: true, // TODO: option.latestVotes.count > numberOfItemsShown,
+                        votes: Array(viewModel.poll.latestVotes(for: option).prefix(numberOfItemsShown)),
+                        allButtonShown: viewModel.poll.latestVotes(for: option).count > numberOfItemsShown,
                         hasMostVotes: viewModel.hasMostVotes(for: option),
                         activity: viewModel.activity,
                         feedsClient: viewModel.feedsClient

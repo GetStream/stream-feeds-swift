@@ -62,7 +62,7 @@ struct FeedsListView: View {
         .padding(.top)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $commentsActivity) { activity in
-            CommentsView(activityId: activity.id, fid: feed.fid, feedsClient: client)
+            CommentsView(activityId: activity.id, feed: feed, feedsClient: client)
                 .modifier(PresentationDetentModifier())
         }
         .onAppear {
