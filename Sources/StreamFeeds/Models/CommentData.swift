@@ -100,6 +100,9 @@ public struct CommentData: Identifiable, Sendable {
     /// such as reply counts and pagination information.
     public let meta: RepliesMeta?
     
+    /// Moderation state for the comment.
+    public let moderation: ModerationV2Response?
+    
     /// The ID of the object this comment belongs to (e.g., activity ID).
     public let objectId: String
     
@@ -236,6 +239,7 @@ extension CommentResponse {
             latestReactions: latestReactions?.map { $0.toModel() } ?? [],
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             meta: nil,
+            moderation: moderation,
             objectId: objectId,
             objectType: objectType,
             ownReactions: ownReactions.map { $0.toModel() },
@@ -274,6 +278,7 @@ extension ThreadedCommentResponse {
             latestReactions: latestReactions?.map { $0.toModel() } ?? [],
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             meta: meta,
+            moderation: moderation,
             objectId: objectId,
             objectType: objectType,
             ownReactions: ownReactions.map { $0.toModel() },

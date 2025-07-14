@@ -10,12 +10,15 @@ public struct FeedData: Identifiable, Sendable {
     public let createdBy: UserData
     public let custom: [String: RawJSON]?
     public let deletedAt: Date?
+    public let description: String
     public let fid: FeedId
+    public let filterTags: [String]?
     public let followerCount: Int
     public let followingCount: Int
     public let groupId: String
     public let id: String
     public let memberCount: Int
+    public let name: String
     public let pinCount: Int
     public let updatedAt: Date
     public let visibility: String?
@@ -30,12 +33,15 @@ extension FeedResponse {
             createdBy: createdBy.toModel(),
             custom: custom,
             deletedAt: deletedAt,
+            description: description,
             fid: FeedId(rawValue: fid),
+            filterTags: filterTags,
             followerCount: followerCount,
             followingCount: followingCount,
             groupId: groupId,
             id: id,
             memberCount: memberCount,
+            name: name,
             pinCount: pinCount,
             updatedAt: updatedAt,
             visibility: visibility

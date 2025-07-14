@@ -29,6 +29,7 @@ public struct ActivityData: Identifiable, Sendable {
     public var parent: ActivityData? { _parent?.value as? ActivityData }
     public let poll: PollData?
     public let popularity: Int
+    public var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
     public let score: Float
     public let searchData: [String: RawJSON]
@@ -39,11 +40,6 @@ public struct ActivityData: Identifiable, Sendable {
     public let user: UserData
     public let visibility: ActivityDataVisibility
     public let visibilityTag: String?
-    
-    // Additional
-    public var reactionCount: Int {
-        reactionGroups.values.reduce(0) { $0 + $1.count }
-    }
     
     fileprivate let _parent: BoxedAny?
 }
@@ -77,6 +73,7 @@ extension ActivityData {
     
     mutating func addReaction(_ reaction: FeedsReactionData) {
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
+        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
         if reaction.user.id == user.id {
             ownReactions.insert(byId: reaction)
         }
@@ -84,6 +81,7 @@ extension ActivityData {
     
     mutating func removeReaction(_ reaction: FeedsReactionData) {
         FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
+        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
         if reaction.user.id == user.id {
             ownReactions.remove(byId: reaction.id)
         }
@@ -117,6 +115,7 @@ extension ActivityResponse {
             ownReactions: ownReactions.map { $0.toModel() },
             poll: poll?.toModel(),
             popularity: popularity,
+            reactionCount: reactionCount,
             reactionGroups: reactionGroups.compactMapValues { $0?.toModel() },
             score: score,
             searchData: searchData,
