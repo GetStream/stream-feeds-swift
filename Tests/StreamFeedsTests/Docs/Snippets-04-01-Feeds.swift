@@ -197,17 +197,6 @@ import StreamFeeds
         suppressUnusedWarning(feeds)
     }
     
-    func queryingFeedsThatIFollow() async throws {
-        // TODO: How to do this?
-//        let query = FeedsQuery(
-//            filter: .contains(., value: "john")
-//        )
-//        let feedList = client.feedList(for: query)
-//        let feeds = try await feedList.get()
-//
-//        suppressUnusedWarning(feeds)
-    }
-    
     func queryingFeedsByNameOrDescription() async throws {
         let sportsQuery = FeedsQuery(
             filter: .and([
