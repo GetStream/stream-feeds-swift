@@ -123,16 +123,20 @@ struct FeedsListRowView: View {
         }
         .padding(.top, 4)
         .contextMenu {
-            Button {
-                onUpdate(activity, activity.text ?? "")
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
-            
-            Button(role: .destructive) {
-                onDelete(activity)
-            } label: {
-                Label("Delete", systemImage: "trash")
+            if activity.user.id == client.user.id {
+                if activity.parent == nil {
+                    Button {
+                        onUpdate(activity, activity.text ?? "")
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                }
+                
+                Button(role: .destructive) {
+                    onDelete(activity)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
             }
         }
     }
