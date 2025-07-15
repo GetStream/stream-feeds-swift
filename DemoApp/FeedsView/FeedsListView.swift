@@ -109,8 +109,7 @@ struct FeedsListView: View {
         .alert("Delete Activity", isPresented: .init(
             get: { activityToDelete != nil },
             set: { if !$0 { activityToDelete = nil } }
-        )) {
-            Text("Are you sure you want to delete this activity?")
+        ), actions: {
             Button("Cancel", role: .cancel) {
                 activityToDelete = nil
             }
@@ -126,7 +125,9 @@ struct FeedsListView: View {
                     }
                 }
             }
-        }
+        }, message: {
+            Text("Are you sure you want to delete this activity?")
+        })
     }
 }
 
