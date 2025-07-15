@@ -29,12 +29,16 @@ struct FeedsListRowView: View {
                     onDelete: onDelete
                 )
             } else if activity.poll != nil {
-                PollAttachmentView(
-                    feedsClient: client,
-                    feed: feed,
-                    activity: activity,
-                    isFirst: true
-                )
+                HStack(alignment: .top, spacing: 8) {
+                    UserAvatar(url: activity.user.imageURL)
+                    PollAttachmentView(
+                        feedsClient: client,
+                        feed: feed,
+                        activity: activity,
+                        isFirst: true
+                    )
+                }
+                .padding(.horizontal)
             } else {
                 ActivityView(
                     user: activity.user,
