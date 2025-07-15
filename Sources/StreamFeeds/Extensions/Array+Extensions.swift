@@ -417,17 +417,17 @@ extension Array where Element: Identifiable {
     
     private func updated(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (Element) -> Element?) -> Self {
         var updatedElements = self
-        for (index, element) in updatedElements.enumerated() {
+        for (index, element) in updatedElements.reversed().enumerated() {
             if element.id == id {
                 if let updated = updates(element) {
                     updatedElements[index] = updated
                 } else {
                     updatedElements.remove(at: index)
+                    // Skip checking nested elements because parent was removed
+                    continue
                 }
             }
-            if let nestedElements = element[keyPath: nestingKeyPath],
-                !nestedElements.isEmpty,
-                index < updatedElements.count {
+            if let nestedElements = element[keyPath: nestingKeyPath], !nestedElements.isEmpty {
                 var updatedElement = element
                 updatedElement[keyPath: nestingKeyPath] = nestedElements.updated(byId: id, nesting: nestingKeyPath, updates: updates)
                 updatedElements[index] = updatedElement
