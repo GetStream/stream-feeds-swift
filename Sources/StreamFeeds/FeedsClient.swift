@@ -157,6 +157,19 @@ public final class FeedsClient: Sendable {
         try await connectTask.value?.value
     }
     
+    /// Disconnects the current `FeedsClient`.
+    public func disconnect() async {
+        await withCheckedContinuation { [webSocketClient] continuation in
+            if let webSocketClient = webSocketClient.value {
+                webSocketClient.disconnect {
+                    continuation.resume()
+                }
+            } else {
+                continuation.resume()
+            }
+        }
+    }
+    
     // MARK: - Feeds
     
     /// Creates a feed instance for the specified group and ID.
