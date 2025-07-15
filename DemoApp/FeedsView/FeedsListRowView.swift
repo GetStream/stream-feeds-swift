@@ -24,9 +24,7 @@ struct FeedsListRowView: View {
                     ownCapabilities: feed.state.ownCapabilities,
                     text: parent.text ?? "",
                     attachments: parent.attachments,
-                    activity: activity,
-                    onUpdate: onUpdate,
-                    onDelete: onDelete
+                    activity: activity
                 )
             } else if activity.poll != nil {
                 HStack(alignment: .top, spacing: 8) {
@@ -45,9 +43,7 @@ struct FeedsListRowView: View {
                     ownCapabilities: feed.state.ownCapabilities,
                     text: activity.text ?? "",
                     attachments: activity.attachments,
-                    activity: activity,
-                    onUpdate: onUpdate,
-                    onDelete: onDelete
+                    activity: activity
                 )
             }
             
@@ -124,6 +120,20 @@ struct FeedsListRowView: View {
             }
             
             Divider()
+        }
+        .padding(.top, 4)
+        .contextMenu {
+            Button {
+                onUpdate(activity, activity.text ?? "")
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            
+            Button(role: .destructive) {
+                onDelete(activity)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
         }
     }
 }

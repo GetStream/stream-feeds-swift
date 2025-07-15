@@ -29,7 +29,7 @@ struct FeedsListView: View {
     
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: 4) {
                 ForEach(state.activities) { activity in
                     FeedsListRowView(
                         activity: activity,
@@ -153,8 +153,6 @@ struct ActivityView: View {
     let text: String
     var attachments: [Attachment]?
     var activity: ActivityData
-    var onUpdate: (ActivityData, String) -> Void
-    var onDelete: (ActivityData) -> Void
     
     var body: some View {
         HStack(alignment: .top) {
@@ -180,19 +178,6 @@ struct ActivityView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 4)
-        .contextMenu {
-            Button {
-                onUpdate(activity, text)
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
-            
-            Button(role: .destructive) {
-                onDelete(activity)
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-        }
     }
 }
 
