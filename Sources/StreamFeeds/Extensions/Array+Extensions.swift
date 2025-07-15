@@ -425,7 +425,9 @@ extension Array where Element: Identifiable {
                     updatedElements.remove(at: index)
                 }
             }
-            if let nestedElements = element[keyPath: nestingKeyPath], !nestedElements.isEmpty {
+            if let nestedElements = element[keyPath: nestingKeyPath],
+                !nestedElements.isEmpty,
+                index < updatedElements.count {
                 var updatedElement = element
                 updatedElement[keyPath: nestingKeyPath] = nestedElements.updated(byId: id, nesting: nestingKeyPath, updates: updates)
                 updatedElements[index] = updatedElement
