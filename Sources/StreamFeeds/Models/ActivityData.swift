@@ -59,30 +59,32 @@ extension ActivityData {
         comments.remove(byId: comment.id)
     }
     
-    mutating func addBookmark(_ bookmark: BookmarkData) {
-        if bookmark.user.id == user.id {
+    mutating func addBookmark(_ bookmark: BookmarkData, currentUserId: String) {
+        if bookmark.user.id == currentUserId {
             ownBookmarks.insert(byId: bookmark)
         }
         bookmarkCount += 1
     }
     
-    mutating func deleteBookmark(_ bookmark: BookmarkData) {
+    mutating func deleteBookmark(_ bookmark: BookmarkData, currentUserId: String) {
         bookmarkCount = max(0, bookmarkCount - 1)
-        ownBookmarks.remove(byId: bookmark.id)
+        if bookmark.user.id == currentUserId {
+            ownBookmarks.remove(byId: bookmark.id)
+        }
     }
     
-    mutating func addReaction(_ reaction: FeedsReactionData) {
+    mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == user.id {
+        if reaction.user.id == currentUserId {
             ownReactions.insert(byId: reaction)
         }
     }
     
-    mutating func removeReaction(_ reaction: FeedsReactionData) {
+    mutating func removeReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == user.id {
+        if reaction.user.id == currentUserId {
             ownReactions.remove(byId: reaction.id)
         }
     }

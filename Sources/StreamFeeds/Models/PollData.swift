@@ -49,10 +49,10 @@ extension PollData {
     
     // MARK: - Votes
     
-    mutating func castVote(_ vote: PollVoteData) {
-        if enforceUniqueVote {
+    mutating func castVote(_ vote: PollVoteData, currentUserId: String) {
+        if enforceUniqueVote, vote.user?.id == currentUserId {
             for ownVote in ownVotes {
-                removeVote(ownVote)
+                removeVote(ownVote, currentUserId: currentUserId)
             }
             ownVotes = [vote]
         } else {
@@ -69,8 +69,10 @@ extension PollData {
         voteCount = voteCountsByOption.reduce(0) { $0 + $1.value }
     }
     
-    mutating func removeVote(_ vote: PollVoteData) {
-        ownVotes.remove(byId: vote.id)
+    mutating func removeVote(_ vote: PollVoteData, currentUserId: String) {
+        if vote.user?.id == currentUserId {
+            ownVotes.remove(byId: vote.id)
+        }
         let optionVoteCounts = voteCountsByOption[vote.optionId] ?? 0
         voteCountsByOption[vote.optionId] = max(0, optionVoteCounts - 1)
         var optionVotes = latestVotesByOption[vote.optionId] ?? []

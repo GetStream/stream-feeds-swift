@@ -34,10 +34,7 @@ public final class Feed: Sendable {
     private let pollsRepository: PollsRepository
     private let memberList: MemberList
     
-    init(
-        query: FeedQuery,
-        client: FeedsClient
-    ) {
+    init(query: FeedQuery, client: FeedsClient) {
         activitiesRepository = client.activitiesRepository
         attachmentsUploader = client.attachmentsUploader
         bookmarksRepository = client.bookmarksRepository
@@ -46,10 +43,12 @@ public final class Feed: Sendable {
         feedsRepository = client.feedsRepository
         memberList = client.memberList(for: .init(fid: query.fid))
         pollsRepository = client.pollsRepository
+        let currentUserId = client.user.id
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { [memberList] in
             FeedState(
                 feedQuery: query,
+                currentUserId: currentUserId,
                 events: events,
                 memberListState: memberList.state
             )

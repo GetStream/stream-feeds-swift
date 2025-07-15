@@ -14,16 +14,12 @@ import StreamCore
     private var cancellables = Set<AnyCancellable>()
     private(set) lazy var changeHandlers = makeChangeHandlers()
     private let commentListState: ActivityCommentListState
+    let currentUserId: String
     private var webSocketObserver: WebSocketObserver?
     
-    /// Initializes a new ActivityState instance.
-    ///
-    /// - Parameters:
-    ///   - activityId: The unique identifier of the activity
-    ///   - fid: The identifier of the feed containing this activity
-    ///   - events: The WebSocket events subscriber for real-time updates
-    init(activityId: String, fid: FeedId, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
+    init(activityId: String, fid: FeedId, currentUserId: String, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
         self.commentListState = commentListState
+        self.currentUserId = currentUserId
         let webSocketObserver = WebSocketObserver(
             activityId: activityId,
             fid: fid,

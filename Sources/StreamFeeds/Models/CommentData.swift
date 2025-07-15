@@ -180,18 +180,20 @@ public struct CommentData: Identifiable, Sendable {
 extension CommentData {
     // MARK: - Comments
     
-    mutating func addReaction(_ reaction: FeedsReactionData) {
-        if reaction.user.id == user.id {
-            ownReactions.append(reaction)
-        }
+    mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
+        if reaction.user.id == currentUserId {
+            ownReactions.append(reaction)
+        }
     }
     
-    mutating func removeReaction(_ reaction: FeedsReactionData) {
-        ownReactions.remove(byId: reaction.id)
+    mutating func removeReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
+        if reaction.user.id == currentUserId {
+            ownReactions.remove(byId: reaction.id)
+        }
     }
     
     // MARK: - Replies

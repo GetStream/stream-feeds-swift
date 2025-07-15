@@ -54,8 +54,15 @@ public final class ActivityCommentList: Sendable {
     init(query: ActivityCommentsQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
+        let currentUserId = client.user.id
         let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { ActivityCommentListState(query: query, events: events) }
+        stateBuilder = StateBuilder {
+            ActivityCommentListState(
+                query: query,
+                currentUserId: currentUserId,
+                events: events
+            )
+        }
     }
 
     /// The query configuration used to fetch comments.

@@ -14,17 +14,14 @@ import StreamCore
     private var cancellables = Set<AnyCancellable>()
     let memberListState: MemberListState
     lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    let currentUserId: String
     private var webSocketObserver: WebSocketObserver?
     
-    /// Initializes a new FeedState instance.
-    ///
-    /// - Parameters:
-    ///   - feedQuery: The query used to create this feed
-    ///   - events: The WebSocket events subscriber for real-time updates
-    init(feedQuery: FeedQuery, events: WSEventsSubscribing, memberListState: MemberListState) {
+    init(feedQuery: FeedQuery, currentUserId: String, events: WSEventsSubscribing, memberListState: MemberListState) {
         fid = feedQuery.fid
         self.feedQuery = feedQuery
         self.memberListState = memberListState
+        self.currentUserId = currentUserId
         webSocketObserver = WebSocketObserver(fid: feedQuery.fid, subscribing: events, handlers: changeHandlers)
         memberListState.$members
             .assign(to: \.members, onWeak: self)
@@ -134,15 +131,17 @@ extension FeedState {
                 self?.pinnedActivities.remove(at: index)
             },
             bookmarkAdded: { [weak self] bookmark in
-                self?.activities.updateFirstElement(
+                guard let self else { return }
+                activities.updateFirstElement(
                     where: { $0.id == bookmark.activity.id },
-                    changes: { $0.addBookmark(bookmark) }
+                    changes: { $0.addBookmark(bookmark, currentUserId: currentUserId) }
                 )
             },
             bookmarkRemoved: { [weak self] bookmark in
-                self?.activities.updateFirstElement(
+                guard let self else { return }
+                activities.updateFirstElement(
                     where: { $0.id == bookmark.activity.id },
-                    changes: { $0.deleteBookmark(bookmark) }
+                    changes: { $0.deleteBookmark(bookmark, currentUserId: currentUserId) }
                 )
             },
             commentAdded: { [weak self] comment in
@@ -180,15 +179,17 @@ extension FeedState {
                 self?.updateFollow(follow)
             },
             reactionAdded: { [weak self] reaction in
-                self?.activities.updateFirstElement(
+                guard let self else { return }
+                activities.updateFirstElement(
                     where: { $0.id == reaction.activityId },
-                    changes: { $0.addReaction(reaction) }
+                    changes: { $0.addReaction(reaction, currentUserId: currentUserId) }
                 )
             },
             reactionRemoved: { [weak self] reaction in
-                self?.activities.updateFirstElement(
+                guard let self else { return }
+                activities.updateFirstElement(
                     where: { $0.id == reaction.activityId },
-                    changes: { $0.removeReaction(reaction) }
+                    changes: { $0.removeReaction(reaction, currentUserId: currentUserId) }
                 )
             }
         )

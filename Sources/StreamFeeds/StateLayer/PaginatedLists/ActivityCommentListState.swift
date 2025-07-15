@@ -50,15 +50,17 @@ import Foundation
 @MainActor public class ActivityCommentListState: ObservableObject {
     private var webSocketObserver: WebSocketObserver?
     lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private let currentUserId: String
     
-    /// Initializes a new ActivityCommentListState instance.
-    ///
-    /// - Parameters:
-    ///   - query: The query configuration for fetching comments
-    ///   - events: The WebSocket events subscriber for real-time updates
-    init(query: ActivityCommentsQuery, events: WSEventsSubscribing) {
+    init(query: ActivityCommentsQuery, currentUserId: String, events: WSEventsSubscribing) {
+        self.currentUserId = currentUserId
         self.query = query
-        webSocketObserver = WebSocketObserver(objectId: query.objectId, objectType: query.objectType, subscribing: events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(
+            objectId: query.objectId,
+            objectType: query.objectType,
+            subscribing: events,
+            handlers: changeHandlers
+        )
     }
     
     /// The query configuration used to fetch comments.
@@ -145,13 +147,15 @@ extension ActivityCommentListState {
                 self?.comments.replace(byId: comment, nesting: \.replies)
             },
             commentReactionAdded: { [weak self] reaction, comment in
-                self?.comments.update(byId: comment.id, nesting: \.replies) { existingComment in
-                    existingComment.addReaction(reaction)
+                guard let self else { return }
+                comments.update(byId: comment.id, nesting: \.replies) { existingComment in
+                    existingComment.addReaction(reaction, currentUserId: currentUserId)
                 }
             },
             commentReactionRemoved: { [weak self] reaction, comment in
-                self?.comments.update(byId: comment.id, nesting: \.replies) { existingComment in
-                    existingComment.removeReaction(reaction)
+                guard let self else { return }
+                comments.update(byId: comment.id, nesting: \.replies) { existingComment in
+                    existingComment.removeReaction(reaction, currentUserId: currentUserId)
                 }
             }
         )

@@ -43,8 +43,17 @@ public final class Activity: Sendable {
         commentsRepository = client.commentsRepository
         self.fid = fid
         pollsRepository = client.pollsRepository
+        let currentUserId = client.user.id
         let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { ActivityState(activityId: id, fid: fid, events: events, commentListState: commentList.state) }
+        stateBuilder = StateBuilder { [currentUserId] in
+            ActivityState(
+                activityId: id,
+                fid: fid,
+                currentUserId: currentUserId,
+                events: events,
+                commentListState: commentList.state
+            )
+        }
     }
     
     // MARK: - Accessing the State
@@ -342,7 +351,7 @@ public final class Activity: Sendable {
     public func castPollVote(request: CastPollVoteRequest) async throws -> PollVoteData? {
         let vote = try await pollsRepository.castPollVote(activityId: activityId, pollId: pollId(), request: request)
         if let vote {
-            await state.access { $0.poll?.castVote(vote) }
+            await state.access { $0.poll?.castVote(vote, currentUserId: $0.currentUserId) }
         }
         return vote
     }
@@ -366,7 +375,7 @@ public final class Activity: Sendable {
             userId: userId
         )
         if let vote {
-            await state.access { $0.poll?.removeVote(vote) }
+            await state.access { $0.poll?.removeVote(vote, currentUserId: $0.currentUserId) }
         }
         return vote
     }
