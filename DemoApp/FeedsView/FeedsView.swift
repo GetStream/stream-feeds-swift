@@ -9,6 +9,9 @@ struct FeedsView: View {
     let client: FeedsClient
     @State private var feed: Feed
     @State private var presentedSheet: Sheet?
+    @State private var showsLogoutAlert = false
+    @ObservedObject var appState = AppState.shared
+    @AppStorage("userId") var userId: String = ""
     
     init(client: FeedsClient) {
         self.client = client
@@ -47,11 +50,23 @@ struct FeedsView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    UserAvatar(url: client.user.imageURL)
+                    Button {
+                        showsLogoutAlert = true
+                    } label: {
+                        UserAvatar(url: client.user.imageURL)
+                    }
                 }
             })
         }
         .sheet(item: $presentedSheet, content: { makeSheet($0) })
+        .alert("Logout", isPresented: $showsLogoutAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("OK") {
+                logout()
+            }
+        } message: {
+            Text("Are you sure you want to logout?")
+        }
     }
     
     @ViewBuilder
@@ -61,6 +76,22 @@ struct FeedsView: View {
             DebugFeedView(feed: feed, client: client)
         case .profile:
             ProfileView(feed: feed, client: client)
+        }
+    }
+    
+    private func logout() {
+        Task {
+            // Disconnect the client
+            await client.disconnect()
+            
+            // Clear the client
+            appState.client = nil
+            
+            // Clear user defaults
+            userId = ""
+            
+            // Update view state to logged out
+            appState.viewState = .loggedOut
         }
     }
 }
