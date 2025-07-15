@@ -221,7 +221,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func closePoll() async throws -> PollData {
-        let pollData = try await updatePollPartial(request: .init(set: ["isClosed": .bool(true)]))
+        let pollData = try await updatePollPartial(request: .init(set: ["is_closed": .bool(true)]))
         await state.changeHandlers.pollUpdated(pollData)
         return pollData
     }
