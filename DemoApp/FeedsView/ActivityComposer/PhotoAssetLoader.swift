@@ -3,12 +3,20 @@
 //
 
 import Photos
+import StreamCore
+import StreamFeeds
 import SwiftUI
 
 /// Helper class that loads assets from the photo library.
-public class PhotoAssetLoader: NSObject, ObservableObject {
+@MainActor public class PhotoAssetLoader: NSObject, ObservableObject {
     @Published var loadedImages = [String: UIImage]()
 
+    let client: FeedsClient
+    
+    init(client: FeedsClient) {
+        self.client = client
+    }
+    
     /// Loads an image from the provided asset.
     func loadImage(from asset: PHAsset) {
         if loadedImages[asset.localIdentifier] != nil {
@@ -30,7 +38,7 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
         }
     }
 
-    func compressAsset(at url: URL, type: AssetType, completion: @escaping @Sendable (URL?) -> Void) {
+    private func compressAsset(at url: URL, type: AssetType, completion: @escaping @Sendable (URL?) -> Void) {
         if type == .video {
             let compressedURL = NSURL.fileURL(withPath: NSTemporaryDirectory() + UUID().uuidString + ".mp4")
             compressVideo(inputURL: url, outputURL: compressedURL) { exportSession in
@@ -45,12 +53,36 @@ public class PhotoAssetLoader: NSObject, ObservableObject {
                     completion(nil)
                 }
             }
+        } else {
+            completion(url)
+        }
+    }
+    
+    func compressAsset(at url: URL, type: AssetType) async -> URL? {
+        await withCheckedContinuation { continuation in
+            compressAsset(at: url, type: type) { result in
+                continuation.resume(returning: result)
+            }
         }
     }
 
-    func assetExceedsAllowedSize(url: URL?) -> Bool {
-        // TODO: implement this.
-        false
+    func assetExceedsAllowedSize(at url: URL, type: AssetType) async -> Bool {
+        let stop = url.startAccessingSecurityScopedResource()
+        defer {
+            if stop {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        guard let fileSize = try? AttachmentFile(url: url).size else { return false }
+        let config = try? await client.getApp()
+        switch type {
+        case .image:
+            guard let imageUploadConfig = config?.imageUploadConfig else { return false }
+            return fileSize > imageUploadConfig.sizeLimit
+        case .video:
+            guard let fileUploadConfig = config?.fileUploadConfig else { return false }
+            return fileSize > fileUploadConfig.sizeLimit
+        }
     }
 
     private func compressVideo(

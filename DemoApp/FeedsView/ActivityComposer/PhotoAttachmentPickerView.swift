@@ -4,11 +4,12 @@
 
 import Photos
 import StreamCore
+import StreamFeeds
 import SwiftUI
 
 /// View for the photo attachment picker.
 public struct PhotoAttachmentPickerView: View {
-    @StateObject var assetLoader = PhotoAssetLoader()
+    @StateObject var assetLoader: PhotoAssetLoader
     
     var assets: PHFetchResultCollection
     var onImageTap: (AddedAsset) -> Void
@@ -18,9 +19,11 @@ public struct PhotoAttachmentPickerView: View {
     
     public init(
         assets: PHFetchResultCollection,
+        assetLoader: PhotoAssetLoader,
         onImageTap: @escaping (AddedAsset) -> Void,
         imageSelected: @escaping (String) -> Bool
     ) {
+        _assetLoader = StateObject(wrappedValue: assetLoader)
         self.assets = assets
         self.onImageTap = onImageTap
         self.imageSelected = imageSelected
@@ -172,13 +175,12 @@ public struct PhotoAttachmentCell: View {
                 }
                 
                 // Check file size.
-                if let assetURL, assetLoader.assetExceedsAllowedSize(url: assetURL) {
-                    compressing = true
-                    assetLoader.compressAsset(at: assetURL, type: assetType) { url in
-                        Task { @MainActor in
-                            self.assetURL = url
-                            compressing = false
-                        }
+                if let assetURL {
+                    Task { @MainActor in
+                        guard await assetLoader.assetExceedsAllowedSize(at: assetURL, type: assetType) else { return }
+                        compressing = true
+                        self.assetURL = await assetLoader.compressAsset(at: assetURL, type: assetType)
+                        compressing = false
                     }
                 }
             }

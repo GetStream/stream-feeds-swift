@@ -51,6 +51,7 @@ struct ActivityComposerView: View {
             if let assets = viewModel.imageAssets {
                 PhotoAttachmentPickerView(
                     assets: PHFetchResultCollection(fetchResult: assets),
+                    assetLoader: PhotoAssetLoader(client: viewModel.client),
                     onImageTap: viewModel.imageTapped(_:),
                     imageSelected: viewModel.isImageSelected(with:)
                 )

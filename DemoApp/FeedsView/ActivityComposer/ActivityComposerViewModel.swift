@@ -15,8 +15,10 @@ import SwiftUI
     @Published var createPollShown = false
     
     let feed: Feed
+    let client: FeedsClient
     
     init(feed: Feed, feedsClient: FeedsClient) {
+        client = feedsClient
         self.feed = feed
     }
     
