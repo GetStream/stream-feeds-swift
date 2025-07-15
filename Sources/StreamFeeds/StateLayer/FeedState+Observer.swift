@@ -22,7 +22,10 @@ extension FeedState {
             switch event {
             case let event as ActivityAddedEvent:
                 guard event.fid == fid else { return }
-                await handlers.activityAdded(event.activity.toModel())
+                // Remove after FEEDS-546
+                let activity = event.activity
+                activity.createdAt = event.createdAt
+                await handlers.activityAdded(activity.toModel())
             case let event as ActivityDeletedEvent:
                 guard event.fid == fid else { return }
                 await handlers.activityRemoved(event.activity.toModel())
