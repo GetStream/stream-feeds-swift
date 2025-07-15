@@ -34,6 +34,7 @@ struct ActivityComposerView: View {
                     Text("Post")
                         .bold()
                 }
+                .disabled(viewModel.text.isEmpty && viewModel.addedAssets.isEmpty)
             }
             .padding()
             
