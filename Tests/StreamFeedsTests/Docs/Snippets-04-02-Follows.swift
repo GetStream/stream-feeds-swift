@@ -7,6 +7,8 @@ import StreamFeeds
 
 @MainActor struct Snippets_04_02_Follows {
     var client: FeedsClient!
+    var adamClient: FeedsClient!
+    var saraClient: FeedsClient!
     var feed: Feed!
     
     func followUnfollow() async throws {
@@ -50,20 +52,29 @@ import StreamFeeds
     }
     
     func followRequests() async throws {
-        // See if a feed needs a request for follow
-        let feed = client.feed(group: "user", id: "amber")
-        let feedData = try await feed.getOrCreate()
-        if feedData.visibility == "followers" {
-            // We need to request a follow
-        }
-
-        // Request to follow this feed
-        let timeline = client.feed(group: "timeline", id: "john")
-        try await timeline.follow(FeedId(group: "user", id: "amber"))
-
-        // Accept
-        try await feed.acceptFollow(.init(group: "timeline", id: "john"))
-        // or reject the follow
-        try await feed.rejectFollow(.init(group: "timeline", id: "john"))
+        // Sara needs to configure the feed with visibility = followers for enabling follow requests
+        let saraFeed = saraClient.feed(
+            for: .init(
+                group: "user",
+                id: "sara",
+                data: .init(visibility: .followers)
+            )
+        )
+        try await saraFeed.getOrCreate()
+        
+        // Adam requesting to follow the feed
+        let adamTimeline = adamClient.feed(group: "timeline", id: "adam")
+        try await adamTimeline.getOrCreate()
+        
+        let followRequest = try await adamTimeline.follow(saraFeed.fid) // user:sara
+        print(followRequest.status) // .pending
+        
+        // Sara accepting
+        try await saraFeed.acceptFollow(
+            adamTimeline.fid, // timeline:adam
+            role: "feed_member" // optional
+        )
+        // or rejecting the request
+        try await saraFeed.rejectFollow(adamTimeline.fid) // timeline:adam
     }
 }

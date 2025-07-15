@@ -111,7 +111,7 @@ struct ProfileView: View {
                                 FollowSuggestionView(
                                     owner: suggestion.createdBy,
                                     feed: feed,
-                                    targetFeed: suggestion
+                                    followedFid: suggestion.fid
                                 )
                             }
                         }
@@ -135,7 +135,7 @@ struct ProfileView: View {
 struct FollowSuggestionView: View {
     let owner: UserData
     let feed: Feed
-    let targetFeed: FeedData
+    let followedFid: FeedId
     
     var body: some View {
         VStack {
@@ -143,19 +143,10 @@ struct FollowSuggestionView: View {
             Text(owner.name ?? owner.id)
             Button {
                 Task {
-                    try await feed.follow(targetFeed.fid)
+                    try await feed.follow(followedFid)
                 }
             } label: {
                 Text("Follow")
-            }
-            
-            Button {
-                Task {
-                    // TODO: check how request to follow will work.
-                    try await feed.follow(targetFeed.fid)
-                }
-            } label: {
-                Text("Request to follow")
             }
         }
     }
