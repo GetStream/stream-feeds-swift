@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FileUploadConfigData: Sendable {
+public struct FileUploadConfigData: Equatable, Sendable {
     public let allowedFileExtensions: [String]
     public let allowedMimeTypes: [String]
     public let blockedFileExtensions: [String]

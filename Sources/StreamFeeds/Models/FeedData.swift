@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FeedData: Identifiable, Sendable {
+public struct FeedData: Identifiable, Equatable, Sendable {
     public let createdAt: Date
     public let createdBy: UserData
     public let custom: [String: RawJSON]?

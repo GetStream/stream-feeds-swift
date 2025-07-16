@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct PollVoteData: Identifiable, Sendable {
+public struct PollVoteData: Identifiable, Equatable, Sendable {
     public let answerText: String?
     public let createdAt: Date
     public let id: String

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct AppData: Sendable {
+public struct AppData: Equatable, Sendable {
     public let asyncUrlEnrichEnabled: Bool
     public let autoTranslationEnabled: Bool
     public let fileUploadConfig: FileUploadConfigData

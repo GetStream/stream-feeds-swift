@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct ModerationConfigData: Identifiable, Sendable {
+public struct ModerationConfigData: Identifiable, Equatable, Sendable {
     public let aiImageConfig: AIImageConfig?
     public let aiTextConfig: AITextConfig?
     public let aiVideoConfig: AIVideoConfig?

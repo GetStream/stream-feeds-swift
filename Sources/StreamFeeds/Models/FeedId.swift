@@ -14,7 +14,7 @@ import Foundation
 /// For example: `"user:john"`, `"timeline:flat"`, `"notification:aggregated"`
 ///
 /// This type is thread-safe and can be used across different execution contexts.
-public struct FeedId: Sendable {
+public struct FeedId: Equatable, Sendable {
     /// The feed group identifier that categorizes the type of feed.
     ///
     /// Common group IDs include:

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct ReactionGroupData: Sendable {
+public struct ReactionGroupData: Equatable, Sendable {
     public private(set) var count: Int
     public let firstReactionAt: Date
     public private(set) var lastReactionAt: Date

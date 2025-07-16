@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FeedsReactionData: Sendable {
+public struct FeedsReactionData: Equatable, Sendable {
     public let activityId: String
     public let createdAt: Date
     public let custom: [String: RawJSON]?

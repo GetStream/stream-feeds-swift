@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct ActivityData: Identifiable, Sendable {
+public struct ActivityData: Identifiable, Equatable, Sendable {
     public let attachments: [Attachment]
     public private(set) var bookmarkCount: Int
     public private(set) var commentCount: Int
@@ -26,10 +26,10 @@ public struct ActivityData: Identifiable, Sendable {
     public let moderation: ModerationV2Response?
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
-    public var parent: ActivityData? { _parent?.value as? ActivityData }
+    public var parent: ActivityData? { _parent?.getValue() }
     public let poll: PollData?
     public let popularity: Int
-    public var reactionCount: Int
+    public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
     public let score: Float
     public let searchData: [String: RawJSON]

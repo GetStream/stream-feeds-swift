@@ -42,7 +42,7 @@ import StreamCore
 /// ## Thread Safety
 ///
 /// This struct is thread-safe and conforms to `Sendable` for safe concurrent access.
-public struct CommentData: Identifiable, Sendable {
+public struct CommentData: Identifiable, Equatable, Sendable {
     /// File attachments associated with the comment.
     ///
     /// This property contains any files, images, or other media attached to the comment.

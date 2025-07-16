@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FollowData: Sendable {
+public struct FollowData: Equatable, Sendable {
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let followerRole: String

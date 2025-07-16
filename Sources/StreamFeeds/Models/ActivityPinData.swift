@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct ActivityPinData: Sendable {
+public struct ActivityPinData: Equatable, Sendable {
     public internal(set) var activity: ActivityData
     public let createdAt: Date
     public let fid: FeedId

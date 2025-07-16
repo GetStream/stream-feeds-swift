@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct PaginationData: Sendable {
+public struct PaginationData: Equatable, Sendable {
     public let next: String?
     public let previous: String?
     

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct PushNotificationsConfig: Sendable, Equatable {
+public struct PushNotificationsConfig: Equatable, Sendable {
     /// Config for regular push notifications.
     public let pushProviderInfo: PushProviderInfo
     

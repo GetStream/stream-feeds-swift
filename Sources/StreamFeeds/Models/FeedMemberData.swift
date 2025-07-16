@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct FeedMemberData: Sendable {
+public struct FeedMemberData: Equatable, Sendable {
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let inviteAcceptedAt: Date?

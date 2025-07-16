@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct PollData: Identifiable, Sendable {
+public struct PollData: Identifiable, Equatable, Sendable {
     public let allowAnswers: Bool
     public let allowUserSuggestedOptions: Bool
     public let answersCount: Int

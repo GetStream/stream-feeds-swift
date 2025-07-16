@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct BookmarkData: Sendable {
+public struct BookmarkData: Equatable, Sendable {
     public let activity: ActivityData
     public let createdAt: Date
     public let custom: [String: RawJSON]?
