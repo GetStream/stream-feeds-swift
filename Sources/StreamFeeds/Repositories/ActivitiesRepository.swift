@@ -18,6 +18,10 @@ final class ActivitiesRepository: Sendable {
     
     func addActivity(request: AddActivityRequest) async throws -> ActivityData {
         let response = try await apiClient.addActivity(addActivityRequest: request)
+        // Remove after FEEDS-546
+        if response.activity.createdAt < Date(timeIntervalSinceReferenceDate: 0) {
+            response.activity.createdAt = Date()
+        }
         return response.activity.toModel()
     }
     

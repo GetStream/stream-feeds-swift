@@ -24,7 +24,9 @@ extension FeedState {
                 guard event.fid == fid else { return }
                 // Remove after FEEDS-546
                 let activity = event.activity
-                activity.createdAt = event.createdAt
+                if event.activity.createdAt < Date(timeIntervalSinceReferenceDate: 0) {
+                    activity.createdAt = event.createdAt
+                }
                 await handlers.activityAdded(activity.toModel())
             case let event as ActivityDeletedEvent:
                 guard event.fid == fid else { return }
