@@ -97,7 +97,7 @@ public final class Activity: Sendable {
     /// - Throws: An error if the network request fails or the response cannot be parsed.
     @discardableResult
     public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
-        try await commentList.queryMoreReplies(limit: limit)
+        try await commentList.queryMoreComments(limit: limit)
     }
         
     /// Gets a specific comment by its identifier.

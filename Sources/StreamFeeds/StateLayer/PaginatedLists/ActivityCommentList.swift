@@ -114,7 +114,7 @@ public final class ActivityCommentList: Sendable {
     /// ```
     @discardableResult
     public func get() async throws -> [CommentData] {
-        try await queryReplies(with: query)
+        try await queryComments(with: query)
     }
     
     /// Loads the next page of comments if more are available.
@@ -128,22 +128,7 @@ public final class ActivityCommentList: Sendable {
     /// - Returns: An array of `CommentData` representing the additional comments.
     ///   Returns an empty array if no more comments are available.
     /// - Throws: An error if the network request fails or the response cannot be parsed.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// // Check if more comments are available
-    /// guard commentList.state.canLoadMore else { return }
-    ///
-    /// // Load more comments
-    /// do {
-    ///     let moreComments = try await commentList.queryMoreReplies(limit: 20)
-    ///     print("Loaded \(moreComments.count) more comments")
-    /// } catch {
-    ///     print("Failed to load more comments: \(error)")
-    /// }
-    /// ```
-    public func queryMoreReplies(limit: Int? = nil) async throws -> [CommentData] {
+    public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
         let nextQuery: ActivityCommentsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             var nextQuery = query
@@ -153,7 +138,7 @@ public final class ActivityCommentList: Sendable {
             return nextQuery
         }
         guard let nextQuery else { return [] }
-        return try await queryReplies(with: nextQuery)
+        return try await queryComments(with: nextQuery)
     }
     
     // MARK: - Private
@@ -163,7 +148,7 @@ public final class ActivityCommentList: Sendable {
     /// - Parameter query: The query configuration for fetching comments
     /// - Returns: An array of `CommentData` representing the fetched comments
     /// - Throws: An error if the network request fails or the response cannot be parsed
-    private func queryReplies(with query: ActivityCommentsQuery) async throws -> [CommentData] {
+    private func queryComments(with query: ActivityCommentsQuery) async throws -> [CommentData] {
         let result = try await commentsRepository.getComments(with: query)
         await state.didPaginate(with: result)
         return result.models
