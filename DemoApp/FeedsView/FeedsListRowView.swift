@@ -129,7 +129,7 @@ struct FeedsListRowView: View {
         .contentShape(.rect)
         .contextMenu {
             if activity.user.id == client.user.id {
-                if activity.parent == nil {
+                if activity.parent == nil && activity.poll == nil {
                     Button {
                         onUpdate(activity, activity.text ?? "")
                     } label: {
