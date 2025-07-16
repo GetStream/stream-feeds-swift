@@ -77,6 +77,9 @@ struct PollCommentsView: View {
                 })
                 .padding()
             }
+            .task {
+                await viewModel.refresh()
+            }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Comments")

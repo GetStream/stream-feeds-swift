@@ -12,7 +12,7 @@ import SwiftUI
     @Published var newCommentText = ""
     @Published var addCommentShown = false
     @Published var bannerError: Error?
-    @Published private(set) var isLoading = true
+    @Published private(set) var isLoading = false
     
     let activity: Activity
     let user: User
