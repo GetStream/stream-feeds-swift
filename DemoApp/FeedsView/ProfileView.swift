@@ -32,32 +32,39 @@ struct ProfileView: View {
                             Text(member.user.name ?? member.user.id)
                         }
                     }
-                    Text("Follow Requests")
-                        .font(.headline)
-                    VStack {
-                        ForEach(feed.state.followRequests) { request in
-                            HStack {
-                                Text(request.sourceFeed.createdBy.name ?? request.sourceFeed.createdBy.id)
-                                Spacer()
-                                Button {
-                                    Task {
-                                        try await feed.acceptFollow(request.sourceFeed.fid)
+                    
+                    Divider()
+                    
+                    if !feed.state.followRequests.isEmpty {
+                        Text("Follow Requests")
+                            .font(.headline)
+                        VStack {
+                            ForEach(feed.state.followRequests) { request in
+                                HStack {
+                                    Text(request.sourceFeed.createdBy.name ?? request.sourceFeed.createdBy.id)
+                                    Spacer()
+                                    Button {
+                                        Task {
+                                            try await feed.acceptFollow(request.sourceFeed.fid)
+                                        }
+                                    } label: {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
                                     }
-                                } label: {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                }
-                                
-                                Button {
-                                    Task {
-                                        try await feed.rejectFollow(request.sourceFeed.fid)
+                                    
+                                    Button {
+                                        Task {
+                                            try await feed.rejectFollow(request.sourceFeed.fid)
+                                        }
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.red)
                                     }
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red)
                                 }
                             }
                         }
+                        
+                        Divider()
                     }
                     
                     Text("Following")
@@ -69,6 +76,9 @@ struct ProfileView: View {
                             Button {
                                 Task {
                                     try await feed.unfollow(follow.targetFeed.fid)
+                                    withAnimation {
+                                        followSuggestions.append(follow.targetFeed)
+                                    }
                                 }
                             } label: {
                                 Text("Unfollow")
@@ -111,7 +121,8 @@ struct ProfileView: View {
                                 FollowSuggestionView(
                                     owner: suggestion.createdBy,
                                     feed: feed,
-                                    followedFid: suggestion.fid
+                                    followedFid: suggestion.fid,
+                                    followSuggestions: $followSuggestions
                                 )
                             }
                         }
@@ -136,6 +147,7 @@ struct FollowSuggestionView: View {
     let owner: UserData
     let feed: Feed
     let followedFid: FeedId
+    @Binding var followSuggestions: [FeedData]
     
     var body: some View {
         VStack {
@@ -144,6 +156,9 @@ struct FollowSuggestionView: View {
             Button {
                 Task {
                     try await feed.follow(followedFid)
+                    withAnimation {
+                        followSuggestions.removeAll(where: { $0.fid == followedFid })
+                    }
                 }
             } label: {
                 Text("Follow")
