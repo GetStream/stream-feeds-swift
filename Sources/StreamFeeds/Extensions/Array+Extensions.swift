@@ -338,7 +338,7 @@ extension Array where Element: Identifiable {
     /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
     mutating func insert(byId newElement: Element, parentId parentIdKeyPath: KeyPath<Element, Element.ID?>, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) {
         if let parentId = newElement[keyPath: parentIdKeyPath] {
-            self = updated(byId: parentId, nesting: nestingKeyPath, updates: { parent in
+            self = Self.updated(byId: parentId, in: self, nesting: nestingKeyPath, updates: { parent in
                 var updatedParent = parent
                 var subitems = updatedParent[keyPath: nestingKeyPath] ?? []
                 subitems.insert(byId: newElement)
@@ -366,7 +366,7 @@ extension Array where Element: Identifiable {
     ///
     /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
     mutating func replace(byId updatedElement: Element, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) {
-        self = updated(byId: updatedElement.id, nesting: nestingKeyPath, updates: { _ in updatedElement })
+        self = Self.updated(byId: updatedElement.id, in: self, nesting: nestingKeyPath, updates: { _ in updatedElement })
     }
     
     /// Removes an element from a nested array structure based on its ID.
@@ -386,7 +386,7 @@ extension Array where Element: Identifiable {
     ///
     /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
     mutating func remove(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) where Element: Identifiable {
-        self = updated(byId: id, nesting: nestingKeyPath, updates: { _ in nil })
+        self = Self.updated(byId: id, in: self, nesting: nestingKeyPath, updates: { _ in nil })
     }
     
     /// Updates an element in a nested array structure based on its ID using a closure.
@@ -408,16 +408,16 @@ extension Array where Element: Identifiable {
     ///
     /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
     mutating func update(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (inout Element) -> Void) where Element: Identifiable {
-        self = updated(byId: id, nesting: nestingKeyPath) { element in
+        self = Self.updated(byId: id, in: self, nesting: nestingKeyPath) { element in
             var updatedElement = element
             updates(&updatedElement)
             return updatedElement
         }
     }
     
-    private func updated(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (Element) -> Element?) -> Self {
-        var updatedElements = self
-        for (index, element) in updatedElements.reversed().enumerated() {
+    private static func updated(byId id: Element.ID, in elements: [Element], nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (Element) -> Element?) -> [Element] {
+        var updatedElements = elements
+        for (index, element) in updatedElements.enumerated().reversed() {
             if element.id == id {
                 if let updated = updates(element) {
                     updatedElements[index] = updated
@@ -429,7 +429,7 @@ extension Array where Element: Identifiable {
             }
             if let nestedElements = element[keyPath: nestingKeyPath], !nestedElements.isEmpty {
                 var updatedElement = element
-                updatedElement[keyPath: nestingKeyPath] = nestedElements.updated(byId: id, nesting: nestingKeyPath, updates: updates)
+                updatedElement[keyPath: nestingKeyPath] = Self.updated(byId: id, in: nestedElements, nesting: nestingKeyPath, updates: updates)
                 updatedElements[index] = updatedElement
             }
         }
