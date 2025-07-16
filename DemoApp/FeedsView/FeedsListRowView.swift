@@ -122,6 +122,7 @@ struct FeedsListRowView: View {
             Divider()
         }
         .padding(.top, 4)
+        .contentShape(.rect)
         .contextMenu {
             if activity.user.id == client.user.id {
                 if activity.parent == nil {
