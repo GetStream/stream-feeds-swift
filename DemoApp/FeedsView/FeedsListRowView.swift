@@ -58,6 +58,7 @@ struct FeedsListRowView: View {
                     }
                     
                     Text("\(activity.commentCount)")
+                        .monospacedDigit()
                 }
                 
                 HStack {
@@ -78,6 +79,7 @@ struct FeedsListRowView: View {
                     }
                     
                     Text("\(activity.reactionCount)")
+                        .monospacedDigit()
                 }
                 
                 HStack {
@@ -94,6 +96,7 @@ struct FeedsListRowView: View {
                     }
                     
                     Text("\(activity.shareCount)")
+                        .monospacedDigit()
                 }
                 
                 HStack {
@@ -114,6 +117,7 @@ struct FeedsListRowView: View {
                     }
                     
                     Text("\(activity.bookmarkCount)")
+                        .monospacedDigit()
                 }
                 
                 Spacer()
