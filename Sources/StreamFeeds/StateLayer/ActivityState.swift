@@ -99,9 +99,6 @@ extension ActivityState {
     /// - Parameter activity: The updated activity data
     func updateActivity(_ activity: ActivityData) {
         self.activity = activity
-        if commentListState.comments.isEmpty {
-            commentListState.comments = activity.comments.filter { $0.parentId == nil }
-        }
         poll = activity.poll
     }
     

@@ -64,19 +64,23 @@ extension Array {
     
     /// Appends new unique elements at the end while replacing existing duplicate elements.
     mutating func appendReplacingDuplicates(byId incomingElements: [Element]) where Element: Identifiable {
-        var incomingLookup = [Element.ID: Element]()
-        incomingLookup.merge(incomingElements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
-        
-        var merged = [Element]()
-        merged.reserveCapacity(count + incomingElements.count)
-        for existing in self {
-            if let incoming = incomingLookup[existing.id] {
-                merged.append(incoming)
-            } else {
-                merged.append(existing)
+        if isEmpty {
+            self = incomingElements
+        } else {
+            var incomingLookup = [Element.ID: Element]()
+            incomingLookup.merge(incomingElements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
+            
+            var merged = [Element]()
+            merged.reserveCapacity(count + incomingElements.count)
+            for existing in self {
+                if let incoming = incomingLookup[existing.id] {
+                    merged.append(incoming)
+                } else {
+                    merged.append(existing)
+                }
             }
+            self = merged
         }
-        self = merged
     }
 
     // MARK: - Managing Identifiable Elements in Sorted Array

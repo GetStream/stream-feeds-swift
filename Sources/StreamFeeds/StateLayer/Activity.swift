@@ -35,7 +35,7 @@ public final class Activity: Sendable {
         client: FeedsClient
     ) {
         let commentList = client.activityCommentList(
-            for: .init(objectId: id, objectType: "activity")
+            for: .init(objectId: id, objectType: "activity", depth: 3)
         )
         self.commentList = commentList
         activityId = id
@@ -69,6 +69,8 @@ public final class Activity: Sendable {
     @discardableResult
     public func get() async throws -> ActivityData {
         let activity = try await activitiesRepository.getActivity(activityId: activityId)
+        // Fetch threaded comments, activity.comments is non-threaded list
+        try await queryComments()
         await state.updateActivity(activity)
         return activity
     }
