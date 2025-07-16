@@ -163,7 +163,7 @@ struct ActivityView: View {
                 Text(user.name ?? user.id)
                     .font(.caption)
                     .bold()
-                Text(text)
+                LinkDetectionTextView(activity: activity)
                 if let attachment = attachments?.first, let url = attachment.imageUrl {
                     AsyncImage(url: URL(string: url)) { image in
                         image
