@@ -176,19 +176,6 @@ public final class Feed: Sendable {
     
     // MARK: - Activity Pagination
     
-    /// Queries activities in the feed based on the provided query parameters.
-    ///
-    /// - Parameter query: The query configuration for filtering and sorting activities
-    /// - Returns: An array of activity data matching the query criteria
-    /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func queryActivities(with query: ActivitiesQuery) async throws -> [ActivityData] {
-        let result = try await activitiesRepository.queryActivities(with: query)
-        let queryConfig = QueryConfiguration(filter: query.filter, sort: query.sort)
-        await state.didPaginateActivities(with: result, for: queryConfig)
-        return result.models
-    }
-    
     /// Loads more activities using the next page token from the previous query.
     ///
     /// - Parameter limit: Optional limit for the number of activities to load. If `nil`, uses the default limit.
@@ -196,18 +183,29 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func queryMoreActivities(limit: Int? = nil) async throws -> [ActivityData] {
-        let nextQuery: ActivitiesQuery? = await state.access { state in
+        let nextQuery: FeedQuery? = await state.access { _ in
             guard let next = state.activitiesPagination?.next else { return nil }
-            return ActivitiesQuery(
-                filter: state.activitiesQueryConfig?.filter,
-                sort: state.activitiesQueryConfig?.sort ?? [],
-                limit: limit,
-                next: next,
-                previous: nil
+            var query = FeedQuery(
+                fid: feedQuery.fid,
+                activityFilter: state.activitiesQueryConfig?.filter,
+                activityLimit: limit ?? feedQuery.activityLimit,
+                activitySelectorOptions: nil,
+                data: nil,
+                externalRanking: nil,
+                followerLimit: 0,
+                followingLimit: 0,
+                interestWeights: nil,
+                memberLimit: 0,
+                view: nil,
+                watch: feedQuery.watch
             )
+            query.activityNext = next
+            return query
         }
         guard let nextQuery else { return [] }
-        return try await queryActivities(with: nextQuery)
+        let response = try await feedsRepository.getOrCreateFeed(with: nextQuery)
+        await state.didPaginateActivities(with: response.activities, for: response.activitiesQueryConfig)
+        return response.activities.models
     }
     
     // MARK: - Bookmarks

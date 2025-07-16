@@ -40,7 +40,7 @@ public struct ActivitiesQuery: Sendable {
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
     public init(
         filter: ActivitiesFilter?,
-        sort: [Sort<ActivitiesSortField>] = [],
+        sort: [Sort<ActivitiesSortField>]? = nil,
         limit: Int? = nil,
         next: String? = nil,
         previous: String? = nil

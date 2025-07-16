@@ -60,7 +60,7 @@ struct FeedsView: View {
         }
         .sheet(item: $presentedSheet, content: { makeSheet($0) })
         .alert("Logout", isPresented: $showsLogoutAlert) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("OK") {
                 logout()
             }

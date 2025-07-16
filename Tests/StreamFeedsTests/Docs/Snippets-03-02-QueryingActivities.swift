@@ -15,7 +15,8 @@ struct Snippets_03_02_QueryingActivities {
             sort: [Sort(field: .createdAt, direction: .reverse)],
             limit: 10
         )
-        let activities = try await feed.queryActivities(with: query)
+        let activityList = client.activityList(for: query)
+        let activities = try await activityList.get()
         
         suppressUnusedWarning(activities)
     }
@@ -25,7 +26,8 @@ struct Snippets_03_02_QueryingActivities {
         let query = ActivitiesQuery(
             filter: .query(.text, "popularity")
         )
-        let activities = try await feed.queryActivities(with: query)
+        let activityList = client.activityList(for: query)
+        let activities = try await activityList.get()
         
         suppressUnusedWarning(activities)
     }
@@ -36,13 +38,15 @@ struct Snippets_03_02_QueryingActivities {
         let query = ActivitiesQuery(
             filter: .contains(.searchData, searchValue)
         )
-        let activities = try await feed.queryActivities(with: query)
+        let activityList = client.activityList(for: query)
+        let activities = try await activityList.get()
         
         // search for activities where the campaign took place in a mall
         let query2 = ActivitiesQuery(
             filter: .pathExists(.searchData, "campaign.location.mall")
         )
-        let activities2 = try await feed.queryActivities(with: query2)
+        let activityList2 = client.activityList(for: query2)
+        let activities2 = try await activityList2.get()
         
         suppressUnusedWarning(activities)
         suppressUnusedWarning(activities2)

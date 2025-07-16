@@ -26,6 +26,12 @@ public struct FeedQuery: Sendable {
     /// Maximum number of activities to retrieve.
     public var activityLimit: Int?
     
+    /// Pagination cursor for fetching the next page of activities.
+    public var activityNext: String?
+    
+    /// Pagination cursor for fetching the previous page of activities.
+    public var activityPrevious: String?
+    
     /// Custom options for activity selection and processing.
     public var activitySelectorOptions: [String: RawJSON]?
     
@@ -134,8 +140,8 @@ extension FeedQuery {
             interestWeights: interestWeights,
             limit: activityLimit,
             memberPagination: memberLimit.flatMap { PagerRequest(limit: $0) },
-            next: nil,
-            prev: nil,
+            next: activityNext,
+            prev: activityPrevious,
             view: view,
             watch: watch
         )

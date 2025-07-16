@@ -302,6 +302,18 @@ public final class FeedsClient: Sendable {
         Activity(id: activityId, fid: fid, client: self)
     }
     
+    /// Creates an activity list instance based on the provided query.
+    ///
+    /// This method creates an `ActivityList` object that represents a collection of activities
+    /// matching the specified query. The activity list can be used to fetch activities,
+    /// manage activity pagination, and receive real-time updates for activity-related events.
+    ///
+    /// - Parameter query: The activities query containing filtering, sorting, and pagination parameters
+    /// - Returns: An `ActivityList` instance that can be used to interact with the collection of activities
+    public func activityList(for query: ActivitiesQuery) -> ActivityList {
+        ActivityList(query: query, client: self)
+    }
+    
     /// Creates an activity reaction list instance based on the provided query.
     ///
     /// This method creates an `ActivityReactionList` object that represents a collection of reactions
