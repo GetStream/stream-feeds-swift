@@ -217,9 +217,13 @@ import SwiftUI
         let isDuplicate = poll.options.contains(where: { $0.text.trimmed.caseInsensitiveCompare(option.trimmed) == .orderedSame })
         guard !isDuplicate else { return }
         Task {
-            try await activity.createPollOption(
-                request: .init(text: suggestOptionText)
-            )
+            do {
+                try await activity.createPollOption(
+                    request: .init(text: option)
+                )
+            } catch {
+                log.error("Error creating poll option: \(error)")
+            }
         }
     }
     
