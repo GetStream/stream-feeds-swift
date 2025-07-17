@@ -82,5 +82,5 @@ extension DemoAppConfig {
         }
     )
     
-    static let current: DemoAppConfig = .staging
+    static let current: DemoAppConfig = .production
 }
