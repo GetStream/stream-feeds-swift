@@ -22,4 +22,9 @@ extension EndpointConfig {
         hostname: "https://chat-edge-frankfurt-ce1.stream-io-api.com",
         wsEndpoint: "wss://chat-edge-frankfurt-ce1.stream-io-api.com/api/v2/connect"
     )
+    
+    static let production = EndpointConfig(
+        hostname: "https://chat.stream-io-api.com",
+        wsEndpoint: "wss://chat.stream-io-api.com/api/v2/connect"
+    )
 }

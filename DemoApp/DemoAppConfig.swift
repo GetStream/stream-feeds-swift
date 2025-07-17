@@ -58,5 +58,29 @@ extension DemoAppConfig {
         }
     )
     
+    static let production = DemoAppConfig(
+        apiKey: "fa5xpkvxrdw4",
+        tokenForUser: { userId in
+            switch userId {
+            case "luke_skywalker":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIifQ.zuAJWZfZWPFJYYItt1QQnUl2IlTq6PcBPStrcD_U91A"
+            case "martin":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFydGluIn0.w4IhPDZXHTnY_JTZqT5f75TpZ-Qq5gFgXHM8-mkjYjg"
+            case "tommaso":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidG9tbWFzbyJ9.3sl5XZMbSVvBfJhoT6islSfNMlPU46uZeKr_UCFESWY"
+            case "thierry":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGhpZXJyeSJ9.2vI4zX2WB6zlSZQdAwLqwRo8RRTPMDKLQF3lNJTiIG8"
+            case "marcelo":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibWFyY2VsbyJ9.JGUi40Ew7SyrGab1AAr0pIXPKfqVMTiyPJPCs8EFaVY"
+            case "kanat":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoia2FuYXQifQ.J7N5-RSAStR8UF3g7ce-fSSgBSLTszr5St3MwFBujfs"
+            case "toomas":
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidG9vbWFzIn0.JOSpmeEbwIdVu1SoT7y4dZknkbQE_fEDQn5mac9yzU0"
+            default:
+                ""
+            }
+        }
+    )
+    
     static let current: DemoAppConfig = .staging
 }
