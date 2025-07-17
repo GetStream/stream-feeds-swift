@@ -105,7 +105,7 @@ struct FeedsListView: View {
                     }
                 }
             }
-            .disabled(updatedActivityText.isEmpty)
+            .disabled(updatedActivityText.trimmed.isEmpty)
         }
         .alert("Delete Activity", isPresented: .init(
             get: { activityToDelete != nil },
