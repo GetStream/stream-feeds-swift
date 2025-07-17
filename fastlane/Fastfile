@@ -215,7 +215,7 @@ lane :sources_matrix do
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
     swiftformat_include: ['Sources', 'DemoApp', 'Tests'],
-    swiftformat_exclude: ["**/Generated", "**/generated", "**/protobuf", "**/OpenApi"]
+    swiftformat_exclude: ['**/Generated', '**/generated', '**/protobuf', '**/OpenApi']
   }
 end
 
