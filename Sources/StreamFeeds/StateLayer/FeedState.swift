@@ -160,8 +160,8 @@ extension FeedState {
                 self?.activities.removeAll()
                 self?.feed = nil
                 self?.followers.removeAll()
-                self?.followers.removeAll()
-                self?.followers.removeAll()
+                self?.following.removeAll()
+                self?.followRequests.removeAll()
                 self?.members.removeAll()
                 self?.ownCapabilities.removeAll()
                 
