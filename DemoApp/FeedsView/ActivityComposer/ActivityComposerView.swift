@@ -28,13 +28,21 @@ struct ActivityComposerView: View {
                             dismiss()
                         } catch {
                             log.error("Error publishing a post \(error)")
+                            viewModel.publishingPost = false
                         }
                     }
                 } label: {
-                    Text("Post")
-                        .bold()
+                    if viewModel.publishingPost {
+                        ProgressView()
+                    } else {
+                        Text("Post")
+                            .bold()
+                    }
                 }
-                .disabled(viewModel.text.trimmed.isEmpty && viewModel.addedAssets.isEmpty)
+                .disabled(
+                    (viewModel.text.trimmed.isEmpty && viewModel.addedAssets.isEmpty)
+                        || viewModel.publishingPost
+                )
             }
             .padding()
             

@@ -13,6 +13,7 @@ import SwiftUI
     @Published public private(set) var addedAssets = [AddedAsset]()
     @Published public var text = ""
     @Published var createPollShown = false
+    @Published var publishingPost = false
     
     let feed: Feed
     let client: FeedsClient
@@ -71,16 +72,18 @@ import SwiftUI
     }
     
     func publishPost() async throws {
-        if text.isEmpty && addedAssets.isEmpty {
+        if text.isEmpty && addedAssets.isEmpty || publishingPost {
             return
         }
         
+        publishingPost = true
         let attachments = try addedAssets.map { try $0.toAttachmentPayload() }
         _ = try await feed.addActivity(
             request: .init(attachmentUploads: attachments, text: text, type: "activity")
         )
         text = ""
         addedAssets = []
+        publishingPost = false
     }
     
     private func fetchAssets() {
