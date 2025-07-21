@@ -84,7 +84,7 @@ import Foundation
     ///     CommentView(comment: comment)
     /// }
     /// ```
-    @Published public internal(set) var comments: [CommentData] = []
+    @Published public internal(set) var comments: [ThreadedCommentData] = []
     
     // MARK: - Pagination State
     
@@ -128,33 +128,37 @@ import Foundation
 
 extension ActivityCommentListState {
     struct ChangeHandlers {
-        let commentAdded: @MainActor (CommentData) -> Void
+        let commentAdded: @MainActor (ThreadedCommentData) -> Void
         let commentRemoved: @MainActor (String) -> Void
         let commentUpdated: @MainActor (CommentData) -> Void
-        let commentReactionAdded: @MainActor (FeedsReactionData, CommentData) -> Void
-        let commentReactionRemoved: @MainActor (FeedsReactionData, CommentData) -> Void
+        let commentReactionAdded: @MainActor (FeedsReactionData, String) -> Void
+        let commentReactionRemoved: @MainActor (FeedsReactionData, String) -> Void
     }
     
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
             commentAdded: { [weak self] comment in
-                self?.comments.insert(byId: comment, parentId: \.parentId, nesting: \.replies)
+                if let parentId = comment.parentId {
+                    self?.comments.update(byId: parentId, nesting: \.replies, updates: { $0.addReply(comment) })
+                } else {
+                    self?.comments.insert(byId: comment)
+                }
             },
             commentRemoved: { [weak self] commentId in
                 self?.comments.remove(byId: commentId, nesting: \.replies)
             },
             commentUpdated: { [weak self] comment in
-                self?.comments.replace(byId: comment, nesting: \.replies)
+                self?.comments.update(byId: comment.id, nesting: \.replies, updates: { $0.setCommentData(comment) })
             },
-            commentReactionAdded: { [weak self] reaction, comment in
+            commentReactionAdded: { [weak self] reaction, commentId in
                 guard let self else { return }
-                comments.update(byId: comment.id, nesting: \.replies) { existingComment in
+                comments.update(byId: commentId, nesting: \.replies) { existingComment in
                     existingComment.addReaction(reaction, currentUserId: currentUserId)
                 }
             },
-            commentReactionRemoved: { [weak self] reaction, comment in
+            commentReactionRemoved: { [weak self] reaction, commentId in
                 guard let self else { return }
-                comments.update(byId: comment.id, nesting: \.replies) { existingComment in
+                comments.update(byId: commentId, nesting: \.replies) { existingComment in
                     existingComment.removeReaction(reaction, currentUserId: currentUserId)
                 }
             }
@@ -165,7 +169,7 @@ extension ActivityCommentListState {
         actions(self)
     }
     
-    func didPaginate(with response: PaginationResult<CommentData>) {
+    func didPaginate(with response: PaginationResult<ThreadedCommentData>) {
         pagination = response.pagination
         // Can't locally sort for all the sorting keys
         comments.appendReplacingDuplicates(byId: response.models)

@@ -33,7 +33,7 @@ public struct LinkDetectionTextView: View {
         let attributes = AttributeContainer()
             .foregroundColor(.primary)
             .font(.body)
-        var attributedString = AttributedString(activity.text ?? "")
+        var attributedString = AttributedString(activity.text ?? "", attributes: attributes)
 
         // Links
         for link in linkDetector.links(in: String(attributedString.characters)) {

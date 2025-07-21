@@ -82,7 +82,7 @@ public final class Activity: Sendable {
     /// - Returns: An array of comment data matching the query criteria
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func queryComments() async throws -> [CommentData] {
+    public func queryComments() async throws -> [ThreadedCommentData] {
         try await commentList.get()
     }
     
@@ -98,7 +98,7 @@ public final class Activity: Sendable {
     ///   Returns an empty array if no more comments are available.
     /// - Throws: An error if the network request fails or the response cannot be parsed.
     @discardableResult
-    public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
+    public func queryMoreComments(limit: Int? = nil) async throws -> [ThreadedCommentData] {
         try await commentList.queryMoreComments(limit: limit)
     }
         
@@ -123,7 +123,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addComment(request: ActivityAddCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.addComment(request: request.withActivityId(activityId))
-        await commentList.state.changeHandlers.commentAdded(comment)
+        await commentList.state.changeHandlers.commentAdded(ThreadedCommentData(from: comment))
         return comment
     }
     
@@ -136,8 +136,9 @@ public final class Activity: Sendable {
     public func addCommentsBatch(requests: [ActivityAddCommentRequest]) async throws -> [CommentData] {
         let request = AddCommentsBatchRequest(comments: requests.map { $0.withActivityId(activityId) })
         let comments = try await commentsRepository.addCommentsBatch(request: request)
+        let threaded = comments.map { ThreadedCommentData(from: $0) }
         await commentList.state.access { state in
-            comments.forEach { state.changeHandlers.commentAdded($0) }
+            threaded.forEach { state.changeHandlers.commentAdded($0) }
         }
         return comments
     }
@@ -177,7 +178,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
-        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.comment)
+        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.commentId)
         return result.reaction
     }
 
@@ -191,7 +192,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
-        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.comment)
+        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.commentId)
         return result.reaction
     }
     

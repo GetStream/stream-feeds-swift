@@ -24,7 +24,7 @@ extension ActivityCommentListState {
             switch event {
             case let event as CommentAddedEvent:
                 guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                await handlers.commentAdded(event.comment.toModel())
+                await handlers.commentAdded(ThreadedCommentData(from: event.comment.toModel()))
             case let event as CommentDeletedEvent:
                 guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
                 await handlers.commentRemoved(event.comment.id)
@@ -33,14 +33,10 @@ extension ActivityCommentListState {
                 await handlers.commentUpdated(event.comment.toModel())
             case let event as CommentReactionAddedEvent:
                 guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                let comment = event.comment.toModel()
-                let reaction = event.reaction.toModel()
-                await handlers.commentReactionAdded(reaction, comment)
+                await handlers.commentReactionAdded(event.reaction.toModel(), event.comment.id)
             case let event as CommentReactionDeletedEvent:
                 guard objectId == event.comment.objectId, objectType == event.comment.objectType else { return }
-                let comment = event.comment.toModel()
-                let reaction = event.reaction.toModel()
-                await handlers.commentReactionRemoved(reaction, comment)
+                await handlers.commentReactionRemoved(event.reaction.toModel(), event.comment.id)
             default:
                 break
             }

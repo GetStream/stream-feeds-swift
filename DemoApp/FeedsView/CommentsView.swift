@@ -248,7 +248,7 @@ struct CommentView: View {
 }
 
 struct ActivityActionsView: View {
-    var comment: CommentData
+    var comment: ThreadedCommentData
     var activity: Activity
     var userId: String
     @Binding var expandedCommentRepliesId: String?
