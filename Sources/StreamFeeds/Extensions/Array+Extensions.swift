@@ -422,9 +422,11 @@ extension Array where Element: Identifiable {
     private static func updated(byId id: Element.ID, in elements: [Element], nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (Element) -> Element?) -> [Element] {
         var updatedElements = elements
         for (index, element) in updatedElements.enumerated().reversed() {
+            var element = element
             if element.id == id {
                 if let updated = updates(element) {
                     updatedElements[index] = updated
+                    element = updated
                 } else {
                     updatedElements.remove(at: index)
                     // Skip checking nested elements because parent was removed

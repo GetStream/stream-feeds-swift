@@ -11,7 +11,7 @@ struct ArrayExtensions_Tests {
     
     struct TestItem: Identifiable, Equatable {
         let id: String
-        let value: Int
+        var value: Int
         var parentId: String?
         var subitems: [TestItem]?
     }
@@ -464,5 +464,12 @@ struct ArrayExtensions_Tests {
         result.insert(byId: incomingItem, parentId: \.parentId, nesting: \.subitems)
         
         #expect(result[0].subitems?.first?.id == "ADDED")
+    }
+    
+    @Test()
+    func nestedUpdateUpdateRootItemWithSubitems() {
+        var items = makeNestedItems()
+        items.update(byId: "1", nesting: \.subitems, updates: { $0.value = 1000 })
+        #expect(items[1].value == 1000)
     }
 }
