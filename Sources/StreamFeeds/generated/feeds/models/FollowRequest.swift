@@ -22,12 +22,14 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
         }
     }
 
+    public var createNotificationActivity: Bool?
     public var custom: [String: RawJSON]?
     public var pushPreference: FollowRequestPushPreference?
     public var source: String
     public var target: String
 
-    public init(custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, source: String, target: String) {
+        self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.pushPreference = pushPreference
         self.source = source
@@ -35,6 +37,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case createNotificationActivity = "create_notification_activity"
         case custom
         case pushPreference = "push_preference"
         case source
@@ -42,13 +45,15 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
     }
 
     public static func == (lhs: FollowRequest, rhs: FollowRequest) -> Bool {
-        lhs.custom == rhs.custom &&
+        lhs.createNotificationActivity == rhs.createNotificationActivity &&
+            lhs.custom == rhs.custom &&
             lhs.pushPreference == rhs.pushPreference &&
             lhs.source == rhs.source &&
             lhs.target == rhs.target
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(createNotificationActivity)
         hasher.combine(custom)
         hasher.combine(pushPreference)
         hasher.combine(source)

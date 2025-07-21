@@ -22,13 +22,15 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         }
     }
 
+    public var createNotificationActivity: Bool?
     public var custom: [String: RawJSON]?
     public var followerRole: String?
     public var pushPreference: UpdateFollowRequestPushPreference?
     public var source: String
     public var target: String
 
-    public init(custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
+        self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.followerRole = followerRole
         self.pushPreference = pushPreference
@@ -37,6 +39,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case createNotificationActivity = "create_notification_activity"
         case custom
         case followerRole = "follower_role"
         case pushPreference = "push_preference"
@@ -45,7 +48,8 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     }
 
     public static func == (lhs: UpdateFollowRequest, rhs: UpdateFollowRequest) -> Bool {
-        lhs.custom == rhs.custom &&
+        lhs.createNotificationActivity == rhs.createNotificationActivity &&
+            lhs.custom == rhs.custom &&
             lhs.followerRole == rhs.followerRole &&
             lhs.pushPreference == rhs.pushPreference &&
             lhs.source == rhs.source &&
@@ -53,6 +57,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(createNotificationActivity)
         hasher.combine(custom)
         hasher.combine(followerRole)
         hasher.combine(pushPreference)

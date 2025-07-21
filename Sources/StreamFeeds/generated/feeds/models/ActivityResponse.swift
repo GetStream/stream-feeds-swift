@@ -41,6 +41,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
     public var location: ActivityLocation?
     public var mentionedUsers: [UserResponse]
     public var moderation: ModerationV2Response?
+    public var object: [String: RawJSON]?
     public var ownBookmarks: [BookmarkResponse]
     public var ownReactions: [FeedsReactionResponse]
     public var parent: ActivityResponse?
@@ -58,7 +59,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
     public var visibility: ActivityResponseVisibility
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, object: [String: RawJSON]? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -77,6 +78,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         self.location = location
         self.mentionedUsers = mentionedUsers
         self.moderation = moderation
+        self.object = object
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
         self.parent = parent
@@ -114,6 +116,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         case location
         case mentionedUsers = "mentioned_users"
         case moderation
+        case object
         case ownBookmarks = "own_bookmarks"
         case ownReactions = "own_reactions"
         case parent
@@ -151,6 +154,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
             lhs.location == rhs.location &&
             lhs.mentionedUsers == rhs.mentionedUsers &&
             lhs.moderation == rhs.moderation &&
+            lhs.object == rhs.object &&
             lhs.ownBookmarks == rhs.ownBookmarks &&
             lhs.ownReactions == rhs.ownReactions &&
             lhs.parent == rhs.parent &&
@@ -188,6 +192,7 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         hasher.combine(location)
         hasher.combine(mentionedUsers)
         hasher.combine(moderation)
+        hasher.combine(object)
         hasher.combine(ownBookmarks)
         hasher.combine(ownReactions)
         hasher.combine(parent)

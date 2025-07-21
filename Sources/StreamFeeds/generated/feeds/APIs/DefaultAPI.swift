@@ -950,6 +950,18 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func stopWatchingFeed() async throws -> Response {
+        let path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/watch"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(Response.self, from: $0)
+        }
+    }
+
     open func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/follow_suggestions"
 
@@ -1738,6 +1750,8 @@ protocol DefaultAPIEndpoints {
     func queryFeedMembers(feedGroupId: String, feedId: String, queryFeedMembersRequest: QueryFeedMembersRequest) async throws -> QueryFeedMembersResponse
 
     func rejectFeedMemberInvite(feedGroupId: String, feedId: String) async throws -> RejectFeedMemberInviteResponse
+
+    func stopWatchingFeed() async throws -> Response
 
     func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
 
