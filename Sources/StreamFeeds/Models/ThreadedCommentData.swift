@@ -5,28 +5,16 @@
 import Foundation
 import StreamCore
 
-/// A data model representing a comment in the Stream Feeds system.
+/// A data model representing a threaded comment in the Stream Feeds system.
 ///
-/// This struct contains all the information about a comment, including its content,
-/// metadata, reactions, and user information. It represents individual comments
-/// without threaded reply support.
-///
-/// ## Usage
-///
-/// ```swift
-/// // Access comment properties
-/// let commentText = comment.text ?? ""
-/// let author = comment.user
-/// let reactionCount = comment.reactionCount
-///
-/// // Check user reactions
-/// let userReactions = comment.latestReactions
-/// let reactionGroups = comment.reactionGroups
-/// ```
+/// This struct contains all the information about a comment with threaded replies,
+/// including its content, metadata, reactions, nested replies, and user information.
+/// It supports hierarchical comment structures with pagination metadata.
 ///
 /// ## Features
 ///
-/// - **Individual Comments**: Represents single comments without threaded replies
+/// - **Threaded Comments**: Supports nested comment replies with hierarchy
+/// - **Pagination Metadata**: Includes metadata for pagination and loading states
 /// - **Reactions**: Tracks user reactions and reaction counts
 /// - **Mentions**: Supports user mentions with metadata
 /// - **Attachments**: Supports file and media attachments
@@ -36,7 +24,7 @@ import StreamCore
 /// ## Thread Safety
 ///
 /// This struct is thread-safe and conforms to `Sendable` for safe concurrent access.
-public struct CommentData: Identifiable, Equatable, Sendable {
+public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     /// File attachments associated with the comment.
     ///
     /// This property contains any files, images, or other media attached to the comment.
@@ -88,6 +76,12 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     /// using @mentions or similar functionality.
     public let mentionedUsers: [UserData]
     
+    /// Metadata about the comment's replies structure.
+    ///
+    /// This property contains information about the threading structure of replies,
+    /// such as reply counts, pagination information, and loading states.
+    public let meta: RepliesMeta?
+    
     /// Moderation state for the comment.
     public let moderation: ModerationV2Response?
     
@@ -117,7 +111,17 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     /// and provides counts and metadata for each reaction type.
     public private(set) var reactionGroups: [String: ReactionGroupData]
     
+    /// The replies to this comment, if any.
+    ///
+    /// This property contains the nested replies to this comment, supporting
+    /// threaded comment structures. For comments without replies, this is `nil`.
+    public internal(set) var replies: [ThreadedCommentData]?
+    
     /// The number of replies to this comment.
+    ///
+    /// This property tracks the total count of replies, which may be different
+    /// from the actual number of replies loaded in the `replies` property due
+    /// to pagination or loading limits.
     public private(set) var replyCount: Int
     
     /// A score assigned to the comment (e.g., relevance, quality).
@@ -145,9 +149,50 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     public let user: UserData
 }
 
+// MARK: - Initializers
+
+extension ThreadedCommentData {
+    /// Creates a `ThreadedCommentData` from a `CommentData`.
+    ///
+    /// This initializer converts a regular comment to a threaded comment,
+    /// preserving all the comment data while adding support for threaded replies.
+    ///
+    /// - Parameter comment: The `CommentData` to convert
+    init(from comment: CommentData) {
+        self.init(
+            attachments: comment.attachments,
+            confidenceScore: comment.confidenceScore,
+            controversyScore: comment.controversyScore,
+            createdAt: comment.createdAt,
+            custom: comment.custom,
+            deletedAt: comment.deletedAt,
+            downvoteCount: comment.downvoteCount,
+            id: comment.id,
+            latestReactions: comment.latestReactions,
+            mentionedUsers: comment.mentionedUsers,
+            meta: nil,
+            moderation: comment.moderation,
+            objectId: comment.objectId,
+            objectType: comment.objectType,
+            ownReactions: comment.ownReactions,
+            parentId: comment.parentId,
+            reactionCount: comment.reactionCount,
+            reactionGroups: comment.reactionGroups,
+            replies: nil,
+            replyCount: comment.replyCount,
+            score: comment.score,
+            status: comment.status,
+            text: comment.text,
+            updatedAt: comment.updatedAt,
+            upvoteCount: comment.upvoteCount,
+            user: comment.user
+        )
+    }
+}
+
 // MARK: - Mutating the Data
 
-extension CommentData {
+extension ThreadedCommentData {
     mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
@@ -163,19 +208,74 @@ extension CommentData {
             ownReactions.remove(byId: reaction.id)
         }
     }
+    
+    // MARK: - Replies
+    
+    mutating func addReply(_ comment: ThreadedCommentData) {
+        var replies = replies ?? []
+        replies.insert(byId: comment)
+        self.replies = replies
+        replyCount += 1
+    }
+    
+    mutating func removeReply(_ comment: ThreadedCommentData) {
+        var replies = replies ?? []
+        replies.remove(byId: comment.id)
+        self.replies = replies
+        replyCount = max(0, replyCount - 1)
+    }
+    
+    mutating func replaceReply(_ comment: ThreadedCommentData) {
+        var replies = replies ?? []
+        replies.replace(byId: comment)
+        self.replies = replies
+    }
+    
+    // MARK: - Updating
+    
+    mutating func setCommentData(_ comment: CommentData) {
+        self = ThreadedCommentData(
+            attachments: comment.attachments,
+            confidenceScore: comment.confidenceScore,
+            controversyScore: comment.controversyScore,
+            createdAt: comment.createdAt,
+            custom: comment.custom,
+            deletedAt: comment.deletedAt,
+            downvoteCount: comment.downvoteCount,
+            id: comment.id,
+            latestReactions: comment.latestReactions,
+            mentionedUsers: comment.mentionedUsers,
+            meta: meta,
+            moderation: comment.moderation,
+            objectId: comment.objectId,
+            objectType: comment.objectType,
+            ownReactions: comment.ownReactions,
+            parentId: comment.parentId,
+            reactionCount: comment.reactionCount,
+            reactionGroups: comment.reactionGroups,
+            replies: replies,
+            replyCount: comment.replyCount,
+            score: comment.score,
+            status: comment.status,
+            text: comment.text,
+            updatedAt: comment.updatedAt,
+            upvoteCount: comment.upvoteCount,
+            user: comment.user
+        )
+    }
 }
 
 // MARK: - Sorting
 
-extension CommentData {
-    static let defaultSorting: @Sendable (CommentData, CommentData) -> Bool = { $0.createdAt > $1.createdAt }
+extension ThreadedCommentData {
+    static let defaultSorting: @Sendable (ThreadedCommentData, ThreadedCommentData) -> Bool = { $0.createdAt > $1.createdAt }
 }
 
 // MARK: - Model Conversions
 
-extension CommentResponse {
-    func toModel() -> CommentData {
-        CommentData(
+extension ThreadedCommentResponse {
+    func toModel() -> ThreadedCommentData {
+        ThreadedCommentData(
             attachments: attachments,
             confidenceScore: confidenceScore,
             controversyScore: controversyScore,
@@ -186,6 +286,7 @@ extension CommentResponse {
             id: id,
             latestReactions: latestReactions?.map { $0.toModel() } ?? [],
             mentionedUsers: mentionedUsers.map { $0.toModel() },
+            meta: meta,
             moderation: moderation,
             objectId: objectId,
             objectType: objectType,
@@ -193,6 +294,7 @@ extension CommentResponse {
             parentId: parentId,
             reactionCount: reactionCount,
             reactionGroups: reactionGroups?.compactMapValues { $0?.toModel() } ?? [:],
+            replies: replies?.map { $0.toModel() },
             replyCount: replyCount,
             score: score,
             status: status,

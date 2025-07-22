@@ -9,6 +9,7 @@
     }
   ],
   "defaultOptions" : {
+    "defaultTestExecutionTimeAllowance" : 60,
     "language" : "en",
     "region" : "US",
     "testTimeoutsEnabled" : true

@@ -37,7 +37,7 @@ import StreamCore
     @Published public private(set) var activity: ActivityData?
     
     /// The list of comments for this activity, sorted by default sorting criteria.
-    @Published public internal(set) var comments = [CommentData]()
+    @Published public internal(set) var comments = [ThreadedCommentData]()
     
     /// The poll data associated with this activity, if any.
     @Published public internal(set) var poll: PollData?
@@ -94,28 +94,12 @@ extension ActivityState {
         )
     }
     
-    /// Updates the activity data and associated poll.
-    ///
-    /// - Parameter activity: The updated activity data
     func updateActivity(_ activity: ActivityData) {
         self.activity = activity
         poll = activity.poll
     }
     
-    /// Provides thread-safe access to the state for modifications.
-    ///
-    /// - Parameter actions: A closure that receives the current state and can modify it
-    /// - Returns: The result of the actions closure
     func access<T>(_ actions: @MainActor (ActivityState) -> T) -> T {
         actions(self)
-    }
-    
-    /// Updates the state with comments query results.
-    ///
-    /// This method is called when comments are initially loaded or refreshed.
-    ///
-    /// - Parameter data: The response containing comments data
-    func update(with data: PaginationResult<CommentData>) {
-        comments = data.models.sorted(by: CommentData.defaultSorting)
     }
 }

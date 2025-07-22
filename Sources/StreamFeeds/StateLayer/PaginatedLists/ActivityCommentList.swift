@@ -99,7 +99,7 @@ public final class ActivityCommentList: Sendable {
     /// The results are automatically stored in the state and can be accessed through
     /// the `state.comments` property.
     ///
-    /// - Returns: An array of `CommentData` representing the fetched comments
+    /// - Returns: An array of `ThreadedCommentData` representing the fetched comments
     /// - Throws: `APIError` if the network request fails or the server returns an error
     ///
     /// ## Example
@@ -113,7 +113,7 @@ public final class ActivityCommentList: Sendable {
     /// }
     /// ```
     @discardableResult
-    public func get() async throws -> [CommentData] {
+    public func get() async throws -> [ThreadedCommentData] {
         try await queryComments(with: query)
     }
     
@@ -125,10 +125,10 @@ public final class ActivityCommentList: Sendable {
     ///
     /// - Parameter limit: Optional limit for the number of comments to fetch.
     ///   If not specified, uses the limit from the original query.
-    /// - Returns: An array of `CommentData` representing the additional comments.
+    /// - Returns: An array of `ThreadedCommentData` representing the additional comments.
     ///   Returns an empty array if no more comments are available.
     /// - Throws: An error if the network request fails or the response cannot be parsed.
-    public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
+    public func queryMoreComments(limit: Int? = nil) async throws -> [ThreadedCommentData] {
         let nextQuery: ActivityCommentsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             var nextQuery = query
@@ -146,9 +146,9 @@ public final class ActivityCommentList: Sendable {
     /// Fetches comments using the specified query and updates the state.
     ///
     /// - Parameter query: The query configuration for fetching comments
-    /// - Returns: An array of `CommentData` representing the fetched comments
+    /// - Returns: An array of `ThreadedCommentData` representing the fetched comments
     /// - Throws: An error if the network request fails or the response cannot be parsed
-    private func queryComments(with query: ActivityCommentsQuery) async throws -> [CommentData] {
+    private func queryComments(with query: ActivityCommentsQuery) async throws -> [ThreadedCommentData] {
         let result = try await commentsRepository.getComments(with: query)
         await state.didPaginate(with: result)
         return result.models

@@ -49,8 +49,10 @@ import Foundation
 @MainActor public class CommentReplyListState: ObservableObject {
     private var webSocketObserver: WebSocketObserver?
     lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private let currentUserId: String
     
-    init(query: CommentRepliesQuery, events: WSEventsSubscribing) {
+    init(query: CommentRepliesQuery, currentUserId: String, events: WSEventsSubscribing) {
+        self.currentUserId = currentUserId
         self.query = query
         webSocketObserver = WebSocketObserver(parentId: query.commentId, subscribing: events, handlers: changeHandlers)
     }
@@ -76,7 +78,7 @@ import Foundation
     ///     ReplyView(reply: reply)
     /// }
     /// ```
-    @Published public private(set) var replies: [CommentData] = []
+    @Published public private(set) var replies: [ThreadedCommentData] = []
     
     // MARK: - Pagination State
     
@@ -120,14 +122,40 @@ import Foundation
 
 extension CommentReplyListState {
     struct ChangeHandlers {
+        let commentAdded: @MainActor (ThreadedCommentData) -> Void
+        let commentRemoved: @MainActor (String) -> Void
         let commentUpdated: @MainActor (CommentData) -> Void
+        let commentReactionAdded: @MainActor (FeedsReactionData, String) -> Void
+        let commentReactionRemoved: @MainActor (FeedsReactionData, String) -> Void
     }
     
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
+            commentAdded: { [weak self] comment in
+                guard let parentId = comment.parentId else { return }
+                if parentId == self?.query.commentId {
+                    self?.replies.insert(byId: comment)
+                } else {
+                    self?.replies.update(byId: parentId, nesting: \.replies, updates: { $0.addReply(comment) })
+                }
+            },
+            commentRemoved: { [weak self] commentId in
+                self?.replies.remove(byId: commentId, nesting: \.replies)
+            },
             commentUpdated: { [weak self] comment in
-                // Only update, do not insert
-                self?.replies.replace(byId: comment)
+                self?.replies.update(byId: comment.id, nesting: \.replies, updates: { $0.setCommentData(comment) })
+            },
+            commentReactionAdded: { [weak self] reaction, commentId in
+                guard let self else { return }
+                replies.update(byId: commentId, nesting: \.replies) { existingComment in
+                    existingComment.addReaction(reaction, currentUserId: currentUserId)
+                }
+            },
+            commentReactionRemoved: { [weak self] reaction, commentId in
+                guard let self else { return }
+                replies.update(byId: commentId, nesting: \.replies) { existingComment in
+                    existingComment.removeReaction(reaction, currentUserId: currentUserId)
+                }
             }
         )
     }
@@ -136,7 +164,7 @@ extension CommentReplyListState {
         actions(self)
     }
     
-    func didPaginate(with response: PaginationResult<CommentData>) {
+    func didPaginate(with response: PaginationResult<ThreadedCommentData>) {
         pagination = response.pagination
         // Can't locally sort for all the sorting keys
         replies.appendReplacingDuplicates(byId: response.models)

@@ -24,7 +24,7 @@ final class CommentsRepository: Sendable {
         )
     }
     
-    func getComments(with query: ActivityCommentsQuery) async throws -> PaginationResult<CommentData> {
+    func getComments(with query: ActivityCommentsQuery) async throws -> PaginationResult<ThreadedCommentData> {
         let response = try await apiClient.getComments(
             objectId: query.objectId,
             objectType: query.objectType,
@@ -69,14 +69,14 @@ final class CommentsRepository: Sendable {
     
     // MARK: - Comment Reactions
     
-    func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
+    func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, commentId: String) {
         let response = try await apiClient.addCommentReaction(commentId: commentId, addCommentReactionRequest: request)
-        return (response.reaction.toModel(), response.comment.toModel())
+        return (response.reaction.toModel(), response.comment.id)
     }
 
-    func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
+    func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, commentId: String) {
         let response = try await apiClient.deleteCommentReaction(commentId: commentId, type: type)
-        return (response.reaction.toModel(), response.comment.toModel())
+        return (response.reaction.toModel(), response.comment.id)
     }
     
     // MARK: - Comment Reactions Pagination
@@ -91,7 +91,7 @@ final class CommentsRepository: Sendable {
     
     // MARK: - Comment Replies
     
-    func getCommentReplies(with query: CommentRepliesQuery) async throws -> PaginationResult<CommentData> {
+    func getCommentReplies(with query: CommentRepliesQuery) async throws -> PaginationResult<ThreadedCommentData> {
         let response = try await apiClient.getCommentReplies(
             commentId: query.commentId,
             depth: query.depth,

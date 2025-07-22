@@ -59,8 +59,9 @@ public final class CommentReplyList: Sendable {
     init(query: CommentRepliesQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
+        let currentUserId = client.user.id
         let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { CommentReplyListState(query: query, events: events) }
+        stateBuilder = StateBuilder { CommentReplyListState(query: query, currentUserId: currentUserId, events: events) }
     }
 
     /// The query configuration used to fetch replies.
@@ -97,7 +98,7 @@ public final class CommentReplyList: Sendable {
     /// The results are automatically stored in the state and can be accessed through
     /// the `state.replies` property.
     ///
-    /// - Returns: An array of `CommentData` representing the fetched replies
+    /// - Returns: An array of `ThreadedCommentData` representing the fetched replies
     /// - Throws: `APIError` if the network request fails or the server returns an error
     ///
     /// ## Example
@@ -111,7 +112,7 @@ public final class CommentReplyList: Sendable {
     /// }
     /// ```
     @discardableResult
-    public func get() async throws -> [CommentData] {
+    public func get() async throws -> [ThreadedCommentData] {
         try await queryReplies(with: query)
     }
     
@@ -123,7 +124,7 @@ public final class CommentReplyList: Sendable {
     ///
     /// - Parameter limit: Optional limit for the number of replies to fetch.
     ///   If not specified, uses the limit from the original query.
-    /// - Returns: An array of `CommentData` representing the additional replies.
+    /// - Returns: An array of `ThreadedCommentData` representing the additional replies.
     ///   Returns an empty array if no more replies are available.
     /// - Throws: An error if the network request fails or the response cannot be parsed.
     ///
@@ -141,7 +142,7 @@ public final class CommentReplyList: Sendable {
     ///     print("Failed to load more replies: \(error)")
     /// }
     /// ```
-    public func queryMoreReplies(limit: Int? = nil) async throws -> [CommentData] {
+    public func queryMoreReplies(limit: Int? = nil) async throws -> [ThreadedCommentData] {
         let nextQuery: CommentRepliesQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             var nextQuery = query
@@ -156,7 +157,7 @@ public final class CommentReplyList: Sendable {
     
     // MARK: - Private
     
-    private func queryReplies(with query: CommentRepliesQuery) async throws -> [CommentData] {
+    private func queryReplies(with query: CommentRepliesQuery) async throws -> [ThreadedCommentData] {
         let result = try await commentsRepository.getCommentReplies(with: query)
         await state.didPaginate(with: result)
         return result.models
