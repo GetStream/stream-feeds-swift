@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var avgResponseTime: Int?
     public var banCount: Int
     public var banned: Bool
     public var blockedUserIds: [String]
@@ -27,7 +28,8 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(banCount: Int, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, deletedContentCount: Int, flaggedCount: Int, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+    public init(avgResponseTime: Int? = nil, banCount: Int, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, deletedContentCount: Int, flaggedCount: Int, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+        self.avgResponseTime = avgResponseTime
         self.banCount = banCount
         self.banned = banned
         self.blockedUserIds = blockedUserIds
@@ -51,6 +53,7 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case avgResponseTime = "avg_response_time"
         case banCount = "ban_count"
         case banned
         case blockedUserIds = "blocked_user_ids"
@@ -74,7 +77,8 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     }
 
     public static func == (lhs: EntityCreatorResponse, rhs: EntityCreatorResponse) -> Bool {
-        lhs.banCount == rhs.banCount &&
+        lhs.avgResponseTime == rhs.avgResponseTime &&
+            lhs.banCount == rhs.banCount &&
             lhs.banned == rhs.banned &&
             lhs.blockedUserIds == rhs.blockedUserIds &&
             lhs.createdAt == rhs.createdAt &&
@@ -97,6 +101,7 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(avgResponseTime)
         hasher.combine(banCount)
         hasher.combine(banned)
         hasher.combine(blockedUserIds)

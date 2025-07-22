@@ -950,8 +950,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func stopWatchingFeed() async throws -> Response {
-        let path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/watch"
+    open func stopWatchingFeed(feedGroupId: String, feedId: String) async throws -> Response {
+        var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/watch"
+
+        let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
+        let feedGroupIdPostEscape = feedGroupIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_group_id"), with: feedGroupIdPostEscape, options: .literal, range: nil)
+        let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
+        let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -1751,7 +1758,7 @@ protocol DefaultAPIEndpoints {
 
     func rejectFeedMemberInvite(feedGroupId: String, feedId: String) async throws -> RejectFeedMemberInviteResponse
 
-    func stopWatchingFeed() async throws -> Response
+    func stopWatchingFeed(feedGroupId: String, feedId: String) async throws -> Response
 
     func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
 

@@ -6,14 +6,12 @@ import Foundation
 import StreamCore
 
 public final class UpdateLiveLocationRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var createdByDeviceId: String
     public var endAt: Date?
     public var latitude: Float?
     public var longitude: Float?
     public var messageId: String
 
-    public init(createdByDeviceId: String, endAt: Date? = nil, latitude: Float? = nil, longitude: Float? = nil, messageId: String) {
-        self.createdByDeviceId = createdByDeviceId
+    public init(endAt: Date? = nil, latitude: Float? = nil, longitude: Float? = nil, messageId: String) {
         self.endAt = endAt
         self.latitude = latitude
         self.longitude = longitude
@@ -21,7 +19,6 @@ public final class UpdateLiveLocationRequest: @unchecked Sendable, Codable, JSON
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdByDeviceId = "created_by_device_id"
         case endAt = "end_at"
         case latitude
         case longitude
@@ -29,15 +26,13 @@ public final class UpdateLiveLocationRequest: @unchecked Sendable, Codable, JSON
     }
 
     public static func == (lhs: UpdateLiveLocationRequest, rhs: UpdateLiveLocationRequest) -> Bool {
-        lhs.createdByDeviceId == rhs.createdByDeviceId &&
-            lhs.endAt == rhs.endAt &&
+        lhs.endAt == rhs.endAt &&
             lhs.latitude == rhs.latitude &&
             lhs.longitude == rhs.longitude &&
             lhs.messageId == rhs.messageId
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(createdByDeviceId)
         hasher.combine(endAt)
         hasher.combine(latitude)
         hasher.combine(longitude)

@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var avgResponseTime: Int?
     public var banExpires: Date?
     public var banned: Bool
     public var blockedUserIds: [String]
@@ -35,7 +36,8 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
     public var unreadThreads: Int
     public var updatedAt: Date
 
-    public init(banExpires: Date? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, devices: [DeviceResponse], id: String, image: String? = nil, invisible: Bool, language: String, lastActive: Date? = nil, latestHiddenChannels: [String]? = nil, mutes: [UserMuteResponse], name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, revokeTokensIssuedBefore: Date? = nil, role: String, shadowBanned: Bool, teams: [String], teamsRole: [String: String]? = nil, totalUnreadCount: Int, unreadChannels: Int, unreadCount: Int, unreadThreads: Int, updatedAt: Date) {
+    public init(avgResponseTime: Int? = nil, banExpires: Date? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, devices: [DeviceResponse], id: String, image: String? = nil, invisible: Bool, language: String, lastActive: Date? = nil, latestHiddenChannels: [String]? = nil, mutes: [UserMuteResponse], name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, revokeTokensIssuedBefore: Date? = nil, role: String, shadowBanned: Bool, teams: [String], teamsRole: [String: String]? = nil, totalUnreadCount: Int, unreadChannels: Int, unreadCount: Int, unreadThreads: Int, updatedAt: Date) {
+        self.avgResponseTime = avgResponseTime
         self.banExpires = banExpires
         self.banned = banned
         self.blockedUserIds = blockedUserIds
@@ -67,6 +69,7 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case avgResponseTime = "avg_response_time"
         case banExpires = "ban_expires"
         case banned
         case blockedUserIds = "blocked_user_ids"
@@ -98,7 +101,8 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public static func == (lhs: FullUserResponse, rhs: FullUserResponse) -> Bool {
-        lhs.banExpires == rhs.banExpires &&
+        lhs.avgResponseTime == rhs.avgResponseTime &&
+            lhs.banExpires == rhs.banExpires &&
             lhs.banned == rhs.banned &&
             lhs.blockedUserIds == rhs.blockedUserIds &&
             lhs.createdAt == rhs.createdAt &&
@@ -129,6 +133,7 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(avgResponseTime)
         hasher.combine(banExpires)
         hasher.combine(banned)
         hasher.combine(blockedUserIds)

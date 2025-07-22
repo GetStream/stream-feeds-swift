@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var avgResponseTime: Int?
     public var banned: Bool
     public var blockedUserIds: [String]
     public var createdAt: Date
@@ -24,7 +25,8 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+        self.avgResponseTime = avgResponseTime
         self.banned = banned
         self.blockedUserIds = blockedUserIds
         self.createdAt = createdAt
@@ -45,6 +47,7 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case avgResponseTime = "avg_response_time"
         case banned
         case blockedUserIds = "blocked_user_ids"
         case createdAt = "created_at"
@@ -65,7 +68,8 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
     }
 
     public static func == (lhs: UserResponseCommonFields, rhs: UserResponseCommonFields) -> Bool {
-        lhs.banned == rhs.banned &&
+        lhs.avgResponseTime == rhs.avgResponseTime &&
+            lhs.banned == rhs.banned &&
             lhs.blockedUserIds == rhs.blockedUserIds &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
@@ -85,6 +89,7 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(avgResponseTime)
         hasher.combine(banned)
         hasher.combine(blockedUserIds)
         hasher.combine(createdAt)
