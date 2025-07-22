@@ -86,6 +86,13 @@ public final class Feed: Sendable {
         return result.feed
     }
     
+    /// Stops watching the feed.
+    /// When this method is called, you will not receive any web socket events for the feed anymore.
+    @discardableResult
+    public func stopWatching() async throws -> Response {
+        try await feedsRepository.stopWatching(feedGroupId: group, feedId: id)
+    }
+    
     // MARK: - Updating the Feed
     
     /// Updates the feed with the provided request data.

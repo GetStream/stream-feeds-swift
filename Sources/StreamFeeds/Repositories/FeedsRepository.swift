@@ -48,6 +48,13 @@ final class FeedsRepository: Sendable {
         )
     }
     
+    func stopWatching(feedGroupId: String, feedId: String) async throws -> Response {
+        try await apiClient.stopWatchingFeed(
+            feedGroupId: feedGroupId,
+            feedId: feedId
+        )
+    }
+    
     // MARK: - Managing the Feed
     
     func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool) async throws {
