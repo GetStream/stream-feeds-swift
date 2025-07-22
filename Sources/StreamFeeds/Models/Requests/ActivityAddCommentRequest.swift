@@ -12,6 +12,7 @@ public struct ActivityAddCommentRequest: Sendable {
     public init(
         attachments: [Attachment]? = nil,
         comment: String,
+        createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
         mentionedUserIds: [String]? = nil,
         parentId: String? = nil
@@ -19,6 +20,7 @@ public struct ActivityAddCommentRequest: Sendable {
         request = AddCommentRequest(
             attachments: attachments,
             comment: comment,
+            createNotificationActivity: createNotificationActivity,
             custom: custom,
             mentionedUserIds: mentionedUserIds,
             objectId: "",

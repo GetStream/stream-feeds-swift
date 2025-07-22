@@ -328,6 +328,7 @@ public final class Feed: Sendable {
     ///
     /// - Parameters:
     ///   - targetFid: The target feed id.
+    ///   - createNotificationActivity: Whether the action is added to the notification feed.
     ///   - custom: Additional data for the request.
     ///   - pushPreference: Push notification preferences for the follow request.
     /// - Throws: `APIError` if the network request fails or the server returns an error
@@ -335,10 +336,17 @@ public final class Feed: Sendable {
     @discardableResult
     public func follow(
         _ targetFid: FeedId,
+        createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
         pushPreference: SingleFollowRequest.SingleFollowRequestPushPreference? = nil
     ) async throws -> FollowData {
-        let request = SingleFollowRequest(custom: custom, pushPreference: pushPreference, source: fid.rawValue, target: targetFid.rawValue)
+        let request = SingleFollowRequest(
+            createNotificationActivity: createNotificationActivity,
+            custom: custom,
+            pushPreference: pushPreference,
+            source: fid.rawValue,
+            target: targetFid.rawValue
+        )
         let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)
         return follow

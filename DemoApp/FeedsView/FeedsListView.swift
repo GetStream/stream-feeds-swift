@@ -140,7 +140,7 @@ struct UserAvatar: View {
         AsyncImage(url: url) { image in
             image
                 .resizable()
-                .scaledToFit()
+                .aspectRatio(contentMode: .fill)
         } placeholder: {
             Color(UIColor.secondarySystemBackground)
         }

@@ -2,12 +2,14 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import StreamCore
 import StreamFeeds
 import SwiftUI
 
 struct FeedsView: View {
     let client: FeedsClient
     @State private var feed: Feed
+    @State private var notificationFeed: Feed
     @State private var presentedSheet: Sheet?
     @State private var showsLogoutAlert = false
     @ObservedObject var appState = AppState.shared
@@ -23,6 +25,8 @@ struct FeedsView: View {
             )
         )
         _feed = State(initialValue: client.feed(for: query))
+        let notificationFeedId = FeedId(group: "notification", id: client.user.id)
+        _notificationFeed = State(initialValue: client.feed(for: notificationFeedId))
     }
     
     var body: some View {
@@ -31,15 +35,22 @@ struct FeedsView: View {
                 feed: feed,
                 client: client
             )
+            .task {
+                do {
+                    try await notificationFeed.getOrCreate()
+                } catch {
+                    log.debug("Error fetching notification feed: \(error)")
+                }
+            }
             .toolbar(content: {
                 ToolbarItem(placement: .principal) {
                     Text("Stream Feeds")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        presentedSheet = .feedDebugCommands
+                        presentedSheet = .notificationFeed
                     } label: {
-                        Image(systemName: "hammer")
+                        Image(systemName: "heart")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -76,6 +87,8 @@ struct FeedsView: View {
             DebugFeedView(feed: feed, client: client)
         case .profile:
             ProfileView(feed: feed, client: client)
+        case .notificationFeed:
+            NotificationFeedView(notificationFeed: notificationFeed)
         }
     }
     
@@ -100,6 +113,7 @@ extension FeedsView {
     enum Sheet: String, Identifiable {
         case feedDebugCommands
         case profile
+        case notificationFeed
         var id: String { rawValue }
     }
 }

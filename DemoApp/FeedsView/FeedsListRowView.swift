@@ -66,7 +66,7 @@ struct FeedsListRowView: View {
                         Task {
                             do {
                                 if activity.ownReactions.isEmpty {
-                                    try await feed.addReaction(activityId: activity.id, request: .init(type: "heart"))
+                                    try await feed.addReaction(activityId: activity.id, request: .init(createNotificationActivity: true, type: "heart"))
                                 } else {
                                     try await feed.deleteReaction(activityId: activity.id, type: "heart")
                                 }

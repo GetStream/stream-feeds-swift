@@ -155,7 +155,7 @@ struct FollowSuggestionView: View {
             Text(owner.name ?? owner.id)
             Button {
                 Task {
-                    try await feed.follow(followedFid)
+                    try await feed.follow(followedFid, createNotificationActivity: true)
                     withAnimation {
                         followSuggestions.removeAll(where: { $0.fid == followedFid })
                     }

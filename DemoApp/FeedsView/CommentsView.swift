@@ -151,7 +151,7 @@ struct CommentsView: View {
                 Task {
                     do {
                         try await activity.addComment(
-                            request: .init(comment: comment)
+                            request: .init(comment: comment, createNotificationActivity: true)
                         )
                         comment = ""
                     } catch {
@@ -169,6 +169,7 @@ struct CommentsView: View {
                         try await activity.addComment(
                             request: .init(
                                 comment: comment,
+                                createNotificationActivity: true,
                                 parentId: nestedCommentRepliesId ?? expandedCommentRepliesId
                             )
                         )
