@@ -88,7 +88,10 @@ struct FeedsView: View {
         case .profile:
             ProfileView(feed: feed, client: client)
         case .notificationFeed:
-            NotificationFeedView(notificationFeed: notificationFeed)
+            NotificationFeedView(
+                notificationFeed: notificationFeed,
+                feedsClient: client
+            )
         }
     }
     
