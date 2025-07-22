@@ -63,22 +63,38 @@ public final class FeedsClient: Sendable {
     ///   - token: The authentication token for the user
     ///   - pushNotificationsConfig: Configuration for push notifications. Defaults to `.default`
     ///   - tokenProvider: Optional token provider for dynamic token refresh
-    public init(
+    public convenience init(
         apiKey: APIKey,
         user: User,
         token: UserToken,
         feedsConfig: FeedsConfig = .default,
         tokenProvider: UserTokenProvider? = nil
     ) {
+        self.init(
+            apiKey: apiKey,
+            user: user,
+            token: token,
+            feedsConfig: feedsConfig,
+            apiTransport: URLSessionTransport(
+                urlSession: Self.makeURLSession(),
+                xStreamClientHeader: SystemEnvironment.xStreamClientHeader,
+                tokenProvider: tokenProvider
+            )
+        )
+    }
+    
+    init(
+        apiKey: APIKey,
+        user: User,
+        token: UserToken,
+        feedsConfig: FeedsConfig,
+        apiTransport: DefaultAPITransport
+    ) {
         self.apiKey = apiKey
+        self.apiTransport = apiTransport
         self.user = user
         self.token = token
         self.feedsConfig = feedsConfig
-        apiTransport = URLSessionTransport(
-            urlSession: Self.makeURLSession(),
-            xStreamClientHeader: SystemEnvironment.xStreamClientHeader,
-            tokenProvider: tokenProvider
-        )
         let basePath = Self.endpointConfig.baseFeedsURL
         let defaultParams = DefaultParams(
             apiKey: apiKey.apiKeyString,
