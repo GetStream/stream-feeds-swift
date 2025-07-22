@@ -219,7 +219,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addBookmark(activityId: String, request: AddBookmarkRequest = .init()) async throws -> BookmarkData {
-        try await bookmarksRepository.addBookmark(activityId: activityId, request: request)
+        let bookmark = try await bookmarksRepository.addBookmark(activityId: activityId, request: request)
+        await state.changeHandlers.bookmarkAdded(bookmark)
+        return bookmark
     }
     
     /// Removes an activity from the user's bookmarks.
@@ -231,7 +233,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func deleteBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
-        try await bookmarksRepository.deleteBookmark(activityId: activityId, folderId: folderId)
+        let bookmark = try await bookmarksRepository.deleteBookmark(activityId: activityId, folderId: folderId)
+        await state.changeHandlers.bookmarkRemoved(bookmark)
+        return bookmark
     }
     
     /// Updates an existing bookmark for an activity.
