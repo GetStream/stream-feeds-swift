@@ -63,16 +63,16 @@ public final class Activity: Sendable {
     
     /// Fetches the current state of the activity.
     ///
-    /// This method retrieves the latest activity data from the server and updates the local state.
+    /// This method retrieves the latest activity data and threaded comments from the server and updates the local state.
     /// - Returns: The data of the activity
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func get() async throws -> ActivityData {
-        let activity = try await activitiesRepository.getActivity(activityId: activityId)
-        // Fetch threaded comments, activity.comments is non-threaded list
-        try await queryComments()
-        await state.updateActivity(activity)
-        return activity
+        async let activity = activitiesRepository.getActivity(activityId: activityId)
+        async let comments = queryComments()
+        let (activityData, _) = try await (activity, comments)
+        await state.updateActivity(activityData)
+        return activityData
     }
     
     // MARK: - Querying the List of Comments
