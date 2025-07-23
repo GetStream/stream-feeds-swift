@@ -79,7 +79,7 @@ import SwiftUI
             try await activity.castPollVote(
                 request: .init(vote: .init(answerText: newCommentText))
             )
+            newCommentText = ""
         }
-        newCommentText = ""
     }
 }

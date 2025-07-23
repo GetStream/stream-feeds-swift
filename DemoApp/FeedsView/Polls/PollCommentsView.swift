@@ -55,17 +55,17 @@ struct PollCommentsView: View {
                         Button(action: {
                             viewModel.addCommentShown = true
                         }, label: {
-                            Text(commentButtonTitle)
+                            Text(commentAlertTitle)
                                 .bold()
                                 .foregroundColor(colors.tintColor)
                         })
                         .frame(maxWidth: .infinity)
                         .withPollsBackground()
                         .uiAlert(
-                            title: commentButtonTitle,
+                            title: commentAlertTitle,
                             isPresented: $viewModel.addCommentShown,
                             text: $viewModel.newCommentText,
-                            accept: "Add",
+                            accept: commentAlertButtonTitle,
                             action: { viewModel.add(comment: viewModel.newCommentText) }
                         )
                     }
@@ -98,10 +98,16 @@ struct PollCommentsView: View {
         }
     }
     
-    private var commentButtonTitle: String {
+    private var commentAlertTitle: String {
         viewModel.currentUserAddedComment
             ? "Update comment"
             : "Add comment"
+    }
+    
+    private var commentAlertButtonTitle: String {
+        viewModel.currentUserAddedComment
+            ? "Update"
+            : "Add"
     }
     
     private func authorTitle(for comment: PollVoteData) -> String {
