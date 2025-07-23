@@ -213,16 +213,22 @@ extension ThreadedCommentData {
     
     mutating func addReply(_ comment: ThreadedCommentData) {
         var replies = replies ?? []
+        let count = replies.count
         replies.insert(byId: comment)
         self.replies = replies
-        replyCount += 1
+        if count != replies.count {
+            replyCount += 1
+        }
     }
     
     mutating func removeReply(_ comment: ThreadedCommentData) {
         var replies = replies ?? []
+        let count = replies.count
         replies.remove(byId: comment.id)
         self.replies = replies
-        replyCount = max(0, replyCount - 1)
+        if count != replies.count {
+            replyCount = max(0, replyCount - 1)
+        }
     }
     
     mutating func replaceReply(_ comment: ThreadedCommentData) {
