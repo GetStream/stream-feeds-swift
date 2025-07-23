@@ -62,7 +62,8 @@ struct CommentsView: View {
                             userId: userId,
                             expandedCommentRepliesId: $expandedCommentRepliesId,
                             addCommentRepliesShown: $addCommentRepliesShown,
-                            containsUserReaction: !comment.ownReactions.isEmpty
+                            containsUserReaction: !comment.ownReactions.isEmpty,
+                            canReply: true
                         )
                         
                         if comment.id == expandedCommentRepliesId, let replies = comment.replies {
@@ -91,7 +92,8 @@ struct CommentsView: View {
                                         userId: userId,
                                         expandedCommentRepliesId: $nestedCommentRepliesId,
                                         addCommentRepliesShown: $addCommentRepliesShown,
-                                        containsUserReaction: !reply.ownReactions.isEmpty
+                                        containsUserReaction: !reply.ownReactions.isEmpty,
+                                        canReply: true
                                     )
                                     
                                     if reply.id == nestedCommentRepliesId, let nestedReplies = reply.replies {
@@ -120,7 +122,8 @@ struct CommentsView: View {
                                                     userId: userId,
                                                     expandedCommentRepliesId: $nestedCommentRepliesId,
                                                     addCommentRepliesShown: $addCommentRepliesShown,
-                                                    containsUserReaction: !nested.ownReactions.isEmpty
+                                                    containsUserReaction: !nested.ownReactions.isEmpty,
+                                                    canReply: false
                                                 )
                                             }
                                             .padding(.leading, 40)
@@ -258,6 +261,7 @@ struct ActivityActionsView: View {
     @Binding var expandedCommentRepliesId: String?
     @Binding var addCommentRepliesShown: Bool
     var containsUserReaction: Bool
+    var canReply: Bool
     
     var body: some View {
         HStack {
@@ -273,18 +277,20 @@ struct ActivityActionsView: View {
                 Text(!containsUserReaction ? "Like" : "Unlike")
             }
             
-            Button {
-                withAnimation {
-                    expandedCommentRepliesId = comment.id
-                    addCommentRepliesShown = true
+            if canReply {
+                Button {
+                    withAnimation {
+                        expandedCommentRepliesId = comment.id
+                        addCommentRepliesShown = true
+                    }
+                } label: {
+                    Text("Reply")
                 }
-            } label: {
-                Text("Reply")
             }
             
             Spacer()
             
-            if comment.replyCount > 0 {
+            if comment.replyCount > 0, canReply {
                 Button {
                     withAnimation {
                         if expandedCommentRepliesId == comment.id {
