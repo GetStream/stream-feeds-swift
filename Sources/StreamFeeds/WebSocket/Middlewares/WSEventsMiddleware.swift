@@ -9,13 +9,15 @@ final class WSEventsMiddleware: EventMiddleware, WSEventsSubscribing {
     private let subscribers = AllocatedUnfairLock(NSHashTable<AnyObject>.weakObjects())
 
     func handle(event: Event) -> Event? {
-        let subscribers = subscribers.withLock { $0.allObjects.compactMap { $0 as? WSEventsSubscriber } }
-        Task {
-            for subscriber in subscribers {
-                await subscriber.onEvent(event)
-            }
-        }
+        Task { await sendEvent(event) }
         return event
+    }
+    
+    func sendEvent(_ event: Event) async {
+        let subscribers = subscribers.withLock { $0.allObjects.compactMap { $0 as? WSEventsSubscriber } }
+        for subscriber in subscribers {
+            await subscriber.onEvent(event)
+        }
     }
     
     func add(subscriber: WSEventsSubscriber) {

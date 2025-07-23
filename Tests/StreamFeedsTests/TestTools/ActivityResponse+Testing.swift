@@ -7,7 +7,10 @@ import StreamCore
 @testable import StreamFeeds
 
 extension ActivityResponse {
-    static func dummy(id: String = "activity-123") -> ActivityResponse {
+    static func dummy(
+        id: String = "activity-123",
+        text: String = "Test activity content"
+    ) -> ActivityResponse {
         ActivityResponse(
             attachments: [],
             bookmarkCount: 0,
@@ -38,7 +41,7 @@ extension ActivityResponse {
             score: 1.0,
             searchData: [:],
             shareCount: 3,
-            text: "Test activity content",
+            text: text,
             type: "post",
             updatedAt: Date(timeIntervalSince1970: 1_640_995_200),
             user: UserResponse.dummy(),

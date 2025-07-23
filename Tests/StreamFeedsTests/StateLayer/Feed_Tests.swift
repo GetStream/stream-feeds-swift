@@ -20,4 +20,23 @@ struct Feed_Tests {
         #expect(stateActivities.map(\.id) == ["1"])
         #expect(stateFeedData == feedData)
     }
+    
+    @Test func activityUpdatedEventChangesText() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(activities: [.dummy(id: "1")])
+            ])
+        )
+        let feed = client.feed(group: "user", id: "jane")
+        try await feed.getOrCreate()
+        
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                fid: feed.fid.rawValue,
+                activity: .dummy(id: "1", text: "NEW TEXT")
+            )
+        )
+        let result = await feed.state.activities.first?.text
+        #expect(result == "NEW TEXT")
+    }
 }
