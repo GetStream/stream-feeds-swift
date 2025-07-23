@@ -15,20 +15,10 @@ import SwiftUI
         
     let feedsClient: FeedsClient
     let feed: Feed
-    let activityInfo: ActivityData
-    
-    private var _activity: Activity?
+    let activityData: ActivityData
+    let activity: Activity
     
     private var cancellables = Set<AnyCancellable>()
-    
-    var activity: Activity {
-        if let _activity {
-            return _activity
-        }
-        let activity = feedsClient.activity(for: activityInfo.id, in: feed.fid)
-        _activity = activity
-        return activity
-    }
     
     /// The object representing the state of the poll.
     @Published public var poll: PollData
@@ -118,21 +108,18 @@ import SwiftUI
         poll.votingVisibility != "anonymous"
     }
     
-    public init(feedsClient: FeedsClient, feed: Feed, poll: PollData, activityInfo: ActivityData) {
+    public init(feedsClient: FeedsClient, feed: Feed, pollData: PollData, activityData: ActivityData) {
         self.feedsClient = feedsClient
         self.feed = feed
-        self.poll = poll
-        self.activityInfo = activityInfo
-        createdByCurrentUser = poll.createdBy?.id == feedsClient.user.id
-        currentUserVotes = poll.ownVotes
-        Task { @MainActor in
-            activity.state.$poll.sink { [weak self] poll in
-                if let poll {
-                    self?.poll = poll
-                }
-            }
+        poll = pollData
+        self.activityData = activityData
+        activity = feedsClient.activity(for: activityData.id, in: feed.fid, data: activityData)
+        createdByCurrentUser = pollData.createdBy?.id == feedsClient.user.id
+        currentUserVotes = pollData.ownVotes
+        activity.state.$poll
+            .compactMap(\.self)
+            .assign(to: \.poll, onWeak: self)
             .store(in: &cancellables)
-        }
     }
         
     /// Casts a vote for a poll.

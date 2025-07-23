@@ -23,15 +23,10 @@ public final class Activity: Sendable {
     /// The feed id for the activity.
     public let fid: FeedId
     
-    /// Initializes a new Activity instance.
-    ///
-    /// - Parameters:
-    ///   - id: The unique identifier of the activity
-    ///   - fid: The identifier of the feed containing this activity
-    ///   - client: The feeds client instance.
     init(
         id: String,
         fid: FeedId,
+        data: ActivityData?,
         client: FeedsClient
     ) {
         let commentList = client.activityCommentList(
@@ -49,6 +44,7 @@ public final class Activity: Sendable {
             ActivityState(
                 activityId: id,
                 fid: fid,
+                data: data,
                 currentUserId: currentUserId,
                 events: events,
                 commentListState: commentList.state

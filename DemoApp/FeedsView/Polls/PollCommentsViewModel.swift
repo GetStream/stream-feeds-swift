@@ -21,7 +21,7 @@ import SwiftUI
     private(set) var animateChanges = false
     private let voteList: PollVoteList
     
-    var poll: PollData? { activity.state.poll }
+    @Published private(set) var poll: PollData?
         
     init(pollId: String, activity: Activity, user: User, client: FeedsClient) {
         self.activity = activity
@@ -35,6 +35,9 @@ import SwiftUI
         )
         voteList.state.$votes
             .assign(to: \.comments, onWeak: self)
+            .store(in: &cancellables)
+        activity.state.$poll
+            .assign(to: \.poll, onWeak: self)
             .store(in: &cancellables)
         // No animation for initial load
         $comments

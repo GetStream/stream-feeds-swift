@@ -17,17 +17,18 @@ public struct PollAttachmentView: View {
     public init(
         feedsClient: FeedsClient,
         feed: Feed,
-        activity: ActivityData,
+        activityData: ActivityData,
+        pollData: PollData,
         isFirst: Bool
     ) {
-        self.activity = activity
+        activity = activityData
         self.isFirst = isFirst
         _viewModel = StateObject(
             wrappedValue: PollAttachmentViewModel(
                 feedsClient: feedsClient,
                 feed: feed,
-                poll: activity.poll!,
-                activityInfo: activity
+                pollData: pollData,
+                activityData: activityData
             )
         )
     }

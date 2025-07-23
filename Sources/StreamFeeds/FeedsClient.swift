@@ -307,6 +307,7 @@ public final class FeedsClient: Sendable {
     /// - Parameters:
     ///   - activityId: The unique identifier of the activity
     ///   - fid: The feed identifier where the activity belongs
+    ///   - data: The activity data already available for injecting to the state.
     /// - Returns: An `Activity` instance that can be used to interact with the specified activity
     ///
     /// - Example:
@@ -314,8 +315,8 @@ public final class FeedsClient: Sendable {
     ///   let feedId = FeedId(groupId: "user", id: "john")
     ///   let activity = client.activity(for: "activity-123", in: feedId)
     ///   ```
-    public func activity(for activityId: String, in fid: FeedId) -> Activity {
-        Activity(id: activityId, fid: fid, client: self)
+    public func activity(for activityId: String, in fid: FeedId, data: ActivityData? = nil) -> Activity {
+        Activity(id: activityId, fid: fid, data: data, client: self)
     }
     
     /// Creates an activity list instance based on the provided query.

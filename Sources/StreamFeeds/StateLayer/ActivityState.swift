@@ -17,7 +17,7 @@ import StreamCore
     let currentUserId: String
     private var webSocketObserver: WebSocketObserver?
     
-    init(activityId: String, fid: FeedId, currentUserId: String, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
+    init(activityId: String, fid: FeedId, data: ActivityData?, currentUserId: String, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
         self.commentListState = commentListState
         self.currentUserId = currentUserId
         let webSocketObserver = WebSocketObserver(
@@ -27,6 +27,9 @@ import StreamCore
             handlers: changeHandlers
         )
         self.webSocketObserver = webSocketObserver
+        if let data, data.id == activityId {
+            updateActivity(data)
+        }
         
         commentListState.$comments
             .assign(to: \.comments, onWeak: self)

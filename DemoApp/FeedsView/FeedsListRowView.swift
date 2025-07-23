@@ -26,13 +26,14 @@ struct FeedsListRowView: View {
                     attachments: parent.attachments,
                     activity: activity
                 )
-            } else if activity.poll != nil {
+            } else if let poll = activity.poll {
                 HStack(alignment: .top, spacing: 8) {
                     UserAvatar(url: activity.user.imageURL)
                     PollAttachmentView(
                         feedsClient: client,
                         feed: feed,
-                        activity: activity,
+                        activityData: activity,
+                        pollData: poll,
                         isFirst: true
                     )
                 }
