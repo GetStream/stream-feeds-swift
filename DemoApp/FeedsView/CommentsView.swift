@@ -159,6 +159,7 @@ struct CommentsView: View {
                     }
                 }
             }
+            .disabled(comment.trimmed.isEmpty)
         }
         .alert("Add Reply", isPresented: $addCommentRepliesShown) {
             TextField("Insert reply", text: $comment)
@@ -179,6 +180,7 @@ struct CommentsView: View {
                     }
                 }
             }
+            .disabled(comment.trimmed.isEmpty)
         }
         .alert("Edit comment", isPresented: $editCommentShown) {
             TextField("Edit comment", text: $comment)
@@ -199,6 +201,7 @@ struct CommentsView: View {
                     }
                 }
             }
+            .disabled(comment.trimmed.isEmpty)
         }
         .onAppear {
             Task {

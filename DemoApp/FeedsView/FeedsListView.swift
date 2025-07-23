@@ -54,6 +54,7 @@ struct FeedsListView: View {
                 do {
                     try await feed.queryMoreActivities(limit: 10)
                 } catch {
+                    log.error("Failed fetching more activities", error: error)
                     bannerError = error
                 }
             })
@@ -101,6 +102,7 @@ struct FeedsListView: View {
                             activityToUpdate = nil
                         } catch {
                             log.error("Error updating an activity \(error)")
+                            bannerError = error
                         }
                     }
                 }
@@ -122,6 +124,7 @@ struct FeedsListView: View {
                             activityToDelete = nil
                         } catch {
                             log.error("Error deleting an activity \(error)")
+                            bannerError = error
                         }
                     }
                 }
