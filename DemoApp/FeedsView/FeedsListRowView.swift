@@ -87,7 +87,11 @@ struct FeedsListRowView: View {
                     Button {
                         Task {
                             do {
-                                try await feed.repost(activityId: activity.id, text: nil)
+                                var activityId = activity.id
+                                if let parent = activity.parent {
+                                    activityId = parent.id
+                                }
+                                try await feed.repost(activityId: activityId, text: nil)
                             } catch {
                                 log.error("Error reposting a post \(error)")
                             }
