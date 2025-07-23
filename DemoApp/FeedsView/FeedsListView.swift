@@ -59,6 +59,7 @@ struct FeedsListView: View {
                 }
             })
         }
+        .refreshable { await refresh() }
         .modifier(AddButtonModifier(addItemShown: $showActivityOptions, buttonShown: true))
         .padding(.top)
         .navigationBarTitleDisplayMode(.inline)
@@ -66,14 +67,8 @@ struct FeedsListView: View {
             CommentsView(activityId: activity.id, feed: feed, feedsClient: client)
                 .modifier(PresentationDetentModifier())
         }
-        .onAppear {
-            Task {
-                do {
-                    try await feed.getOrCreate()
-                } catch {
-                    bannerError = error
-                }
-            }
+        .onLoad {
+            await refresh()
         }
         .sheet(isPresented: $showActivityOptions, content: {
             if #available(iOS 16.0, *) {
@@ -132,6 +127,14 @@ struct FeedsListView: View {
         }, message: {
             Text("Are you sure you want to delete this activity?")
         })
+    }
+    
+    func refresh() async {
+        do {
+            try await feed.getOrCreate()
+        } catch {
+            bannerError = error
+        }
     }
 }
 
