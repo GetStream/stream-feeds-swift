@@ -7,28 +7,23 @@ import StreamFeeds
 import SwiftUI
 
 public struct LinkDetectionTextView: View {
-    var activity: ActivityData
-
-    @State var text: AttributedString?
-    @State var linkDetector = TextLinkDetector()
+    static let linkDetector = TextLinkDetector()
+    let text: AttributedString
         
     public init(
         activity: ActivityData
     ) {
-        self.activity = activity
+        text = Self.displayText(for: activity)
     }
     
     public var body: some View {
         Group {
-            Text(text ?? displayText)
+            Text(text)
         }
         .font(.body)
-        .onChange(of: activity.text) { _ in
-            text = displayText
-        }
     }
     
-    var displayText: AttributedString {
+    static func displayText(for activity: ActivityData) -> AttributedString {
         // Markdown
         let attributes = AttributeContainer()
             .foregroundColor(.primary)
