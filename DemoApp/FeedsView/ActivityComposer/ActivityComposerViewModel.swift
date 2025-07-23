@@ -101,7 +101,9 @@ import SwiftUI
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         let assets = PHAsset.fetchAssets(with: fetchOptions)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
-            self?.imageAssets = assets
+            withAnimation {
+                self?.imageAssets = assets
+            }
         }
     }
 }

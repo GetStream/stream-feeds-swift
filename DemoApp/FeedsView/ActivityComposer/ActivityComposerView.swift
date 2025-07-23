@@ -64,6 +64,8 @@ struct ActivityComposerView: View {
                     onImageTap: viewModel.imageTapped(_:),
                     imageSelected: viewModel.isImageSelected(with:)
                 )
+            } else {
+                Color.clear
             }
         }
         .onAppear {
