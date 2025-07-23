@@ -59,12 +59,15 @@ extension PollData {
             ownVotes.insert(byId: vote)
         }
         
-        let optionVoteCounts = voteCountsByOption[vote.optionId] ?? 0
-        voteCountsByOption[vote.optionId] = optionVoteCounts + 1
-        
         var optionVotes = latestVotesByOption[vote.optionId] ?? []
+        let optionVoteCount = optionVotes.count
         optionVotes.insert(byId: vote)
         latestVotesByOption[vote.optionId] = optionVotes
+        
+        if optionVotes.count != optionVoteCount {
+            let optionVoteCounts = voteCountsByOption[vote.optionId] ?? 0
+            voteCountsByOption[vote.optionId] = optionVoteCounts + 1
+        }
         
         voteCount = voteCountsByOption.reduce(0) { $0 + $1.value }
     }
@@ -73,11 +76,16 @@ extension PollData {
         if vote.user?.id == currentUserId {
             ownVotes.remove(byId: vote.id)
         }
-        let optionVoteCounts = voteCountsByOption[vote.optionId] ?? 0
-        voteCountsByOption[vote.optionId] = max(0, optionVoteCounts - 1)
+        
         var optionVotes = latestVotesByOption[vote.optionId] ?? []
+        let optionVoteCount = optionVotes.count
         optionVotes.remove(byId: vote.id)
         latestVotesByOption[vote.optionId] = optionVotes
+        
+        if optionVotes.count != optionVoteCount {
+            let optionVoteCounts = voteCountsByOption[vote.optionId] ?? 0
+            voteCountsByOption[vote.optionId] = max(0, optionVoteCounts - 1)
+        }
     }
 }
 
