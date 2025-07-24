@@ -1,5 +1,16 @@
 # StreamFeeds iOS
 
+<p align="center">
+  <a href="https://www.swift.org/package-manager/"><img src="https://img.shields.io/badge/SPM-compatible-green" /></a>
+</p>
+<p align="center">
+  <a href="https://getstream.io/activity-feeds/docs/ios/"><img src="https://img.shields.io/badge/iOS-13%2B-lightblue" /></a>
+  <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0%2B-orange.svg" /></a>
+</p>
+<p align="center">
+  <img id="stream-feeds-label" alt="StreamFeeds" src="https://img.shields.io/badge/StreamFeeds-6.73%20MB-blue"/>
+</p>
+
 This is the official iOS SDK for StreamFeeds, a platform for building apps with activity feeds support. The repository includes a low-level SDK that communicates with Stream's backend, as well as a demo app that showcases how to use it.
 
 For detailed examples and supported features, please check out our [docs](https://getstream.io/activity-feeds/docs/ios/).
@@ -29,9 +40,9 @@ V3 keeps that scalability while giving you more flexibility over the content sho
 
 - **Comments**: Voting, ranking, threading, images, URL previews, @mentions & notifications. Basically all the features of Reddit style commenting systems.
 
-- **Advanced feed features**: 
+- **Advanced feed features**:
   - Activity expiration
-  - visibility controls 
+  - visibility controls
   - feed visibility levels
   - feed members
   - bookmarking
@@ -40,7 +51,7 @@ V3 keeps that scalability while giving you more flexibility over the content sho
 
 - **Search & queries**: Activity search, **query activities**, and **query feeds** endpoints.
 
-- **Modern essentials**: 
+- **Modern essentials**:
   - Permissions
   - OpenAPI spec
   - GDPR endpoints
@@ -52,7 +63,7 @@ V3 keeps that scalability while giving you more flexibility over the content sho
 
 ### Installation
 
-The Swift SDK can be installed using Swift Package Manager, if you are starting a new project we always recommend using the latest release. 
+The Swift SDK can be installed using Swift Package Manager, if you are starting a new project we always recommend using the latest release.
 
 Releases and changes are published on the [GitHub releases page](https://github.com/GetStream/stream-feeds-swift/releases).
 
@@ -68,7 +79,7 @@ To add `StreamFeeds` SDK, open Xcode and follow these steps:
 
 ### Basic Usage
 
-To get started, you need to create a `FeedsClient` with your API key and a token. 
+To get started, you need to create a `FeedsClient` with your API key and a token.
 
 Afterwards, it's pretty straightforward to start adding feeds and activities.
 
