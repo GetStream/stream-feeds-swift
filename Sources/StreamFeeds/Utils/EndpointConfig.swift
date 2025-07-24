@@ -24,7 +24,7 @@ extension EndpointConfig {
     )
     
     static let production = EndpointConfig(
-        hostname: "https://chat.stream-io-api.com",
-        wsEndpoint: "wss://chat.stream-io-api.com/api/v2/connect"
+        hostname: "https://feeds.stream-io-api.com",
+        wsEndpoint: "wss://feeds.stream-io-api.com/api/v2/connect"
     )
 }
