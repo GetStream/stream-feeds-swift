@@ -13,6 +13,7 @@ struct FeedsView: View {
     @State private var presentedSheet: Sheet?
     @State private var showsLogoutAlert = false
     @ObservedObject var appState = AppState.shared
+    @ObservedObject var notificationFeedState: FeedState
     @AppStorage("userId") var userId: String = ""
     
     init(client: FeedsClient) {
@@ -26,7 +27,9 @@ struct FeedsView: View {
         )
         _feed = State(initialValue: client.feed(for: query))
         let notificationFeedId = FeedId(group: "notification", id: client.user.id)
-        _notificationFeed = State(initialValue: client.feed(for: notificationFeedId))
+        let notificationFeed = State(initialValue: client.feed(for: notificationFeedId))
+        _notificationFeed = notificationFeed
+        notificationFeedState = notificationFeed.wrappedValue.state
     }
     
     var body: some View {
@@ -51,6 +54,23 @@ struct FeedsView: View {
                         presentedSheet = .notificationFeed
                     } label: {
                         Image(systemName: "heart")
+                            .overlay(
+                                ZStack {
+                                    if let notificationStatus = notificationFeedState.notificationStatus,
+                                       notificationStatus.unread > 0 {
+                                        Text("\(notificationStatus.unread)")
+                                            .font(.caption)
+                                            .bold()
+                                            .foregroundColor(.white)
+                                            .padding(.all, 6)
+                                            .background(Color.red)
+                                            .clipShape(Circle())
+                                            .offset(x: 10, y: -8)
+                                    } else {
+                                        EmptyView()
+                                    }
+                                }
+                            )
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {

@@ -37,6 +37,9 @@ import StreamCore
     /// The list of activities in the feed, sorted by default sorting criteria.
     @Published public internal(set) var activities = [ActivityData]()
     
+    /// The list of aggregated activities in the feed.
+    @Published public internal(set) var aggregatedActivities = [AggregatedActivityData]()
+    
     /// The feed data containing feed metadata and configuration.
     @Published public internal(set) var feed: FeedData?
     
@@ -57,6 +60,9 @@ import StreamCore
     
     /// The list of pinned activities and its pinning state.
     @Published public private(set) var pinnedActivities = [ActivityPinData]()
+    
+    /// Returns information about the notification status (read / seen activities).
+    @Published public private(set) var notificationStatus: NotificationStatusResponse?
     
     // MARK: - Pagination State
     
@@ -231,6 +237,8 @@ extension FeedState {
         followRequests = response.followRequests
         ownCapabilities = response.ownCapabilities
         pinnedActivities = response.pinnedActivities
+        aggregatedActivities = response.aggregatedActivities
+        notificationStatus = response.notificationStatus
         
         // Members are managed by the paginatable list
         memberListState.didPaginate(with: response.members, for: .empty)

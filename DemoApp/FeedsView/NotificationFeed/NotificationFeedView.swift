@@ -25,10 +25,12 @@ struct NotificationFeedView: View {
                 Text("Notifications")
                     .font(.title)
                     .bold()
-                ForEach(state.activities) { activity in
+                    .padding(.bottom)
+                
+                ForEach(state.aggregatedActivities) { activity in
                     HStack {
-                        UserAvatar(url: activity.user.imageURL)
-                        Text(activity.text ?? "")
+                        UserAvatar(url: activity.activities.first?.user.imageURL)
+                        Text(activity.displayText)
                         Spacer()
                         if let url = imageCache.activityImages[activity.id] {
                             AsyncImage(url: url) { image in
@@ -47,13 +49,22 @@ struct NotificationFeedView: View {
                         }
                     }
                     .padding(.all, 8)
+                    .background(
+                        isActivityRead(id: activity.id) ? nil : Color.blue.opacity(0.05).cornerRadius(16)
+                    )
                     .task {
-                        try? await imageCache.check(activityData: activity)
+                        if let first = activity.activities.first {
+                            try? await imageCache.check(activityData: first)
+                        }
                     }
                 }
             }
             .padding()
         }
+    }
+    
+    func isActivityRead(id: String) -> Bool {
+        state.notificationStatus?.readActivities?.contains(id) == true
     }
 }
 
@@ -76,6 +87,34 @@ class ImageCache: ObservableObject {
                let imageUrl = attachment.imageUrl {
                 activityImages[activityData.id] = URL(string: imageUrl)
             }
+        }
+    }
+}
+
+extension AggregatedActivityData {
+    var displayText: String {
+        guard !activities.isEmpty else {
+            return ""
+        }
+        let firstUser = activities.first?.user.name ?? "Someone"
+        let actionText = displayTextForAggregationType(activities.first?.type ?? "reaction")
+        var text = "\(firstUser) \(actionText)"
+        let otherUsers = userCount == 2 ? "other" : "others"
+        if userCount > 1 {
+            text = "\(firstUser) and \(userCount - 1) \(otherUsers) \(actionText)"
+        }
+        return text
+    }
+    
+    func displayTextForAggregationType(_ type: String) -> String {
+        if type == "comment" {
+            "commented on your activity"
+        } else if type == "reaction" {
+            "reacted on your activity"
+        } else if type == "follow" {
+            "followed you"
+        } else {
+            ""
         }
     }
 }

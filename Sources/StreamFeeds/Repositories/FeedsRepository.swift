@@ -44,7 +44,9 @@ final class FeedsRepository: Sendable {
                 pagination: response.memberPagination?.toModel() ?? .empty
             ),
             ownCapabilities: response.ownCapabilities,
-            pinnedActivities: response.pinnedActivities.map { $0.toModel() }
+            pinnedActivities: response.pinnedActivities.map { $0.toModel() },
+            aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
+            notificationStatus: response.notificationStatus
         )
     }
     
@@ -145,5 +147,7 @@ extension FeedsRepository {
         let members: PaginationResult<FeedMemberData>
         let ownCapabilities: [FeedOwnCapability]
         let pinnedActivities: [ActivityPinData]
+        let aggregatedActivities: [AggregatedActivityData]
+        let notificationStatus: NotificationStatusResponse?
     }
 }
