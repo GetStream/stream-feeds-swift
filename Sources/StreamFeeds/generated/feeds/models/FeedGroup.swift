@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var activityProcessors: [ActivityProcessorConfig]
     public var appPK: Int
     public var createdAt: Date
     public var custom: [String: RawJSON]
@@ -18,7 +19,8 @@ public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hasha
     public var stories: StoriesConfig?
     public var updatedAt: Date
 
-    public init(appPK: Int, createdAt: Date, custom: [String: RawJSON], defaultViewID: String, defaultVisibility: String, deletedAt: Date? = nil, iD: String, lastFeedGetAt: Date? = nil, notification: NotificationConfig? = nil, stories: StoriesConfig? = nil, updatedAt: Date) {
+    public init(activityProcessors: [ActivityProcessorConfig], appPK: Int, createdAt: Date, custom: [String: RawJSON], defaultViewID: String, defaultVisibility: String, deletedAt: Date? = nil, iD: String, lastFeedGetAt: Date? = nil, notification: NotificationConfig? = nil, stories: StoriesConfig? = nil, updatedAt: Date) {
+        self.activityProcessors = activityProcessors
         self.appPK = appPK
         self.createdAt = createdAt
         self.custom = custom
@@ -33,6 +35,7 @@ public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hasha
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case activityProcessors = "ActivityProcessors"
         case appPK = "AppPK"
         case createdAt = "created_at"
         case custom = "Custom"
@@ -47,7 +50,8 @@ public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hasha
     }
 
     public static func == (lhs: FeedGroup, rhs: FeedGroup) -> Bool {
-        lhs.appPK == rhs.appPK &&
+        lhs.activityProcessors == rhs.activityProcessors &&
+            lhs.appPK == rhs.appPK &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.defaultViewID == rhs.defaultViewID &&
@@ -61,6 +65,7 @@ public final class FeedGroup: @unchecked Sendable, Codable, JSONEncodable, Hasha
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(activityProcessors)
         hasher.combine(appPK)
         hasher.combine(createdAt)
         hasher.combine(custom)

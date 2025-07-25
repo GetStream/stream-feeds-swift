@@ -397,6 +397,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func activityFeedback(activityId: String, activityFeedbackRequest: ActivityFeedbackRequest) async throws -> ActivityFeedbackResponse {
+        var path = "/api/v2/feeds/activities/{activity_id}/feedback"
+
+        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
+        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: activityFeedbackRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(ActivityFeedbackResponse.self, from: $0)
+        }
+    }
+
     open func castPollVote(activityId: String, pollId: String, castPollVoteRequest: CastPollVoteRequest) async throws -> PollVoteResponse {
         var path = "/api/v2/feeds/activities/{activity_id}/polls/{poll_id}/vote"
 
@@ -1697,6 +1714,8 @@ protocol DefaultAPIEndpoints {
     func updateBookmark(activityId: String, updateBookmarkRequest: UpdateBookmarkRequest) async throws -> UpdateBookmarkResponse
 
     func addBookmark(activityId: String, addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse
+
+    func activityFeedback(activityId: String, activityFeedbackRequest: ActivityFeedbackRequest) async throws -> ActivityFeedbackResponse
 
     func castPollVote(activityId: String, pollId: String, castPollVoteRequest: CastPollVoteRequest) async throws -> PollVoteResponse
 
