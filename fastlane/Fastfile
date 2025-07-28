@@ -197,8 +197,8 @@ desc 'Run source code formatting/linting'
 lane :run_swift_format do |options|
   Dir.chdir('..') do
     strict = options[:strict] ? '--lint' : nil
-    sources_matrix[:swiftformat_include].each do |path|
-      sh("mint run swiftformat #{strict} --config .swiftformat --exclude #{sources_matrix[:swiftformat_exclude].join(',')} #{path}")
+    sources_matrix[:swiftformat].each do |path|
+      sh("mint run swiftformat #{strict} --config .swiftformat #{path}")
       sh("mint run swiftlint lint --config .swiftlint.yml --fix --progress --quiet --reporter json #{path}") unless strict
       sh("mint run swiftlint lint --config .swiftlint.yml --strict --progress --quiet --reporter json #{path}")
     end
@@ -216,8 +216,7 @@ lane :sources_matrix do
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
     public_interface: ['Sources'],
-    swiftformat_include: ['Sources', 'DemoApp', 'Tests'],
-    swiftformat_exclude: ['**/Generated', '**/generated', '**/protobuf', '**/OpenApi']
+    swiftformat: ['Sources', 'DemoApp', 'Tests']
   }
 end
 
