@@ -159,6 +159,7 @@ struct CommentsView: View {
                         comment = ""
                     } catch {
                         log.error("Error adding a comment \(error)")
+                        comment = ""
                     }
                 }
             }
@@ -180,6 +181,7 @@ struct CommentsView: View {
                         comment = ""
                     } catch {
                         log.error("Error adding a reply \(error)")
+                        comment = ""
                     }
                 }
             }
