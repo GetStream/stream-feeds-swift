@@ -46,6 +46,9 @@ extension FeedState {
             case let event as ActivityUnpinnedEvent:
                 guard event.fid == fid else { return }
                 await handlers.activityUnpinned(event.pinnedActivity.activity.id)
+            case let event as ActivityMarkEvent:
+                guard event.fid == fid else { return }
+                await handlers.activityMarked(event.toModel())
             case let event as BookmarkAddedEvent:
                 guard event.bookmark.activity.feeds.contains(fid) else { return }
                 await handlers.bookmarkAdded(event.bookmark.toModel())

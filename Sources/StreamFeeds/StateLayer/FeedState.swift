@@ -95,6 +95,7 @@ extension FeedState {
         let activityUpdated: @MainActor (ActivityData) -> Void
         let activityPinned: @MainActor (ActivityPinData) -> Void
         let activityUnpinned: @MainActor (String) -> Void
+        let activityMarked: @MainActor (MarkActivityData) -> Void
         let bookmarkAdded: @MainActor (BookmarkData) -> Void
         let bookmarkRemoved: @MainActor (BookmarkData) -> Void
         let commentAdded: @MainActor (CommentData) -> Void
@@ -135,6 +136,35 @@ extension FeedState {
             activityUnpinned: { [weak self] activityId in
                 guard let index = self?.pinnedActivities.firstIndex(where: { $0.activity.id == activityId }) else { return }
                 self?.pinnedActivities.remove(at: index)
+            },
+            activityMarked: { [weak self] markData in
+                if markData.markAllRead == true {
+                    let aggregatedActivities = self?.aggregatedActivities ?? []
+                    var readIds = [String]()
+                    for aggregated in aggregatedActivities {
+                        let acitivtyIds = aggregated.activities.map(\.id)
+                        readIds.append(contentsOf: acitivtyIds)
+                    }
+                    self?.notificationStatus = NotificationStatusResponse(
+                        lastSeenAt: self?.notificationStatus?.lastSeenAt,
+                        readActivities: readIds,
+                        unread: 0,
+                        unseen: self?.notificationStatus?.unseen ?? 0
+                    )
+                } else {
+                    var readActivities = self?.notificationStatus?.readActivities ?? []
+                    if let markRead = markData.markRead {
+                        readActivities.append(contentsOf: markRead)
+                    }
+                    var unreadCount = self?.notificationStatus?.unread ?? 0
+                    unreadCount = max(unreadCount - 1, 0)
+                    self?.notificationStatus = NotificationStatusResponse(
+                        lastSeenAt: self?.notificationStatus?.lastSeenAt,
+                        readActivities: readActivities,
+                        unread: unreadCount,
+                        unseen: self?.notificationStatus?.unseen ?? 0
+                    )
+                }
             },
             bookmarkAdded: { [weak self] bookmark in
                 guard let self else { return }

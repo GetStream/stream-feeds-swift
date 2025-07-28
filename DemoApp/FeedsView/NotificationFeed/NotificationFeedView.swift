@@ -27,6 +27,21 @@ struct NotificationFeedView: View {
                     .bold()
                     .padding(.bottom)
                 
+                HStack {
+                    Spacer()
+                    if state.notificationStatus?.unread ?? 0 > 0 {
+                        Button {
+                            Task {
+                                try await notificationFeed.markActivity(
+                                    request: .init(markAllRead: true)
+                                )
+                            }
+                        } label: {
+                            Text("Mark all as read")
+                        }
+                    }
+                }
+                
                 ForEach(state.aggregatedActivities) { activity in
                     HStack {
                         UserAvatar(url: activity.activities.first?.user.imageURL)
@@ -55,6 +70,21 @@ struct NotificationFeedView: View {
                     .task {
                         if let first = activity.activities.first {
                             try? await imageCache.check(activityData: first)
+                        }
+                    }
+                    .onTapGesture {
+                        if !isActivityRead(id: activity.id) {
+                            let ids = activity.activities.map(\.id)
+                            let request = MarkActivityRequest(
+                                markRead: ids
+                            )
+                            Task {
+                                do {
+                                    try await notificationFeed.markActivity(request: request)
+                                } catch {
+                                    log.error("Error marking the activities as read: \(error)")
+                                }
+                            }
                         }
                     }
                 }
