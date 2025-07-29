@@ -6,16 +6,17 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension CommentResponse {
+extension ThreadedCommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
         id: String = "comment-123",
         text: String = "Test comment",
         objectId: String = "activity-123",
         objectType: String = "activity",
-        parentId: String? = nil
-    ) -> CommentResponse {
-        CommentResponse(
+        parentId: String? = nil,
+        replies: [ThreadedCommentResponse]? = nil
+    ) -> ThreadedCommentResponse {
+        ThreadedCommentResponse(
             attachments: nil,
             confidenceScore: 0.95,
             controversyScore: nil,
@@ -26,6 +27,7 @@ extension CommentResponse {
             id: id,
             latestReactions: nil,
             mentionedUsers: [UserResponse.dummy()],
+            meta: nil,
             moderation: nil,
             objectId: objectId,
             objectType: objectType,
@@ -33,7 +35,8 @@ extension CommentResponse {
             parentId: parentId,
             reactionCount: 5,
             reactionGroups: nil,
-            replyCount: 2,
+            replies: replies,
+            replyCount: replies?.count ?? 0,
             score: 10,
             status: "active",
             text: text,

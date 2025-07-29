@@ -13,7 +13,7 @@ final class APITransportMock: DefaultAPITransport {
             guard !payloads.isEmpty else { throw ClientError.Unexpected("Please setup responses") }
             return payloads.removeFirst()
         }
-        let data = try JSONEncoder().encode(payload)
+        let data = try CodableHelper.jsonEncoder.encode(payload)
         let response = HTTPURLResponse(
             url: request.url,
             statusCode: 200,

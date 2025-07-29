@@ -211,10 +211,10 @@ extension ThreadedCommentData {
     
     // MARK: - Replies
     
-    mutating func addReply(_ comment: ThreadedCommentData) {
+    mutating func addReply(_ comment: ThreadedCommentData, sort areInIncreasingOrder: (ThreadedCommentData, ThreadedCommentData) -> Bool) {
         var replies = replies ?? []
         let count = replies.count
-        replies.insert(byId: comment)
+        replies.sortedInsert(comment, sorting: areInIncreasingOrder)
         self.replies = replies
         if count != replies.count {
             replyCount += 1
@@ -231,9 +231,9 @@ extension ThreadedCommentData {
         }
     }
     
-    mutating func replaceReply(_ comment: ThreadedCommentData) {
+    mutating func replaceReply(_ comment: ThreadedCommentData, sort areInIncreasingOrder: (ThreadedCommentData, ThreadedCommentData) -> Bool) {
         var replies = replies ?? []
-        replies.replace(byId: comment)
+        replies.sortedReplace(comment, nesting: nil, sorting: areInIncreasingOrder)
         self.replies = replies
     }
     
@@ -273,9 +273,7 @@ extension ThreadedCommentData {
 
 // MARK: - Sorting
 
-extension ThreadedCommentData {
-    static let defaultSorting: @Sendable (ThreadedCommentData, ThreadedCommentData) -> Bool = { $0.createdAt > $1.createdAt }
-}
+extension ThreadedCommentData: CommentsSortDataFields {}
 
 // MARK: - Model Conversions
 

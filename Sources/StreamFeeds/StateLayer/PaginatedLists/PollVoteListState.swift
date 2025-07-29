@@ -54,7 +54,7 @@ extension PollVoteListState {
             },
             pollVoteUpdated: { [weak self] pollVote in
                 guard let sorting = self?.pollVotesSorting else { return }
-                self?.votes.sortedReplace(pollVote, using: sorting)
+                self?.votes.sortedReplace(pollVote, nesting: nil, sorting: sorting)
             }
         )
     }
@@ -69,6 +69,6 @@ extension PollVoteListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        votes = votes.sortedMerge(response.models, using: pollVotesSorting)
+        votes = votes.sortedMerge(response.models, sorting: pollVotesSorting)
     }
 }

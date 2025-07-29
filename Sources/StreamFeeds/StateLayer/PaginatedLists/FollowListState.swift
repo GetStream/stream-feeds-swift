@@ -68,6 +68,6 @@ extension FollowListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        follows = follows.sortedMerge(response.models, using: followsSorting)
+        follows = follows.sortedMerge(response.models, sorting: followsSorting)
     }
 }

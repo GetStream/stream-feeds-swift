@@ -18,6 +18,8 @@ extension CommentListState {
         
         func onEvent(_ event: any Event) async {
             switch event {
+            case let event as CommentDeletedEvent:
+                await handlers.commentRemoved(event.comment.id)
             case let event as CommentUpdatedEvent:
                 await handlers.commentUpdated(event.comment.toModel())
             default:

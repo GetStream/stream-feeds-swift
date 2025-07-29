@@ -29,20 +29,33 @@ import Foundation
     
     /// The configuration used for the last query.
     private(set) var queryConfig: (filter: CommentsFilter?, sort: CommentsSort?)?
+    
+    private var sortingKey: CommentsSort {
+        queryConfig?.sort ?? .last
+    }
 }
 
 // MARK: - Updating the State
 
 extension CommentListState {
     struct ChangeHandlers {
+        let commentRemoved: @MainActor (String) -> Void
         let commentUpdated: @MainActor (CommentData) -> Void
     }
     
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
+            commentRemoved: { [weak self] commentId in
+                self?.comments.remove(byId: commentId)
+            },
             commentUpdated: { [weak self] comment in
+                guard let self else { return }
                 // Only update, do not insert
-                self?.comments.replace(byId: comment)
+                comments.sortedReplace(
+                    comment,
+                    nesting: nil,
+                    sorting: CommentsSort.areInIncreasingOrder(sortingKey)
+                )
             }
         )
     }
@@ -58,7 +71,6 @@ extension CommentListState {
     ) {
         pagination = response.pagination
         queryConfig = (filter, sort)
-        // Can't locally sort for all the sorting keys
-        comments.appendReplacingDuplicates(byId: response.models)
+        comments = comments.sortedMerge(response.models, sorting: CommentsSort.areInIncreasingOrder(sortingKey))
     }
 }

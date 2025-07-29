@@ -68,6 +68,6 @@ extension FeedListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        feeds = feeds.sortedMerge(response.models, using: feedsSorting)
+        feeds = feeds.sortedMerge(response.models, sorting: feedsSorting)
     }
 }
