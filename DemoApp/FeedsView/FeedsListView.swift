@@ -186,6 +186,7 @@ struct ActivityView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 4)
+        .modifier(ShowProfileModifier(activity: activity))
     }
 }
 
