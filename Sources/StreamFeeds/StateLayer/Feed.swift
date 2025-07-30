@@ -175,7 +175,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func repost(activityId: String, text: String?) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(
-            request: .init(fids: [fid.rawValue], parentId: activityId, text: text, type: "post")
+            request: .init(feeds: [fid.rawValue], parentId: activityId, text: text, type: "post")
         )
         await state.changeHandlers.activityAdded(activity)
         return activity
@@ -533,7 +533,7 @@ public final class Feed: Sendable {
     public func createPoll(request: CreatePollRequest, activityType: String) async throws -> ActivityData {
         let poll = try await pollsRepository.createPoll(request: request)
         return try await activitiesRepository.addActivity(
-            request: .init(fids: [fid.rawValue], pollId: poll.id, type: activityType)
+            request: .init(feeds: [fid.rawValue], pollId: poll.id, type: activityType)
         )
     }
 }

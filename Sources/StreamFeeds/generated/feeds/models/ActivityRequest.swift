@@ -26,7 +26,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
     public var attachments: [Attachment]?
     public var custom: [String: RawJSON]?
     public var expiresAt: String?
-    public var fids: [String]
+    public var feeds: [String]
     public var filterTags: [String]?
     public var id: String?
     public var interestTags: [String]?
@@ -40,11 +40,11 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
     public var visibility: ActivityRequestVisibility?
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, fids: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
-        self.fids = fids
+        self.feeds = feeds
         self.filterTags = filterTags
         self.id = id
         self.interestTags = interestTags
@@ -63,7 +63,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         case attachments
         case custom
         case expiresAt = "expires_at"
-        case fids
+        case feeds = "fids" //TODO: temp fix.
         case filterTags = "filter_tags"
         case id
         case interestTags = "interest_tags"
@@ -82,7 +82,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         lhs.attachments == rhs.attachments &&
             lhs.custom == rhs.custom &&
             lhs.expiresAt == rhs.expiresAt &&
-            lhs.fids == rhs.fids &&
+            lhs.feeds == rhs.feeds &&
             lhs.filterTags == rhs.filterTags &&
             lhs.id == rhs.id &&
             lhs.interestTags == rhs.interestTags &&
@@ -101,7 +101,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(attachments)
         hasher.combine(custom)
         hasher.combine(expiresAt)
-        hasher.combine(fids)
+        hasher.combine(feeds)
         hasher.combine(filterTags)
         hasher.combine(id)
         hasher.combine(interestTags)

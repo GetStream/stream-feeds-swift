@@ -20,6 +20,7 @@ public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncoda
         case shadowBlock = "shadow_block"
         case unban
         case unblock
+        case unmask
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
