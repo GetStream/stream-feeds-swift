@@ -16,12 +16,14 @@ import SwiftUI
             if text != "" {
                 checkTypingSuggestions()
             } else {
-                if composerCommand?.displayInfo?.isInstant == false {
-                    composerCommand = nil
+                withAnimation {
+                    if composerCommand?.displayInfo?.isInstant == false {
+                        composerCommand = nil
+                    }
+                    selectedRangeLocation = 0
+                    suggestions = [String: Any]()
+                    mentionedUsers = Set<UserData>()
                 }
-                selectedRangeLocation = 0
-                suggestions = [String: Any]()
-                mentionedUsers = Set<UserData>()
             }
         }
     }
@@ -70,6 +72,7 @@ import SwiftUI
             commandId: commandId,
             extraData: extraData
         )
+        suggestions = [:]
     }
     
     func askForPhotosPermission() {
@@ -128,7 +131,12 @@ import SwiftUI
         publishingPost = true
         let attachments = try addedAssets.map { try $0.toAttachmentPayload() }
         _ = try await feed.addActivity(
-            request: .init(attachmentUploads: attachments, text: text, type: "activity")
+            request: .init(
+                attachmentUploads: attachments,
+                mentionedUserIds: mentionedUsers.map(\.id),
+                text: text,
+                type: "activity"
+            )
         )
         text = ""
         addedAssets = []

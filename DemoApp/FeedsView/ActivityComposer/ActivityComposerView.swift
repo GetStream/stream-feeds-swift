@@ -9,7 +9,6 @@ import SwiftUI
 struct ActivityComposerView: View {
     @StateObject var viewModel: ActivityComposerViewModel
     @State var textHeight: CGFloat = TextSizeConstants.minimumHeight
-    @State var mentionsPopupHeight: CGFloat = 0
     @Environment(\.dismiss) var dismiss
     
     var textFieldHeight: CGFloat {
@@ -34,6 +33,19 @@ struct ActivityComposerView: View {
     var body: some View {
         ZStack {
             VStack {
+                if viewModel.showCommandsOverlay && !viewModel.suggestions.isEmpty {
+                    CommandsContainerView(suggestions: viewModel.suggestions) { commandInfo in
+                        viewModel.handleCommand(
+                            for: $viewModel.text,
+                            selectedRangeLocation: $viewModel.selectedRangeLocation,
+                            command: $viewModel.composerCommand,
+                            extraData: commandInfo
+                        )
+                    }
+                    .id(viewModel.text)
+                    .background(Color(UIColor.systemBackground))
+                }
+                
                 HStack {
                     ComposerTextInputView(
                         text: $viewModel.text,
@@ -92,42 +104,9 @@ struct ActivityComposerView: View {
                     Color.clear
                 }
             }
-            
-            // Commands overlay positioned above the view
-            if viewModel.showCommandsOverlay {
-                VStack {
-                    CommandsContainerView(suggestions: viewModel.suggestions) { commandInfo in
-                        viewModel.handleCommand(
-                            for: $viewModel.text,
-                            selectedRangeLocation: $viewModel.selectedRangeLocation,
-                            command: $viewModel.composerCommand,
-                            extraData: commandInfo
-                        )
-                    }
-                    .background(Color(UIColor.systemBackground))
-                    .onPreferenceChange(HeightPreferenceKey.self) { value in
-                        Task { @MainActor in
-                            if let value, value != mentionsPopupHeight {
-                                mentionsPopupHeight = value
-                            }
-                        }
-                    }
-                    
-                    Spacer()
-                }
-                .offset(y: -mentionsPopupHeight - 200) // Position above the view
-            }
         }
         .onAppear {
             viewModel.askForPhotosPermission()
         }
-    }
-}
-
-struct HeightPreferenceKey: PreferenceKey {
-    nonisolated(unsafe) static var defaultValue: CGFloat?
-
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-        value = value ?? nextValue()
     }
 }
