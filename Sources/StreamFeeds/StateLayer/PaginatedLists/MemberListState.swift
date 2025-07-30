@@ -97,6 +97,6 @@ extension MemberListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        members = members.sortedMerge(response.models, using: membersSorting)
+        members = members.sortedMerge(response.models, sorting: membersSorting)
     }
 }

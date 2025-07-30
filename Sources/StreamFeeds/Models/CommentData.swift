@@ -167,9 +167,7 @@ extension CommentData {
 
 // MARK: - Sorting
 
-extension CommentData {
-    static let defaultSorting: @Sendable (CommentData, CommentData) -> Bool = { $0.createdAt > $1.createdAt }
-}
+extension CommentData: CommentsSortDataFields {}
 
 // MARK: - Model Conversions
 

@@ -68,6 +68,6 @@ extension BookmarkFolderListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        folders = folders.sortedMerge(response.models, using: bookmarksSorting)
+        folders = folders.sortedMerge(response.models, sorting: bookmarksSorting)
     }
 }

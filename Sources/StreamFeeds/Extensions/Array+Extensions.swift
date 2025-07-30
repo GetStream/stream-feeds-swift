@@ -5,11 +5,9 @@
 import Foundation
 import StreamCore
 
-// MARK: - Inserting, Replacing and Removing Elements
+// MARK: - Managing Identifiable Elements in Array Without Sorting
 
 extension Array {
-    // MARK: - Managing Identifiable Elements in Array Without Sorting
-    
     /// Inserts or replaces an element in the non-sorted array based on its ID.
     /// If an element with the same ID already exists, it will be replaced.
     /// Otherwise, the new element will be inserted at the start of the array.
@@ -23,12 +21,15 @@ extension Array {
         }
     }
     
-    /// Removes an element from the non-sorted array based on its ID.
+    /// Removes an element from the array based on its ID, optionally searching nested elements.
     ///
     /// - Parameter id: The ID of the element to remove.
-    mutating func remove(byId id: Element.ID) where Element: Identifiable {
-        guard let index = firstIndex(where: { $0.id == id }) else { return }
-        remove(at: index)
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    mutating func remove(
+        byId id: Element.ID,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>? = nil
+    ) where Element: Identifiable {
+        _unsortedUpdate(ofId: id, nesting: nestingKeyPath, changes: { _ in nil })
     }
     
     /// Removes elements from the non-sorted array based on ID.
@@ -61,39 +62,17 @@ extension Array {
             replaceSubrange(replacement.0...replacement.0, with: CollectionOfOne(replacement.1))
         }
     }
-    
-    /// Appends new unique elements at the end while replacing existing duplicate elements.
-    mutating func appendReplacingDuplicates(byId incomingElements: [Element]) where Element: Identifiable {
-        if isEmpty {
-            self = incomingElements
-        } else {
-            var incomingLookup = [Element.ID: Element]()
-            incomingLookup.merge(incomingElements.map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
-            
-            var merged = [Element]()
-            merged.reserveCapacity(count + incomingElements.count)
-            for existing in self {
-                if let incoming = incomingLookup[existing.id] {
-                    merged.append(incoming)
-                } else {
-                    merged.append(existing)
-                }
-            }
-            self = merged
-        }
-    }
+}
 
-    // MARK: - Managing Identifiable Elements in Sorted Array
-    
-    /// Inserts or replaces an element in a sorted array while maintaining the sort order.
-    /// If an element with the same ID already exists, it will be replaced.
-    /// Otherwise, the new element will be inserted at the appropriate position to maintain the sort order.
+// MARK: - Managing Identifiable Elements in Sorted Array
+
+extension Array where Element: Identifiable {
+    /// Inserts an element into a sorted array at the correct position and removes any duplicates.
     ///
-    /// - Parameters:
-    ///   - element: The element to insert or replace.
-    ///   - sorting: A closure that defines the sort order between two elements.
-    mutating func sortedInsert(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
-        let insertionIndex = binarySearchInsertionIndex(for: element, using: sorting)
+    /// - Parameter element: The element to insert.
+    /// - Parameter sorting: Closure that defines the sorting order.
+    mutating func sortedInsert(_ element: Element, sorting: (Element, Element) -> Bool) {
+        let insertionIndex = binarySearchInsertionIndex(for: element, sorting: sorting)
         insert(element, at: insertionIndex)
         // Look for duplicates
         var distance = 1
@@ -112,20 +91,20 @@ extension Array {
         }
     }
     
-    mutating func sortedInsert<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
-        sortedInsert(element, by: sorting.areInIncreasingOrder())
+    /// Inserts an element into a sorted array using SortField configuration.
+    ///
+    /// - Parameter element: The element to insert.
+    /// - Parameter sorting: Array of sort fields that define the sorting order.
+    mutating func sortedInsert<Field>(_ element: Element, sorting: [Sort<Field>]) where Element == Field.Model, Field: SortField {
+        sortedInsert(element, sorting: sorting.areInIncreasingOrder())
     }
     
-    /// Merges two sorted arrays while maintaining the sort order and handling duplicates.
+    /// Merges incoming elements with the current sorted array, preferring incoming elements over existing ones.
     ///
-    /// - Parameters:
-    ///   - incomingElements: The sorted array to merge with the current array.
-    ///   - areInIncreasingOrder: A closure that defines the sort order between two elements.
-    /// - Returns: A new array containing all elements from both arrays, maintaining the sort order.
-    /// - Note: This function assumes both arrays are already sorted according to the provided sorting closure.
-    /// - Important: When elements with the same ID exist in both arrays, the element from the incoming array is preferred.
-    /// - Complexity: O(n + m) where n and m are the lengths of the arrays.
-    func sortedMerge(_ incomingElements: [Element], by areInIncreasingOrder: (Element, Element) -> Bool) -> [Element] where Element: Identifiable {
+    /// - Parameter incomingElements: The elements to merge with the current array.
+    /// - Parameter areInIncreasingOrder: Closure that defines the sorting order.
+    /// - Returns: A new sorted array containing the merged elements.
+    func sortedMerge(_ incomingElements: [Element], sorting areInIncreasingOrder: (Element, Element) -> Bool) -> [Element] {
         let incomingIds = Set<Element.ID>(incomingElements.map(\.id))
         var mergedResult = [Element]()
         mergedResult.reserveCapacity(count + incomingElements.count)
@@ -156,122 +135,196 @@ extension Array {
         return mergedResult
     }
     
-    func sortedMerge<Field>(_ incomingElements: [Element], using sorting: [Sort<Field>]) -> [Element] where Element == Field.Model, Element: Identifiable, Field: SortField {
-        sortedMerge(incomingElements, by: sorting.areInIncreasingOrder())
+    /// Merges incoming elements with the current sorted array using SortField configuration.
+    ///
+    /// - Parameter incomingElements: The elements to merge with the current array.
+    /// - Parameter sorting: Array of sort fields that define the sorting order.
+    /// - Returns: A new sorted array containing the merged elements.
+    func sortedMerge<Field>(_ incomingElements: [Element], sorting: [Sort<Field>]) -> [Element] where Element == Field.Model, Field: SortField {
+        sortedMerge(incomingElements, sorting: sorting.areInIncreasingOrder())
     }
     
-    /// Removes an element from a sorted array while maintaining the sort order.
+    /// Removes an element from a sorted array using SortField configuration, optionally searching nested elements.
     ///
-    /// This method efficiently removes an element from a sorted array by first attempting
-    /// a binary search for optimal performance. If the binary search fails (e.g., when
-    /// sorting parameters have changed), it falls back to a linear search by ID.
-    ///
-    /// The method preserves the sorted order of the remaining elements and handles
-    /// cases where the element might not be found in the array.
-    ///
-    /// - Parameters:
-    ///   - element: The element to remove from the array.
-    ///   - sorting: A closure that defines the sort order between two elements.
-    ///     The closure should return `true` if the first element should be ordered
-    ///     before the second element.
-    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
-    ///   when falling back to linear search.
-    mutating func sortedRemove(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
-        // Binary search succeeds if the element is present and its sorting parameters have not changed.
-        if let index = firstSortedIndex(for: element, using: sorting) {
-            remove(at: index)
-        } else {
-            remove(byId: element.id)
-        }
+    /// - Parameter matchingElement: The element to remove.
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    /// - Parameter sorting: Array of sort fields that define the sorting order.
+    mutating func sortedRemove<Field>(
+        _ matchingElement: Element,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: [Sort<Field>]
+    ) where Element == Field.Model, Field: SortField {
+        sortedRemove(matchingElement, nesting: nestingKeyPath, sorting: sorting.areInIncreasingOrder())
     }
     
-    /// Removes an element from a sorted array using a collection of sort fields.
+    /// Removes an element from a sorted array, optionally searching nested elements.
     ///
-    /// This method is a convenience overload that allows you to specify sorting criteria
-    /// using an array of `Sort<Field>` objects instead of a custom sorting closure.
-    /// It internally converts the sort fields to a sorting closure and delegates to
-    /// the main `sortedRemove(_:by:)` method.
-    ///
-    /// - Parameters:
-    ///   - element: The element to remove from the array.
-    ///   - sorting: An array of sort field configurations that define the sort order.
-    ///     The sort fields are applied in order, with earlier fields taking precedence.
-    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
-    ///   when falling back to linear search.
-    mutating func sortedRemove<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
-        sortedRemove(element, by: sorting.areInIncreasingOrder())
+    /// - Parameter matchingElement: The element to remove.
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    /// - Parameter sorting: Closure that defines the sorting order.
+    mutating func sortedRemove(
+        _ matchingElement: Element,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: (Element, Element) -> Bool
+    ) {
+        _sortedUpdate(
+            searchStrategy: .binarySearch(matchingElement),
+            nesting: nestingKeyPath,
+            sorting: sorting,
+            changes: { _ in nil }
+        )
     }
     
-    /// Replaces an element in a sorted array while maintaining the sort order.
+    /// Replaces an element in a sorted array using SortField configuration, optionally searching nested elements.
     ///
-    /// This method efficiently replaces an element in a sorted array by first attempting
-    /// a binary search for optimal performance. If the binary search fails (e.g., when
-    /// sorting parameters have changed), it falls back to a linear search by ID.
+    /// - Parameter matchingElement: The element to replace with.
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    /// - Parameter sorting: Array of sort fields that define the sorting order.
+    mutating func sortedReplace<Field>(
+        _ matchingElement: Element,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: [Sort<Field>]
+    ) where Element == Field.Model, Field: SortField {
+        sortedReplace(
+            matchingElement,
+            nesting: nestingKeyPath,
+            sorting: sorting.areInIncreasingOrder()
+        )
+    }
+    
+    /// Replaces an element in a sorted array, optionally searching nested elements.
     ///
-    /// The method preserves the sorted order of the array by:
-    /// 1. Finding the existing element using binary search or linear search
-    /// 2. Removing the existing element from its current position
-    /// 3. Finding the correct insertion position for the new element using binary search
-    /// 4. Inserting the new element at the appropriate position to maintain sort order
+    /// - Parameter matchingElement: The element to replace with.
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    /// - Parameter sorting: Closure that defines the sorting order.
+    mutating func sortedReplace(
+        _ matchingElement: Element,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: (Element, Element) -> Bool
+    ) {
+        _sortedUpdate(
+            searchStrategy: .binarySearch(matchingElement),
+            nesting: nestingKeyPath,
+            sorting: sorting,
+            changes: { _ in matchingElement }
+        )
+    }
+
+    /// Updates an element in a sorted array using a closure, optionally searching nested elements.
     ///
-    /// - Important: If no element with the specified ID is found, no changes will be made.
-    ///   The method will silently return without modifying the array.
-    ///
-    /// - Parameters:
-    ///   - element: The new element to replace the existing one.
-    ///   - sorting: A closure that defines the sort order between two elements.
-    ///     The closure should return `true` if the first element should be ordered
-    ///     before the second element.
-    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
-    ///   when falling back to linear search.
-    /// - Note: This method assumes the array is already sorted according to the provided
-    ///   sorting closure. If the array is not sorted, the behavior is undefined.
-    mutating func sortedReplace(_ element: Element, by sorting: (Element, Element) -> Bool) where Element: Identifiable {
-        let existingIndex: Index? = {
-            // Binary search succeeds if the element is present and its sorting parameters have not changed.
-            if let index = firstSortedIndex(for: element, using: sorting) {
-                return index
+    /// - Parameter matchingElement: The element to update.
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    /// - Parameter sorting: Closure that defines the sorting order.
+    /// - Parameter changes: Closure that modifies the element.
+    mutating func sortedUpdate(
+        _ matchingElement: Element,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: (Element, Element) -> Bool,
+        changes: (inout Element) -> Void
+    ) {
+        _sortedUpdate(
+            searchStrategy: .binarySearch(matchingElement),
+            nesting: nestingKeyPath,
+            sorting: sorting,
+            changes: { matchingElement in
+                var updatedElement = matchingElement
+                changes(&updatedElement)
+                return updatedElement
             }
-            return firstIndex(where: { $0.id == element.id })
+        )
+    }
+    
+    /// Updates an element in a sorted array by ID using a closure, optionally searching nested elements.
+    ///
+    /// - Parameter matchingId: The ID of the element to update.
+    /// - Parameter nesting: Optional key path to search for nested elements.
+    /// - Parameter sorting: Closure that defines the sorting order.
+    /// - Parameter changes: Closure that modifies the element.
+    mutating func sortedUpdate(
+        ofId matchingId: Element.ID,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: (Element, Element) -> Bool,
+        changes: (inout Element) -> Void
+    ) {
+        _sortedUpdate(
+            searchStrategy: .linear(matchingId),
+            nesting: nestingKeyPath,
+            sorting: sorting,
+            changes: { matchingElement in
+                var updatedElement = matchingElement
+                changes(&updatedElement)
+                return updatedElement
+            }
+        )
+    }
+    
+    private enum ElementSearch {
+        case linear(Element.ID)
+        case binarySearch(Element)
+    }
+    
+    @discardableResult private mutating func _sortedUpdate(
+        searchStrategy: ElementSearch,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        sorting: (Element, Element) -> Bool,
+        changes: (Element) -> Element?
+    ) -> Bool {
+        var foundMatch = false
+        var updatedElements = self
+        
+        let matchingIndex: Index? = {
+            switch searchStrategy {
+            case .linear(let matchingId):
+                return updatedElements.firstIndex(where: { $0.id == matchingId })
+            case .binarySearch(let matchingElement):
+                // Here we are looking for existing element which might have a different state
+                // therefore if binary search fails, we still need to do linear search.
+                if let index = firstSortedIndex(for: matchingElement, sorting: sorting) {
+                    return index
+                }
+                return updatedElements.firstIndex(where: { $0.id == matchingElement.id })
+            }
         }()
-        guard let existingIndex else { return }
-        // Element was present, replace it and keep the sorted order
-        remove(at: existingIndex)
-        let insertionIndex = binarySearchInsertionIndex(for: element, using: sorting)
-        insert(element, at: insertionIndex)
+        if let matchingIndex {
+            let element = updatedElements[matchingIndex]
+            if let updated = changes(element) {
+                updatedElements[matchingIndex] = updated
+                // Sort the whole array for simplicity because updating can change the sorting
+                updatedElements.sort(by: sorting)
+            } else {
+                // Nil means remove
+                updatedElements.remove(at: matchingIndex)
+            }
+            foundMatch = true
+        } else if let nestingKeyPath {
+            // Try nested paths of each element until match is found
+            for (index, element) in updatedElements.enumerated() {
+                if var nestedElements = element[keyPath: nestingKeyPath], !nestedElements.isEmpty {
+                    foundMatch = nestedElements._sortedUpdate(searchStrategy: searchStrategy, nesting: nestingKeyPath, sorting: sorting, changes: changes)
+                    if foundMatch {
+                        var updatedElement = element
+                        updatedElement[keyPath: nestingKeyPath] = nestedElements
+                        updatedElements[index] = updatedElement
+                        break // duplicates are not expected
+                    }
+                }
+            }
+        }
+        if foundMatch {
+            self = updatedElements
+        }
+        return foundMatch
     }
     
-    /// Replaces an element in a sorted array using a collection of sort fields.
-    ///
-    /// This method is a convenience overload that allows you to specify sorting criteria
-    /// using an array of `Sort<Field>` objects instead of a custom sorting closure.
-    /// It internally converts the sort fields to a sorting closure and delegates to
-    /// the main `sortedReplace(_:by:)` method.
-    ///
-    /// - Important: If no element with the specified ID is found, no changes will be made.
-    ///   The method will silently return without modifying the array.
-    ///
-    /// - Parameters:
-    ///   - element: The new element to replace the existing one.
-    ///   - sorting: An array of sort field configurations that define the sort order.
-    ///     The sort fields are applied in order, with earlier fields taking precedence.
-    /// - Complexity: O(log n) average case when binary search succeeds, O(n) worst case
-    ///   when falling back to linear search.
-    /// - Note: This method assumes the array is already sorted according to the provided
-    ///   sort fields. If the array is not sorted, the behavior is undefined.
-    mutating func sortedReplace<Field>(_ element: Element, using sorting: [Sort<Field>]) where Element == Field.Model, Element: Identifiable, Field: SortField {
-        sortedReplace(element, by: sorting.areInIncreasingOrder())
+    @discardableResult private mutating func _unsortedUpdate(
+        ofId id: Element.ID,
+        nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
+        changes: (Element) -> Element?
+    ) -> Bool {
+        _sortedUpdate(searchStrategy: .linear(id), nesting: nestingKeyPath, sorting: { _, _ in true }, changes: changes)
     }
     
-    /// Performs a binary search to find an element with the same ID in a sorted array.
-    ///
-    /// - Important: Only works if sorting parameters have not changed.
-    ///
-    /// - Parameters:
-    ///   - element: The element to search for.
-    ///   - sorting: A closure that defines the sort order between two elements.
-    /// - Returns: The index of the found element, or nil if not found.
-    private func firstSortedIndex(for element: Element, using sorting: (Element, Element) -> Bool) -> Index? where Element: Identifiable {
+    private func firstSortedIndex(for element: Element, sorting: (Element, Element) -> Bool) -> Index? {
         var left = startIndex
         var right = endIndex
         while left < right {
@@ -287,13 +340,7 @@ extension Array {
         return nil
     }
     
-    /// Performs a binary search to find the insertion index for a new element in a sorted array.
-    ///
-    /// - Parameters:
-    ///   - element: The element to find the insertion index for.
-    ///   - sorting: A closure that defines the sort order between two elements.
-    /// - Returns: The index where the element should be inserted to maintain the sort order.
-    private func binarySearchInsertionIndex(for element: Element, using sorting: (Element, Element) -> Bool) -> Index {
+    private func binarySearchInsertionIndex(for element: Element, sorting: (Element, Element) -> Bool) -> Index {
         var left = startIndex
         var right = endIndex
         while left < right {
@@ -311,134 +358,14 @@ extension Array {
 // MARK: - Updating Element's Property
 
 extension Array {
+    /// Updates the first element that matches the predicate using a closure.
+    ///
+    /// - Parameter predicate: Closure that determines which element to update.
+    /// - Parameter changes: Closure that modifies the element.
     mutating func updateFirstElement(where predicate: (Element) -> Bool, changes: (inout Element) -> Void) {
         guard let index = firstIndex(where: predicate) else { return }
         var updatedElement = self[index]
         changes(&updatedElement)
         self[index] = updatedElement
-    }
-}
-
-// MARK: - Nested Updates
-
-extension Array where Element: Identifiable {
-    /// Inserts or replaces an element in a nested array structure based on its ID and parent relationship.
-    ///
-    /// This method handles hierarchical data structures where elements can have parent-child relationships.
-    /// If the new element has a parent ID, it will be inserted into the parent's nested collection.
-    /// If no parent ID is provided, the element will be inserted at the top level of the array.
-    ///
-    /// - Parameters:
-    ///   - newElement: The element to insert or replace.
-    ///   - parentIdKeyPath: A key path to the optional parent ID property of the element.
-    ///     This determines whether the element should be nested under a parent.
-    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
-    ///     This specifies where child elements are stored within each parent element.
-    ///
-    /// - Note: If an element with the same ID already exists at the appropriate level
-    ///   (either top-level or within a parent's nested collection), it will be replaced.
-    ///   Otherwise, the new element will be inserted at the beginning of the appropriate collection.
-    ///
-    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
-    mutating func insert(byId newElement: Element, parentId parentIdKeyPath: KeyPath<Element, Element.ID?>, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) {
-        if let parentId = newElement[keyPath: parentIdKeyPath] {
-            self = Self.updated(byId: parentId, in: self, nesting: nestingKeyPath, updates: { parent in
-                var updatedParent = parent
-                var subitems = updatedParent[keyPath: nestingKeyPath] ?? []
-                subitems.insert(byId: newElement)
-                updatedParent[keyPath: nestingKeyPath] = subitems
-                return updatedParent
-            })
-        } else {
-            insert(byId: newElement)
-        }
-    }
-    
-    /// Replaces an element in a nested array structure based on its ID.
-    ///
-    /// This method searches for an element with the specified ID throughout the entire
-    /// nested structure and replaces it with the provided updated element. The search
-    /// includes both top-level elements and all nested collections.
-    ///
-    /// - Parameters:
-    ///   - updatedElement: The new element to replace the existing one.
-    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
-    ///     This specifies where child elements are stored within each parent element.
-    ///
-    /// - Note: If no element with the specified ID is found, no changes will be made.
-    ///   The method searches recursively through all nested levels.
-    ///
-    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
-    mutating func replace(byId updatedElement: Element, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) {
-        self = Self.updated(byId: updatedElement.id, in: self, nesting: nestingKeyPath, updates: { _ in updatedElement })
-    }
-    
-    /// Removes an element from a nested array structure based on its ID.
-    ///
-    /// This method searches for an element with the specified ID throughout the entire
-    /// nested structure and removes it. The search includes both top-level elements
-    /// and all nested collections at any depth.
-    ///
-    /// - Parameters:
-    ///   - id: The ID of the element to remove.
-    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
-    ///     This specifies where child elements are stored within each parent element.
-    ///
-    /// - Note: If no element with the specified ID is found, no changes will be made.
-    ///   The method searches recursively through all nested levels and removes the
-    ///   first occurrence found.
-    ///
-    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
-    mutating func remove(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>) where Element: Identifiable {
-        self = Self.updated(byId: id, in: self, nesting: nestingKeyPath, updates: { _ in nil })
-    }
-    
-    /// Updates an element in a nested array structure based on its ID using a closure.
-    ///
-    /// This method searches for an element with the specified ID throughout the entire
-    /// nested structure and applies the provided update closure to it. The search
-    /// includes both top-level elements and all nested collections at any depth.
-    ///
-    /// - Parameters:
-    ///   - id: The ID of the element to update.
-    ///   - nestingKeyPath: A writable key path to the optional nested collection property.
-    ///     This specifies where child elements are stored within each parent element.
-    ///   - updates: A closure that receives the element to be updated as an `inout` parameter.
-    ///     You can modify any properties of the element within this closure.
-    ///
-    /// - Note: If no element with the specified ID is found, no changes will be made.
-    ///   The method searches recursively through all nested levels and updates the
-    ///   first occurrence found.
-    ///
-    /// - Complexity: O(n) where n is the total number of elements in the array and all nested collections.
-    mutating func update(byId id: Element.ID, nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (inout Element) -> Void) where Element: Identifiable {
-        self = Self.updated(byId: id, in: self, nesting: nestingKeyPath) { element in
-            var updatedElement = element
-            updates(&updatedElement)
-            return updatedElement
-        }
-    }
-    
-    private static func updated(byId id: Element.ID, in elements: [Element], nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>, updates: (Element) -> Element?) -> [Element] {
-        var updatedElements = elements
-        for (index, element) in updatedElements.enumerated().reversed() {
-            var element = element
-            if element.id == id {
-                if let updated = updates(element) {
-                    updatedElements[index] = updated
-                    element = updated
-                } else {
-                    updatedElements.remove(at: index)
-                    // Skip checking nested elements because parent was removed
-                    continue
-                }
-            }
-            if let nestedElements = element[keyPath: nestingKeyPath], !nestedElements.isEmpty {
-                var updatedElement = element
-                updatedElement[keyPath: nestingKeyPath] = Self.updated(byId: id, in: nestedElements, nesting: nestingKeyPath, updates: updates)
-                updatedElements[index] = updatedElement
-            }
-        }
-        return updatedElements
     }
 }

@@ -99,6 +99,6 @@ extension ModerationConfigListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        configs = configs.sortedMerge(response.models, using: configsSorting)
+        configs = configs.sortedMerge(response.models, sorting: configsSorting)
     }
 }

@@ -116,6 +116,10 @@ import Foundation
     /// }
     /// ```
     public var canLoadMore: Bool { pagination?.next != nil }
+    
+    var sortingKey: CommentsSort {
+        query.sort ?? .last
+    }
 }
 
 // MARK: - Updating the State
@@ -132,30 +136,47 @@ extension CommentReplyListState {
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
             commentAdded: { [weak self] comment in
-                guard let parentId = comment.parentId else { return }
-                if parentId == self?.query.commentId {
-                    self?.replies.insert(byId: comment)
+                guard let self else { return }
+                if let parentId = comment.parentId {
+                    replies.sortedUpdate(
+                        ofId: parentId,
+                        nesting: \.replies,
+                        sorting: CommentsSort.areInIncreasingOrder(sortingKey),
+                        changes: { $0.addReply(comment, sort: CommentsSort.areInIncreasingOrder(sortingKey)) }
+                    )
                 } else {
-                    self?.replies.update(byId: parentId, nesting: \.replies, updates: { $0.addReply(comment) })
+                    replies.sortedInsert(comment, sorting: CommentsSort.areInIncreasingOrder(sortingKey))
                 }
             },
             commentRemoved: { [weak self] commentId in
                 self?.replies.remove(byId: commentId, nesting: \.replies)
             },
             commentUpdated: { [weak self] comment in
-                self?.replies.update(byId: comment.id, nesting: \.replies, updates: { $0.setCommentData(comment) })
+                guard let self else { return }
+                replies.sortedUpdate(
+                    ofId: comment.id,
+                    nesting: \.replies,
+                    sorting: CommentsSort.areInIncreasingOrder(sortingKey),
+                    changes: { $0.setCommentData(comment) }
+                )
             },
             commentReactionAdded: { [weak self] reaction, commentId in
                 guard let self else { return }
-                replies.update(byId: commentId, nesting: \.replies) { existingComment in
-                    existingComment.addReaction(reaction, currentUserId: currentUserId)
-                }
+                replies.sortedUpdate(
+                    ofId: commentId,
+                    nesting: \.replies,
+                    sorting: CommentsSort.areInIncreasingOrder(sortingKey),
+                    changes: { $0.addReaction(reaction, currentUserId: currentUserId) }
+                )
             },
             commentReactionRemoved: { [weak self] reaction, commentId in
                 guard let self else { return }
-                replies.update(byId: commentId, nesting: \.replies) { existingComment in
-                    existingComment.removeReaction(reaction, currentUserId: currentUserId)
-                }
+                replies.sortedUpdate(
+                    ofId: commentId,
+                    nesting: \.replies,
+                    sorting: CommentsSort.areInIncreasingOrder(sortingKey),
+                    changes: { $0.removeReaction(reaction, currentUserId: currentUserId) }
+                )
             }
         )
     }
@@ -166,7 +187,6 @@ extension CommentReplyListState {
     
     func didPaginate(with response: PaginationResult<ThreadedCommentData>) {
         pagination = response.pagination
-        // Can't locally sort for all the sorting keys
-        replies.appendReplacingDuplicates(byId: response.models)
+        replies = replies.sortedMerge(response.models, sorting: CommentsSort.areInIncreasingOrder(query.sort ?? .last))
     }
 }

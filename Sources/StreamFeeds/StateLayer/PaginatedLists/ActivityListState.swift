@@ -91,11 +91,11 @@ extension ActivityListState {
         ChangeHandlers(
             activityRemoved: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedRemove(activity, using: sorting)
+                self?.activities.sortedRemove(activity, nesting: nil, sorting: sorting)
             },
             activityUpdated: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedInsert(activity, using: sorting)
+                self?.activities.sortedInsert(activity, sorting: sorting)
             },
             bookmarkAdded: { [weak self] bookmark in
                 guard let self else { return }
@@ -150,6 +150,6 @@ extension ActivityListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        activities = activities.sortedMerge(response.models, using: activitiesSorting)
+        activities = activities.sortedMerge(response.models, sorting: activitiesSorting)
     }
 }

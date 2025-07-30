@@ -129,6 +129,6 @@ extension CommentReactionListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        reactions = reactions.sortedMerge(response.models, using: reactionsSorting)
+        reactions = reactions.sortedMerge(response.models, sorting: reactionsSorting)
     }
 }

@@ -65,6 +65,6 @@ extension PollListState {
     ) {
         pagination = response.pagination
         self.queryConfig = queryConfig
-        polls = polls.sortedMerge(response.models, using: pollsSorting)
+        polls = polls.sortedMerge(response.models, sorting: pollsSorting)
     }
 }

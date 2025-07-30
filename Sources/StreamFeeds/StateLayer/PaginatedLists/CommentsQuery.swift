@@ -9,34 +9,6 @@ import StreamCore
 ///
 /// Use this struct to configure how comments should be fetched from the Stream Feeds API.
 /// You can specify filters to narrow down results, sorting options, and pagination parameters.
-///
-/// ## Example Usage
-/// ```swift
-/// // Simple query with basic filter
-/// let query = CommentsQuery(
-///     filter: CommentsFilter(
-///         filterOperator: .equal,
-///         field: .objectId,
-///         value: "activity-123"
-///     ),
-///     sort: .best,
-///     limit: 20
-/// )
-///
-/// // Complex query with multiple filters
-/// let complexQuery = CommentsQuery(
-///     filter: CommentsFilter(
-///         filterOperator: .and,
-///         filters: [
-///             CommentsFilter(filterOperator: .equal, field: .objectId, value: "activity-123"),
-///             CommentsFilter(filterOperator: .greaterThan, field: .score, value: 5.0),
-///             CommentsFilter(filterOperator: .equal, field: .status, value: "active")
-///         ]
-///     ),
-///     sort: .top,
-///     limit: 50
-/// )
-/// ```
 public struct CommentsQuery: Sendable {
     /// Filter criteria for the comments query.
     ///
@@ -242,6 +214,45 @@ public struct CommentsFilter: Filter {
 
 /// Represents sorting options for comments queries.
 public typealias CommentsSort = QueryCommentsRequest.QueryCommentsRequestSort
+
+protocol CommentsSortDataFields {
+    var createdAt: Date { get }
+    var confidenceScore: Float { get }
+    var controversyScore: Float? { get }
+    var score: Int { get }
+}
+
+extension CommentsSort {
+    static func areInIncreasingOrder(_ sort: CommentsSort) -> (CommentsSortDataFields, CommentsSortDataFields) -> Bool {
+        { lhs, rhs in
+            switch sort {
+            case .top:
+                if lhs.score != rhs.score {
+                    return lhs.score > rhs.score
+                }
+                return lhs.createdAt > rhs.createdAt
+            case .best:
+                if lhs.confidenceScore != rhs.confidenceScore {
+                    return lhs.confidenceScore > rhs.confidenceScore
+                }
+                return lhs.createdAt > rhs.createdAt
+            case .controversial:
+                let lhsControversy = lhs.controversyScore ?? -1
+                let rhsControversy = rhs.controversyScore ?? -1
+                if lhsControversy != rhsControversy {
+                    return lhsControversy > rhsControversy
+                }
+                return false
+            case .first:
+                return lhs.createdAt < rhs.createdAt
+            case .last:
+                return lhs.createdAt > rhs.createdAt
+            case .unknown:
+                return lhs.createdAt > rhs.createdAt
+            }
+        }
+    }
+}
 
 // MARK: -
 
