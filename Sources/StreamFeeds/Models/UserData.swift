@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public struct UserData: Identifiable, Equatable, Sendable {
+public struct UserData: Identifiable, Equatable, Sendable, Hashable {
     public let banned: Bool
     public let blockedUserIds: [String]
     public let createdAt: Date

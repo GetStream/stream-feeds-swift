@@ -15,6 +15,15 @@ import SwiftUI
     @Published var createPollShown = false
     @Published var publishingPost = false
     
+    @Published public var composerCommand: ComposerCommand? {
+        didSet {
+            if oldValue?.id != composerCommand?.id &&
+                composerCommand?.displayInfo?.isInstant == true {
+                clearCommandText()
+            }
+        }
+    }
+    
     let feed: Feed
     let client: FeedsClient
     
@@ -86,6 +95,18 @@ import SwiftUI
         publishingPost = false
     }
     
+    public var showCommandsOverlay: Bool {
+        // Mentions are really not commands, but at the moment this flag controls
+        // if the mentions are displayed or not, so if the command is related to mentions
+        // then we need to ignore if commands are available or not.
+        let isMentionsSuggestions = composerCommand?.id == "mentions"
+        if isMentionsSuggestions {
+            return true
+        }
+        let commandAvailable = composerCommand != nil
+        return commandAvailable
+    }
+    
     private func fetchAssets() {
         let fetchOptions = PHFetchOptions()
         let supportedTypes = GallerySupportedTypes.imagesAndVideo
@@ -105,6 +126,32 @@ import SwiftUI
                 self?.imageAssets = assets
             }
         }
+    }
+    
+    private func clearCommandText() {
+        guard composerCommand != nil else { return }
+        let currentText = text
+        if let value = getValueOfCommand(currentText) {
+            text = value
+            return
+        }
+        text = ""
+    }
+    
+    private func getValueOfCommand(_ currentText: String) -> String? {
+        let pattern = "/\\S+\\s+(.*)"
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            let range = NSRange(currentText.startIndex..<currentText.endIndex, in: currentText)
+
+            if let match = regex.firstMatch(in: currentText, range: range) {
+                let valueRange = match.range(at: 1)
+
+                if let range = Range(valueRange, in: currentText) {
+                    return String(currentText[range])
+                }
+            }
+        }
+        return nil
     }
 }
 
