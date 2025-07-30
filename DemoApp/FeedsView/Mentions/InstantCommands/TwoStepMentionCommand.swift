@@ -8,7 +8,7 @@ import StreamFeeds
 import SwiftUI
 
 /// Base class that supports two step commands, where the second one is mentioning users.
-open class TwoStepMentionCommand: CommandHandler {
+open class TwoStepMentionCommand: CommandHandler, @unchecked Sendable {
     private let mentionsCommandHandler: MentionsCommandHandler
     private let mentionSymbol: String
 

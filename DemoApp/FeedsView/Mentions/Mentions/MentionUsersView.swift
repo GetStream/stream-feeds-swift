@@ -25,7 +25,6 @@ public struct MentionUsersView: View {
             }
         }
         .frame(height: viewHeight)
-        .background(Color.secondary)
         .modifier(ShadowModifier())
         .padding(.all, 8)
         .animation(.spring(), value: true)

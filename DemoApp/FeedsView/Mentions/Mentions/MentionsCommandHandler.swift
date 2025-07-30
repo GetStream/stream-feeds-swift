@@ -8,7 +8,7 @@ import StreamFeeds
 import SwiftUI
 
 /// Handles the mention command and provides suggestions.
-public struct MentionsCommandHandler: CommandHandler {
+public class MentionsCommandHandler: CommandHandler, @unchecked Sendable {
     public let id: String
     public var displayInfo: CommandDisplayInfo?
 
@@ -16,6 +16,8 @@ public struct MentionsCommandHandler: CommandHandler {
     private let typingSuggester: TypingSuggester
     
     private let feed: Feed
+    
+    private var followSuggestions = [UserData]()
 
     public init(
         feed: Feed,
@@ -87,11 +89,20 @@ public struct MentionsCommandHandler: CommandHandler {
         for typingMention: String,
         mentionRange: NSRange
     ) async throws -> SuggestionInfo {
-        // NOTE: we only allow tagging followers here.
-        let followers = await feed.state.followers.map { followData in
+        var suggestions = [UserData]()
+        suggestions = await feed.state.followers.map { followData in
             followData.sourceFeed.createdBy
         }
-        let suggestionInfo = SuggestionInfo(key: id, value: followers)
+        if suggestions.isEmpty {
+            if followSuggestions.isEmpty {
+                suggestions = try await feed.queryFollowSuggestions(limit: 20).map(\.createdBy)
+                followSuggestions = suggestions
+            } else {
+                suggestions = followSuggestions
+            }
+        }
+        suggestions = searchUsers(suggestions, by: typingMention)
+        let suggestionInfo = SuggestionInfo(key: id, value: suggestions)
         return suggestionInfo
     }
 

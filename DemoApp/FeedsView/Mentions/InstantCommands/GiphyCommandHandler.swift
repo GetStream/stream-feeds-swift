@@ -7,7 +7,7 @@ import StreamCore
 import SwiftUI
 
 /// Handles the giphy command and provides suggestions.
-public struct GiphyCommandHandler: CommandHandler {
+public struct GiphyCommandHandler: CommandHandler, @unchecked Sendable {
     public let id: String
     public var displayInfo: CommandDisplayInfo?
 
