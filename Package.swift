@@ -11,7 +11,7 @@ let package = Package(
         .library(
             name: "StreamFeeds",
             targets: ["StreamFeeds"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/GetStream/stream-core-swift.git", branch: "main")
