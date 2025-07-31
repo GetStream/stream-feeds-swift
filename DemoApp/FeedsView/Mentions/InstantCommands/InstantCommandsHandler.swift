@@ -6,7 +6,7 @@ import Combine
 import SwiftUI
 
 /// Handler for istant commands.
-public class InstantCommandsHandler: CommandHandler {
+public class InstantCommandsHandler: CommandHandler, @unchecked Sendable {
     public let id: String
     public var displayInfo: CommandDisplayInfo?
 

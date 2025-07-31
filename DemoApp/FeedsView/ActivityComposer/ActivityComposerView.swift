@@ -8,64 +8,101 @@ import SwiftUI
 
 struct ActivityComposerView: View {
     @StateObject var viewModel: ActivityComposerViewModel
-    
+    @State var textHeight: CGFloat = TextSizeConstants.minimumHeight
     @Environment(\.dismiss) var dismiss
+    
+    var textFieldHeight: CGFloat {
+        let minHeight: CGFloat = TextSizeConstants.minimumHeight
+        let maxHeight: CGFloat = TextSizeConstants.maximumHeight
+
+        if textHeight < minHeight {
+            return minHeight
+        }
+
+        if textHeight > maxHeight {
+            return maxHeight
+        }
+
+        return textHeight
+    }
     
     init(feed: Feed, feedsClient: FeedsClient) {
         _viewModel = StateObject(wrappedValue: ActivityComposerViewModel(feed: feed, feedsClient: feedsClient))
     }
     
     var body: some View {
-        VStack {
-            HStack {
-                TextField("Add post", text: $viewModel.text)
-                    .textFieldStyle(.roundedBorder)
+        ZStack {
+            VStack {
+                if viewModel.showCommandsOverlay && !viewModel.suggestions.isEmpty {
+                    CommandsContainerView(suggestions: viewModel.suggestions) { commandInfo in
+                        viewModel.handleCommand(
+                            for: $viewModel.text,
+                            selectedRangeLocation: $viewModel.selectedRangeLocation,
+                            command: $viewModel.composerCommand,
+                            extraData: commandInfo
+                        )
+                    }
+                    .id(viewModel.text)
+                    .background(Color(UIColor.systemBackground))
+                }
                 
-                Button {
-                    Task {
-                        do {
-                            try await viewModel.publishPost()
-                            dismiss()
-                        } catch {
-                            log.error("Error publishing a post \(error)")
-                            viewModel.publishingPost = false
+                HStack {
+                    ComposerTextInputView(
+                        text: $viewModel.text,
+                        height: $textHeight,
+                        selectedRangeLocation: $viewModel.selectedRangeLocation,
+                        placeholder: "Add post",
+                        editable: true,
+                        currentHeight: textFieldHeight
+                    )
+                    .frame(height: textFieldHeight)
+                    
+                    Button {
+                        Task {
+                            do {
+                                try await viewModel.publishPost()
+                                dismiss()
+                            } catch {
+                                log.error("Error publishing a post \(error)")
+                                viewModel.publishingPost = false
+                            }
+                        }
+                    } label: {
+                        if viewModel.publishingPost {
+                            ProgressView()
+                        } else {
+                            Text("Post")
+                                .bold()
                         }
                     }
+                    .disabled(
+                        (viewModel.text.trimmed.isEmpty && viewModel.addedAssets.isEmpty)
+                            || viewModel.publishingPost
+                    )
+                }
+                .padding()
+                
+                Button {
+                    viewModel.createPollShown = true
                 } label: {
-                    if viewModel.publishingPost {
-                        ProgressView()
-                    } else {
-                        Text("Post")
-                            .bold()
+                    Text("Create Poll")
+                }
+                .sheet(isPresented: $viewModel.createPollShown) {
+                    CreatePollView(feed: viewModel.feed) {
+                        dismiss()
                     }
                 }
-                .disabled(
-                    (viewModel.text.trimmed.isEmpty && viewModel.addedAssets.isEmpty)
-                        || viewModel.publishingPost
-                )
-            }
-            .padding()
-            
-            Button {
-                viewModel.createPollShown = true
-            } label: {
-                Text("Create Poll")
-            }
-            .sheet(isPresented: $viewModel.createPollShown) {
-                CreatePollView(feed: viewModel.feed) {
-                    dismiss()
+                
+                if let assets = viewModel.imageAssets {
+                    PhotoAttachmentPickerView(
+                        assets: PHFetchResultCollection(fetchResult: assets),
+                        assetLoader: PhotoAssetLoader(client: viewModel.client),
+                        onImageTap: viewModel.imageTapped(_:),
+                        imageSelected: viewModel.isImageSelected(with:)
+                    )
+                } else {
+                    Color.clear
                 }
-            }
-            
-            if let assets = viewModel.imageAssets {
-                PhotoAttachmentPickerView(
-                    assets: PHFetchResultCollection(fetchResult: assets),
-                    assetLoader: PhotoAssetLoader(client: viewModel.client),
-                    onImageTap: viewModel.imageTapped(_:),
-                    imageSelected: viewModel.isImageSelected(with:)
-                )
-            } else {
-                Color.clear
             }
         }
         .onAppear {

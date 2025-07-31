@@ -8,7 +8,7 @@ import StreamFeeds
 import SwiftUI
 
 /// Defines methods for handling commands.
-public protocol CommandHandler {
+public protocol CommandHandler: Sendable {
     /// Identifier of the command.
     var id: String { get }
 
@@ -111,7 +111,7 @@ public struct ComposerCommand {
 }
 
 /// Provides information about the suggestion.
-public struct SuggestionInfo {
+public struct SuggestionInfo: @unchecked Sendable {
     /// Identifies the suggestion.
     public let key: String
     /// Any value that can be passed to the suggestion.
@@ -145,7 +145,7 @@ public struct CommandDisplayInfo {
 
 /// Main commands handler - decides which commands to invoke.
 /// Command is matched if there's an id matching.
-public class CommandsHandler: CommandHandler {
+public class CommandsHandler: CommandHandler, @unchecked Sendable {
     private let commands: [CommandHandler]
     public let id: String = "main"
     public var displayInfo: CommandDisplayInfo?

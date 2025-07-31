@@ -11,9 +11,27 @@ import SwiftUI
 @MainActor class ActivityComposerViewModel: ObservableObject {
     @Published public private(set) var imageAssets: PHFetchResult<PHAsset>?
     @Published public private(set) var addedAssets = [AddedAsset]()
-    @Published public var text = ""
+    @Published public var text = "" {
+        didSet {
+            if text != "" {
+                checkTypingSuggestions()
+            } else {
+                withAnimation {
+                    if composerCommand?.displayInfo?.isInstant == false {
+                        composerCommand = nil
+                    }
+                    selectedRangeLocation = 0
+                    suggestions = [String: Any]()
+                    mentionedUsers = Set<UserData>()
+                }
+            }
+        }
+    }
+
     @Published var createPollShown = false
     @Published var publishingPost = false
+    @Published public var suggestions = [String: Any]()
+    @Published public var selectedRangeLocation: Int = 0
     
     @Published public var composerCommand: ComposerCommand? {
         didSet {
@@ -24,12 +42,37 @@ import SwiftUI
         }
     }
     
+    public var mentionedUsers: Set<UserData> = []
+    
     let feed: Feed
     let client: FeedsClient
-    
+    let commandsHandler: CommandsHandler
+        
     init(feed: Feed, feedsClient: FeedsClient) {
         client = feedsClient
         self.feed = feed
+        let commandsConfig = DefaultCommandsConfig()
+        commandsHandler = commandsConfig.makeCommandsHandler(with: feed)
+    }
+    
+    func handleCommand(
+        for text: Binding<String>,
+        selectedRangeLocation: Binding<Int>,
+        command: Binding<ComposerCommand?>,
+        extraData: [String: Any]
+    ) {
+        let commandId = command.wrappedValue?.id
+        commandsHandler.handleCommand(
+            for: text,
+            selectedRangeLocation: selectedRangeLocation,
+            command: command,
+            extraData: extraData
+        )
+        checkForMentionedUsers(
+            commandId: commandId,
+            extraData: extraData
+        )
+        suggestions = [:]
     }
     
     func askForPhotosPermission() {
@@ -88,7 +131,12 @@ import SwiftUI
         publishingPost = true
         let attachments = try addedAssets.map { try $0.toAttachmentPayload() }
         _ = try await feed.addActivity(
-            request: .init(attachmentUploads: attachments, text: text, type: "activity")
+            request: .init(
+                attachmentUploads: attachments,
+                mentionedUserIds: mentionedUsers.map(\.id),
+                text: text,
+                type: "activity"
+            )
         )
         text = ""
         addedAssets = []
@@ -152,6 +200,55 @@ import SwiftUI
             }
         }
         return nil
+    }
+    
+    private func checkTypingSuggestions() {
+        if composerCommand?.displayInfo?.isInstant == true {
+            let typingSuggestion = TypingSuggestion(
+                text: text,
+                locationRange: NSRange(
+                    location: 0,
+                    length: selectedRangeLocation
+                )
+            )
+            composerCommand?.typingSuggestion = typingSuggestion
+            showTypingSuggestions()
+            return
+        }
+        composerCommand = commandsHandler.canHandleCommand(
+            in: text,
+            caretLocation: selectedRangeLocation
+        )
+        
+        showTypingSuggestions()
+    }
+    
+    private func showTypingSuggestions() {
+        if let composerCommand {
+            Task { @MainActor in
+                let suggestionInfo = try await commandsHandler.showSuggestions(for: composerCommand)
+                self.suggestions[suggestionInfo.key] = suggestionInfo.value
+            }
+        }
+    }
+    
+    private func checkForMentionedUsers(
+        commandId: String?,
+        extraData: [String: Any]
+    ) {
+        guard commandId == "mentions",
+              let user = extraData["user"] as? UserData else {
+            return
+        }
+        mentionedUsers.insert(user)
+    }
+    
+    private func clearRemovedMentions() {
+        for user in mentionedUsers {
+            if !text.contains("@\(user.mentionText)") {
+                mentionedUsers.remove(user)
+            }
+        }
     }
 }
 

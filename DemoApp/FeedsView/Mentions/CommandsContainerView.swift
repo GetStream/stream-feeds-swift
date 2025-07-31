@@ -12,7 +12,7 @@ struct CommandsContainerView: View {
 
     var body: some View {
         ZStack {
-            if let suggestedUsers = suggestions["mentions"] as? [UserData] {
+            if let suggestedUsers = suggestions["mentions"] as? [UserData], !suggestedUsers.isEmpty {
                 MentionUsersView(
                     users: suggestedUsers,
                     userSelected: { user in
@@ -20,16 +20,6 @@ struct CommandsContainerView: View {
                     }
                 )
             }
-
-            // TODO: enable it.
-//            if let instantCommands = suggestions["instantCommands"] as? [CommandHandler] {
-//                InstantCommandsView(
-//                    instantCommands: instantCommands,
-//                    commandSelected: { command in
-//                        handleCommand(["instantCommand": command])
-//                    }
-//                )
-//            }
         }
     }
 }

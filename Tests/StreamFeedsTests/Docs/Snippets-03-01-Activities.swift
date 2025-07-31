@@ -21,7 +21,7 @@ struct Snippets_03_01_Activities {
         // Add an activity to multiple feeds
         let multiFeedActivity = try await client.addActivity(
             request: .init(
-                fids: ["user:1", "stock:apple"],
+                feeds: ["user:1", "stock:apple"],
                 text: "apple stock will go up",
                 type: "post"
             )
@@ -79,13 +79,13 @@ struct Snippets_03_01_Activities {
     func addingManyActivities() async throws {
         let activities = [
             ActivityRequest(
-                fids: ["user:123"],
+                feeds: ["user:123"],
                 id: "1",
                 text: "hi",
                 type: "post"
             ),
             ActivityRequest(
-                fids: ["user:456"],
+                feeds: ["user:456"],
                 id: "2",
                 text: "hi",
                 type: "post"

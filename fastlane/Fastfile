@@ -199,8 +199,8 @@ lane :run_swift_format do |options|
     strict = options[:strict] ? '--lint' : nil
     sources_matrix[:swiftformat].each do |path|
       sh("mint run swiftformat #{strict} --config .swiftformat #{path}")
-      sh("mint run swiftlint lint --config .swiftlint.yml --fix --progress --quiet --reporter json #{path}") unless strict
-      sh("mint run swiftlint lint --config .swiftlint.yml --strict --progress --quiet --reporter json #{path}")
+      sh("mint run swiftlint lint --config .swiftlint.yml --fix --progress --reporter json #{path}") unless strict
+      sh("mint run swiftlint lint --config .swiftlint.yml --strict --progress --reporter json #{path}")
     end
   end
 end
@@ -216,7 +216,7 @@ lane :sources_matrix do
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
     public_interface: ['Sources'],
-    swiftformat: ['Sources', 'DemoApp', 'Tests']
+    swiftformat: ['Sources', 'DemoApp', 'Tests', 'Package.swift']
   }
 end
 

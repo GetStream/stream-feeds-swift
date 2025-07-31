@@ -9,7 +9,8 @@
 --disable hoistPatternLet
 --disable typeSugar
 --disable opaqueGenericParameters
-
+--disable genericExtensions
+--disable preferForLoop
 --disable redundantGet # it removes get async throws from getters
 
 # Rules inferred from Swift Standard Library:
