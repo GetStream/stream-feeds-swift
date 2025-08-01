@@ -25,38 +25,38 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
     public var createNotificationActivity: Bool?
     public var custom: [String: RawJSON]?
     public var pushPreference: FollowRequestPushPreference?
-    public var source: String
-    public var target: String
+    public var sourceFid: String
+    public var targetFid: String
 
-    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, sourceFid: String, targetFid: String) {
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.pushPreference = pushPreference
-        self.source = source
-        self.target = target
+        self.sourceFid = sourceFid
+        self.targetFid = targetFid
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createNotificationActivity = "create_notification_activity"
         case custom
         case pushPreference = "push_preference"
-        case source
-        case target
+        case sourceFid = "source" // TODO: revert when backend deployed.
+        case targetFid = "target" // TODO: revert when backend deployed.
     }
 
     public static func == (lhs: FollowRequest, rhs: FollowRequest) -> Bool {
         lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&
             lhs.pushPreference == rhs.pushPreference &&
-            lhs.source == rhs.source &&
-            lhs.target == rhs.target
+            lhs.sourceFid == rhs.sourceFid &&
+            lhs.targetFid == rhs.targetFid
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createNotificationActivity)
         hasher.combine(custom)
         hasher.combine(pushPreference)
-        hasher.combine(source)
-        hasher.combine(target)
+        hasher.combine(sourceFid)
+        hasher.combine(targetFid)
     }
 }

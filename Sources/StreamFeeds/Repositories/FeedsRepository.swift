@@ -60,7 +60,8 @@ final class FeedsRepository: Sendable {
     // MARK: - Managing the Feed
     
     func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool) async throws {
-        _ = try await apiClient.deleteFeed(feedGroupId: feedGroupId, feedId: feedId, hardDelete: hardDelete)
+        // TODO: Review the API again.
+        _ = try await apiClient.deleteFeed(feedGroupId: feedGroupId, feedId: feedId)
     }
     
     func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedData {
@@ -71,7 +72,7 @@ final class FeedsRepository: Sendable {
     // MARK: - Feed Lists
     
     func queryFeeds(with query: FeedsQuery) async throws -> PaginationResult<FeedData> {
-        let response = try await apiClient.feedsQueryFeeds(queryFeedsRequest: query.toRequest())
+        let response = try await apiClient.queryFeeds(queryFeedsRequest: query.toRequest())
         let feeds = response.feeds.map { $0.toModel() }
         let pagination = PaginationData(next: response.next, previous: response.prev)
         return PaginationResult(models: feeds, pagination: pagination)
@@ -91,8 +92,8 @@ final class FeedsRepository: Sendable {
         return PaginationResult(models: follows, pagination: pagination)
     }
     
-    func follow(request: SingleFollowRequest) async throws -> FollowData {
-        let response = try await apiClient.follow(singleFollowRequest: request)
+    func follow(request: FollowRequest) async throws -> FollowData {
+        let response = try await apiClient.follow(followRequest: request)
         return response.follow.toModel()
     }
     

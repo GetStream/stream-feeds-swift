@@ -349,14 +349,14 @@ public final class Feed: Sendable {
         _ targetFid: FeedId,
         createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
-        pushPreference: SingleFollowRequest.SingleFollowRequestPushPreference? = nil
+        pushPreference: FollowRequest.FollowRequestPushPreference? = nil
     ) async throws -> FollowData {
-        let request = SingleFollowRequest(
+        let request = FollowRequest(
             createNotificationActivity: createNotificationActivity,
             custom: custom,
             pushPreference: pushPreference,
-            source: fid.rawValue,
-            target: targetFid.rawValue
+            sourceFid: fid.rawValue,
+            targetFid: targetFid.rawValue
         )
         let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)

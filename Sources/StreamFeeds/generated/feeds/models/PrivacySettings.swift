@@ -1,8 +1,8 @@
-import Foundation
 //
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Foundation
 import StreamCore
 
 public final class PrivacySettings: @unchecked Sendable, Codable, JSONEncodable, Hashable {

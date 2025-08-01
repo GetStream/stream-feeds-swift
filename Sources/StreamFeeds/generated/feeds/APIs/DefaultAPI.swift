@@ -273,19 +273,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteActivity(activityId: String, hardDelete: Bool?) async throws -> DeleteActivityResponse {
+    open func deleteActivity(activityId: String) async throws -> DeleteActivityResponse {
         var path = "/api/v2/feeds/activities/{activity_id}"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
         let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -762,7 +758,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse {
+    open func deleteFeed(feedGroupId: String, feedId: String) async throws -> DeleteFeedResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -771,13 +767,9 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
         let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -1019,7 +1011,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func feedsQueryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse {
+    open func queryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse {
         let path = "/api/v2/feeds/feeds/query"
 
         let urlRequest = try makeRequest(
@@ -1045,13 +1037,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func follow(singleFollowRequest: SingleFollowRequest) async throws -> SingleFollowResponse {
+    open func follow(followRequest: FollowRequest) async throws -> SingleFollowResponse {
         let path = "/api/v2/feeds/follows"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: singleFollowRequest
+            request: followRequest
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(SingleFollowResponse.self, from: $0)
@@ -1701,7 +1693,7 @@ protocol DefaultAPIEndpoints {
 
     func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
-    func deleteActivity(activityId: String, hardDelete: Bool?) async throws -> DeleteActivityResponse
+    func deleteActivity(activityId: String) async throws -> DeleteActivityResponse
 
     func getActivity(activityId: String) async throws -> GetActivityResponse
 
@@ -1757,7 +1749,7 @@ protocol DefaultAPIEndpoints {
 
     func getCommentReplies(commentId: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
 
-    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse
+    func deleteFeed(feedGroupId: String, feedId: String) async throws -> DeleteFeedResponse
 
     func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 
@@ -1783,11 +1775,11 @@ protocol DefaultAPIEndpoints {
 
     func createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest) async throws -> CreateFeedsBatchResponse
 
-    func feedsQueryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse
+    func queryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse
 
     func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
 
-    func follow(singleFollowRequest: SingleFollowRequest) async throws -> SingleFollowResponse
+    func follow(followRequest: FollowRequest) async throws -> SingleFollowResponse
 
     func acceptFollow(acceptFollowRequest: AcceptFollowRequest) async throws -> AcceptFollowResponse
 

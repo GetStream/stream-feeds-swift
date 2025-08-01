@@ -34,7 +34,8 @@ final class ActivitiesRepository: Sendable {
     }
         
     func deleteActivity(activityId: String, hardDelete: Bool) async throws {
-        _ = try await apiClient.deleteActivity(activityId: activityId, hardDelete: hardDelete)
+        // TODO: re-check the API.
+        _ = try await apiClient.deleteActivity(activityId: activityId)
     }
     
     func getActivity(activityId: String) async throws -> ActivityData {
