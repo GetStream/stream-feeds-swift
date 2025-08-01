@@ -35,6 +35,3 @@
 --wraparguments before-first
 --wrapparameters before-first
 --wrapcollections before-first
-
-# Exclude paths
---exclude **/Generated,**/generated,**/protobuf,**/OpenApi

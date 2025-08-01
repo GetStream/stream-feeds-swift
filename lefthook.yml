@@ -4,11 +4,6 @@ pre-commit:
     - run: mint run swiftformat --config .swiftformat {staged_files}
       glob: "*.{swift}"
       stage_fixed: true
-      exclude:
-        - "**/Generated/**"
-        - "**/generated/**"
-        - "**/protobuf/**"
-        - "**/OpenApi/**"
       skip:
         - merge
         - rebase
@@ -17,10 +12,7 @@ pre-commit:
       glob: "*.{swift}"
       stage_fixed: true
       exclude:
-        - "**/Generated/**"
         - "**/generated/**"
-        - "**/protobuf/**"
-        - "**/OpenApi/**"
       skip:
         - merge
         - rebase
@@ -30,9 +22,6 @@ pre-push:
     - run: mint run swiftlint lint --config .swiftlint.yml --strict --progress --reporter json {push_files}
       glob: "*.{swift}"
       exclude:
-        - "**/Generated/**"
         - "**/generated/**"
-        - "**/protobuf/**"
-        - "**/OpenApi/**"
       skip:
         - merge-commit
