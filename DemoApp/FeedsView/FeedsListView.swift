@@ -156,6 +156,10 @@ struct UserAvatar: View {
 }
 
 struct ActivityView: View {
+    @State var videoPreviewLoader: VideoPreviewLoader?
+    @State var previewImage: UIImage?
+    @State var videoPlayerShown = false
+    
     let user: UserData
     let ownCapabilities: [FeedOwnCapability]
     let text: String
@@ -169,17 +173,56 @@ struct ActivityView: View {
                 Text(user.name ?? user.id)
                     .font(.caption)
                     .bold()
+
                 LinkDetectionTextView(activity: activity)
-                if let attachment = attachments?.first, let url = attachment.imageUrl {
-                    AsyncImage(url: URL(string: url)) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } placeholder: {
-                        Color(UIColor.secondarySystemBackground)
+                if let attachment = attachments?.first,
+                   let url = attachment.assetUrl {
+                    if attachment.type == "image" {
+                        AsyncImage(url: URL(string: url)) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        } placeholder: {
+                            Color(UIColor.secondarySystemBackground)
+                        }
+                        .frame(height: 200)
+                        .cornerRadius(16)
+                    } else if attachment.type == "video" {
+                        ZStack {
+                            if let previewImage {
+                                Image(uiImage: previewImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 200)
+                                    .cornerRadius(16)
+                            }
+                            
+                            VideoPlayIcon()
+                        }
+                        .onTapGesture(perform: {
+                            videoPlayerShown = true
+                        })
+                        .onAppear {
+                            guard let assetUrl = attachment.assetUrl, let url = URL(string: assetUrl) else { return }
+                            videoPreviewLoader = DefaultVideoPreviewLoader()
+                            videoPreviewLoader?.loadPreviewForVideo(at: url) { result in
+                                Task { @MainActor in
+                                    switch result {
+                                    case let .success(image):
+                                        previewImage = image
+                                    case let .failure(error):
+                                        log.error("error generating a thumbnail: \(error.localizedDescription)")
+                                    }
+                                }
+                            }
+                        }
+                        .sheet(isPresented: $videoPlayerShown) {
+                            VideoPlayerView(
+                                attachment: attachment,
+                                isShown: $videoPlayerShown
+                            )
+                        }
                     }
-                    .frame(height: 200)
-                    .cornerRadius(16)
                 }
             }
             Spacer()
@@ -224,6 +267,18 @@ struct AddButtonView: View {
             .background(Color.blue)
             .foregroundColor(.white)
             .clipShape(Circle())
+    }
+}
+
+struct VideoPlayIcon: View {
+    var width: CGFloat = 24
+    
+    var body: some View {
+        Image(systemName: "play.fill")
+            .customizable()
+            .frame(width: width)
+            .foregroundColor(.white)
+            .modifier(ShadowModifier())
     }
 }
 
