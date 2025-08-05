@@ -26,16 +26,16 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     public var custom: [String: RawJSON]?
     public var followerRole: String?
     public var pushPreference: UpdateFollowRequestPushPreference?
-    public var sourceFid: String
-    public var targetFid: String
+    public var source: String
+    public var target: String
 
-    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, sourceFid: String, targetFid: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.followerRole = followerRole
         self.pushPreference = pushPreference
-        self.sourceFid = sourceFid
-        self.targetFid = targetFid
+        self.source = source
+        self.target = target
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -43,8 +43,8 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         case custom
         case followerRole = "follower_role"
         case pushPreference = "push_preference"
-        case sourceFid = "source_fid"
-        case targetFid = "target_fid"
+        case source = "source_fid" // TODO: temp, we should fix this.
+        case target = "target_fid" // TODO: temp, we should fix this.
     }
 
     public static func == (lhs: UpdateFollowRequest, rhs: UpdateFollowRequest) -> Bool {
@@ -52,8 +52,8 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
             lhs.custom == rhs.custom &&
             lhs.followerRole == rhs.followerRole &&
             lhs.pushPreference == rhs.pushPreference &&
-            lhs.sourceFid == rhs.sourceFid &&
-            lhs.targetFid == rhs.targetFid
+            lhs.source == rhs.source &&
+            lhs.target == rhs.target
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -61,7 +61,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         hasher.combine(custom)
         hasher.combine(followerRole)
         hasher.combine(pushPreference)
-        hasher.combine(sourceFid)
-        hasher.combine(targetFid)
+        hasher.combine(source)
+        hasher.combine(target)
     }
 }

@@ -9,14 +9,14 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
     public var activity: ActivityResponse
     public var createdAt: Date
     public var duration: String
-    public var fid: String
+    public var feed: String
     public var userId: String
 
-    public init(activity: ActivityResponse, createdAt: Date, duration: String, fid: String, userId: String) {
+    public init(activity: ActivityResponse, createdAt: Date, duration: String, feed: String, userId: String) {
         self.activity = activity
         self.createdAt = createdAt
         self.duration = duration
-        self.fid = fid
+        self.feed = feed
         self.userId = userId
     }
 
@@ -24,7 +24,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
         case activity
         case createdAt = "created_at"
         case duration
-        case fid
+        case feed = "fid" // TODO: temp.
         case userId = "user_id"
     }
 
@@ -32,7 +32,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&
             lhs.duration == rhs.duration &&
-            lhs.fid == rhs.fid &&
+            lhs.feed == rhs.feed &&
             lhs.userId == rhs.userId
     }
 
@@ -40,7 +40,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
         hasher.combine(activity)
         hasher.combine(createdAt)
         hasher.combine(duration)
-        hasher.combine(fid)
+        hasher.combine(feed)
         hasher.combine(userId)
     }
 }
