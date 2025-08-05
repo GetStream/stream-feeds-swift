@@ -81,6 +81,7 @@ final class ActivitiesRepository: Sendable {
                     assetUrl: uploadedAttachment.remoteURL.absoluteString,
                     custom: [:],
                     imageUrl: uploadedAttachment.remoteURL.absoluteString,
+                    thumbUrl: uploadedAttachment.thumbnailURL?.absoluteString,
                     type: uploadedAttachment.attachment.type.rawValue
                 )
             }
