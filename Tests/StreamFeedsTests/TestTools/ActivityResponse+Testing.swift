@@ -30,7 +30,7 @@ extension ActivityResponse {
             location: nil,
             mentionedUsers: [UserResponse.dummy()],
             moderation: nil,
-            object: nil,
+            notificationContext: nil,
             ownBookmarks: [],
             ownReactions: [],
             parent: nil,

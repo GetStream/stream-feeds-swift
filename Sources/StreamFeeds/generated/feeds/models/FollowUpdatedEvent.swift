@@ -8,14 +8,16 @@ import StreamCore
 public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
+    public var feedVisibility: String?
     public var fid: String
     public var follow: FollowResponse
     public var receivedAt: Date?
     public var type: String = "feeds.follow.updated"
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
+        self.feedVisibility = feedVisibility
         self.fid = fid
         self.follow = follow
         self.receivedAt = receivedAt
@@ -24,6 +26,7 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
+        case feedVisibility = "feed_visibility"
         case fid
         case follow
         case receivedAt = "received_at"
@@ -33,6 +36,7 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
     public static func == (lhs: FollowUpdatedEvent, rhs: FollowUpdatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
+            lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.follow == rhs.follow &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -42,6 +46,7 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
+        hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(follow)
         hasher.combine(receivedAt)

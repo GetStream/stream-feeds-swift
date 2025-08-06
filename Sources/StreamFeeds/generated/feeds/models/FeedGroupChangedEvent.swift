@@ -9,15 +9,17 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedGroup: FeedGroup?
+    public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
     public var type: String = "feeds.feed_group.changed"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedGroup: FeedGroup? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedGroup: FeedGroup? = nil, feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedGroup = feedGroup
+        self.feedVisibility = feedVisibility
         self.fid = fid
         self.receivedAt = receivedAt
         self.user = user
@@ -27,6 +29,7 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
         case createdAt = "created_at"
         case custom
         case feedGroup = "feed_group"
+        case feedVisibility = "feed_visibility"
         case fid
         case receivedAt = "received_at"
         case type
@@ -37,6 +40,7 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.feedGroup == rhs.feedGroup &&
+            lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.receivedAt == rhs.receivedAt &&
             lhs.type == rhs.type &&
@@ -47,6 +51,7 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(feedGroup)
+        hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(receivedAt)
         hasher.combine(type)

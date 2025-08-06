@@ -9,12 +9,14 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
     public var markAllRead: Bool?
     public var markAllSeen: Bool?
     public var markRead: [String]?
+    public var markSeen: [String]?
     public var markWatched: [String]?
 
-    public init(markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markWatched: [String]? = nil) {
+    public init(markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil) {
         self.markAllRead = markAllRead
         self.markAllSeen = markAllSeen
         self.markRead = markRead
+        self.markSeen = markSeen
         self.markWatched = markWatched
     }
 
@@ -22,6 +24,7 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
         case markAllRead = "mark_all_read"
         case markAllSeen = "mark_all_seen"
         case markRead = "mark_read"
+        case markSeen = "mark_seen"
         case markWatched = "mark_watched"
     }
 
@@ -29,6 +32,7 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
         lhs.markAllRead == rhs.markAllRead &&
             lhs.markAllSeen == rhs.markAllSeen &&
             lhs.markRead == rhs.markRead &&
+            lhs.markSeen == rhs.markSeen &&
             lhs.markWatched == rhs.markWatched
     }
 
@@ -36,6 +40,7 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
         hasher.combine(markAllRead)
         hasher.combine(markAllSeen)
         hasher.combine(markRead)
+        hasher.combine(markSeen)
         hasher.combine(markWatched)
     }
 }

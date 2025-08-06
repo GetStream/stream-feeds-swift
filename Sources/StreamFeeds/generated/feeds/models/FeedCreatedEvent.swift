@@ -9,16 +9,18 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feed: FeedResponse
+    public var feedVisibility: String?
     public var fid: String
     public var members: [FeedMemberResponse]
     public var receivedAt: Date?
     public var type: String = "feeds.feed.created"
     public var user: UserResponseCommonFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed
+        self.feedVisibility = feedVisibility
         self.fid = fid
         self.members = members
         self.receivedAt = receivedAt
@@ -29,6 +31,7 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case createdAt = "created_at"
         case custom
         case feed
+        case feedVisibility = "feed_visibility"
         case fid
         case members
         case receivedAt = "received_at"
@@ -40,6 +43,7 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.feed == rhs.feed &&
+            lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.members == rhs.members &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -51,6 +55,7 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(feed)
+        hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(members)
         hasher.combine(receivedAt)

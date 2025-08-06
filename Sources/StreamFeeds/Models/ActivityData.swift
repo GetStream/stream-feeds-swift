@@ -24,7 +24,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let location: ActivityLocation?
     public let mentionedUsers: [UserData]
     public let moderation: ModerationV2Response?
-    public let object: [String: RawJSON]?
+    public let notificationContext: [String: RawJSON]?
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
     public var parent: ActivityData? { _parent?.getValue() }
@@ -114,7 +114,7 @@ extension ActivityResponse {
             location: location,
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             moderation: moderation,
-            object: object,
+            notificationContext: notificationContext,
             ownBookmarks: ownBookmarks.map { $0.toModel() },
             ownReactions: ownReactions.map { $0.toModel() },
             poll: poll?.toModel(),

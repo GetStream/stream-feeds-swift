@@ -8,14 +8,16 @@ import StreamCore
 public final class PollClosedFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
+    public var feedVisibility: String?
     public var fid: String
     public var poll: PollResponseData
     public var receivedAt: Date?
     public var type: String = "feeds.poll.closed"
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, poll: PollResponseData, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, poll: PollResponseData, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
+        self.feedVisibility = feedVisibility
         self.fid = fid
         self.poll = poll
         self.receivedAt = receivedAt
@@ -24,6 +26,7 @@ public final class PollClosedFeedEvent: @unchecked Sendable, Event, Codable, JSO
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
+        case feedVisibility = "feed_visibility"
         case fid
         case poll
         case receivedAt = "received_at"
@@ -33,6 +36,7 @@ public final class PollClosedFeedEvent: @unchecked Sendable, Event, Codable, JSO
     public static func == (lhs: PollClosedFeedEvent, rhs: PollClosedFeedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
+            lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.poll == rhs.poll &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -42,6 +46,7 @@ public final class PollClosedFeedEvent: @unchecked Sendable, Event, Codable, JSO
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
+        hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(poll)
         hasher.combine(receivedAt)

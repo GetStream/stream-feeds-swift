@@ -8,15 +8,17 @@ import StreamCore
 public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
+    public var feedVisibility: String?
     public var fid: String
     public var pinnedActivity: PinActivityResponse
     public var receivedAt: Date?
     public var type: String = "feeds.activity.pinned"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], fid: String, pinnedActivity: PinActivityResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, pinnedActivity: PinActivityResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
+        self.feedVisibility = feedVisibility
         self.fid = fid
         self.pinnedActivity = pinnedActivity
         self.receivedAt = receivedAt
@@ -26,6 +28,7 @@ public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSO
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
+        case feedVisibility = "feed_visibility"
         case fid
         case pinnedActivity = "pinned_activity"
         case receivedAt = "received_at"
@@ -36,6 +39,7 @@ public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSO
     public static func == (lhs: ActivityPinnedEvent, rhs: ActivityPinnedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
+            lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.pinnedActivity == rhs.pinnedActivity &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -46,6 +50,7 @@ public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSO
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
+        hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(pinnedActivity)
         hasher.combine(receivedAt)

@@ -355,8 +355,8 @@ public final class Feed: Sendable {
             createNotificationActivity: createNotificationActivity,
             custom: custom,
             pushPreference: pushPreference,
-            sourceFid: fid.rawValue,
-            targetFid: targetFid.rawValue
+            source: fid.rawValue,
+            target: targetFid.rawValue
         )
         let follow = try await feedsRepository.follow(request: request)
         await state.changeHandlers.followAdded(follow)

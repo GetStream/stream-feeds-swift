@@ -43,8 +43,8 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         case custom
         case followerRole = "follower_role"
         case pushPreference = "push_preference"
-        case source = "source_fid" // TODO: temp, we should fix this.
-        case target = "target_fid" // TODO: temp, we should fix this.
+        case source
+        case target
     }
 
     public static func == (lhs: UpdateFollowRequest, rhs: UpdateFollowRequest) -> Bool {

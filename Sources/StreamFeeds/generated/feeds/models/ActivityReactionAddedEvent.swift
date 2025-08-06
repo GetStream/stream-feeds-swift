@@ -9,16 +9,18 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
     public var activity: ActivityResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
+    public var feedVisibility: String?
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
     public var type: String = "feeds.activity.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
+        self.feedVisibility = feedVisibility
         self.fid = fid
         self.reaction = reaction
         self.receivedAt = receivedAt
@@ -29,6 +31,7 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
         case activity
         case createdAt = "created_at"
         case custom
+        case feedVisibility = "feed_visibility"
         case fid
         case reaction
         case receivedAt = "received_at"
@@ -40,6 +43,7 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
+            lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.reaction == rhs.reaction &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -51,6 +55,7 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
         hasher.combine(activity)
         hasher.combine(createdAt)
         hasher.combine(custom)
+        hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(reaction)
         hasher.combine(receivedAt)
