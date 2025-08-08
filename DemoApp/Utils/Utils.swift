@@ -10,7 +10,7 @@ class Utils {
     
     let imageLoader: ImageLoading = DefaultImageLoader()
     let imageCDN: ImageCDN = StreamImageCDN()
-    let videoPreviewLoader: VideoPreviewLoader = DefaultVideoPreviewLoader()
+    let videoPreviewLoader: VideoLoading = StreamVideoLoader()
     
     private init() {}
 }

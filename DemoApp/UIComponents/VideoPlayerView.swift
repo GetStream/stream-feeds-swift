@@ -13,7 +13,6 @@ struct VideoPlayerView: View {
     @Binding var attachment: Attachment?
     
     @State private var avPlayer: AVPlayer?
-    @State private var fileCDN = DefaultFileCDN()
     @State private var error: Error?
 
     init(
@@ -32,16 +31,9 @@ struct VideoPlayerView: View {
             guard let assetUrl = attachment?.assetUrl, let url = URL(string: assetUrl) else {
                 return
             }
-            fileCDN.adjustedURL(for: url) { result in
-                switch result {
-                case let .success(url):
-                    avPlayer = AVPlayer(url: url)
-                    try? AVAudioSession.sharedInstance().setCategory(.playback, options: [])
-                    avPlayer?.play()
-                case let .failure(error):
-                    self.error = error
-                }
-            }
+            avPlayer = AVPlayer(url: url)
+            try? AVAudioSession.sharedInstance().setCategory(.playback, options: [])
+            avPlayer?.play()
         }
         .onDisappear {
             attachment = nil
