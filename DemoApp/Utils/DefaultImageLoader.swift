@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import StreamCoreUI
 import UIKit
 
 // MARK: - Errors
@@ -140,7 +141,7 @@ final class DefaultImageLoader: ImageLoading, @unchecked Sendable {
     ) async -> Result<UIImage, Error> {
         guard let url else { return .failure(ImageLoaderError.invalidURL) }
 
-        let key = imageCDN.cachingKey(forImage: url)
+        let key = imageCDN.cachingKey(forImageUrl: url)
 
         // 1. Cache
         if let cached = await cache.image(forKey: key) {
@@ -149,7 +150,7 @@ final class DefaultImageLoader: ImageLoading, @unchecked Sendable {
         }
 
         // 2. Network
-        let request = imageCDN.urlRequest(forImage: url)
+        let request = imageCDN.urlRequest(forImageUrl: url, resize: nil)
 
         do {
             let (data, _) = try await session.data(for: request, delegate: nil)

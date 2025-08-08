@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import StreamCoreUI
 
 class Utils {
     nonisolated(unsafe) static let shared = Utils()

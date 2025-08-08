@@ -14,8 +14,6 @@ struct ImageAttachmentView: View {
 
     private let spacing: CGFloat = 2
     private let maxDisplayedImages = 4
-
-    private var imageCDN = StreamImageCDN()
     
     init(
         activity: ActivityData,

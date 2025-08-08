@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import StreamCoreUI
 import UIKit
 
 /// ImageLoading is providing set of functions for downloading of images from URLs.
@@ -44,7 +45,7 @@ public extension ImageLoading {
         from urls: [URL],
         placeholders: [UIImage],
         loadThumbnails: Bool = true,
-        thumbnailSize: CGSize = .avatarThumbnailSize,
+        thumbnailSize: CGSize,
         imageCDN: ImageCDN,
         completion: @escaping (@Sendable ([UIImage]) -> Void)
     ) {
