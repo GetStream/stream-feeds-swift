@@ -156,15 +156,16 @@ struct UserAvatar: View {
 }
 
 struct ActivityView: View {
-    @State var videoPreviewLoader: VideoPreviewLoader?
     @State var previewImage: UIImage?
-    @State var videoPlayerShown = false
+    @State var selectedAttachment: Attachment?
     
     let user: UserData
     let ownCapabilities: [FeedOwnCapability]
     let text: String
     var attachments: [Attachment]?
     var activity: ActivityData
+    
+    let utils = Utils.shared
     
     var body: some View {
         HStack(alignment: .top) {
@@ -175,54 +176,24 @@ struct ActivityView: View {
                     .bold()
 
                 LinkDetectionTextView(activity: activity)
-                if let attachment = attachments?.first,
-                   let url = attachment.assetUrl {
-                    if attachment.type == "image" {
-                        AsyncImage(url: URL(string: url)) { image in
-                            image
-                                .resizable()
-                                .scaledToFit()
-                        } placeholder: {
-                            Color(UIColor.secondarySystemBackground)
-                        }
-                        .frame(height: 200)
-                        .cornerRadius(16)
-                    } else if attachment.type == "video" {
-                        ZStack {
-                            if let previewImage {
-                                Image(uiImage: previewImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 200)
-                                    .cornerRadius(16)
-                            }
-                            
-                            VideoPlayIcon()
-                        }
-                        .onTapGesture(perform: {
-                            videoPlayerShown = true
-                        })
-                        .onAppear {
-                            guard let assetUrl = attachment.assetUrl, let url = URL(string: assetUrl) else { return }
-                            videoPreviewLoader = DefaultVideoPreviewLoader()
-                            videoPreviewLoader?.loadPreviewForVideo(at: url) { result in
-                                Task { @MainActor in
-                                    switch result {
-                                    case let .success(image):
-                                        previewImage = image
-                                    case let .failure(error):
-                                        log.error("error generating a thumbnail: \(error.localizedDescription)")
-                                    }
-                                }
+                
+                if !activity.attachments.isEmpty {
+                    ImageAttachmentView(
+                        activity: activity,
+                        sources: sources,
+                        width: UIScreen.main.bounds.width - 80,
+                        imageTapped: { index in
+                            if attachments?[index].type == "video" {
+                                selectedAttachment = attachments?[index]
                             }
                         }
-                        .sheet(isPresented: $videoPlayerShown) {
-                            VideoPlayerView(
-                                attachment: attachment,
-                                isShown: $videoPlayerShown
-                            )
-                        }
+                    )
+                    .sheet(item: $selectedAttachment) { _ in
+                        VideoPlayerView(
+                            attachment: $selectedAttachment
+                        )
                     }
+                    .cornerRadius(16)
                 }
             }
             Spacer()
@@ -230,6 +201,19 @@ struct ActivityView: View {
         .padding(.horizontal)
         .padding(.vertical, 4)
         .modifier(ShowProfileModifier(activity: activity))
+    }
+    
+    private var sources: [MediaAttachment] {
+        activity.attachments.compactMap { attachment in
+            guard let assetUrl = attachment.assetUrl, let url = URL(string: assetUrl) else {
+                return nil
+            }
+            return MediaAttachment(
+                url: url,
+                type: attachment.type == "video" ? .video : .image,
+                uploadingState: nil
+            )
+        }
     }
 }
 

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-extension Attachment {
+extension Attachment: Identifiable {
     public convenience init(
         actions: [Action]? = nil,
         assetUrl: String? = nil,

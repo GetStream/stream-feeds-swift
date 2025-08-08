@@ -11,12 +11,12 @@ struct NotificationFeedView: View {
     
     @ObservedObject var state: FeedState
     
-    @StateObject var imageCache: ImageCache
+    @StateObject var imageCache: ImagesCache
         
     init(notificationFeed: Feed, feedsClient: FeedsClient) {
         self.notificationFeed = notificationFeed
         state = notificationFeed.state
-        _imageCache = StateObject(wrappedValue: ImageCache(feedsClient: feedsClient))
+        _imageCache = StateObject(wrappedValue: ImagesCache(feedsClient: feedsClient))
     }
     
     var body: some View {
@@ -99,7 +99,7 @@ struct NotificationFeedView: View {
 }
 
 @MainActor
-class ImageCache: ObservableObject {
+class ImagesCache: ObservableObject {
     @Published var activityImages = [String: URL]()
     
     private let feedsClient: FeedsClient

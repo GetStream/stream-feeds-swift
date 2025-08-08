@@ -10,20 +10,16 @@ import SwiftUI
 struct VideoPlayerView: View {
     @Environment(\.presentationMode) var presentationMode
 
-    let attachment: Attachment
+    @Binding var attachment: Attachment?
     
-    @Binding var isShown: Bool
-
     @State private var avPlayer: AVPlayer?
     @State private var fileCDN = DefaultFileCDN()
     @State private var error: Error?
 
     init(
-        attachment: Attachment,
-        isShown: Binding<Bool>
+        attachment: Binding<Attachment?>
     ) {
-        self.attachment = attachment
-        _isShown = isShown
+        _attachment = attachment
     }
 
     public var body: some View {
@@ -33,7 +29,7 @@ struct VideoPlayerView: View {
             }
         }
         .onAppear {
-            guard let assetUrl = attachment.assetUrl, let url = URL(string: assetUrl) else {
+            guard let assetUrl = attachment?.assetUrl, let url = URL(string: assetUrl) else {
                 return
             }
             fileCDN.adjustedURL(for: url) { result in
@@ -48,6 +44,7 @@ struct VideoPlayerView: View {
             }
         }
         .onDisappear {
+            attachment = nil
             avPlayer?.replaceCurrentItem(with: nil)
         }
     }
