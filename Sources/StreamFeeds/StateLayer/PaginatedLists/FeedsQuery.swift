@@ -112,7 +112,7 @@ extension FeedsFilterField {
     /// Filter by the feed ID (fid) of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let fid = Self(codingKey: .fid)
+    public static let fid = Self(codingKey: .feed)
     
     /// Filter by the creation timestamp of the feed.
     ///

@@ -14,7 +14,7 @@ extension FeedResponse {
             custom: nil,
             deletedAt: nil,
             description: "Test feed description",
-            fid: "user:test",
+            feed: "user:test",
             filterTags: nil,
             followerCount: 50,
             followingCount: 25,

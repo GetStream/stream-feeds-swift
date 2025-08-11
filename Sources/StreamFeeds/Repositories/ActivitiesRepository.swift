@@ -34,17 +34,16 @@ final class ActivitiesRepository: Sendable {
     }
         
     func deleteActivity(activityId: String, hardDelete: Bool) async throws {
-        // TODO: re-check the API.
-        _ = try await apiClient.deleteActivity(activityId: activityId)
+        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete)
     }
     
     func getActivity(activityId: String) async throws -> ActivityData {
-        let response = try await apiClient.getActivity(activityId: activityId)
+        let response = try await apiClient.getActivity(id: activityId)
         return response.activity.toModel()
     }
 
     func updateActivity(activityId: String, request: UpdateActivityRequest) async throws -> ActivityData {
-        let response = try await apiClient.updateActivity(activityId: activityId, updateActivityRequest: request)
+        let response = try await apiClient.updateActivity(id: activityId, updateActivityRequest: request)
         return response.activity.toModel()
     }
     

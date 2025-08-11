@@ -143,8 +143,8 @@ public final class Activity: Sendable {
     ///
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteComment(commentId: String) async throws {
-        try await commentsRepository.deleteComment(commentId: commentId)
+    public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws {
+        try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
         await commentList.state.changeHandlers.commentRemoved(commentId)
     }
     

@@ -273,72 +273,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteActivity(activityId: String) async throws -> DeleteActivityResponse {
-        var path = "/api/v2/feeds/activities/{activity_id}"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(DeleteActivityResponse.self, from: $0)
-        }
-    }
-
-    open func getActivity(activityId: String) async throws -> GetActivityResponse {
-        var path = "/api/v2/feeds/activities/{activity_id}"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(GetActivityResponse.self, from: $0)
-        }
-    }
-
-    open func updateActivityPartial(activityId: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse {
-        var path = "/api/v2/feeds/activities/{activity_id}"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PATCH",
-            request: updateActivityPartialRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateActivityPartialResponse.self, from: $0)
-        }
-    }
-
-    open func updateActivity(activityId: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse {
-        var path = "/api/v2/feeds/activities/{activity_id}"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PUT",
-            request: updateActivityRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateActivityResponse.self, from: $0)
-        }
-    }
-
     open func deleteBookmark(activityId: String, folderId: String?) async throws -> DeleteBookmarkResponse {
         var path = "/api/v2/feeds/activities/{activity_id}/bookmarks"
 
@@ -509,6 +443,76 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func deleteActivity(id: String, hardDelete: Bool?) async throws -> DeleteActivityResponse {
+        var path = "/api/v2/feeds/activities/{id}"
+
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteActivityResponse.self, from: $0)
+        }
+    }
+
+    open func getActivity(id: String) async throws -> GetActivityResponse {
+        var path = "/api/v2/feeds/activities/{id}"
+
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(GetActivityResponse.self, from: $0)
+        }
+    }
+
+    open func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse {
+        var path = "/api/v2/feeds/activities/{id}"
+
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateActivityPartialRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateActivityPartialResponse.self, from: $0)
+        }
+    }
+
+    open func updateActivity(id: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse {
+        var path = "/api/v2/feeds/activities/{id}"
+
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PUT",
+            request: updateActivityRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateActivityResponse.self, from: $0)
+        }
+    }
+
     open func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse {
         let path = "/api/v2/feeds/bookmark_folders/query"
 
@@ -631,15 +635,19 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteComment(commentId: String) async throws -> DeleteCommentResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}"
+    open func deleteComment(id: String, hardDelete: Bool?) async throws -> DeleteCommentResponse {
+        var path = "/api/v2/feeds/comments/{id}"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -647,12 +655,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getComment(commentId: String) async throws -> GetCommentResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}"
+    open func getComment(id: String) async throws -> GetCommentResponse {
+        var path = "/api/v2/feeds/comments/{id}"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -663,12 +671,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}"
+    open func updateComment(id: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse {
+        var path = "/api/v2/feeds/comments/{id}"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -680,12 +688,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func addCommentReaction(commentId: String, addCommentReactionRequest: AddCommentReactionRequest) async throws -> AddCommentReactionResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}/reactions"
+    open func addCommentReaction(id: String, addCommentReactionRequest: AddCommentReactionRequest) async throws -> AddCommentReactionResponse {
+        var path = "/api/v2/feeds/comments/{id}/reactions"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -697,12 +705,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func queryCommentReactions(commentId: String, queryCommentReactionsRequest: QueryCommentReactionsRequest) async throws -> QueryCommentReactionsResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}/reactions/query"
+    open func queryCommentReactions(id: String, queryCommentReactionsRequest: QueryCommentReactionsRequest) async throws -> QueryCommentReactionsResponse {
+        var path = "/api/v2/feeds/comments/{id}/reactions/query"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
 
         let urlRequest = try makeRequest(
             uriPath: path,
@@ -714,12 +722,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteCommentReaction(commentId: String, type: String) async throws -> DeleteCommentReactionResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}/reactions/{type}"
+    open func deleteCommentReaction(id: String, type: String) async throws -> DeleteCommentReactionResponse {
+        var path = "/api/v2/feeds/comments/{id}/reactions/{type}"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
         let typePreEscape = "\(APIHelper.mapValueToPathItem(type))"
         let typePostEscape = typePreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "type"), with: typePostEscape, options: .literal, range: nil)
@@ -733,12 +741,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getCommentReplies(commentId: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse {
-        var path = "/api/v2/feeds/comments/{comment_id}/replies"
+    open func getCommentReplies(id: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse {
+        var path = "/api/v2/feeds/comments/{id}/replies"
 
-        let commentIdPreEscape = "\(APIHelper.mapValueToPathItem(commentId))"
-        let commentIdPostEscape = commentIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "comment_id"), with: commentIdPostEscape, options: .literal, range: nil)
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
             "depth": (wrappedValue: depth?.encodeToJSON(), isExplode: true),
             "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
@@ -758,7 +766,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteFeed(feedGroupId: String, feedId: String) async throws -> DeleteFeedResponse {
+    open func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -767,9 +775,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
         let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -1693,14 +1705,6 @@ protocol DefaultAPIEndpoints {
 
     func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
-    func deleteActivity(activityId: String) async throws -> DeleteActivityResponse
-
-    func getActivity(activityId: String) async throws -> GetActivityResponse
-
-    func updateActivityPartial(activityId: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
-
-    func updateActivity(activityId: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse
-
     func deleteBookmark(activityId: String, folderId: String?) async throws -> DeleteBookmarkResponse
 
     func updateBookmark(activityId: String, updateBookmarkRequest: UpdateBookmarkRequest) async throws -> UpdateBookmarkResponse
@@ -1719,6 +1723,14 @@ protocol DefaultAPIEndpoints {
 
     func deleteActivityReaction(activityId: String, type: String) async throws -> DeleteActivityReactionResponse
 
+    func deleteActivity(id: String, hardDelete: Bool?) async throws -> DeleteActivityResponse
+
+    func getActivity(id: String) async throws -> GetActivityResponse
+
+    func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
+
+    func updateActivity(id: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse
+
     func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse
 
     func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse
@@ -1735,21 +1747,21 @@ protocol DefaultAPIEndpoints {
 
     func queryComments(queryCommentsRequest: QueryCommentsRequest) async throws -> QueryCommentsResponse
 
-    func deleteComment(commentId: String) async throws -> DeleteCommentResponse
+    func deleteComment(id: String, hardDelete: Bool?) async throws -> DeleteCommentResponse
 
-    func getComment(commentId: String) async throws -> GetCommentResponse
+    func getComment(id: String) async throws -> GetCommentResponse
 
-    func updateComment(commentId: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
+    func updateComment(id: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
 
-    func addCommentReaction(commentId: String, addCommentReactionRequest: AddCommentReactionRequest) async throws -> AddCommentReactionResponse
+    func addCommentReaction(id: String, addCommentReactionRequest: AddCommentReactionRequest) async throws -> AddCommentReactionResponse
 
-    func queryCommentReactions(commentId: String, queryCommentReactionsRequest: QueryCommentReactionsRequest) async throws -> QueryCommentReactionsResponse
+    func queryCommentReactions(id: String, queryCommentReactionsRequest: QueryCommentReactionsRequest) async throws -> QueryCommentReactionsResponse
 
-    func deleteCommentReaction(commentId: String, type: String) async throws -> DeleteCommentReactionResponse
+    func deleteCommentReaction(id: String, type: String) async throws -> DeleteCommentReactionResponse
 
-    func getCommentReplies(commentId: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
+    func getCommentReplies(id: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
 
-    func deleteFeed(feedGroupId: String, feedId: String) async throws -> DeleteFeedResponse
+    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse
 
     func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 

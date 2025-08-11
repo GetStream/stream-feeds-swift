@@ -6,26 +6,26 @@ import Foundation
 import StreamCore
 
 public final class RejectFollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var sourceFid: String
-    public var targetFid: String
+    public var source: String
+    public var target: String
 
-    public init(sourceFid: String, targetFid: String) {
-        self.sourceFid = sourceFid
-        self.targetFid = targetFid
+    public init(source: String, target: String) {
+        self.source = source
+        self.target = target
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case sourceFid = "source_fid"
-        case targetFid = "target_fid"
+        case source
+        case target
     }
 
     public static func == (lhs: RejectFollowRequest, rhs: RejectFollowRequest) -> Bool {
-        lhs.sourceFid == rhs.sourceFid &&
-            lhs.targetFid == rhs.targetFid
+        lhs.source == rhs.source &&
+            lhs.target == rhs.target
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(sourceFid)
-        hasher.combine(targetFid)
+        hasher.combine(source)
+        hasher.combine(target)
     }
 }

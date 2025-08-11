@@ -113,8 +113,8 @@ struct Snippets_03_01_Activities {
         // Batch delete activities
         try await client.deleteActivities(
             request: .init(
-                activityIds: ["123", "456"],
-                hardDelete: false
+                hardDelete: false,
+                ids: ["123", "456"]
             )
         )
         

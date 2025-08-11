@@ -6,26 +6,26 @@ import Foundation
 import StreamCore
 
 public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activityIds: [String]
     public var hardDelete: Bool?
+    public var ids: [String]
 
-    public init(activityIds: [String], hardDelete: Bool? = nil) {
-        self.activityIds = activityIds
+    public init(hardDelete: Bool? = nil, ids: [String]) {
         self.hardDelete = hardDelete
+        self.ids = ids
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityIds = "activity_ids"
         case hardDelete = "hard_delete"
+        case ids
     }
 
     public static func == (lhs: DeleteActivitiesRequest, rhs: DeleteActivitiesRequest) -> Bool {
-        lhs.activityIds == rhs.activityIds &&
-            lhs.hardDelete == rhs.hardDelete
+        lhs.hardDelete == rhs.hardDelete &&
+            lhs.ids == rhs.ids
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityIds)
         hasher.combine(hardDelete)
+        hasher.combine(ids)
     }
 }

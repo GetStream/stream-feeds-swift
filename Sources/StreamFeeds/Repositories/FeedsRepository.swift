@@ -60,8 +60,11 @@ final class FeedsRepository: Sendable {
     // MARK: - Managing the Feed
     
     func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool) async throws {
-        // TODO: Review the API again.
-        _ = try await apiClient.deleteFeed(feedGroupId: feedGroupId, feedId: feedId)
+        _ = try await apiClient.deleteFeed(
+            feedGroupId: feedGroupId,
+            feedId: feedId,
+            hardDelete: hardDelete
+        )
     }
     
     func updateFeed(feedGroupId: String, feedId: String, request: UpdateFeedRequest) async throws -> FeedData {

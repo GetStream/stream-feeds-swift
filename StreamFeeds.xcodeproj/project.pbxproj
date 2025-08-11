@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		82C6B2B02E1D177D00CB3B23 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 82C6B2AF2E1D177D00CB3B23 /* PrivacyInfo.xcprivacy */; };
-		8415DA3A2E46347500FEE25F /* StreamCoreUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8415DA392E46347500FEE25F /* StreamCoreUI */; };
 		845494EB2DBA2E7C00211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8E632DCA45880030DD7D /* StreamCore */; };
-		84AA908D2DCB62480030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA908C2DCB62480030DD7D /* StreamCore */; };
 		84AA92682DCE35170030DD7D /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		84AA92692DCE35170030DD7D /* StreamFeeds.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		84B9B53B2E4A9F0300923DD8 /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84B9B53A2E4A9F0300923DD8 /* StreamCore */; };
+		84B9B53D2E4A9F0300923DD8 /* StreamCoreUI in Frameworks */ = {isa = PBXBuildFile; productRef = 84B9B53C2E4A9F0300923DD8 /* StreamCoreUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,7 +104,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */,
-				84AA908D2DCB62480030DD7D /* StreamCore in Frameworks */,
+				84B9B53B2E4A9F0300923DD8 /* StreamCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +121,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84AA92682DCE35170030DD7D /* StreamFeeds.framework in Frameworks */,
-				8415DA3A2E46347500FEE25F /* StreamCoreUI in Frameworks */,
+				84B9B53D2E4A9F0300923DD8 /* StreamCoreUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,7 +189,7 @@
 			name = StreamFeeds;
 			packageProductDependencies = (
 				84AA8E632DCA45880030DD7D /* StreamCore */,
-				84AA908C2DCB62480030DD7D /* StreamCore */,
+				84B9B53A2E4A9F0300923DD8 /* StreamCore */,
 			);
 			productName = StreamFeeds;
 			productReference = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */;
@@ -237,7 +237,7 @@
 			);
 			name = DemoApp;
 			packageProductDependencies = (
-				8415DA392E46347500FEE25F /* StreamCoreUI */,
+				84B9B53C2E4A9F0300923DD8 /* StreamCoreUI */,
 			);
 			productName = DemoApp;
 			productReference = 845495012DBA2F7100211413 /* DemoApp.app */;
@@ -275,7 +275,7 @@
 			mainGroup = 845494D82DBA2E7C00211413;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */,
+				84B9B5392E4A9F0300923DD8 /* XCRemoteSwiftPackageReference "stream-core-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 845494E32DBA2E7C00211413 /* Products */;
@@ -856,7 +856,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */ = {
+		84B9B5392E4A9F0300923DD8 /* XCRemoteSwiftPackageReference "stream-core-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
@@ -867,19 +867,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8415DA392E46347500FEE25F /* StreamCoreUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */;
-			productName = StreamCoreUI;
-		};
 		84AA8E632DCA45880030DD7D /* StreamCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = StreamCore;
 		};
-		84AA908C2DCB62480030DD7D /* StreamCore */ = {
+		84B9B53A2E4A9F0300923DD8 /* StreamCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 84AA908B2DCB62480030DD7D /* XCRemoteSwiftPackageReference "stream-core-swift" */;
+			package = 84B9B5392E4A9F0300923DD8 /* XCRemoteSwiftPackageReference "stream-core-swift" */;
 			productName = StreamCore;
+		};
+		84B9B53C2E4A9F0300923DD8 /* StreamCoreUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84B9B5392E4A9F0300923DD8 /* XCRemoteSwiftPackageReference "stream-core-swift" */;
+			productName = StreamCoreUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

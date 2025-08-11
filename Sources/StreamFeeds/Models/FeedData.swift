@@ -34,7 +34,7 @@ extension FeedResponse {
             custom: custom,
             deletedAt: deletedAt,
             description: description,
-            fid: FeedId(rawValue: fid),
+            fid: FeedId(rawValue: feed),
             filterTags: filterTags,
             followerCount: followerCount,
             followingCount: followingCount,

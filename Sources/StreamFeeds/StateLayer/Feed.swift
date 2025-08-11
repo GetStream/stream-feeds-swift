@@ -305,8 +305,8 @@ public final class Feed: Sendable {
     ///
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteComment(commentId: String) async throws {
-        try await commentsRepository.deleteComment(commentId: commentId)
+    public func deleteComment(commentId: String, hardDelete: Bool? = false) async throws {
+        try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
     }
     
     /// Updates an existing comment with the provided request data.
@@ -384,7 +384,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
-        let request = AcceptFollowRequest(followerRole: role, sourceFid: sourceFid.rawValue, targetFid: fid.rawValue)
+        let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: fid.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
         await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         await state.changeHandlers.followAdded(follow)
@@ -398,7 +398,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func rejectFollow(_ sourceFid: FeedId) async throws -> FollowData {
-        let request = RejectFollowRequest(sourceFid: sourceFid.rawValue, targetFid: fid.rawValue)
+        let request = RejectFollowRequest(source: sourceFid.rawValue, target: fid.rawValue)
         let follow = try await feedsRepository.rejectFollow(request: request)
         await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         return follow
