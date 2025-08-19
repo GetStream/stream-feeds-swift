@@ -24,7 +24,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
         case activity
         case createdAt = "created_at"
         case duration
-        case feed = "fid" // TODO: temp.
+        case feed
         case userId = "user_id"
     }
 

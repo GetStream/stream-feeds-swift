@@ -16,12 +16,13 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, 
     public var blockListConfig: BlockListConfig?
     public var createdAt: Date
     public var key: String
+    public var llmConfig: LLMConfig?
     public var ruleBuilderConfig: RuleBuilderConfig?
     public var team: String
     public var updatedAt: Date
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfig? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, key: String, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
+    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfig? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
         self.aiTextConfig = aiTextConfig
         self.aiVideoConfig = aiVideoConfig
@@ -32,6 +33,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, 
         self.blockListConfig = blockListConfig
         self.createdAt = createdAt
         self.key = key
+        self.llmConfig = llmConfig
         self.ruleBuilderConfig = ruleBuilderConfig
         self.team = team
         self.updatedAt = updatedAt
@@ -49,6 +51,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, 
         case blockListConfig = "block_list_config"
         case createdAt = "created_at"
         case key
+        case llmConfig = "llm_config"
         case ruleBuilderConfig = "rule_builder_config"
         case team
         case updatedAt = "updated_at"
@@ -66,6 +69,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, 
             lhs.blockListConfig == rhs.blockListConfig &&
             lhs.createdAt == rhs.createdAt &&
             lhs.key == rhs.key &&
+            lhs.llmConfig == rhs.llmConfig &&
             lhs.ruleBuilderConfig == rhs.ruleBuilderConfig &&
             lhs.team == rhs.team &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -83,6 +87,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, 
         hasher.combine(blockListConfig)
         hasher.combine(createdAt)
         hasher.combine(key)
+        hasher.combine(llmConfig)
         hasher.combine(ruleBuilderConfig)
         hasher.combine(team)
         hasher.combine(updatedAt)

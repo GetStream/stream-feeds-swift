@@ -21,7 +21,7 @@ public final class UnpinActivityResponse: @unchecked Sendable, Codable, JSONEnco
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case activity
         case duration
-        case feed = "fid" // TODO: we should fix this.
+        case feed
         case userId = "user_id"
     }
 

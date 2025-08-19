@@ -50,7 +50,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case custom
         case deletedAt = "deleted_at"
         case description
-        case feed = "fid" // TODO: temp
+        case feed
         case filterTags = "filter_tags"
         case followerCount = "follower_count"
         case followingCount = "following_count"

@@ -19,6 +19,8 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
     public var entityId: String
     public var entityType: String
     public var feedsV2Activity: EnrichedActivity?
+    public var flagLabels: [String]
+    public var flagTypes: [String]
     public var flags: [Flag]
     public var flagsCount: Int
     public var hasImage: Bool
@@ -29,13 +31,14 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
     public var moderationPayload: ModerationPayload?
     public var moderationPayloadHash: String
     public var recommendedAction: String
+    public var reporterIds: [String]
     public var reviewedBy: String
     public var severity: Int
     public var status: String
     public var teams: [String]
     public var updatedAt: Date
 
-    public init(actions: [ActionLog], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: User? = nil, bans: [Ban], bounceCount: Int, configKey: String, contentChanged: Bool, createdAt: Date, entityCreator: EntityCreator? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flags: [Flag], flagsCount: Int, hasImage: Bool, hasText: Bool, hasVideo: Bool, id: String, languages: [String], moderationPayload: ModerationPayload? = nil, moderationPayloadHash: String, recommendedAction: String, reviewedBy: String, severity: Int, status: String, teams: [String], updatedAt: Date) {
+    public init(actions: [ActionLog], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: User? = nil, bans: [Ban], bounceCount: Int, configKey: String, contentChanged: Bool, createdAt: Date, entityCreator: EntityCreator? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flagLabels: [String], flagTypes: [String], flags: [Flag], flagsCount: Int, hasImage: Bool, hasText: Bool, hasVideo: Bool, id: String, languages: [String], moderationPayload: ModerationPayload? = nil, moderationPayloadHash: String, recommendedAction: String, reporterIds: [String], reviewedBy: String, severity: Int, status: String, teams: [String], updatedAt: Date) {
         self.actions = actions
         self.activity = activity
         self.aiTextSeverity = aiTextSeverity
@@ -49,6 +52,8 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
         self.entityId = entityId
         self.entityType = entityType
         self.feedsV2Activity = feedsV2Activity
+        self.flagLabels = flagLabels
+        self.flagTypes = flagTypes
         self.flags = flags
         self.flagsCount = flagsCount
         self.hasImage = hasImage
@@ -59,6 +64,7 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
         self.moderationPayload = moderationPayload
         self.moderationPayloadHash = moderationPayloadHash
         self.recommendedAction = recommendedAction
+        self.reporterIds = reporterIds
         self.reviewedBy = reviewedBy
         self.severity = severity
         self.status = status
@@ -80,6 +86,8 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
         case entityId = "entity_id"
         case entityType = "entity_type"
         case feedsV2Activity = "feeds_v2_activity"
+        case flagLabels = "flag_labels"
+        case flagTypes = "flag_types"
         case flags
         case flagsCount = "flags_count"
         case hasImage = "has_image"
@@ -90,6 +98,7 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
         case moderationPayload = "moderation_payload"
         case moderationPayloadHash = "moderation_payload_hash"
         case recommendedAction = "recommended_action"
+        case reporterIds = "reporter_ids"
         case reviewedBy = "reviewed_by"
         case severity
         case status
@@ -111,6 +120,8 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
             lhs.entityId == rhs.entityId &&
             lhs.entityType == rhs.entityType &&
             lhs.feedsV2Activity == rhs.feedsV2Activity &&
+            lhs.flagLabels == rhs.flagLabels &&
+            lhs.flagTypes == rhs.flagTypes &&
             lhs.flags == rhs.flags &&
             lhs.flagsCount == rhs.flagsCount &&
             lhs.hasImage == rhs.hasImage &&
@@ -121,6 +132,7 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
             lhs.moderationPayload == rhs.moderationPayload &&
             lhs.moderationPayloadHash == rhs.moderationPayloadHash &&
             lhs.recommendedAction == rhs.recommendedAction &&
+            lhs.reporterIds == rhs.reporterIds &&
             lhs.reviewedBy == rhs.reviewedBy &&
             lhs.severity == rhs.severity &&
             lhs.status == rhs.status &&
@@ -142,6 +154,8 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(entityId)
         hasher.combine(entityType)
         hasher.combine(feedsV2Activity)
+        hasher.combine(flagLabels)
+        hasher.combine(flagTypes)
         hasher.combine(flags)
         hasher.combine(flagsCount)
         hasher.combine(hasImage)
@@ -152,6 +166,7 @@ public final class ReviewQueueItem: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(moderationPayload)
         hasher.combine(moderationPayloadHash)
         hasher.combine(recommendedAction)
+        hasher.combine(reporterIds)
         hasher.combine(reviewedBy)
         hasher.combine(severity)
         hasher.combine(status)

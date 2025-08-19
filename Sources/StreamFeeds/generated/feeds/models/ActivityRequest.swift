@@ -63,7 +63,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable,
         case attachments
         case custom
         case expiresAt = "expires_at"
-        case feeds = "fids" // TODO: temp fix.
+        case feeds
         case filterTags = "filter_tags"
         case id
         case interestTags = "interest_tags"

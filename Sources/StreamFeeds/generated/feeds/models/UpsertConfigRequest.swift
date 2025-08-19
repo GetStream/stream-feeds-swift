@@ -18,11 +18,12 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
     public var bodyguardConfig: AITextConfig?
     public var googleVisionConfig: GoogleVisionConfig?
     public var key: String
+    public var llmConfig: LLMConfig?
     public var ruleBuilderConfig: RuleBuilderConfig?
     public var team: String?
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfig? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, key: String, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
+    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfig? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
         self.aiTextConfig = aiTextConfig
         self.aiVideoConfig = aiVideoConfig
@@ -35,6 +36,7 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
         self.bodyguardConfig = bodyguardConfig
         self.googleVisionConfig = googleVisionConfig
         self.key = key
+        self.llmConfig = llmConfig
         self.ruleBuilderConfig = ruleBuilderConfig
         self.team = team
         self.velocityFilterConfig = velocityFilterConfig
@@ -53,6 +55,7 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
         case bodyguardConfig = "bodyguard_config"
         case googleVisionConfig = "google_vision_config"
         case key
+        case llmConfig = "llm_config"
         case ruleBuilderConfig = "rule_builder_config"
         case team
         case velocityFilterConfig = "velocity_filter_config"
@@ -71,6 +74,7 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
             lhs.bodyguardConfig == rhs.bodyguardConfig &&
             lhs.googleVisionConfig == rhs.googleVisionConfig &&
             lhs.key == rhs.key &&
+            lhs.llmConfig == rhs.llmConfig &&
             lhs.ruleBuilderConfig == rhs.ruleBuilderConfig &&
             lhs.team == rhs.team &&
             lhs.velocityFilterConfig == rhs.velocityFilterConfig
@@ -89,6 +93,7 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
         hasher.combine(bodyguardConfig)
         hasher.combine(googleVisionConfig)
         hasher.combine(key)
+        hasher.combine(llmConfig)
         hasher.combine(ruleBuilderConfig)
         hasher.combine(team)
         hasher.combine(velocityFilterConfig)
