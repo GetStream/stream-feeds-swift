@@ -25,6 +25,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
     public var blocklist: String?
     public var blocklistBehavior: ConfigOverridesBlocklistBehavior?
     public var commands: [String]
+    public var countMessages: Bool?
     public var grants: [String: [String]]
     public var maxMessageLength: Int?
     public var quotes: Bool?
@@ -36,10 +37,11 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
     public var urlEnrichment: Bool?
     public var userMessageReminders: Bool?
 
-    public init(blocklist: String? = nil, blocklistBehavior: ConfigOverridesBlocklistBehavior? = nil, commands: [String], grants: [String: [String]], maxMessageLength: Int? = nil, quotes: Bool? = nil, reactions: Bool? = nil, replies: Bool? = nil, sharedLocations: Bool? = nil, typingEvents: Bool? = nil, uploads: Bool? = nil, urlEnrichment: Bool? = nil, userMessageReminders: Bool? = nil) {
+    public init(blocklist: String? = nil, blocklistBehavior: ConfigOverridesBlocklistBehavior? = nil, commands: [String], countMessages: Bool? = nil, grants: [String: [String]], maxMessageLength: Int? = nil, quotes: Bool? = nil, reactions: Bool? = nil, replies: Bool? = nil, sharedLocations: Bool? = nil, typingEvents: Bool? = nil, uploads: Bool? = nil, urlEnrichment: Bool? = nil, userMessageReminders: Bool? = nil) {
         self.blocklist = blocklist
         self.blocklistBehavior = blocklistBehavior
         self.commands = commands
+        self.countMessages = countMessages
         self.grants = grants
         self.maxMessageLength = maxMessageLength
         self.quotes = quotes
@@ -56,6 +58,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
         case blocklist
         case blocklistBehavior = "blocklist_behavior"
         case commands
+        case countMessages = "count_messages"
         case grants
         case maxMessageLength = "max_message_length"
         case quotes
@@ -72,6 +75,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
         lhs.blocklist == rhs.blocklist &&
             lhs.blocklistBehavior == rhs.blocklistBehavior &&
             lhs.commands == rhs.commands &&
+            lhs.countMessages == rhs.countMessages &&
             lhs.grants == rhs.grants &&
             lhs.maxMessageLength == rhs.maxMessageLength &&
             lhs.quotes == rhs.quotes &&
@@ -88,6 +92,7 @@ public final class ConfigOverrides: @unchecked Sendable, Codable, JSONEncodable,
         hasher.combine(blocklist)
         hasher.combine(blocklistBehavior)
         hasher.combine(commands)
+        hasher.combine(countMessages)
         hasher.combine(grants)
         hasher.combine(maxMessageLength)
         hasher.combine(quotes)
