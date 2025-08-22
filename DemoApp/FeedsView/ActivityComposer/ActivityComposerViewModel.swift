@@ -42,6 +42,11 @@ import SwiftUI
         }
     }
     
+    @Published var postAsStory = false
+    
+    // Hidden until ready on the backend.
+    public let storiesEnabled = false
+    
     public var mentionedUsers: Set<UserData> = []
     
     let feed: Feed
@@ -133,6 +138,7 @@ import SwiftUI
         _ = try await feed.addActivity(
             request: .init(
                 attachmentUploads: attachments,
+                expiresAt: postAsStory ? Date().addingTimeInterval(60 * 60 * 24).ISO8601Format() : nil,
                 mentionedUserIds: mentionedUsers.map(\.id),
                 text: text,
                 type: "activity"

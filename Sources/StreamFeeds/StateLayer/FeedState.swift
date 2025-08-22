@@ -116,7 +116,18 @@ extension FeedState {
         ChangeHandlers(
             activityAdded: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedInsert(activity, sorting: sorting)
+                let query = self?.feedQuery.activityFilter
+                var shouldInsert = true
+                if query?.filterOperator == .exists, query?.field == .expiresAt, let contains = query?.value as? Bool {
+                    if contains {
+                        shouldInsert = activity.expiresAt != nil
+                    } else {
+                        shouldInsert = activity.expiresAt == nil
+                    }
+                }
+                if shouldInsert {
+                    self?.activities.sortedInsert(activity, sorting: sorting)
+                }
             },
             activityRemoved: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }

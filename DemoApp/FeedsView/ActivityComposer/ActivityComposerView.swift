@@ -82,14 +82,22 @@ struct ActivityComposerView: View {
                 }
                 .padding()
                 
-                Button {
-                    viewModel.createPollShown = true
-                } label: {
-                    Text("Create Poll")
-                }
-                .sheet(isPresented: $viewModel.createPollShown) {
-                    CreatePollView(feed: viewModel.feed) {
-                        dismiss()
+                HStack {
+                    Button {
+                        viewModel.createPollShown = true
+                    } label: {
+                        Text("Create Poll")
+                    }
+                    .sheet(isPresented: $viewModel.createPollShown) {
+                        CreatePollView(feed: viewModel.feed) {
+                            dismiss()
+                        }
+                    }
+                    
+                    if viewModel.storiesEnabled {
+                        Toggle(isOn: $viewModel.postAsStory) {
+                            Text("Post as story")
+                        }
                     }
                 }
                 

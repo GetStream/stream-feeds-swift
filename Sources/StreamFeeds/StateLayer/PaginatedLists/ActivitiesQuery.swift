@@ -59,7 +59,7 @@ public struct ActivitiesQuery: Sendable {
 ///
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for activities queries.
-public struct ActivitiesFilterField: FilterFieldRepresentable, Sendable {
+public struct ActivitiesFilterField: FilterFieldRepresentable, Sendable, Equatable {
     /// The string value representing the field name in the API.
     public let value: String
     
@@ -83,6 +83,11 @@ extension ActivitiesFilterField {
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
     public static let createdAt = Self(codingKey: .createdAt)
+    
+    /// Filter by the expiry date.
+    ///
+    /// **Supported operators:** `.exists`
+    public static let expiresAt = Self(codingKey: .expiresAt)
     
     /// Filter by the unique identifier of the activity.
     ///
