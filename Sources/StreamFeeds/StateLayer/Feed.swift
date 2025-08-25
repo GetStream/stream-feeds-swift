@@ -21,7 +21,7 @@ import StreamCore
 /// followers, members, and other feed-related data.
 ///
 /// - Note: This class is thread-safe and can be used from any thread.
-public final class Feed: Sendable {
+public final class Feed: @unchecked Sendable {
     @MainActor private let stateBuilder: StateBuilder<FeedState>
     
     private let feedQuery: FeedQuery
@@ -53,6 +53,7 @@ public final class Feed: Sendable {
                 memberListState: memberList.state
             )
         }
+        subscribeToConnectionUpdates(client: client)
     }
     
     /// The unique identifier for this feed.
@@ -64,6 +65,9 @@ public final class Feed: Sendable {
     
     private var id: String { fid.id }
     private var group: String { fid.group }
+    
+    private var socketDisconnected = false
+    private var disposableBag = DisposableBag()
     
     // MARK: - Accessing the State
     
@@ -535,5 +539,31 @@ public final class Feed: Sendable {
         return try await activitiesRepository.addActivity(
             request: .init(feeds: [fid.rawValue], pollId: poll.id, type: activityType)
         )
+    }
+    
+    // MARK: - private
+    
+    private func subscribeToConnectionUpdates(client: FeedsClient) {
+        client.$connection.sink { [weak self] status in
+            guard let self else { return }
+            if case .disconnected = status {
+                socketDisconnected = true
+            } else if status == .disconnecting {
+                socketDisconnected = true
+            } else if status == .connected && socketDisconnected {
+                rewatchFeed()
+            }
+        }
+        .store(in: disposableBag)
+    }
+    
+    private func rewatchFeed() {
+        socketDisconnected = false
+        if feedQuery.watch {
+            Task {
+                log.debug("Re-watching feed after WS reconnection")
+                try await getOrCreate()
+            }
+        }
     }
 }

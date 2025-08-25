@@ -6,13 +6,15 @@ import Combine
 import Foundation
 @preconcurrency import StreamCore
 
-public final class FeedsClient: Sendable {
+public final class FeedsClient: ObservableObject, @unchecked Sendable {
     public let apiKey: APIKey
     public let user: User
-    public let token: UserToken
+    public var token: UserToken
 
     public let attachmentsUploader: StreamAttachmentUploader
     public let moderation: Moderation
+    
+    @Published var connection: ConnectionStatus
     
     static let endpointConfig: EndpointConfig = .production
     
@@ -42,6 +44,8 @@ public final class FeedsClient: Sendable {
     
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
     private let feedsConfig: FeedsConfig
+    
+    private let disposableBag = DisposableBag()
     
     public var userAuth: UserAuth? {
         _userAuth.value
@@ -95,6 +99,7 @@ public final class FeedsClient: Sendable {
         self.user = user
         self.token = token
         self.feedsConfig = feedsConfig
+        connection = .initialized
         let basePath = Self.endpointConfig.baseFeedsURL
         let defaultParams = DefaultParams(
             apiKey: apiKey.apiKeyString,
@@ -607,7 +612,34 @@ extension FeedsClient: ConnectionStateDelegate {
     public func webSocketClient(
         _ client: WebSocketClient,
         didUpdateConnectionState state: WebSocketConnectionState
-    ) {}
+    ) {
+        connection = ConnectionStatus(webSocketConnectionState: state)
+        switch state {
+        case let .disconnected(source):
+            if let serverError = source.serverError {
+                if serverError.isInvalidTokenError {
+                    Task { [weak self] in
+                        guard let self else {
+                            return
+                        }
+                        do {
+                            guard let apiTransport = apiTransport as? URLSessionTransport else { return }
+                            token = try await apiTransport.refreshToken()
+                            log.debug("user token updated, will reconnect ws")
+                            webSocketClient.value?.connect()
+                        } catch {
+                            log.error("Error refreshing token, will disconnect ws connection", error: error)
+                        }
+                    }
+                }
+            }
+        case .connected:
+            log.debug("Web socket connected")
+        default:
+            log.debug("Web socket connection state update \(state)")
+        }
+        connectionRecoveryHandler.value?.webSocketClient(client, didUpdateConnectionState: state)
+    }
 }
 
 extension FeedsClient: WSEventsSubscriber {

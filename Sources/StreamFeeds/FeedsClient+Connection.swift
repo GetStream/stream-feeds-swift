@@ -141,33 +141,27 @@ extension FeedsClient {
         if let connectionId = loadConnectionIdFromHealthcheck() {
             return connectionId
         }
-        guard let connectionState = webSocketClient.value?.connectionState else { return "" }
         
-        guard connectionState == .connecting
-            || connectionState == .authenticating else {
+        guard webSocketClient.value?.connectionState == .connecting
+            || webSocketClient.value?.connectionState == .authenticating
+        else {
             return ""
         }
-        
-        var timeout = false
-        let control = DefaultTimer.schedule(timeInterval: 5, queue: .sdk) {
-            timeout = true
-        }
-        log.debug("Waiting for connection id")
 
-        while loadConnectionIdFromHealthcheck() == nil && !timeout {
-            try? await Task.sleep(nanoseconds: 100_000)
+        do {
+            let result = try await DefaultTimer
+                .publish(every: 0.1)
+                .log(.debug) { _ in "Waiting for connection id" }
+                .compactMap { [weak self] _ in self?.loadConnectionIdFromHealthcheck() }
+                .nextValue(timeout: 5)
+            defer { log.debug("ConnectionId loaded: \(result)") }
+            return result
+        } catch {
+            log.warning("Unable to load connectionId.")
+            return ""
         }
-        
-        control.cancel()
-        
-        if let connectionId = loadConnectionIdFromHealthcheck() {
-            log.debug("Connection id available from the WS")
-            return connectionId
-        }
-        
-        return ""
     }
-    
+
     private func loadConnectionIdFromHealthcheck() -> String? {
         if case let .connected(healthCheckInfo: healtCheckInfo) = webSocketClient.value?.connectionState {
             return healtCheckInfo.connectionId
