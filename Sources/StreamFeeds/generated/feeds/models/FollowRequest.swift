@@ -25,13 +25,15 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
     public var createNotificationActivity: Bool?
     public var custom: [String: RawJSON]?
     public var pushPreference: FollowRequestPushPreference?
+    public var skipPush: Bool?
     public var source: String
     public var target: String
 
-    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.pushPreference = pushPreference
+        self.skipPush = skipPush
         self.source = source
         self.target = target
     }
@@ -40,6 +42,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
         case createNotificationActivity = "create_notification_activity"
         case custom
         case pushPreference = "push_preference"
+        case skipPush = "skip_push"
         case source
         case target
     }
@@ -48,6 +51,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
         lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&
             lhs.pushPreference == rhs.pushPreference &&
+            lhs.skipPush == rhs.skipPush &&
             lhs.source == rhs.source &&
             lhs.target == rhs.target
     }
@@ -56,6 +60,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
         hasher.combine(createNotificationActivity)
         hasher.combine(custom)
         hasher.combine(pushPreference)
+        hasher.combine(skipPush)
         hasher.combine(source)
         hasher.combine(target)
     }

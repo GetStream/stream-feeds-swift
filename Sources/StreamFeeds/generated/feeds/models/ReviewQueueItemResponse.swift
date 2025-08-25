@@ -19,7 +19,7 @@ public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEn
     public var entityId: String
     public var entityType: String
     public var feedsV2Activity: EnrichedActivity?
-    public var flags: [FlagResponse]
+    public var flags: [ModerationFlagResponse]
     public var flagsCount: Int
     public var id: String
     public var languages: [String]
@@ -32,7 +32,7 @@ public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEn
     public var teams: [String]?
     public var updatedAt: Date
 
-    public init(actions: [ActionLogResponse], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: UserResponse? = nil, bans: [Ban], completedAt: Date? = nil, configKey: String? = nil, createdAt: Date, entityCreator: EntityCreatorResponse? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flags: [FlagResponse], flagsCount: Int, id: String, languages: [String], moderationPayload: ModerationPayload? = nil, recommendedAction: String, reviewedAt: Date? = nil, reviewedBy: String, severity: Int, status: String, teams: [String]? = nil, updatedAt: Date) {
+    public init(actions: [ActionLogResponse], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: UserResponse? = nil, bans: [Ban], completedAt: Date? = nil, configKey: String? = nil, createdAt: Date, entityCreator: EntityCreatorResponse? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flags: [ModerationFlagResponse], flagsCount: Int, id: String, languages: [String], moderationPayload: ModerationPayload? = nil, recommendedAction: String, reviewedAt: Date? = nil, reviewedBy: String, severity: Int, status: String, teams: [String]? = nil, updatedAt: Date) {
         self.actions = actions
         self.activity = activity
         self.aiTextSeverity = aiTextSeverity

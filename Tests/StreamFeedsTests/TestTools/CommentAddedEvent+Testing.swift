@@ -15,6 +15,7 @@ extension CommentAddedEvent {
         user: UserResponseCommonFields? = nil
     ) -> CommentAddedEvent {
         CommentAddedEvent(
+            activity: .dummy(),
             comment: comment,
             createdAt: createdAt,
             custom: custom,

@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+    public var activity: ActivityResponse
     public var comment: CommentResponse
     public var createdAt: Date
     public var custom: [String: RawJSON]
@@ -16,7 +17,8 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     public var type: String = "feeds.comment.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+        self.activity = activity
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom
@@ -28,6 +30,7 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case activity
         case comment
         case createdAt = "created_at"
         case custom
@@ -40,7 +43,8 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     }
 
     public static func == (lhs: CommentReactionAddedEvent, rhs: CommentReactionAddedEvent) -> Bool {
-        lhs.comment == rhs.comment &&
+        lhs.activity == rhs.activity &&
+            lhs.comment == rhs.comment &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.feedVisibility == rhs.feedVisibility &&
@@ -52,6 +56,7 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(activity)
         hasher.combine(comment)
         hasher.combine(createdAt)
         hasher.combine(custom)

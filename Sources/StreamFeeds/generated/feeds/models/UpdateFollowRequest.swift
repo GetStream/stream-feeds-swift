@@ -26,14 +26,16 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     public var custom: [String: RawJSON]?
     public var followerRole: String?
     public var pushPreference: UpdateFollowRequestPushPreference?
+    public var skipPush: Bool?
     public var source: String
     public var target: String
 
-    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, followerRole: String? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.followerRole = followerRole
         self.pushPreference = pushPreference
+        self.skipPush = skipPush
         self.source = source
         self.target = target
     }
@@ -43,6 +45,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         case custom
         case followerRole = "follower_role"
         case pushPreference = "push_preference"
+        case skipPush = "skip_push"
         case source
         case target
     }
@@ -52,6 +55,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
             lhs.custom == rhs.custom &&
             lhs.followerRole == rhs.followerRole &&
             lhs.pushPreference == rhs.pushPreference &&
+            lhs.skipPush == rhs.skipPush &&
             lhs.source == rhs.source &&
             lhs.target == rhs.target
     }
@@ -61,6 +65,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         hasher.combine(custom)
         hasher.combine(followerRole)
         hasher.combine(pushPreference)
+        hasher.combine(skipPush)
         hasher.combine(source)
         hasher.combine(target)
     }

@@ -27,16 +27,18 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
     public var custom: [String: RawJSON]?
     public var inviteAcceptedAt: Date?
     public var inviteRejectedAt: Date?
+    public var membershipLevel: MembershipLevelResponse?
     public var role: String
     public var status: FeedMemberResponseStatus
     public var updatedAt: Date
     public var user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.inviteAcceptedAt = inviteAcceptedAt
         self.inviteRejectedAt = inviteRejectedAt
+        self.membershipLevel = membershipLevel
         self.role = role
         self.status = status
         self.updatedAt = updatedAt
@@ -48,6 +50,7 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
         case custom
         case inviteAcceptedAt = "invite_accepted_at"
         case inviteRejectedAt = "invite_rejected_at"
+        case membershipLevel = "membership_level"
         case role
         case status
         case updatedAt = "updated_at"
@@ -59,6 +62,7 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
             lhs.custom == rhs.custom &&
             lhs.inviteAcceptedAt == rhs.inviteAcceptedAt &&
             lhs.inviteRejectedAt == rhs.inviteRejectedAt &&
+            lhs.membershipLevel == rhs.membershipLevel &&
             lhs.role == rhs.role &&
             lhs.status == rhs.status &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -70,6 +74,7 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
         hasher.combine(custom)
         hasher.combine(inviteAcceptedAt)
         hasher.combine(inviteRejectedAt)
+        hasher.combine(membershipLevel)
         hasher.combine(role)
         hasher.combine(status)
         hasher.combine(updatedAt)

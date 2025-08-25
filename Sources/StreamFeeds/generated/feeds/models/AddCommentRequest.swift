@@ -14,8 +14,9 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     public var objectId: String
     public var objectType: String
     public var parentId: String?
+    public var skipPush: Bool?
 
-    public init(attachments: [Attachment]? = nil, comment: String, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, mentionedUserIds: [String]? = nil, objectId: String, objectType: String, parentId: String? = nil) {
+    public init(attachments: [Attachment]? = nil, comment: String, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, mentionedUserIds: [String]? = nil, objectId: String, objectType: String, parentId: String? = nil, skipPush: Bool? = nil) {
         self.attachments = attachments
         self.comment = comment
         self.createNotificationActivity = createNotificationActivity
@@ -24,6 +25,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
         self.objectId = objectId
         self.objectType = objectType
         self.parentId = parentId
+        self.skipPush = skipPush
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -35,6 +37,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
         case objectId = "object_id"
         case objectType = "object_type"
         case parentId = "parent_id"
+        case skipPush = "skip_push"
     }
 
     public static func == (lhs: AddCommentRequest, rhs: AddCommentRequest) -> Bool {
@@ -45,7 +48,8 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
             lhs.mentionedUserIds == rhs.mentionedUserIds &&
             lhs.objectId == rhs.objectId &&
             lhs.objectType == rhs.objectType &&
-            lhs.parentId == rhs.parentId
+            lhs.parentId == rhs.parentId &&
+            lhs.skipPush == rhs.skipPush
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -57,5 +61,6 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
         hasher.combine(objectId)
         hasher.combine(objectType)
         hasher.combine(parentId)
+        hasher.combine(skipPush)
     }
 }
