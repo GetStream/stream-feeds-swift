@@ -21,11 +21,12 @@ import StreamCore
 /// followers, members, and other feed-related data.
 ///
 /// - Note: This class is thread-safe and can be used from any thread.
-public final class Feed: @unchecked Sendable {
+public final class Feed: Sendable {
     @MainActor private let stateBuilder: StateBuilder<FeedState>
     
     private let feedQuery: FeedQuery
     private let attachmentsUploader: StreamAttachmentUploader
+    private let disposableBag = DisposableBag()
     
     private let activitiesRepository: ActivitiesRepository
     private let bookmarksRepository: BookmarksRepository
@@ -53,7 +54,10 @@ public final class Feed: @unchecked Sendable {
                 memberListState: memberList.state
             )
         }
-        subscribeToConnectionUpdates(client: client)
+        // Automatically refetch data on reconnection
+        if feedQuery.watch {
+            subscribeToReconnectionUpdates(client: client)
+        }
     }
     
     /// The unique identifier for this feed.
@@ -65,9 +69,6 @@ public final class Feed: @unchecked Sendable {
     
     private var id: String { fid.id }
     private var group: String { fid.group }
-    
-    private var socketDisconnected = false
-    private var disposableBag = DisposableBag()
     
     // MARK: - Accessing the State
     
@@ -543,27 +544,16 @@ public final class Feed: @unchecked Sendable {
     
     // MARK: - private
     
-    private func subscribeToConnectionUpdates(client: FeedsClient) {
-        client.$connection.sink { [weak self] status in
+    private func subscribeToReconnectionUpdates(client: FeedsClient) {
+        client.reconnectionPublisher.asyncSink { [weak self] in
             guard let self else { return }
-            if case .disconnected = status {
-                socketDisconnected = true
-            } else if status == .disconnecting {
-                socketDisconnected = true
-            } else if status == .connected && socketDisconnected {
-                rewatchFeed()
+            log.debug("Re-watching feed \(fid) after WS reconnection")
+            do {
+                try await getOrCreate()
+            } catch {
+                log.error("Re-watching feed \(fid) failed", error: error)
             }
         }
         .store(in: disposableBag)
-    }
-    
-    private func rewatchFeed() {
-        socketDisconnected = false
-        if feedQuery.watch {
-            Task {
-                log.debug("Re-watching feed after WS reconnection")
-                try await getOrCreate()
-            }
-        }
     }
 }

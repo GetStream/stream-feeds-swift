@@ -6,15 +6,13 @@ import Combine
 import Foundation
 @preconcurrency import StreamCore
 
-public final class FeedsClient: ObservableObject, @unchecked Sendable {
+public final class FeedsClient: Sendable {
     public let apiKey: APIKey
     public let user: User
-    public var token: UserToken
+    public var token: UserToken { _token.value }
 
     public let attachmentsUploader: StreamAttachmentUploader
     public let moderation: Moderation
-    
-    @Published var connection: ConnectionStatus
     
     static let endpointConfig: EndpointConfig = .production
     
@@ -41,11 +39,11 @@ public final class FeedsClient: ObservableObject, @unchecked Sendable {
     let feedsRepository: FeedsRepository
     let moderationRepository: ModerationRepository
     let pollsRepository: PollsRepository
-    
+
+    private let _token: AllocatedUnfairLock<UserToken>
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
-    private let feedsConfig: FeedsConfig
-    
     private let disposableBag = DisposableBag()
+    private let feedsConfig: FeedsConfig
     
     public var userAuth: UserAuth? {
         _userAuth.value
@@ -53,12 +51,9 @@ public final class FeedsClient: ObservableObject, @unchecked Sendable {
     
     let connectTask = AllocatedUnfairLock<Task<Void, Error>?>(nil)
     
-    private nonisolated(unsafe) let eventSubject: PassthroughSubject<Event, Never> = .init()
-    public var eventPublisher: AnyPublisher<Event, Never> {
-        eventSubject
-            .eraseToAnyPublisher()
-    }
-
+    let connectionSubject = AllocatedUnfairLock<CurrentValueSubject<ConnectionStatus, Never>>(.init(.initialized))
+    private let eventSubject = AllocatedUnfairLock<PassthroughSubject<Event, Never>>(.init())
+    
     /// Initializes a new FeedsClient instance.
     ///
     /// - Parameters:
@@ -97,9 +92,8 @@ public final class FeedsClient: ObservableObject, @unchecked Sendable {
         self.apiKey = apiKey
         self.apiTransport = apiTransport
         self.user = user
-        self.token = token
+        _token = AllocatedUnfairLock(token)
         self.feedsConfig = feedsConfig
-        connection = .initialized
         let basePath = Self.endpointConfig.baseFeedsURL
         let defaultParams = DefaultParams(
             apiKey: apiKey.apiKeyString,
@@ -297,9 +291,40 @@ public final class FeedsClient: ObservableObject, @unchecked Sendable {
     public func eventPublisher<WSEvent: Event>(
         for event: WSEvent.Type
     ) -> AnyPublisher<WSEvent, Never> {
-        eventSubject
-            .compactMap { $0 as? WSEvent }
-            .eraseToAnyPublisher()
+        eventSubject.withLock { subject in
+            subject
+                .compactMap { $0 as? WSEvent }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    public var eventPublisher: AnyPublisher<Event, Never> {
+        eventSubject.withLock { $0.eraseToAnyPublisher() }
+    }
+    
+    /// Emits when Web-Socket reconnected after disconnection.
+    var reconnectionPublisher: AnyPublisher<Void, Never> {
+        struct State {
+            var wasDisconnected: Bool
+            var reconnected: Bool
+        }
+        return connectionSubject.withLock { subject in
+            subject
+                .scan(State(wasDisconnected: false, reconnected: false)) { state, connectionStatus in
+                    switch connectionStatus {
+                    case .initialized, .connecting:
+                        return State(wasDisconnected: state.wasDisconnected, reconnected: false)
+                    case .disconnecting, .disconnected:
+                        return State(wasDisconnected: true, reconnected: false)
+                    case .connected:
+                        return State(wasDisconnected: false, reconnected: state.wasDisconnected)
+                    @unknown default:
+                        return state
+                    }
+                }
+                .compactMap { $0.reconnected ? () : nil }
+                .eraseToAnyPublisher()
+        }
     }
     
     // MARK: - Activities
@@ -613,7 +638,7 @@ extension FeedsClient: ConnectionStateDelegate {
         _ client: WebSocketClient,
         didUpdateConnectionState state: WebSocketConnectionState
     ) {
-        connection = ConnectionStatus(webSocketConnectionState: state)
+        connectionSubject.withLock { $0.send(ConnectionStatus(webSocketConnectionState: state)) }
         switch state {
         case let .disconnected(source):
             if let serverError = source.serverError {
@@ -624,7 +649,7 @@ extension FeedsClient: ConnectionStateDelegate {
                         }
                         do {
                             guard let apiTransport = apiTransport as? URLSessionTransport else { return }
-                            token = try await apiTransport.refreshToken()
+                            _token.value = try await apiTransport.refreshToken()
                             log.debug("user token updated, will reconnect ws")
                             webSocketClient.value?.connect()
                         } catch {
@@ -644,6 +669,6 @@ extension FeedsClient: ConnectionStateDelegate {
 
 extension FeedsClient: WSEventsSubscriber {
     func onEvent(_ event: any Event) async {
-        eventSubject.send(event)
+        eventSubject.withLock { $0.send(event) }
     }
 }
