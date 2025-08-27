@@ -6,9 +6,9 @@ import Foundation
 import StreamCore
 
 public final class FlagContentOptions: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var reason: String
+    public var reason: String?
 
-    public init(reason: String) {
+    public init(reason: String? = nil) {
         self.reason = reason
     }
 

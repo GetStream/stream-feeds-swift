@@ -6,10 +6,10 @@ import Foundation
 import StreamCore
 
 public final class RuleBuilderConditionGroup: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var conditions: [RuleBuilderCondition]
-    public var logic: String
+    public var conditions: [RuleBuilderCondition]?
+    public var logic: String?
 
-    public init(conditions: [RuleBuilderCondition], logic: String) {
+    public init(conditions: [RuleBuilderCondition]? = nil, logic: String? = nil) {
         self.conditions = conditions
         self.logic = logic
     }

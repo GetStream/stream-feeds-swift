@@ -10,14 +10,13 @@ public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodabl
     public var flagContentOptions: FlagContentOptions?
     public var flagUserOptions: FlagUserOptions?
     public var removeContentOptions: BlockContentOptions?
-    public var type: String
+    public var type: String?
 
-    public init(banOptions: BanOptions? = nil, flagContentOptions: FlagContentOptions? = nil, flagUserOptions: FlagUserOptions? = nil, removeContentOptions: BlockContentOptions? = nil, type: String) {
+    public init(banOptions: BanOptions? = nil, flagContentOptions: FlagContentOptions? = nil, flagUserOptions: FlagUserOptions? = nil, removeContentOptions: BlockContentOptions? = nil) {
         self.banOptions = banOptions
         self.flagContentOptions = flagContentOptions
         self.flagUserOptions = flagUserOptions
         self.removeContentOptions = removeContentOptions
-        self.type = type
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {

@@ -12,21 +12,22 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
     public var imageRuleParams: ImageRuleParameters?
     public var textContentParams: TextContentParameters?
     public var textRuleParams: TextRuleParameters?
-    public var type: String
+    public var type: String?
     public var userCreatedWithinParams: UserCreatedWithinParameters?
+    public var userCustomPropertyParams: UserCustomPropertyParameters?
     public var userRuleParams: UserRuleParameters?
     public var videoContentParams: VideoContentParameters?
     public var videoRuleParams: VideoRuleParameters?
 
-    public init(confidence: Float? = nil, contentCountRuleParams: ContentCountRuleParameters? = nil, imageContentParams: ImageContentParameters? = nil, imageRuleParams: ImageRuleParameters? = nil, textContentParams: TextContentParameters? = nil, textRuleParams: TextRuleParameters? = nil, type: String, userCreatedWithinParams: UserCreatedWithinParameters? = nil, userRuleParams: UserRuleParameters? = nil, videoContentParams: VideoContentParameters? = nil, videoRuleParams: VideoRuleParameters? = nil) {
+    public init(confidence: Float? = nil, contentCountRuleParams: ContentCountRuleParameters? = nil, imageContentParams: ImageContentParameters? = nil, imageRuleParams: ImageRuleParameters? = nil, textContentParams: TextContentParameters? = nil, textRuleParams: TextRuleParameters? = nil, userCreatedWithinParams: UserCreatedWithinParameters? = nil, userCustomPropertyParams: UserCustomPropertyParameters? = nil, userRuleParams: UserRuleParameters? = nil, videoContentParams: VideoContentParameters? = nil, videoRuleParams: VideoRuleParameters? = nil) {
         self.confidence = confidence
         self.contentCountRuleParams = contentCountRuleParams
         self.imageContentParams = imageContentParams
         self.imageRuleParams = imageRuleParams
         self.textContentParams = textContentParams
         self.textRuleParams = textRuleParams
-        self.type = type
         self.userCreatedWithinParams = userCreatedWithinParams
+        self.userCustomPropertyParams = userCustomPropertyParams
         self.userRuleParams = userRuleParams
         self.videoContentParams = videoContentParams
         self.videoRuleParams = videoRuleParams
@@ -41,6 +42,7 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
         case textRuleParams = "text_rule_params"
         case type
         case userCreatedWithinParams = "user_created_within_params"
+        case userCustomPropertyParams = "user_custom_property_params"
         case userRuleParams = "user_rule_params"
         case videoContentParams = "video_content_params"
         case videoRuleParams = "video_rule_params"
@@ -55,6 +57,7 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
             lhs.textRuleParams == rhs.textRuleParams &&
             lhs.type == rhs.type &&
             lhs.userCreatedWithinParams == rhs.userCreatedWithinParams &&
+            lhs.userCustomPropertyParams == rhs.userCustomPropertyParams &&
             lhs.userRuleParams == rhs.userRuleParams &&
             lhs.videoContentParams == rhs.videoContentParams &&
             lhs.videoRuleParams == rhs.videoRuleParams
@@ -69,6 +72,7 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
         hasher.combine(textRuleParams)
         hasher.combine(type)
         hasher.combine(userCreatedWithinParams)
+        hasher.combine(userCustomPropertyParams)
         hasher.combine(userRuleParams)
         hasher.combine(videoContentParams)
         hasher.combine(videoRuleParams)

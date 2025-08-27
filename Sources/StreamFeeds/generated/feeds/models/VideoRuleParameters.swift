@@ -7,10 +7,10 @@ import StreamCore
 
 public final class VideoRuleParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var harmLabels: [String]?
-    public var threshold: Int
-    public var timeWindow: String
+    public var threshold: Int?
+    public var timeWindow: String?
 
-    public init(harmLabels: [String]? = nil, threshold: Int, timeWindow: String) {
+    public init(harmLabels: [String]? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.harmLabels = harmLabels
         self.threshold = threshold
         self.timeWindow = timeWindow

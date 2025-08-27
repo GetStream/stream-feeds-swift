@@ -6,12 +6,12 @@ import Foundation
 import StreamCore
 
 public final class BanOptions: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: Int
-    public var ipBan: Bool
-    public var reason: String
-    public var shadowBan: Bool
+    public var duration: Int?
+    public var ipBan: Bool?
+    public var reason: String?
+    public var shadowBan: Bool?
 
-    public init(duration: Int, ipBan: Bool, reason: String, shadowBan: Bool) {
+    public init(duration: Int? = nil, ipBan: Bool? = nil, reason: String? = nil, shadowBan: Bool? = nil) {
         self.duration = duration
         self.ipBan = ipBan
         self.reason = reason

@@ -9,14 +9,16 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
     public var blocklistMatch: [String]?
     public var containsUrl: Bool?
     public var harmLabels: [String]?
+    public var llmHarmLabels: [String: String]?
     public var severity: String?
-    public var threshold: Int
-    public var timeWindow: String
+    public var threshold: Int?
+    public var timeWindow: String?
 
-    public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, severity: String? = nil, threshold: Int, timeWindow: String) {
+    public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, llmHarmLabels: [String: String]? = nil, severity: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.blocklistMatch = blocklistMatch
         self.containsUrl = containsUrl
         self.harmLabels = harmLabels
+        self.llmHarmLabels = llmHarmLabels
         self.severity = severity
         self.threshold = threshold
         self.timeWindow = timeWindow
@@ -26,6 +28,7 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
         case blocklistMatch = "blocklist_match"
         case containsUrl = "contains_url"
         case harmLabels = "harm_labels"
+        case llmHarmLabels = "llm_harm_labels"
         case severity
         case threshold
         case timeWindow = "time_window"
@@ -35,6 +38,7 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
         lhs.blocklistMatch == rhs.blocklistMatch &&
             lhs.containsUrl == rhs.containsUrl &&
             lhs.harmLabels == rhs.harmLabels &&
+            lhs.llmHarmLabels == rhs.llmHarmLabels &&
             lhs.severity == rhs.severity &&
             lhs.threshold == rhs.threshold &&
             lhs.timeWindow == rhs.timeWindow
@@ -44,6 +48,7 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
         hasher.combine(blocklistMatch)
         hasher.combine(containsUrl)
         hasher.combine(harmLabels)
+        hasher.combine(llmHarmLabels)
         hasher.combine(severity)
         hasher.combine(threshold)
         hasher.combine(timeWindow)

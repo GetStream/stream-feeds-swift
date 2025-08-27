@@ -7,9 +7,9 @@ import StreamCore
 
 public final class RuleBuilderConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var async: Bool?
-    public var rules: [RuleBuilderRule]
+    public var rules: [RuleBuilderRule]?
 
-    public init(async: Bool? = nil, rules: [RuleBuilderRule]) {
+    public init(async: Bool? = nil, rules: [RuleBuilderRule]? = nil) {
         self.async = async
         self.rules = rules
     }
