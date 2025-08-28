@@ -9,7 +9,9 @@ import SwiftUI
 struct FeedsListView: View {
     let client: FeedsClient
     let feed: Feed
+    let storiesFeed: Feed
     @ObservedObject var state: FeedState
+    @ObservedObject var storiesState: FeedState
     
     @State var commentsActivity: ActivityData?
     @State var activityName = ""
@@ -20,16 +22,60 @@ struct FeedsListView: View {
     @State var updatedActivityText = ""
     @State var activityToDelete: ActivityData?
     @State private var bannerError: Error?
+    @State var selectedStory: ActivityData?
     
-    init(feed: Feed, client: FeedsClient) {
+    init(
+        feed: Feed,
+        storiesFeed: Feed,
+        client: FeedsClient
+    ) {
         self.client = client
         self.feed = feed
+        self.storiesFeed = storiesFeed
         state = feed.state
+        storiesState = storiesFeed.state
     }
     
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 4) {
+                ScrollView(.horizontal) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(storiesState.activities) { activity in
+                            if let image = activity.user.image, let url = URL(string: image) {
+                                Button {
+                                    selectedStory = activity
+                                } label: {
+                                    UserAvatar(url: url)
+                                }
+                                .overlay(
+                                    Circle().stroke(Color.purple, lineWidth: 2)
+                                )
+                                .padding(.all, 2)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .sheet(item: $selectedStory) { story in
+                    let sources: [MediaAttachment] = story.attachments.compactMap { attachment in
+                        guard let assetUrl = attachment.assetUrl, let url = URL(string: assetUrl) else {
+                            return nil
+                        }
+                        return MediaAttachment(
+                            url: url,
+                            type: attachment.type == "video" ? .video : .image,
+                            uploadingState: nil
+                        )
+                    }
+                    ImageAttachmentView(
+                        activity: story,
+                        sources: sources,
+                        width: UIScreen.main.bounds.width,
+                        imageTapped: { _ in }
+                    )
+                }
+                
                 ForEach(state.activities) { activity in
                     FeedsListRowView(
                         activity: activity,
@@ -61,7 +107,6 @@ struct FeedsListView: View {
         }
         .refreshable { await refresh() }
         .modifier(AddButtonModifier(addItemShown: $showActivityOptions, buttonShown: true))
-        .padding(.top)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $commentsActivity) { activity in
             CommentsView(activityId: activity.id, feed: feed, feedsClient: client)
@@ -132,6 +177,7 @@ struct FeedsListView: View {
     func refresh() async {
         do {
             try await feed.getOrCreate()
+            try await storiesFeed.getOrCreate()
         } catch {
             bannerError = error
         }

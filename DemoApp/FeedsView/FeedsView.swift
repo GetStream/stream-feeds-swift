@@ -10,6 +10,7 @@ struct FeedsView: View {
     let client: FeedsClient
     @State private var feed: Feed
     @State private var notificationFeed: Feed
+    @State private var storiesFeed: Feed
     @State private var presentedSheet: Sheet?
     @State private var showsLogoutAlert = false
     @ObservedObject var appState = AppState.shared
@@ -18,24 +19,41 @@ struct FeedsView: View {
     
     init(client: FeedsClient) {
         self.client = client
+        
+        // Regular feed.
         let query = FeedQuery(
             feed: FeedId(group: "user", id: client.user.id),
+            activityFilter: .exists(.expiresAt, false),
             data: .init(
                 members: [.init(userId: client.user.id)],
                 visibility: .public
             )
         )
         _feed = State(initialValue: client.feed(for: query))
+        
+        // Notification feed.
         let notificationFeedId = FeedId(group: "notification", id: client.user.id)
         let notificationFeed = State(initialValue: client.feed(for: notificationFeedId))
         _notificationFeed = notificationFeed
         notificationFeedState = notificationFeed.wrappedValue.state
+        
+        // Stories feed.
+        let storiesQuery = FeedQuery(
+            feed: FeedId(group: "user", id: client.user.id),
+            activityFilter: .exists(.expiresAt, true),
+            data: .init(
+                members: [.init(userId: client.user.id)],
+                visibility: .public
+            )
+        )
+        _storiesFeed = State(initialValue: client.feed(for: storiesQuery))
     }
     
     var body: some View {
         NavigationView {
             FeedsListView(
                 feed: feed,
+                storiesFeed: storiesFeed,
                 client: client
             )
             .task {

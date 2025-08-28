@@ -45,7 +45,7 @@ import SwiftUI
     @Published var postAsStory = false
     
     // Hidden until ready on the backend.
-    public let storiesEnabled = false
+    public let storiesEnabled = true
     
     public var mentionedUsers: Set<UserData> = []
     

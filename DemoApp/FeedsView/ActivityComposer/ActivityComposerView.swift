@@ -94,12 +94,18 @@ struct ActivityComposerView: View {
                         }
                     }
                     
+                    Spacer()
+                    
                     if viewModel.storiesEnabled {
                         Toggle(isOn: $viewModel.postAsStory) {
                             Text("Post as story")
+                                .font(.subheadline)
+                                .lineLimit(1)
                         }
+                        .frame(width: 150)
                     }
                 }
+                .padding(.horizontal)
                 
                 if let assets = viewModel.imageAssets {
                     PhotoAttachmentPickerView(
