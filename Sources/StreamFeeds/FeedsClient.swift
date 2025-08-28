@@ -211,7 +211,7 @@ public final class FeedsClient: Sendable {
     /// This method creates a `Feed` object that represents a specific feed using a `FeedId`.
     /// The feed can be used to fetch activities, manage follows, and receive real-time updates.
     ///
-    /// - Parameter fid: The feed identifier containing the group and ID
+    /// - Parameter feed: The feed identifier containing the group and ID
     /// - Returns: A `Feed` instance that can be used to interact with the specified feed
     ///
     /// - Example:
@@ -219,8 +219,8 @@ public final class FeedsClient: Sendable {
     ///   let feedId = FeedId(groupId: "user", id: "john")
     ///   let userFeed = client.feed(for: feedId)
     ///   ```
-    public func feed(for fid: FeedId) -> Feed {
-        feed(for: FeedQuery(fid: fid))
+    public func feed(for feed: FeedId) -> Feed {
+        self.feed(for: FeedQuery(feed: feed))
     }
     
     /// Creates a feed instance based on the provided query.
@@ -336,7 +336,7 @@ public final class FeedsClient: Sendable {
     ///
     /// - Parameters:
     ///   - activityId: The unique identifier of the activity
-    ///   - fid: The feed identifier where the activity belongs
+    ///   - feed: The feed identifier where the activity belongs
     ///   - data: The activity data already available for injecting to the state.
     /// - Returns: An `Activity` instance that can be used to interact with the specified activity
     ///
@@ -345,8 +345,8 @@ public final class FeedsClient: Sendable {
     ///   let feedId = FeedId(groupId: "user", id: "john")
     ///   let activity = client.activity(for: "activity-123", in: feedId)
     ///   ```
-    public func activity(for activityId: String, in fid: FeedId, data: ActivityData? = nil) -> Activity {
-        Activity(id: activityId, fid: fid, data: data, client: self)
+    public func activity(for activityId: String, in feed: FeedId, data: ActivityData? = nil) -> Activity {
+        Activity(id: activityId, feed: feed, data: data, client: self)
     }
     
     /// Creates an activity list instance based on the provided query.

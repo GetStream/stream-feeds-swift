@@ -42,7 +42,7 @@ public final class Feed: Sendable {
         commentsRepository = client.commentsRepository
         feedQuery = query
         feedsRepository = client.feedsRepository
-        memberList = client.memberList(for: .init(fid: query.fid))
+        memberList = client.memberList(for: .init(feed: query.feed))
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
         let events = client.eventsMiddleware
@@ -65,10 +65,10 @@ public final class Feed: Sendable {
     /// This property provides access to the feed's identifier, which is used to distinguish
     /// this feed from other feeds in the system. The feed ID is composed of a group and
     /// an ID component that together form a unique reference to this specific feed.
-    public var fid: FeedId { feedQuery.fid }
+    public var feed: FeedId { feedQuery.feed }
     
-    private var id: String { fid.id }
-    private var group: String { fid.group }
+    private var id: String { feed.id }
+    private var group: String { feed.group }
     
     // MARK: - Accessing the State
     
@@ -130,7 +130,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addActivity(request: FeedAddActivityRequest) async throws -> ActivityData {
-        let activity = try await activitiesRepository.addActivity(request: request, in: fid)
+        let activity = try await activitiesRepository.addActivity(request: request, in: feed)
         await state.changeHandlers.activityAdded(activity)
         return activity
     }
@@ -180,7 +180,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func repost(activityId: String, text: String?) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(
-            request: .init(feeds: [fid.rawValue], parentId: activityId, text: text, type: "post")
+            request: .init(feeds: [feed.rawValue], parentId: activityId, text: text, type: "post")
         )
         await state.changeHandlers.activityAdded(activity)
         return activity
@@ -198,7 +198,7 @@ public final class Feed: Sendable {
         let nextQuery: FeedQuery? = await state.access { _ in
             guard let next = state.activitiesPagination?.next else { return nil }
             var query = FeedQuery(
-                fid: feedQuery.fid,
+                feed: feedQuery.feed,
                 activityFilter: state.activitiesQueryConfig?.filter,
                 activityLimit: limit ?? feedQuery.activityLimit,
                 activitySelectorOptions: nil,
@@ -360,7 +360,7 @@ public final class Feed: Sendable {
             createNotificationActivity: createNotificationActivity,
             custom: custom,
             pushPreference: pushPreference,
-            source: fid.rawValue,
+            source: feed.rawValue,
             target: targetFid.rawValue
         )
         let follow = try await feedsRepository.follow(request: request)
@@ -371,12 +371,12 @@ public final class Feed: Sendable {
     /// Unfollows another feed.
     ///
     /// - Parameters:
-    ///   - targetFid: The target feed identifier to unfollow
+    ///   - targetFeed: The target feed identifier to unfollow
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func unfollow(_ targetFid: FeedId) async throws {
-        try await feedsRepository.unfollow(source: fid, target: targetFid)
+    public func unfollow(_ targetFeed: FeedId) async throws {
+        try await feedsRepository.unfollow(source: feed, target: targetFeed)
         await state.access { state in
-            state.following.removeAll(where: { $0.sourceFeed.fid == fid && $0.targetFeed.fid == targetFid })
+            state.following.removeAll(where: { $0.sourceFeed.feed == feed && $0.targetFeed.feed == targetFeed })
         }
     }
     
@@ -389,7 +389,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
-        let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: fid.rawValue)
+        let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
         await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         await state.changeHandlers.followAdded(follow)
@@ -403,7 +403,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func rejectFollow(_ sourceFid: FeedId) async throws -> FollowData {
-        let request = RejectFollowRequest(source: sourceFid.rawValue, target: fid.rawValue)
+        let request = RejectFollowRequest(source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.rejectFollow(request: request)
         await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
         return follow
@@ -538,7 +538,7 @@ public final class Feed: Sendable {
     public func createPoll(request: CreatePollRequest, activityType: String) async throws -> ActivityData {
         let poll = try await pollsRepository.createPoll(request: request)
         return try await activitiesRepository.addActivity(
-            request: .init(feeds: [fid.rawValue], pollId: poll.id, type: activityType)
+            request: .init(feeds: [feed.rawValue], pollId: poll.id, type: activityType)
         )
     }
     
@@ -547,11 +547,11 @@ public final class Feed: Sendable {
     private func subscribeToReconnectionUpdates(client: FeedsClient) {
         client.reconnectionPublisher.asyncSink { [weak self] in
             guard let self else { return }
-            log.debug("Re-watching feed \(fid) after WS reconnection")
+            log.debug("Re-watching feed \(feed) after WS reconnection")
             do {
                 try await getOrCreate()
             } catch {
-                log.error("Re-watching feed \(fid) failed", error: error)
+                log.error("Re-watching feed \(feed) failed", error: error)
             }
         }
         .store(in: disposableBag)

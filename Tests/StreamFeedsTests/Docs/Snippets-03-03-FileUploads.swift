@@ -12,7 +12,7 @@ struct Snippets_03_03_FileUploads {
     private var uploadedAttachments = [Attachment]()
     
     func howToUploadAFileOrImage_1() async throws {
-        func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in fid: FeedId) async throws -> [Attachment] {
+        func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in feed: FeedId) async throws -> [Attachment] {
             let dataAttachments: [StreamAttachment<Data>] = try attachments
                 .filter { $0.localFileURL != nil }
                 .enumerated()
@@ -23,7 +23,7 @@ struct Snippets_03_03_FileUploads {
                     try Task.checkCancellation()
                     return StreamAttachment<Data>(
                         id: AttachmentId(
-                            fid: fid.rawValue,
+                            fid: feed.rawValue,
                             activityId: UUID().uuidString,
                             index: index
                         ),

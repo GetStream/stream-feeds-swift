@@ -45,7 +45,7 @@ struct ProfileView: View {
                                     Spacer()
                                     Button {
                                         Task {
-                                            try await feed.acceptFollow(request.sourceFeed.fid)
+                                            try await feed.acceptFollow(request.sourceFeed.feed)
                                         }
                                     } label: {
                                         Image(systemName: "checkmark.circle.fill")
@@ -54,7 +54,7 @@ struct ProfileView: View {
                                     
                                     Button {
                                         Task {
-                                            try await feed.rejectFollow(request.sourceFeed.fid)
+                                            try await feed.rejectFollow(request.sourceFeed.feed)
                                         }
                                     } label: {
                                         Image(systemName: "xmark.circle.fill")
@@ -75,7 +75,7 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(follow.targetFeed.fid)
+                                    try await feed.unfollow(follow.targetFeed.feed)
                                     withAnimation {
                                         followSuggestions.append(follow.targetFeed)
                                     }
@@ -99,7 +99,7 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(follow.sourceFeed.fid)
+                                    try await feed.unfollow(follow.sourceFeed.feed)
                                 }
                             } label: {
                                 Text("Remove Follower")
@@ -121,7 +121,7 @@ struct ProfileView: View {
                                 FollowSuggestionView(
                                     owner: suggestion.createdBy,
                                     feed: feed,
-                                    followedFid: suggestion.fid,
+                                    followedFeed: suggestion.feed,
                                     followSuggestions: $followSuggestions
                                 )
                             }
@@ -146,7 +146,7 @@ struct ProfileView: View {
 struct FollowSuggestionView: View {
     let owner: UserData
     let feed: Feed
-    let followedFid: FeedId
+    let followedFeed: FeedId
     @Binding var followSuggestions: [FeedData]
     
     var body: some View {
@@ -155,9 +155,9 @@ struct FollowSuggestionView: View {
             Text(owner.name ?? owner.id)
             Button {
                 Task {
-                    try await feed.follow(followedFid, createNotificationActivity: true)
+                    try await feed.follow(followedFeed, createNotificationActivity: true)
                     withAnimation {
-                        followSuggestions.removeAll(where: { $0.fid == followedFid })
+                        followSuggestions.removeAll(where: { $0.feed == followedFeed })
                     }
                 }
             } label: {

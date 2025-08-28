@@ -5,7 +5,7 @@
 import Foundation
 
 public struct MarkActivityData: Equatable, Sendable {
-    public let fid: String
+    public let feed: String
     public let markAllRead: Bool?
     public let markAllSeen: Bool?
     public let markRead: [String]?
@@ -15,7 +15,7 @@ public struct MarkActivityData: Equatable, Sendable {
 extension ActivityMarkEvent {
     func toModel() -> MarkActivityData {
         .init(
-            fid: fid,
+            feed: fid,
             markAllRead: markAllRead,
             markAllSeen: markAllSeen,
             markRead: markRead,

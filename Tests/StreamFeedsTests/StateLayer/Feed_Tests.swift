@@ -16,7 +16,7 @@ struct Feed_Tests {
         let feed = client.feed(group: "user", id: "jane")
         let feedData = try await feed.getOrCreate()
         let stateActivities = await feed.state.activities
-        let stateFeedData = await feed.state.feed
+        let stateFeedData = await feed.state.feedData
         #expect(stateActivities.map(\.id) == ["1"])
         #expect(stateFeedData == feedData)
     }
@@ -32,7 +32,7 @@ struct Feed_Tests {
         
         await client.eventsMiddleware.sendEvent(
             ActivityUpdatedEvent.dummy(
-                fid: feed.fid.rawValue,
+                fid: feed.feed.rawValue,
                 activity: .dummy(id: "1", text: "NEW TEXT")
             )
         )

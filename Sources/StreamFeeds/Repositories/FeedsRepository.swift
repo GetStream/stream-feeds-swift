@@ -18,11 +18,11 @@ final class FeedsRepository: Sendable {
     // MARK: - Creating or Getting the State of the Feed
     
     func getOrCreateFeed(with query: FeedQuery) async throws -> GetOrCreateInfo {
-        let fid = query.fid
+        let feed = query.feed
         let request = query.toRequest()
         let response = try await apiClient.getOrCreateFeed(
-            feedGroupId: fid.group,
-            feedId: fid.id,
+            feedGroupId: feed.group,
+            feedId: feed.id,
             getOrCreateFeedRequest: request
         )
         let rawFollowers = response.followers.map { $0.toModel() }
@@ -36,8 +36,8 @@ final class FeedsRepository: Sendable {
                 sort: Sort<ActivitiesSortField>.defaultSorting
             ),
             feed: response.feed.toModel(),
-            followers: rawFollowers.filter { $0.isFollower(of: fid) },
-            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(fid) },
+            followers: rawFollowers.filter { $0.isFollower(of: feed) },
+            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feed) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
             members: PaginationResult(
                 models: response.members.map { $0.toModel() },

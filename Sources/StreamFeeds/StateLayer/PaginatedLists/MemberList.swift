@@ -67,7 +67,7 @@ public final class MemberList: Sendable {
         let nextQuery: MembersQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return MembersQuery(
-                fid: query.fid,
+                feed: query.feed,
                 filter: state.queryConfig?.filter,
                 sort: state.queryConfig?.sort,
                 limit: limit,
@@ -83,8 +83,8 @@ public final class MemberList: Sendable {
     
     private func queryMembers(with query: MembersQuery) async throws -> [FeedMemberData] {
         let response = try await feedsRepository.queryFeedMembers(
-            feedGroupId: query.fid.group,
-            feedId: query.fid.id,
+            feedGroupId: query.feed.group,
+            feedId: query.feed.id,
             request: query.toRequest()
         )
         let members = response.members.map { $0.toModel() }

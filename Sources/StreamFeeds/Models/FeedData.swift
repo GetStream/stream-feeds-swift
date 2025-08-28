@@ -11,7 +11,7 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let custom: [String: RawJSON]?
     public let deletedAt: Date?
     public let description: String
-    public let fid: FeedId
+    public let feed: FeedId
     public let filterTags: [String]?
     public let followerCount: Int
     public let followingCount: Int
@@ -34,7 +34,7 @@ extension FeedResponse {
             custom: custom,
             deletedAt: deletedAt,
             description: description,
-            fid: FeedId(rawValue: feed),
+            feed: FeedId(rawValue: feed),
             filterTags: filterTags,
             followerCount: followerCount,
             followingCount: followingCount,

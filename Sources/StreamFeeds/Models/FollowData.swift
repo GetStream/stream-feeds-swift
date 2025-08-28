@@ -29,12 +29,12 @@ public struct FollowData: Equatable, Sendable {
         status == .pending
     }
     
-    func isFollower(of fid: FeedId) -> Bool {
-        isFollower && targetFeed.fid == fid
+    func isFollower(of feed: FeedId) -> Bool {
+        isFollower && targetFeed.feed == feed
     }
     
-    func isFollowing(_ fid: FeedId) -> Bool {
-        isFollowing && sourceFeed.fid == fid
+    func isFollowing(_ feed: FeedId) -> Bool {
+        isFollowing && sourceFeed.feed == feed
     }
 }
 
@@ -42,7 +42,7 @@ public typealias FollowStatus = FollowResponse.FollowResponseStatus
 
 extension FollowData: Identifiable {
     public var id: String {
-        "\(sourceFeed.fid)\(targetFeed.fid)\(createdAt.timeIntervalSince1970)"
+        "\(sourceFeed.feed)\(targetFeed.feed)\(createdAt.timeIntervalSince1970)"
     }
 }
 

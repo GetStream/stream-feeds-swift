@@ -83,15 +83,15 @@ import StreamFeeds
     
     func filteringExamples() async throws {
         // Add a few activities
-        let fid = FeedId(group: "user", id: "john")
+        let feedId = FeedId(group: "user", id: "john")
         try await client.upsertActivities([
-            ActivityRequest(feeds: [fid.rawValue], filterTags: ["green", "blue"], text: "first", type: "post"),
-            ActivityRequest(feeds: [fid.rawValue], filterTags: ["yellow", "blue"], text: "second", type: "post"),
-            ActivityRequest(feeds: [fid.rawValue], filterTags: ["orange"], text: "third", type: "activity"),
-            ActivityRequest(feeds: [fid.rawValue], filterTags: ["yellow"], text: "fourth", type: "activity")
+            ActivityRequest(feeds: [feedId.rawValue], filterTags: ["green", "blue"], text: "first", type: "post"),
+            ActivityRequest(feeds: [feedId.rawValue], filterTags: ["yellow", "blue"], text: "second", type: "post"),
+            ActivityRequest(feeds: [feedId.rawValue], filterTags: ["orange"], text: "third", type: "activity"),
+            ActivityRequest(feeds: [feedId.rawValue], filterTags: ["yellow"], text: "fourth", type: "activity")
         ])
         // Now read the feed, this will fetch activity 1 and 2
-        let query = FeedQuery(fid: fid, activityFilter: .in(.filterTags, ["blue"]))
+        let query = FeedQuery(feed: feedId, activityFilter: .in(.filterTags, ["blue"]))
         let feed = client.feed(for: query)
         try await feed.getOrCreate()
         let activities = feed.state.activities // contains first and second

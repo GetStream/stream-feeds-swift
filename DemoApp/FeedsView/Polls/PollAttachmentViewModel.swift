@@ -113,7 +113,7 @@ import SwiftUI
         self.feed = feed
         poll = pollData
         self.activityData = activityData
-        activity = feedsClient.activity(for: activityData.id, in: feed.fid, data: activityData)
+        activity = feedsClient.activity(for: activityData.id, in: feed.feed, data: activityData)
         createdByCurrentUser = pollData.createdBy?.id == feedsClient.user.id
         currentUserVotes = pollData.ownVotes
         activity.state.$poll

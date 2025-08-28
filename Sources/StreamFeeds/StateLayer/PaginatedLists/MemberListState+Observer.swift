@@ -8,11 +8,11 @@ import StreamCore
 extension MemberListState {
     final class WebSocketObserver: WSEventsSubscriber {
         private let handlers: MemberListState.ChangeHandlers
-        private let fid: String
+        private let feed: FeedId
         
-        init(fid: FeedId, subscribing events: WSEventsSubscribing, handlers: MemberListState.ChangeHandlers) {
+        init(feed: FeedId, subscribing events: WSEventsSubscribing, handlers: MemberListState.ChangeHandlers) {
             self.handlers = handlers
-            self.fid = fid.rawValue
+            self.feed = feed
             events.add(subscriber: self)
         }
         
@@ -21,10 +21,10 @@ extension MemberListState {
         func onEvent(_ event: any Event) async {
             switch event {
             case let event as FeedMemberRemovedEvent:
-                guard event.fid == fid else { return }
+                guard event.fid == feed.rawValue else { return }
                 await handlers.memberRemoved(event.memberId)
             case let event as FeedMemberUpdatedEvent:
-                guard event.fid == fid else { return }
+                guard event.fid == feed.rawValue else { return }
                 await handlers.memberUpdated(event.member.toModel())
             default:
                 break

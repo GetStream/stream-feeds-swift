@@ -19,7 +19,7 @@ struct FeedsView: View {
     init(client: FeedsClient) {
         self.client = client
         let query = FeedQuery(
-            fid: FeedId(group: "user", id: client.user.id),
+            feed: FeedId(group: "user", id: client.user.id),
             data: .init(
                 members: [.init(userId: client.user.id)],
                 visibility: .public

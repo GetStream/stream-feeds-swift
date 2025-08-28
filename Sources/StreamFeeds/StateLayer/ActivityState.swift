@@ -17,12 +17,12 @@ import StreamCore
     let currentUserId: String
     private var webSocketObserver: WebSocketObserver?
     
-    init(activityId: String, fid: FeedId, data: ActivityData?, currentUserId: String, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
+    init(activityId: String, feed: FeedId, data: ActivityData?, currentUserId: String, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
         self.commentListState = commentListState
         self.currentUserId = currentUserId
         let webSocketObserver = WebSocketObserver(
             activityId: activityId,
-            fid: fid,
+            feed: feed,
             subscribing: events,
             handlers: changeHandlers
         )

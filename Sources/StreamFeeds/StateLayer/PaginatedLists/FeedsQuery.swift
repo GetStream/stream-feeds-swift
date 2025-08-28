@@ -109,10 +109,10 @@ extension FeedsFilterField {
     /// **Supported operators:** `.equal`, `.in`
     public static let groupId = Self(codingKey: .groupId)
     
-    /// Filter by the feed ID (fid) of the feed.
+    /// Filter by the feed ID of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let fid = Self(codingKey: .feed)
+    public static let feed = Self(codingKey: .feed)
     
     /// Filter by the creation timestamp of the feed.
     ///
@@ -192,7 +192,7 @@ extension FeedsFilterField {
 ///
 /// ## Supported Operators by Field Type
 ///
-/// **String fields** (`id`, `groupId`, `fid`, `createdById`, `visibility`):
+/// **String fields** (`id`, `groupId`, `feed`, `createdById`, `visibility`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
 ///

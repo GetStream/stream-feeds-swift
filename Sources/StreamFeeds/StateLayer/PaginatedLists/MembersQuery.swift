@@ -11,7 +11,7 @@ import StreamCore
 /// You can specify filters to narrow down results, sorting options, and pagination parameters.
 public struct MembersQuery: Sendable {
     /// The feed ID to fetch members for.
-    public var fid: FeedId
+    public var feed: FeedId
     
     /// Optional filter to apply to the members query.
     /// Use this to narrow down results based on specific criteria.
@@ -36,21 +36,21 @@ public struct MembersQuery: Sendable {
     /// Creates a new members query with the specified parameters.
     ///
     /// - Parameters:
-    ///   - fid: The feed ID to fetch members for.
+    ///   - feed: The feed ID to fetch members for.
     ///   - filter: Optional filter to apply to the members query.
     ///   - sort: Optional array of sorting criteria to apply to the members.
     ///   - limit: Optional maximum number of members to return in a single request.
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
     public init(
-        fid: FeedId,
+        feed: FeedId,
         filter: MembersFilter? = nil,
         sort: [Sort<MembersSortField>]? = nil,
         limit: Int? = nil,
         next: String? = nil,
         previous: String? = nil
     ) {
-        self.fid = fid
+        self.feed = feed
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -113,7 +113,7 @@ extension MembersFilterField {
     /// Filter by the feed ID that the member belongs to.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let fid = Self(value: "fid")
+    public static let feed = Self(value: "fid")
     
     /// Filter by whether the member is a request (true/false).
     ///
@@ -128,7 +128,7 @@ extension MembersFilterField {
 ///
 /// ## Supported Operators by Field Type
 ///
-/// **String fields** (`userId`, `fid`, `role`, `status`):
+/// **String fields** (`userId`, `feed`, `role`, `status`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
 ///

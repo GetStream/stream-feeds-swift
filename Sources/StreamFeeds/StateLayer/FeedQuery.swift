@@ -42,7 +42,7 @@ public struct FeedQuery: Sendable {
     public var externalRanking: [String: RawJSON]?
     
     /// The unique identifier for the feed.
-    public var fid: FeedId
+    public var feed: FeedId
     
     /// Maximum number of followers to retrieve.
     public var followerLimit: Int?
@@ -78,9 +78,23 @@ public struct FeedQuery: Sendable {
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - view: Custom view for ranking or aggregation logic.
     ///   - watch: Whether to subscribe to real-time updates for this feed.
-    public init(group: String, id: String, activityFilter: ActivitiesFilter? = nil, activityLimit: Int? = nil, activitySelectorOptions: [String: RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, followerLimit: Int? = nil, followingLimit: Int? = nil, interestWeights: [String: Float]? = nil, memberLimit: Int? = nil, view: String? = nil, watch: Bool = true) {
+    public init(
+        group: String,
+        id: String,
+        activityFilter: ActivitiesFilter? = nil,
+        activityLimit: Int? = nil,
+        activitySelectorOptions: [String: RawJSON]? = nil,
+        data: FeedInput? = nil,
+        externalRanking: [String: RawJSON]? = nil,
+        followerLimit: Int? = nil,
+        followingLimit: Int? = nil,
+        interestWeights: [String: Float]? = nil,
+        memberLimit: Int? = nil,
+        view: String? = nil,
+        watch: Bool = true
+    ) {
         self.init(
-            fid: FeedId(group: group, id: id),
+            feed: FeedId(group: group, id: id),
             activityFilter: activityFilter,
             activityLimit: activityLimit,
             activitySelectorOptions: activitySelectorOptions,
@@ -98,7 +112,7 @@ public struct FeedQuery: Sendable {
     /// Creates a new feed query with the specified feed ID.
     ///
     /// - Parameters:
-    ///   - fid: The feed identifier containing group and ID.
+    ///   - feed: The feed identifier containing group and ID.
     ///   - activityFilter: Optional filter criteria for activities.
     ///   - activityLimit: Maximum number of activities to retrieve.
     ///   - activitySelectorOptions: Custom options for activity selection.
@@ -110,13 +124,26 @@ public struct FeedQuery: Sendable {
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - view: Custom view for ranking or aggregation logic.
     ///   - watch: Whether to subscribe to real-time updates for this feed.
-    public init(fid: FeedId, activityFilter: ActivitiesFilter? = nil, activityLimit: Int? = nil, activitySelectorOptions: [String: RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, followerLimit: Int? = nil, followingLimit: Int? = nil, interestWeights: [String: Float]? = nil, memberLimit: Int? = nil, view: String? = nil, watch: Bool = true) {
+    public init(
+        feed: FeedId,
+        activityFilter: ActivitiesFilter? = nil,
+        activityLimit: Int? = nil,
+        activitySelectorOptions: [String: RawJSON]? = nil,
+        data: FeedInput? = nil,
+        externalRanking: [String: RawJSON]? = nil,
+        followerLimit: Int? = nil,
+        followingLimit: Int? = nil,
+        interestWeights: [String: Float]? = nil,
+        memberLimit: Int? = nil,
+        view: String? = nil,
+        watch: Bool = true
+    ) {
         self.activityFilter = activityFilter
         self.activityLimit = activityLimit
         self.activitySelectorOptions = activitySelectorOptions
         self.data = data
         self.externalRanking = externalRanking
-        self.fid = fid
+        self.feed = feed
         self.followerLimit = followerLimit
         self.followingLimit = followingLimit
         self.interestWeights = interestWeights

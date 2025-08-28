@@ -26,7 +26,7 @@ struct CommentsView: View {
     init(activityId: String, feed: Feed, feedsClient: FeedsClient) {
         self.activityId = activityId
         self.feed = feed
-        let activity = feedsClient.activity(for: activityId, in: feed.fid)
+        let activity = feedsClient.activity(for: activityId, in: feed.feed)
         _activity = State(initialValue: activity)
         _state = StateObject(wrappedValue: activity.state)
         userId = feedsClient.user.id

@@ -66,15 +66,15 @@ import StreamFeeds
         let adamTimeline = adamClient.feed(group: "timeline", id: "adam")
         try await adamTimeline.getOrCreate()
         
-        let followRequest = try await adamTimeline.follow(saraFeed.fid) // user:sara
+        let followRequest = try await adamTimeline.follow(saraFeed.feed) // user:sara
         print(followRequest.status) // .pending
         
         // Sara accepting
         try await saraFeed.acceptFollow(
-            adamTimeline.fid, // timeline:adam
+            adamTimeline.feed, // timeline:adam
             role: "feed_member" // optional
         )
         // or rejecting the request
-        try await saraFeed.rejectFollow(adamTimeline.fid) // timeline:adam
+        try await saraFeed.rejectFollow(adamTimeline.feed) // timeline:adam
     }
 }

@@ -18,18 +18,18 @@ import StreamCore
     private var webSocketObserver: WebSocketObserver?
     
     init(feedQuery: FeedQuery, currentUserId: String, events: WSEventsSubscribing, memberListState: MemberListState) {
-        fid = feedQuery.fid
+        feed = feedQuery.feed
         self.feedQuery = feedQuery
         self.memberListState = memberListState
         self.currentUserId = currentUserId
-        webSocketObserver = WebSocketObserver(fid: feedQuery.fid, subscribing: events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(feed: feedQuery.feed, subscribing: events, handlers: changeHandlers)
         memberListState.$members
             .assign(to: \.members, onWeak: self)
             .store(in: &cancellables)
     }
     
     /// The unique identifier of the feed.
-    public let fid: FeedId
+    public let feed: FeedId
     
     /// The query used to create this feed.
     public let feedQuery: FeedQuery
@@ -41,7 +41,7 @@ import StreamCore
     @Published public internal(set) var aggregatedActivities = [AggregatedActivityData]()
     
     /// The feed data containing feed metadata and configuration.
-    @Published public internal(set) var feed: FeedData?
+    @Published public internal(set) var feedData: FeedData?
     
     /// The list of followers for this feed.
     @Published public internal(set) var followers = [FollowData]()
@@ -205,7 +205,7 @@ extension FeedState {
             },
             feedDeleted: { [weak self] in
                 self?.activities.removeAll()
-                self?.feed = nil
+                self?.feedData = nil
                 self?.followers.removeAll()
                 self?.following.removeAll()
                 self?.followRequests.removeAll()
@@ -214,7 +214,7 @@ extension FeedState {
                 
             },
             feedUpdated: { [weak self] feed in
-                self?.feed = feed
+                self?.feedData = feed
             },
             followAdded: { [weak self] follow in
                 self?.addFollow(follow)
@@ -249,9 +249,9 @@ extension FeedState {
     private func addFollow(_ follow: FollowData) {
         if follow.isFollowRequest {
             followRequests.insert(byId: follow)
-        } else if follow.isFollowing(fid) {
+        } else if follow.isFollowing(feed) {
             following.insert(byId: follow)
-        } else if follow.isFollower(of: fid) {
+        } else if follow.isFollower(of: feed) {
             followers.insert(byId: follow)
         }
     }
@@ -272,7 +272,7 @@ extension FeedState {
         activities = response.activities.models
         activitiesPagination = response.activities.pagination
         activitiesQueryConfig = response.activitiesQueryConfig
-        feed = response.feed
+        feedData = response.feed
         followers = response.followers
         following = response.following
         followRequests = response.followRequests

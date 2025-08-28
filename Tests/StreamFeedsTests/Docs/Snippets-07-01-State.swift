@@ -11,10 +11,10 @@ import StreamFeeds
     
     func gettingFeedState() async throws {
         // Create a feed id
-        let fid = FeedId(group: "user", id: "john")
+        let feedId = FeedId(group: "user", id: "john")
 
         // Create the feed instance from your client
-        let feed = client.feed(for: fid)
+        let feed = client.feed(for: feedId)
 
         // Get the latest data
         try await feed.getOrCreate()

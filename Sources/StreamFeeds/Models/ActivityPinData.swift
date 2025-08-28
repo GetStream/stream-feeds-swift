@@ -7,14 +7,14 @@ import Foundation
 public struct ActivityPinData: Equatable, Sendable {
     public internal(set) var activity: ActivityData
     public let createdAt: Date
-    public let fid: FeedId
+    public let feed: FeedId
     public let updatedAt: Date
     public let userId: String
 }
 
 extension ActivityPinData: Identifiable {
     public var id: String {
-        fid.rawValue + activity.id + userId
+        feed.rawValue + activity.id + userId
     }
 }
 
@@ -25,7 +25,7 @@ extension ActivityPinResponse {
         ActivityPinData(
             activity: activity.toModel(),
             createdAt: createdAt,
-            fid: FeedId(rawValue: feed),
+            feed: FeedId(rawValue: feed),
             updatedAt: updatedAt,
             userId: user.id
         )
@@ -37,7 +37,7 @@ extension PinActivityResponse {
         ActivityPinData(
             activity: activity.toModel(),
             createdAt: createdAt,
-            fid: FeedId(rawValue: feed),
+            feed: FeedId(rawValue: feed),
             updatedAt: createdAt, // no updatedAt
             userId: userId
         )

@@ -17,7 +17,7 @@ import StreamCore
     
     init(query: MembersQuery, events: WSEventsSubscribing) {
         self.query = query
-        webSocketObserver = WebSocketObserver(fid: query.fid, subscribing: events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(feed: query.feed, subscribing: events, handlers: changeHandlers)
     }
     
     /// The original query configuration used to fetch members.

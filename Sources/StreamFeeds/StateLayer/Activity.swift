@@ -21,11 +21,11 @@ public final class Activity: Sendable {
     public let activityId: String
     
     /// The feed id for the activity.
-    public let fid: FeedId
+    public let feed: FeedId
     
     init(
         id: String,
-        fid: FeedId,
+        feed: FeedId,
         data: ActivityData?,
         client: FeedsClient
     ) {
@@ -36,14 +36,14 @@ public final class Activity: Sendable {
         activityId = id
         activitiesRepository = client.activitiesRepository
         commentsRepository = client.commentsRepository
-        self.fid = fid
+        self.feed = feed
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
         let events = client.eventsMiddleware
         stateBuilder = StateBuilder { [currentUserId] in
             ActivityState(
                 activityId: id,
-                fid: fid,
+                feed: feed,
                 data: data,
                 currentUserId: currentUserId,
                 events: events,
@@ -199,7 +199,7 @@ public final class Activity: Sendable {
     /// - SeeAlso: ``FeedData/pinnedActivities``
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func pin() async throws {
-        let activity = try await activitiesRepository.pin(true, activityId: activityId, in: fid)
+        let activity = try await activitiesRepository.pin(true, activityId: activityId, in: feed)
         await state.changeHandlers.activityUpdated(activity)
     }
     
@@ -208,7 +208,7 @@ public final class Activity: Sendable {
     /// - SeeAlso: ``FeedData/pinnedActivities``
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func unpin() async throws {
-        let activity = try await activitiesRepository.pin(false, activityId: activityId, in: fid)
+        let activity = try await activitiesRepository.pin(false, activityId: activityId, in: feed)
         await state.changeHandlers.activityUpdated(activity)
     }
     

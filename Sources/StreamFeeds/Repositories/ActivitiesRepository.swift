@@ -25,12 +25,12 @@ final class ActivitiesRepository: Sendable {
         return response.activity.toModel()
     }
     
-    func addActivity(request: FeedAddActivityRequest, in fid: FeedId) async throws -> ActivityData {
+    func addActivity(request: FeedAddActivityRequest, in feed: FeedId) async throws -> ActivityData {
         let uploadedAttachments: [Attachment] = try await {
             guard let payloads = request.attachmentUploads, !payloads.isEmpty else { return [] }
-            return try await uploadAttachmentPayloads(payloads, in: fid)
+            return try await uploadAttachmentPayloads(payloads, in: feed)
         }()
-        return try await addActivity(request: request.withFid(fid, uploadedAttachments: uploadedAttachments))
+        return try await addActivity(request: request.withFeed(feed, uploadedAttachments: uploadedAttachments))
     }
         
     func deleteActivity(activityId: String, hardDelete: Bool) async throws {
@@ -49,7 +49,7 @@ final class ActivitiesRepository: Sendable {
     
     // MARK: - Activity Attachment Uploading
     
-    func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in fid: FeedId) async throws -> [Attachment] {
+    func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in feed: FeedId) async throws -> [Attachment] {
         let dataAttachments: [StreamAttachment<Data>] = try attachments
             .filter { $0.localFileURL != nil }
             .enumerated()
@@ -60,7 +60,7 @@ final class ActivitiesRepository: Sendable {
                 try Task.checkCancellation()
                 return StreamAttachment<Data>(
                     id: AttachmentId(
-                        fid: fid.rawValue,
+                        fid: feed.rawValue,
                         activityId: UUID().uuidString, // TODO: how do we know this?
                         index: index
                     ),
@@ -95,8 +95,8 @@ final class ActivitiesRepository: Sendable {
     
     // MARK: - Activity Interactions
     
-    func pin(_ flag: Bool, activityId: String, in fid: FeedId) async throws -> ActivityData {
-        let response = try await apiClient.pinActivity(feedGroupId: fid.group, feedId: fid.id, activityId: activityId)
+    func pin(_ flag: Bool, activityId: String, in feed: FeedId) async throws -> ActivityData {
+        let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
         return response.activity.toModel()
     }
     
