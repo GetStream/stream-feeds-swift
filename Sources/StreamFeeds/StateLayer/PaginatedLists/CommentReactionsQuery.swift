@@ -68,19 +68,16 @@ public struct CommentReactionsQuery: Sendable {
 
 // MARK: - Filters
 
-/// Represents a field that can be used in comment reactions filtering.
-///
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for comment reactions queries.
 public struct CommentReactionsFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = FeedsReactionData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
 }
 
@@ -88,17 +85,17 @@ extension CommentReactionsFilterField {
     /// Filter by the reaction type (e.g., "like", "love", "angry").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let reactionType = Self(value: "reaction_type")
+    public static let reactionType = Self(remote: "reaction_type", localValue: \.type)
     
     /// Filter by the user ID who created the reaction.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
+    public static let userId = Self(remote: "user_id", localValue: \.user.id)
     
     /// Filter by the creation timestamp of the reaction.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
 }
 
 /// A filter that can be applied to comment reactions queries.
@@ -163,7 +160,7 @@ public struct CommentReactionsSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

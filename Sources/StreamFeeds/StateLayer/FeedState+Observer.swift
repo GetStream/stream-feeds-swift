@@ -7,11 +7,11 @@ import StreamCore
 
 extension FeedState {
     final class WebSocketObserver: WSEventsSubscriber {
-        private let feed: String
+        private let query: FeedQuery
         private let handlers: FeedState.ChangeHandlers
         
-        init(feed: FeedId, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
-            self.feed = feed.rawValue
+        init(query: FeedQuery, subscribing events: WSEventsSubscribing, handlers: FeedState.ChangeHandlers) {
+            self.query = query
             self.handlers = handlers
             events.add(subscriber: self)
         }
@@ -19,6 +19,7 @@ extension FeedState {
         // MARK: - Event Subscription
         
         func onEvent(_ event: any Event) async {
+            let feed = query.feed.rawValue
             switch event {
             case let event as ActivityAddedEvent:
                 guard event.fid == feed else { return }
@@ -27,7 +28,11 @@ extension FeedState {
                 if event.activity.createdAt < Date(timeIntervalSinceReferenceDate: 0) {
                     activity.createdAt = event.createdAt
                 }
-                await handlers.activityAdded(activity.toModel())
+                let model = activity.toModel()
+                if let filter = query.activityFilter, !filter.matches(model) {
+                    return
+                }
+                await handlers.activityAdded(model)
             case let event as ActivityDeletedEvent:
                 guard event.fid == feed else { return }
                 await handlers.activityRemoved(event.activity.toModel())

@@ -66,21 +66,17 @@ public struct MembersQuery: Sendable {
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for members queries.
 public struct MembersFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = FeedMemberData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    /// Creates a filter field from a coding key.
-    ///
-    /// - Parameter codingKey: The coding key to convert to a filter field.
-    init(codingKey: FeedMemberResponse.CodingKeys) {
-        value = codingKey.rawValue
+    init<Value>(remoteCodingKey: FeedMemberResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remote: remoteCodingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -88,37 +84,37 @@ extension MembersFilterField {
     /// Filter by the creation timestamp of the member.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(codingKey: .createdAt)
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
     
     /// Filter by the role of the member in the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let role = Self(codingKey: .role)
+    public static let role = Self(remote: "role", localValue: \.role)
     
     /// Filter by the status of the member (e.g., "accepted", "pending").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let status = Self(codingKey: .status)
+    public static let status = Self(remote: "status", localValue: \.status.rawValue)
     
     /// Filter by the last update timestamp of the member.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(codingKey: .updatedAt)
+    public static let updatedAt = Self(remote: "updated_at", localValue: \.updatedAt)
     
     /// Filter by the user ID of the member.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
+    public static let userId = Self(remote: "user_id", localValue: \.user.id)
     
     /// Filter by the feed ID that the member belongs to.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let feed = Self(value: "fid")
+    public static let feed = Self(remote: "fid", localValue: \.feed?.rawValue)
     
-    /// Filter by whether the member is a request (true/false).
+    /// Filter by whether the member joined via a request (true/false).
     ///
     /// **Supported operators:** `.equal`
-    public static let request = Self(value: "request")
+    public static let request = Self(remote: "request", localValue: { $0.inviteAcceptedAt != nil })
 }
 
 /// A filter that can be applied to members queries.
@@ -186,7 +182,7 @@ public struct MembersSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

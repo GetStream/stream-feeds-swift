@@ -73,19 +73,16 @@ public struct ModerationConfigsQuery: Sendable {
 
 // MARK: - Filters
 
-/// Represents a field that can be used in moderation configuration filtering.
-///
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for moderation configuration queries.
 public struct ModerationConfigFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = ModerationConfigData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
 }
 
@@ -93,22 +90,22 @@ extension ModerationConfigFilterField {
     /// Filter by the unique key of the moderation configuration.
     ///
     /// **Supported operators:** `.equal`, `.in`, `.autocomplete`
-    public static let key = Self(value: "key")
+    public static let key = Self(remote: "key", localValue: \.key)
     
     /// Filter by the creation timestamp of the configuration.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
     
     /// Filter by the last update timestamp of the configuration.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(value: "updated_at")
+    public static let updatedAt = Self(remote: "updated_at", localValue: \.updatedAt)
     
     /// Filter by the team associated with the configuration.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let team = Self(value: "team")
+    public static let team = Self(remote: "team", localValue: \.team)
 }
 
 /// A filter that can be applied to moderation configuration queries.
@@ -176,7 +173,7 @@ public struct ModerationConfigsSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

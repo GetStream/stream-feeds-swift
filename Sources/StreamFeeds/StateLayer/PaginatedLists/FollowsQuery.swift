@@ -60,21 +60,17 @@ public struct FollowsQuery: Sendable {
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for follows queries.
 public struct FollowsFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = FollowData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    /// Creates a filter field from a coding key.
-    ///
-    /// - Parameter codingKey: The coding key to convert to a filter field.
-    init(codingKey: FollowResponse.CodingKeys) {
-        value = codingKey.rawValue
+    init<Value>(remoteCodingKey: FollowResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remote: remoteCodingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -82,22 +78,22 @@ extension FollowsFilterField {
     /// Filter by the source feed ID (the feed that is following).
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let sourceFeed = Self(codingKey: .sourceFeed)
+    public static let sourceFeed = Self(remote: "source_feed", localValue: \.sourceFeed.feed.rawValue)
     
     /// Filter by the target feed ID (the feed being followed).
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let targetFeed = Self(codingKey: .targetFeed)
+    public static let targetFeed = Self(remote: "target_feed", localValue: \.targetFeed.feed.rawValue)
     
     /// Filter by the status of the follow relationship (e.g., "accepted", "pending").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let status = Self(value: "status")
+    public static let status = Self(remote: "status", localValue: \.status.rawValue)
     
     /// Filter by the creation timestamp of the follow relationship.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
 }
 
 /// A filter that can be applied to follows queries.
@@ -162,7 +158,7 @@ public struct FollowsSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

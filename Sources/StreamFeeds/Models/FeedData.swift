@@ -22,6 +22,9 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let pinCount: Int
     public let updatedAt: Date
     public let visibility: String?
+    
+    var followingFeedIds = [String]()
+    var memberIds = [String]()
 }
 
 // MARK: - Model Conversions
@@ -46,5 +49,17 @@ extension FeedResponse {
             updatedAt: updatedAt,
             visibility: visibility
         )
+    }
+}
+
+extension FeedData {
+    func toLocalFilterModel(
+        followingFeedIds: [String],
+        memberIds: [String]
+    ) -> Self {
+        var data = self
+        data.followingFeedIds = followingFeedIds
+        data.memberIds = memberIds
+        return data
     }
 }

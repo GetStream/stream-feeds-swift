@@ -24,7 +24,7 @@ struct ArrayExtensions_Tests {
         public let remote: String
         
         public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-            comparator = SortComparator(localValue).toAny()
+            comparator = AnySortComparator(localValue: localValue)
             self.remote = remote
         }
         

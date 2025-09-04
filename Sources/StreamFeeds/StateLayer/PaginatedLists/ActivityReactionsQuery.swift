@@ -66,14 +66,13 @@ public struct ActivityReactionsQuery: Sendable {
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for activity reactions queries.
 public struct ActivityReactionsFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = FeedsReactionData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
 }
 
@@ -81,17 +80,17 @@ extension ActivityReactionsFilterField {
     /// Filter by the reaction type (e.g., "like", "love", "angry").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let reactionType = Self(value: "reaction_type")
+    public static let reactionType = Self(remote: "reaction_type", localValue: \.type)
     
     /// Filter by the user ID who created the reaction.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
+    public static let userId = Self(remote: "user_id", localValue: \.user.id)
     
     /// Filter by the creation timestamp of the reaction.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
 }
 
 /// A filter that can be applied to activity reactions queries.
@@ -156,7 +155,7 @@ public struct ActivityReactionsSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

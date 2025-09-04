@@ -60,21 +60,17 @@ public struct BookmarkFoldersQuery: Sendable {
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for bookmark folders queries.
 public struct BookmarkFoldersFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = BookmarkFolderData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    /// Creates a filter field from a coding key.
-    ///
-    /// - Parameter codingKey: The coding key to convert to a filter field.
-    init(codingKey: BookmarkFolderResponse.CodingKeys) {
-        value = codingKey.rawValue
+    init<Value>(remoteCodingKey: BookmarkFolderResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remote: remoteCodingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -82,27 +78,22 @@ extension BookmarkFoldersFilterField {
     /// Filter by the unique identifier of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let folderId = Self(value: "folder_id")
+    public static let folderId = Self(remote: "folder_id", localValue: \.id)
     
     /// Filter by the name of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.in`, `.contains`
-    public static let folderName = Self(value: "folder_name")
-    
-    /// Filter by the user ID who owns the bookmark folder.
-    ///
-    /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
-    
+    public static let folderName = Self(remote: "folder_name", localValue: \.name)
+        
     /// Filter by the creation timestamp of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
     
     /// Filter by the last update timestamp of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(value: "updated_at")
+    public static let updatedAt = Self(remote: "updated_at", localValue: \.updatedAt)
 }
 
 /// A filter that can be applied to bookmark folders queries.
@@ -172,7 +163,7 @@ public struct BookmarkFoldersSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

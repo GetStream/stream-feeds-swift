@@ -68,15 +68,14 @@ public struct CommentsQuery: Sendable {
 ///
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for comments queries.
-public struct CommentsFilterField: FilterFieldRepresentable, Hashable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+public struct CommentsFilterField: FilterFieldRepresentable, Sendable {
+    public typealias Model = CommentData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
 }
 
@@ -84,72 +83,72 @@ extension CommentsFilterField {
     /// Filter by the unique identifier of the comment.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let id = Self(value: "id")
+    public static let id = Self(remote: "id", localValue: \.id)
     
     /// Filter by the user ID who created the comment.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
+    public static let userId = Self(remote: "user_id", localValue: \.user.id)
     
     /// Filter by the type of object the comment belongs to (e.g., "activity", "post").
     ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.in`
-    public static let objectType = Self(value: "object_type")
+    public static let objectType = Self(remote: "object_type", localValue: \.objectType)
     
     /// Filter by the ID of the object the comment belongs to.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let objectId = Self(value: "object_id")
+    public static let objectId = Self(remote: "object_id", localValue: \.objectId)
     
     /// Filter by the ID of the parent comment (for replies).
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let parentId = Self(value: "parent_id")
+    public static let parentId = Self(remote: "parent_id", localValue: \.parentId)
     
     /// Filter by the text content of the comment.
     ///
     /// **Supported operators:** `.q` (full-text search)
-    public static let commentText = Self(value: "comment_text")
+    public static let commentText = Self(remote: "comment_text", localValue: \.text)
     
     /// Filter by the status of the comment (e.g., "active", "deleted", "moderated").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let status = Self(value: "status")
+    public static let status = Self(remote: "status", localValue: \.status)
     
     /// Filter by the number of upvotes the comment has received.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let upvoteCount = Self(value: "upvote_count")
+    public static let upvoteCount = Self(remote: "upvote_count", localValue: \.upvoteCount)
     
     /// Filter by the number of downvotes the comment has received.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let downvoteCount = Self(value: "downvote_count")
+    public static let downvoteCount = Self(remote: "downvote_count", localValue: \.downvoteCount)
     
     /// Filter by the number of replies the comment has received.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let replyCount = Self(value: "reply_count")
+    public static let replyCount = Self(remote: "reply_count", localValue: \.replyCount)
     
     /// Filter by the score of the comment.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let score = Self(value: "score")
+    public static let score = Self(remote: "score", localValue: \.score)
     
     /// Filter by the confidence score of the comment.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let confidenceScore = Self(value: "confidence_score")
+    public static let confidenceScore = Self(remote: "confidence_score", localValue: \.confidenceScore)
     
     /// Filter by the controversy score of the comment.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let controversyScore = Self(value: "controversy_score")
+    public static let controversyScore = Self(remote: "controversy_score", localValue: \.controversyScore)
     
     /// Filter by the creation timestamp of the comment.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
 }
 
 /// A filter that can be applied to comments queries.

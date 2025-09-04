@@ -22,7 +22,7 @@ import StreamCore
         self.feedQuery = feedQuery
         self.memberListState = memberListState
         self.currentUserId = currentUserId
-        webSocketObserver = WebSocketObserver(feed: feedQuery.feed, subscribing: events, handlers: changeHandlers)
+        webSocketObserver = WebSocketObserver(query: feedQuery, subscribing: events, handlers: changeHandlers)
         memberListState.$members
             .assign(to: \.members, onWeak: self)
             .store(in: &cancellables)
@@ -115,19 +115,8 @@ extension FeedState {
     private func makeChangeHandlers() -> ChangeHandlers {
         ChangeHandlers(
             activityAdded: { [weak self] activity in
-                guard let sorting = self?.activitiesSorting else { return }
-                let query = self?.feedQuery.activityFilter
-                var shouldInsert = true
-                if query?.filterOperator == .exists, query?.field == .expiresAt, let contains = query?.value as? Bool {
-                    if contains {
-                        shouldInsert = activity.expiresAt != nil
-                    } else {
-                        shouldInsert = activity.expiresAt == nil
-                    }
-                }
-                if shouldInsert {
-                    self?.activities.sortedInsert(activity, sorting: sorting)
-                }
+                guard let self else { return }
+                activities.sortedInsert(activity, sorting: activitiesSorting)
             },
             activityRemoved: { [weak self] activity in
                 guard let sorting = self?.activitiesSorting else { return }

@@ -60,21 +60,17 @@ public struct PollsQuery: Sendable {
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for polls queries.
 public struct PollsFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = PollData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    /// Creates a filter field from a coding key.
-    ///
-    /// - Parameter codingKey: The coding key to convert to a filter field.
-    init(codingKey: PollResponseData.CodingKeys) {
-        value = codingKey.rawValue
+    init<Value>(remoteCodingKey: PollResponseData.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remote: remoteCodingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -82,52 +78,52 @@ extension PollsFilterField {
     /// Filter by whether the poll allows answers.
     ///
     /// **Supported operators:** `.equal`
-    public static let allowAnswers = Self(codingKey: .allowAnswers)
+    public static let allowAnswers = Self(remote: "allow_answers", localValue: \.allowAnswers)
     
     /// Filter by whether the poll allows user-suggested options.
     ///
     /// **Supported operators:** `.equal`
-    public static let allowUserSuggestedOptions = Self(codingKey: .allowUserSuggestedOptions)
+    public static let allowUserSuggestedOptions = Self(remote: "allow_user_suggested_options", localValue: \.allowUserSuggestedOptions)
     
     /// Filter by the creation timestamp of the poll.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(codingKey: .createdAt)
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
     
     /// Filter by the ID of the user who created the poll.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let createdById = Self(value: "created_by_id")
+    public static let createdById = Self(remote: "created_by_id", localValue: \.createdById)
     
     /// Filter by the unique identifier of the poll.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let id = Self(codingKey: .id)
+    public static let id = Self(remote: "id", localValue: \.id)
     
     /// Filter by whether the poll is closed.
     ///
     /// **Supported operators:** `.equal`
-    public static let isClosed = Self(codingKey: .isClosed)
+    public static let isClosed = Self(remote: "is_closed", localValue: \.isClosed)
     
     /// Filter by the maximum number of votes allowed per user.
     ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let maxVotesAllowed = Self(codingKey: .maxVotesAllowed)
+    public static let maxVotesAllowed = Self(remote: "max_votes_allowed", localValue: \.maxVotesAllowed)
     
     /// Filter by the name of the poll.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let name = Self(codingKey: .name)
+    public static let name = Self(remote: "name", localValue: \.name)
     
     /// Filter by the last update timestamp of the poll.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(codingKey: .updatedAt)
+    public static let updatedAt = Self(remote: "updated_at", localValue: \.updatedAt)
     
     /// Filter by the voting visibility setting of the poll.
     ///
     /// **Supported operators:** `.equal`
-    public static let votingVisibility = Self(codingKey: .votingVisibility)
+    public static let votingVisibility = Self(remote: "voting_visibility", localValue: \.votingVisibility)
 }
 
 /// A filter that can be applied to polls queries.
@@ -203,7 +199,7 @@ public struct PollsSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     

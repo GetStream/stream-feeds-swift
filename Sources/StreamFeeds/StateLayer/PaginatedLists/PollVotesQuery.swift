@@ -72,21 +72,17 @@ public struct PollVotesQuery: Sendable {
 /// This type provides a type-safe way to specify which field should be used
 /// when creating filters for poll votes queries.
 public struct PollVotesFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = PollVoteData
+    public let matcher: AnyFilterMatcher<Model>
+    public let remote: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.remote = remote
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    /// Creates a filter field from a coding key.
-    ///
-    /// - Parameter codingKey: The coding key to convert to a filter field.
-    init(codingKey: PollVoteResponseData.CodingKeys) {
-        value = codingKey.rawValue
+    init<Value>(remoteCodingKey: PollVoteResponseData.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remote: remoteCodingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -94,37 +90,37 @@ extension PollVotesFilterField {
     /// Filter by the creation timestamp of the poll vote.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(codingKey: .createdAt)
+    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
     
     /// Filter by the unique identifier of the poll vote.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let id = Self(codingKey: .id)
+    public static let id = Self(remote: "id", localValue: \.id)
     
     /// Filter by whether the vote is an answer (true/false).
     ///
     /// **Supported operators:** `.equal`
-    public static let isAnswer = Self(value: "is_answer")
+    public static let isAnswer = Self(remote: "is_answer", localValue: \.isAnswer)
     
     /// Filter by the option ID that was voted for.
     ///
     /// **Supported operators:** `.equal`, `.in`, `.exists`
-    public static let optionId = Self(value: "option_id")
+    public static let optionId = Self(remote: "option_id", localValue: \.optionId)
     
     /// Filter by the user ID who cast the vote.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
+    public static let userId = Self(remote: "user_id", localValue: \.userId)
     
     /// Filter by the poll ID that the vote belongs to.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let pollId = Self(value: "poll_id")
+    public static let pollId = Self(remote: "poll_id", localValue: \.pollId)
     
     /// Filter by the last update timestamp of the poll vote.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(value: "updated_at")
+    public static let updatedAt = Self(remote: "updated_at", localValue: \.updatedAt)
 }
 
 /// A filter that can be applied to poll votes queries.
@@ -193,7 +189,7 @@ public struct PollVotesSortField: SortField {
     ///   - remote: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
     public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
+        comparator = AnySortComparator(localValue: localValue)
         self.remote = remote
     }
     
