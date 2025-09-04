@@ -141,7 +141,7 @@ import SwiftUI
                 expiresAt: postAsStory ? Date().addingTimeInterval(60 * 60 * 24).ISO8601Format() : nil,
                 mentionedUserIds: mentionedUsers.map(\.id),
                 text: text,
-                type: "activity"
+                type: "post"
             )
         )
         text = ""

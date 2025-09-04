@@ -50,7 +50,7 @@ struct DebugFeedView: View {
                 for index in (0..<10).reversed() {
                     let request = FeedAddActivityRequest(
                         text: "Generated \(index) at \(Date().formatted(.dateTime))",
-                        type: "activity"
+                        type: "post"
                     )
                     try await feed.addActivity(request: request)
                     try await Task.sleep(nanoseconds: 500_000_000)
