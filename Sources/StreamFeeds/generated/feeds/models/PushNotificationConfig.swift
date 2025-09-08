@@ -6,26 +6,26 @@ import Foundation
 import StreamCore
 
 public final class PushNotificationConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activityTypes: [String]?
-    public var enabled: Bool?
+    public var enablePush: Bool?
+    public var pushTypes: [String]?
 
-    public init(activityTypes: [String]? = nil, enabled: Bool? = nil) {
-        self.activityTypes = activityTypes
-        self.enabled = enabled
+    public init(enablePush: Bool? = nil, pushTypes: [String]? = nil) {
+        self.enablePush = enablePush
+        self.pushTypes = pushTypes
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityTypes = "activity_types"
-        case enabled
+        case enablePush = "enable_push"
+        case pushTypes = "push_types"
     }
 
     public static func == (lhs: PushNotificationConfig, rhs: PushNotificationConfig) -> Bool {
-        lhs.activityTypes == rhs.activityTypes &&
-            lhs.enabled == rhs.enabled
+        lhs.enablePush == rhs.enablePush &&
+            lhs.pushTypes == rhs.pushTypes
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityTypes)
-        hasher.combine(enabled)
+        hasher.combine(enablePush)
+        hasher.combine(pushTypes)
     }
 }

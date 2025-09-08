@@ -1513,6 +1513,19 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func updatePushNotificationPreferences(upsertPushPreferencesRequest: UpsertPushPreferencesRequest) async throws -> UpsertPushPreferencesResponse {
+        let path = "/api/v2/push_preferences"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: upsertPushPreferencesRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpsertPushPreferencesResponse.self, from: $0)
+        }
+    }
+
     open func deleteFile(url: String?) async throws -> Response {
         let path = "/api/v2/uploads/file"
 
@@ -1848,6 +1861,8 @@ protocol DefaultAPIEndpoints {
     func getPollOption(pollId: String, optionId: String, userId: String?) async throws -> PollOptionResponse
 
     func queryPollVotes(pollId: String, userId: String?, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse
+
+    func updatePushNotificationPreferences(upsertPushPreferencesRequest: UpsertPushPreferencesRequest) async throws -> UpsertPushPreferencesResponse
 
     func deleteFile(url: String?) async throws -> Response
 
