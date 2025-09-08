@@ -24,7 +24,7 @@ struct FeedsListRowView: View {
                     ownCapabilities: feed.state.ownCapabilities,
                     text: parent.text ?? "",
                     attachments: parent.attachments,
-                    activity: activity
+                    activity: parent
                 )
             } else if let poll = activity.poll {
                 HStack(alignment: .top, spacing: 8) {
