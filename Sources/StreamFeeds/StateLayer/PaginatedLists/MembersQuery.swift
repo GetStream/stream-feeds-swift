@@ -105,12 +105,7 @@ extension MembersFilterField {
     /// Filter by the feed ID that the member belongs to.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let feed = Self("fid", localValue: \.feed?.rawValue)
-    
-    /// Filter by whether the member joined via a request (true/false).
-    ///
-    /// **Supported operators:** `.equal`
-    public static let request = Self("request", localValue: { $0.inviteAcceptedAt != nil })
+    public static let feed = Self("fid", localValue: \.localFilterData?.feed.rawValue)
 }
 
 /// A filter that can be applied to members queries.

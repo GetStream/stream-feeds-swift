@@ -148,7 +148,7 @@ extension FeedsFilterField {
     /// Filter by specific members in the feed.
     ///
     /// **Supported operators:** `.in`
-    public static let members = Self("members", localValue: \.memberIds)
+    public static let members = Self("members", localValue: \.localFilterData?.memberIds)
     
     /// Filter by the name of the feed.
     ///
@@ -168,7 +168,7 @@ extension FeedsFilterField {
     /// Filter by feeds that this feed is following.
     ///
     /// **Supported operators:** `.in`
-    public static let followingFeeds = Self("following_feeds", localValue: \.followingFeedIds)
+    public static let followingFeeds = Self("following_feeds", localValue: \.localFilterData?.followingFeedIds)
     
     /// Filter by filter tags associated with the feed.
     ///
