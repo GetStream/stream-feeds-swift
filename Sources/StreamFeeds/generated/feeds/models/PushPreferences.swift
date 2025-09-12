@@ -9,38 +9,38 @@ public final class PushPreferences: @unchecked Sendable, Codable, JSONEncodable,
     public var callLevel: String?
     public var chatLevel: String?
     public var disabledUntil: Date?
-    public var feedsEvents: FeedsEventPreferences?
     public var feedsLevel: String?
+    public var feedsPreferences: FeedsPreferences?
 
-    public init(callLevel: String? = nil, chatLevel: String? = nil, disabledUntil: Date? = nil, feedsEvents: FeedsEventPreferences? = nil, feedsLevel: String? = nil) {
+    public init(callLevel: String? = nil, chatLevel: String? = nil, disabledUntil: Date? = nil, feedsLevel: String? = nil, feedsPreferences: FeedsPreferences? = nil) {
         self.callLevel = callLevel
         self.chatLevel = chatLevel
         self.disabledUntil = disabledUntil
-        self.feedsEvents = feedsEvents
         self.feedsLevel = feedsLevel
+        self.feedsPreferences = feedsPreferences
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case callLevel = "call_level"
         case chatLevel = "chat_level"
         case disabledUntil = "disabled_until"
-        case feedsEvents = "feeds_events"
         case feedsLevel = "feeds_level"
+        case feedsPreferences = "feeds_preferences"
     }
 
     public static func == (lhs: PushPreferences, rhs: PushPreferences) -> Bool {
         lhs.callLevel == rhs.callLevel &&
             lhs.chatLevel == rhs.chatLevel &&
             lhs.disabledUntil == rhs.disabledUntil &&
-            lhs.feedsEvents == rhs.feedsEvents &&
-            lhs.feedsLevel == rhs.feedsLevel
+            lhs.feedsLevel == rhs.feedsLevel &&
+            lhs.feedsPreferences == rhs.feedsPreferences
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(callLevel)
         hasher.combine(chatLevel)
         hasher.combine(disabledUntil)
-        hasher.combine(feedsEvents)
         hasher.combine(feedsLevel)
+        hasher.combine(feedsPreferences)
     }
 }

@@ -114,7 +114,7 @@ import SwiftUI
                         options: pollOptions,
                         votingVisibility: anonymousPoll ? .anonymous : .public
                     ),
-                    activityType: "activity"
+                    activityType: "post"
                 )
                 completion()
             } catch {

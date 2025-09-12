@@ -72,8 +72,6 @@ lane :publish_release do |options|
     version: release_version,
     github_repo: github_repo
   )
-
-  sh('gh workflow run merge-main-to-develop.yml --ref main')
 end
 
 lane :get_sdk_version_from_environment do
