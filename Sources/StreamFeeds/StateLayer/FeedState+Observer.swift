@@ -28,11 +28,7 @@ extension FeedState {
                 if event.activity.createdAt < Date(timeIntervalSinceReferenceDate: 0) {
                     activity.createdAt = event.createdAt
                 }
-                let model = activity.toModel()
-                if let filter = query.activityFilter, !filter.matches(model) {
-                    return
-                }
-                await handlers.activityAdded(model)
+                await handlers.activityAdded(activity.toModel())
             case let event as ActivityDeletedEvent:
                 guard event.fid == feed else { return }
                 await handlers.activityRemoved(event.activity.toModel())

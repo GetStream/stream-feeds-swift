@@ -116,6 +116,9 @@ extension FeedState {
         ChangeHandlers(
             activityAdded: { [weak self] activity in
                 guard let self else { return }
+                if let filter = feedQuery.activityFilter, !filter.matches(activity) {
+                    return
+                }
                 activities.sortedInsert(activity, sorting: activitiesSorting)
             },
             activityRemoved: { [weak self] activity in
