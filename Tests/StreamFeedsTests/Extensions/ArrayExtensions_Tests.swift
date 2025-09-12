@@ -21,11 +21,11 @@ struct ArrayExtensions_Tests {
     struct TestItemSortField: SortField {
         public typealias Model = TestItem
         public let comparator: AnySortComparator<Model>
-        public let remote: String
+        public let rawValue: String
         
-        public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+        public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
             comparator = AnySortComparator(localValue: localValue)
-            self.remote = remote
+            self.rawValue = rawValue
         }
         
         public static let value = Self("value", localValue: \.value)

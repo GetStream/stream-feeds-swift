@@ -55,22 +55,22 @@ public struct BookmarkFoldersQuery: Sendable {
 
 // MARK: - Filters
 
-/// Represents a field that can be used in bookmark folders filtering.
+/// A filter field for bookmark folders that defines how filter fields are represented as strings.
 ///
-/// This type provides a type-safe way to specify which field should be used
-/// when creating filters for bookmark folders queries.
+/// This protocol allows for type-safe field names while maintaining the ability to convert to string values
+/// for API communication.
 public struct BookmarkFoldersFilterField: FilterFieldRepresentable, Sendable {
     public typealias Model = BookmarkFolderData
     public let matcher: AnyFilterMatcher<Model>
-    public let remote: String
+    public let rawValue: String
     
-    public init<Value>(remote: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
-        self.remote = remote
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.rawValue = rawValue
         matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    init<Value>(remoteCodingKey: BookmarkFolderResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
-        self.init(remote: remoteCodingKey.rawValue, localValue: localValue)
+    init<Value>(_ codingKey: BookmarkFolderResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(codingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -78,22 +78,22 @@ extension BookmarkFoldersFilterField {
     /// Filter by the unique identifier of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let folderId = Self(remote: "folder_id", localValue: \.id)
+    public static let folderId = Self("folder_id", localValue: \.id)
     
     /// Filter by the name of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.in`, `.contains`
-    public static let folderName = Self(remote: "folder_name", localValue: \.name)
+    public static let folderName = Self("folder_name", localValue: \.name)
         
     /// Filter by the creation timestamp of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(remote: "created_at", localValue: \.createdAt)
+    public static let createdAt = Self(.createdAt, localValue: \.createdAt)
     
     /// Filter by the last update timestamp of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(remote: "updated_at", localValue: \.updatedAt)
+    public static let updatedAt = Self(.updatedAt, localValue: \.updatedAt)
 }
 
 /// A filter that can be applied to bookmark folders queries.
@@ -143,10 +143,13 @@ public struct BookmarkFoldersFilter: Filter {
 
 // MARK: - Sorting
 
-/// Represents a field that can be used for sorting bookmark folders.
+/// A sortable field for bookmark folders that can be used for both local and remote sorting.
 ///
-/// This type provides a type-safe way to specify which field should be used
-/// when sorting bookmark folders results.
+/// This type provides the foundation for creating sortable fields that can be used
+/// both for local sorting and remote API requests. It includes a comparator for local
+/// sorting operations and a remote string identifier for API communication.
+///
+/// - Note: The associated `Model` type must conform to `Sendable` to ensure thread safety.
 public struct BookmarkFoldersSortField: SortField {
     /// The model type associated with this sort field.
     public typealias Model = BookmarkFolderData
@@ -155,16 +158,16 @@ public struct BookmarkFoldersSortField: SortField {
     public let comparator: AnySortComparator<Model>
     
     /// The string value representing the field name in the API for remote sorting.
-    public let remote: String
+    public let rawValue: String
     
     /// Creates a new sort field with the specified parameters.
     ///
     /// - Parameters:
-    ///   - remote: The string value representing the field name in the API.
+    ///   - rawValue: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
-    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
         comparator = AnySortComparator(localValue: localValue)
-        self.remote = remote
+        self.rawValue = rawValue
     }
     
     /// Sort by the creation timestamp of the bookmark folder.
