@@ -328,7 +328,7 @@ extension Array where Element: Identifiable {
         var left = startIndex
         var right = endIndex
         while left < right {
-            let mid = index(left, offsetBy: distance(from: left / 2, to: right / 2))
+            let mid = index(left, offsetBy: distance(from: left, to: right) / 2)
             if self[mid].id == element.id {
                 return mid
             } else if sorting(self[mid], element) {

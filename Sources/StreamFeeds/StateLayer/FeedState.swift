@@ -126,9 +126,9 @@ extension FeedState {
                 self?.activities.sortedRemove(activity, nesting: nil, sorting: sorting)
             },
             activityUpdated: { [weak self] activity in
-                guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedInsert(activity, sorting: sorting)
-                self?.pinnedActivities.updateFirstElement(
+                guard let self else { return }
+                activities.sortedReplace(activity, nesting: nil, sorting: activitiesSorting)
+                pinnedActivities.updateFirstElement(
                     where: { $0.activity.id == activity.id },
                     changes: { $0.activity = activity }
                 )
