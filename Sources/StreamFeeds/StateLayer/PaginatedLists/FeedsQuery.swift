@@ -75,26 +75,22 @@ public struct FeedsQuery: Sendable {
 
 // MARK: - Filters
 
-/// Represents a field that can be used in feeds filtering.
+/// A filter field for feeds that defines how filter fields are represented as strings.
 ///
-/// This type provides a type-safe way to specify which field should be used
-/// when creating filters for feeds queries.
+/// This protocol allows for type-safe field names while maintaining the ability to convert to string values
+/// for API communication.
 public struct FeedsFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = FeedData
+    public let matcher: AnyFilterMatcher<Model>
+    public let rawValue: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.rawValue = rawValue
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    /// Creates a filter field from a coding key.
-    ///
-    /// - Parameter codingKey: The coding key to convert to a filter field.
-    init(codingKey: FeedResponse.CodingKeys) {
-        value = codingKey.rawValue
+    init<Value>(remoteCodingKey: FeedResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remoteCodingKey.rawValue, localValue: localValue)
     }
 }
 
@@ -102,87 +98,82 @@ extension FeedsFilterField {
     /// Filter by the unique identifier of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let id = Self(codingKey: .id)
+    public static let id = Self("id", localValue: \.id)
     
     /// Filter by the group ID of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let groupId = Self(codingKey: .groupId)
+    public static let groupId = Self("group_id", localValue: \.groupId)
     
     /// Filter by the feed ID of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let feed = Self(codingKey: .feed)
+    public static let feed = Self("feed", localValue: \.feed.rawValue)
     
     /// Filter by the creation timestamp of the feed.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(codingKey: .createdAt)
+    public static let createdAt = Self("created_at", localValue: \.createdAt)
     
     /// Filter by the ID of the user who created the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let createdById = Self(value: "created_by_id")
+    public static let createdById = Self("created_by_id", localValue: \.createdBy.id)
     
     /// Filter by the name of the user who created the feed.
     ///
     /// **Supported operators:** `.equal`, `.customQ`, `.customAutocomplete`
-    public static let createdByName = Self(value: "created_by.name")
+    public static let createdByName = Self("created_by.name", localValue: \.createdBy.name)
     
     /// Filter by the description of the feed.
     ///
     /// **Supported operators:** `.equal`, `.customQ`, `.customAutocomplete`
-    public static let description = Self(codingKey: .description)
+    public static let description = Self("description", localValue: \.description)
     
     /// Filter by the number of followers the feed has.
     ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let followerCount = Self(codingKey: .followerCount)
+    public static let followerCount = Self("follower_count", localValue: \.followerCount)
     
     /// Filter by the number of feeds this feed is following.
     ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let followingCount = Self(codingKey: .followingCount)
+    public static let followingCount = Self("following_count", localValue: \.followingCount)
     
     /// Filter by the number of members in the feed.
     ///
     /// **Supported operators:** `.equal`, `.notEqual`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let memberCount = Self(codingKey: .memberCount)
+    public static let memberCount = Self("member_count", localValue: \.memberCount)
     
     /// Filter by specific members in the feed.
     ///
     /// **Supported operators:** `.in`
-    public static let members = Self(value: "members")
+    public static let members = Self("members", localValue: \.localFilterData?.memberIds)
     
     /// Filter by the name of the feed.
     ///
     /// **Supported operators:** `.equal`, `.customQ`, `.customAutocomplete`
-    public static let name = Self(codingKey: .name)
+    public static let name = Self("name", localValue: \.name)
     
     /// Filter by the last update timestamp of the feed.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(codingKey: .updatedAt)
+    public static let updatedAt = Self("updated_at", localValue: \.updatedAt)
     
     /// Filter by the visibility setting of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let visibility = Self(codingKey: .visibility)
-    
-    /// Filter by users that the feed is following.
-    ///
-    /// **Supported operators:** `.in`
-    public static let followingUsers = Self(value: "following_users")
+    public static let visibility = Self("visibility", localValue: \.visibility)
     
     /// Filter by feeds that this feed is following.
     ///
     /// **Supported operators:** `.in`
-    public static let followingFeeds = Self(value: "following_feeds")
+    public static let followingFeeds = Self("following_feeds", localValue: \.localFilterData?.followingFeedIds)
     
     /// Filter by filter tags associated with the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`, `.customContains`
-    public static let filterTags = Self(value: "filter_tags")
+    public static let filterTags = Self("filter_tags", localValue: \.filterTags)
 }
 
 /// A filter that can be applied to feeds queries.
@@ -248,10 +239,13 @@ public struct FeedsFilter: Filter {
 
 // MARK: - Sorting
 
-/// Represents a field that can be used for sorting feeds.
+/// A sortable field for feeds that can be used for both local and remote sorting.
 ///
-/// This type provides a type-safe way to specify which field should be used
-/// when sorting feeds results.
+/// This type provides the foundation for creating sortable fields that can be used
+/// both for local sorting and remote API requests. It includes a comparator for local
+/// sorting operations and a remote string identifier for API communication.
+///
+/// - Note: The associated `Model` type must conform to `Sendable` to ensure thread safety.
 public struct FeedsSortField: SortField {
     /// The model type associated with this sort field.
     public typealias Model = FeedData
@@ -260,37 +254,32 @@ public struct FeedsSortField: SortField {
     public let comparator: AnySortComparator<Model>
     
     /// The string value representing the field name in the API for remote sorting.
-    public let remote: String
+    public let rawValue: String
     
-    /// Creates a new sort field with the specified parameters.
-    ///
-    /// - Parameters:
-    ///   - remote: The string value representing the field name in the API.
-    ///   - localValue: A closure that extracts the comparable value from the model.
-    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
-        self.remote = remote
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+        comparator = AnySortComparator(localValue: localValue)
+        self.rawValue = rawValue
     }
     
     /// Sort by the creation timestamp of the feed.
     /// This field allows sorting feeds by when they were created (newest/oldest first).
-    public static let createdAt: Self = FeedsSortField("created_at", localValue: \.createdAt)
+    public static let createdAt = Self("created_at", localValue: \.createdAt)
     
     /// Sort by the number of followers the feed has.
     /// This field allows sorting feeds by popularity (most/least followed).
-    public static let followerCount: Self = FeedsSortField("follower_count", localValue: \.followerCount)
+    public static let followerCount = Self("follower_count", localValue: \.followerCount)
     
     /// Sort by the number of feeds this feed is following.
     /// This field allows sorting feeds by how many feeds they follow.
-    public static let followingCount: Self = FeedsSortField("following_count", localValue: \.followingCount)
+    public static let followingCount = Self("following_count", localValue: \.followingCount)
     
     /// Sort by the number of members in the feed.
     /// This field allows sorting feeds by member count (most/least members).
-    public static let memberCount: Self = FeedsSortField("member_count", localValue: \.memberCount)
+    public static let memberCount = Self("member_count", localValue: \.memberCount)
     
     /// Sort by the last update timestamp of the feed.
     /// This field allows sorting feeds by when they were last updated (newest/oldest first).
-    public static let updatedAt: Self = FeedsSortField("updated_at", localValue: \.updatedAt)
+    public static let updatedAt = Self("updated_at", localValue: \.updatedAt)
 }
 
 extension Sort where Field == FeedsSortField {

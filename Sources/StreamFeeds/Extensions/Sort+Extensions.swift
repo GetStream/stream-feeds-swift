@@ -12,7 +12,7 @@ extension Sort {
     func toRequest() -> SortParamRequest {
         SortParamRequest(
             direction: direction.rawValue,
-            field: field.remote
+            field: field.rawValue
         )
     }
 }

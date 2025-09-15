@@ -22,6 +22,8 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let pinCount: Int
     public let updatedAt: Date
     public let visibility: String?
+    
+    var localFilterData: LocalFilterData?
 }
 
 // MARK: - Model Conversions
@@ -46,5 +48,23 @@ extension FeedResponse {
             updatedAt: updatedAt,
             visibility: visibility
         )
+    }
+}
+
+// MARK: - Local Filter Matching
+
+extension FeedData {
+    struct LocalFilterData: Equatable, Sendable {
+        var followingFeedIds: [String]
+        var memberIds: [String]
+    }
+
+    func toLocalFilterModel(
+        followingFeedIds: [String],
+        memberIds: [String]
+    ) -> Self {
+        var data = self
+        data.localFilterData = LocalFilterData(followingFeedIds: followingFeedIds, memberIds: memberIds)
+        return data
     }
 }

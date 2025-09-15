@@ -9,7 +9,8 @@ import StreamCore
 extension ActivityResponse {
     static func dummy(
         id: String = "activity-123",
-        text: String = "Test activity content"
+        text: String = "Test activity content",
+        expiresAt: Date? = nil
     ) -> ActivityResponse {
         ActivityResponse(
             attachments: [],
@@ -21,7 +22,7 @@ extension ActivityResponse {
             custom: [:],
             deletedAt: nil,
             editedAt: nil,
-            expiresAt: nil,
+            expiresAt: expiresAt,
             feeds: ["user:test"],
             filterTags: [],
             id: id,

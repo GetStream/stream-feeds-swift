@@ -61,19 +61,18 @@ public struct ActivityReactionsQuery: Sendable {
 
 // MARK: - Filters
 
-/// Represents a field that can be used in activity reactions filtering.
+/// A filter field for activity reactions that defines how filter fields are represented as strings.
 ///
-/// This type provides a type-safe way to specify which field should be used
-/// when creating filters for activity reactions queries.
+/// This protocol allows for type-safe field names while maintaining the ability to convert to string values
+/// for API communication.
 public struct ActivityReactionsFilterField: FilterFieldRepresentable, Sendable {
-    /// The string value representing the field name in the API.
-    public let value: String
+    public typealias Model = FeedsReactionData
+    public let matcher: AnyFilterMatcher<Model>
+    public let rawValue: String
     
-    /// Creates a new filter field with the specified value.
-    ///
-    /// - Parameter value: The string value representing the field name.
-    public init(value: String) {
-        self.value = value
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.rawValue = rawValue
+        matcher = AnyFilterMatcher(localValue: localValue)
     }
 }
 
@@ -81,17 +80,17 @@ extension ActivityReactionsFilterField {
     /// Filter by the reaction type (e.g., "like", "love", "angry").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let reactionType = Self(value: "reaction_type")
+    public static let reactionType = Self("reaction_type", localValue: \.type)
     
     /// Filter by the user ID who created the reaction.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self(value: "user_id")
+    public static let userId = Self("user_id", localValue: \.user.id)
     
     /// Filter by the creation timestamp of the reaction.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(value: "created_at")
+    public static let createdAt = Self("created_at", localValue: \.createdAt)
 }
 
 /// A filter that can be applied to activity reactions queries.
@@ -136,10 +135,13 @@ public struct ActivityReactionsFilter: Filter {
 
 // MARK: - Sorting
 
-/// Represents a field that can be used for sorting activity reactions.
+/// A sortable field for activity reactions that can be used for both local and remote sorting.
 ///
-/// This type provides a type-safe way to specify which field should be used
-/// when sorting activity reactions results.
+/// This type provides the foundation for creating sortable fields that can be used
+/// both for local sorting and remote API requests. It includes a comparator for local
+/// sorting operations and a remote string identifier for API communication.
+///
+/// - Note: The associated `Model` type must conform to `Sendable` to ensure thread safety.
 public struct ActivityReactionsSortField: SortField {
     /// The model type associated with this sort field.
     public typealias Model = FeedsReactionData
@@ -148,16 +150,16 @@ public struct ActivityReactionsSortField: SortField {
     public let comparator: AnySortComparator<Model>
     
     /// The string value representing the field name in the API for remote sorting.
-    public let remote: String
+    public let rawValue: String
     
     /// Creates a new sort field with the specified parameters.
     ///
     /// - Parameters:
-    ///   - remote: The string value representing the field name in the API.
+    ///   - rawValue: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
-    public init<Value>(_ remote: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
-        comparator = SortComparator(localValue).toAny()
-        self.remote = remote
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+        comparator = AnySortComparator(localValue: localValue)
+        self.rawValue = rawValue
     }
     
     /// Sort by the creation timestamp of the reaction.

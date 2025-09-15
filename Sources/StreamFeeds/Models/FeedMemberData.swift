@@ -14,6 +14,8 @@ public struct FeedMemberData: Equatable, Sendable {
     public let status: FeedMemberStatus
     public let updatedAt: Date
     public let user: UserData
+    
+    var localFilterData: LocalFilterData?
 }
 
 public typealias FeedMemberStatus = FeedMemberResponse.FeedMemberResponseStatus
@@ -38,5 +40,19 @@ extension FeedMemberResponse {
             updatedAt: updatedAt,
             user: user.toModel()
         )
+    }
+}
+
+// MARK: - Local Filter Matching
+
+extension FeedMemberData {
+    struct LocalFilterData: Equatable, Sendable {
+        var feed: FeedId
+    }
+
+    func toLocalFilterModel(feed: FeedId) -> Self {
+        var data = self
+        data.localFilterData = LocalFilterData(feed: feed)
+        return data
     }
 }
