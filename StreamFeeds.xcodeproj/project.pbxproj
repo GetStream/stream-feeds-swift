@@ -860,7 +860,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
-				branch = "add/local-filter-matching";
+				branch = develop;
 				kind = branch;
 			};
 		};
