@@ -9,10 +9,10 @@ import StreamCore
 extension CommentReactionAddedEvent {
     static func dummy(
         comment: CommentResponse = .dummy(),
-        reaction: FeedsReactionResponse = .dummy(),
-        fid: String = "user:test",
         createdAt: Date = Date(),
         custom: [String: RawJSON] = [:],
+        fid: String = "user:test",
+        reaction: FeedsReactionResponse = .dummy(),
         user: UserResponseCommonFields? = nil
     ) -> CommentReactionAddedEvent {
         CommentReactionAddedEvent(

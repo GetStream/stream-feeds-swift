@@ -8,8 +8,8 @@ import StreamCore
 
 extension ActivityUpdatedEvent {
     static func dummy(
-        fid: String = "test-feed-id",
         activity: ActivityResponse = ActivityResponse.dummy(),
+        fid: String = "test-feed-id",
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
     ) -> ActivityUpdatedEvent {
         ActivityUpdatedEvent(

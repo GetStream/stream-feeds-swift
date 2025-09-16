@@ -10,11 +10,11 @@ extension ThreadedCommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
         id: String = "comment-123",
-        text: String = "Test comment",
         objectId: String = "activity-123",
         objectType: String = "activity",
         parentId: String? = nil,
-        replies: [ThreadedCommentResponse]? = nil
+        replies: [ThreadedCommentResponse]? = nil,
+        text: String = "Test comment"
     ) -> ThreadedCommentResponse {
         ThreadedCommentResponse(
             attachments: nil,

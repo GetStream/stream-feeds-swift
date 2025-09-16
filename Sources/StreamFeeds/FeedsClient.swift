@@ -30,6 +30,7 @@ public final class FeedsClient: Sendable {
     
     let eventsMiddleware = WSEventsMiddleware()
     let eventNotificationCenter: EventNotificationCenter
+    let stateLayerEventPublisher = StateLayerEventPublisher()
     
     let activitiesRepository: ActivitiesRepository
     let bookmarksRepository: BookmarksRepository
@@ -133,6 +134,7 @@ public final class FeedsClient: Sendable {
         moderation = Moderation(apiClient: apiClient)
         
         eventsMiddleware.add(subscriber: self)
+        eventsMiddleware.add(subscriber: stateLayerEventPublisher)
         eventNotificationCenter.add(middlewares: [eventsMiddleware])
     }
     

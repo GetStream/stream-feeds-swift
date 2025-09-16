@@ -8,12 +8,12 @@ import StreamCore
 
 extension FeedsReactionResponse {
     static func dummy(
-        type: String = "like",
         activityId: String = "activity-123",
         commentId: String? = nil,
-        user: UserResponse = .dummy(),
         createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
-        custom: [String: RawJSON]? = nil
+        custom: [String: RawJSON]? = nil,
+        type: String = "like",
+        user: UserResponse = .dummy()
     ) -> FeedsReactionResponse {
         FeedsReactionResponse(
             activityId: activityId,

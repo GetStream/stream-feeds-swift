@@ -150,8 +150,8 @@ struct ActivityCommentList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionAddedEvent.dummy(
                 comment: .dummy(id: "comment-1"),
-                reaction: .dummy(type: "heart"),
-                fid: "user:test"
+                fid: "user:test",
+                reaction: .dummy(type: "heart")
             )
         )
         
@@ -174,8 +174,8 @@ struct ActivityCommentList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionAddedEvent.dummy(
                 comment: .dummy(id: "comment-1"),
-                reaction: .dummy(type: "heart"),
-                fid: "user:test"
+                fid: "user:test",
+                reaction: .dummy(type: "heart")
             )
         )
         
@@ -183,8 +183,8 @@ struct ActivityCommentList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionDeletedEvent.dummy(
                 comment: .dummy(id: "comment-1"),
-                reaction: .dummy(type: "heart"),
-                fid: "user:test"
+                fid: "user:test",
+                reaction: .dummy(type: "heart")
             )
         )
         

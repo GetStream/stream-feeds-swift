@@ -8,9 +8,14 @@ import StreamCore
 
 extension ActivityResponse {
     static func dummy(
+        expiresAt: Date? = nil,
         id: String = "activity-123",
-        text: String = "Test activity content",
-        expiresAt: Date? = nil
+        latestReactions: [FeedsReactionResponse]? = nil,
+        ownReactions: [FeedsReactionResponse]? = nil,
+        poll: PollResponseData? = nil,
+        reactionCount: Int? = nil,
+        reactionGroups: [String: ReactionGroupResponse]? = nil,
+        text: String = "Test activity content"
     ) -> ActivityResponse {
         ActivityResponse(
             attachments: [],
@@ -27,18 +32,18 @@ extension ActivityResponse {
             filterTags: [],
             id: id,
             interestTags: [],
-            latestReactions: [],
+            latestReactions: latestReactions ?? [],
             location: nil,
             mentionedUsers: [UserResponse.dummy()],
             moderation: nil,
             notificationContext: nil,
             ownBookmarks: [],
-            ownReactions: [],
+            ownReactions: ownReactions ?? [],
             parent: nil,
-            poll: nil,
+            poll: poll,
             popularity: 100,
-            reactionCount: 25,
-            reactionGroups: [:],
+            reactionCount: reactionCount ?? 25,
+            reactionGroups: reactionGroups ?? [:],
             score: 1.0,
             searchData: [:],
             shareCount: 3,

@@ -480,9 +480,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
-        let reaction = try await activitiesRepository.addReaction(activityId: activityId, request: request)
-        await state.changeHandlers.reactionAdded(reaction)
-        return reaction
+        let result = try await activitiesRepository.addReaction(activityId: activityId, request: request)
+        await state.changeHandlers.reactionAdded(result.reaction)
+        return result.reaction
     }
     
     /// Removes a reaction from an activity.
@@ -494,9 +494,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
-        let reaction = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
-        await state.changeHandlers.reactionRemoved(reaction)
-        return reaction
+        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
+        await state.changeHandlers.reactionRemoved(result.reaction)
+        return result.reaction
     }
     
     /// Adds a reaction to a comment.

@@ -12,25 +12,21 @@ import StreamCore
 /// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
 @MainActor public class ActivityState: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
-    private(set) lazy var changeHandlers = makeChangeHandlers()
     private let commentListState: ActivityCommentListState
     let currentUserId: String
-    private var webSocketObserver: WebSocketObserver?
+    private let activityId: String
+    private let feed: FeedId
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(activityId: String, feed: FeedId, data: ActivityData?, currentUserId: String, events: WSEventsSubscribing, commentListState: ActivityCommentListState) {
+    init(activityId: String, feed: FeedId, data: ActivityData?, currentUserId: String, eventPublisher: StateLayerEventPublisher, commentListState: ActivityCommentListState) {
+        self.activityId = activityId
         self.commentListState = commentListState
         self.currentUserId = currentUserId
-        let webSocketObserver = WebSocketObserver(
-            activityId: activityId,
-            feed: feed,
-            subscribing: events,
-            handlers: changeHandlers
-        )
-        self.webSocketObserver = webSocketObserver
+        self.feed = feed
         if let data, data.id == activityId {
-            updateActivity(data)
+            setActivity(data)
         }
-        
+        subscribe(to: eventPublisher)
         commentListState.$comments
             .assign(to: \.comments, onWeak: self)
             .store(in: &cancellables)
@@ -49,60 +45,34 @@ import StreamCore
 // MARK: - Updating the State
 
 extension ActivityState {
-    /// Handlers for various activity state change events.
-    ///
-    /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
-    struct ChangeHandlers: Sendable {
-        let activityUpdated: @MainActor (ActivityData) -> Void
-        let pollClosed: @MainActor (PollData) -> Void
-        let pollDeleted: @MainActor (String) -> Void
-        let pollUpdated: @MainActor (PollData) -> Void
-        let pollVoteCasted: @MainActor (PollVoteData, PollData) -> Void
-        let pollVoteChanged: @MainActor (PollVoteData, PollData) -> Void
-        let pollVoteRemoved: @MainActor (PollVoteData, PollData) -> Void
-    }
-    
-    /// Creates the change handlers for activity state updates.
-    ///
-    /// - Returns: A ChangeHandlers instance with all the necessary update functions
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            activityUpdated: { [weak self] activity in
-                self?.updateActivity(activity)
-            },
-            pollClosed: { [weak self] poll in
-                guard poll.id == self?.poll?.id else { return }
-                self?.poll = poll
-            },
-            pollDeleted: { [weak self] pollId in
-                guard pollId == self?.poll?.id else { return }
-                self?.poll = nil
-            },
-            pollUpdated: { [weak self] poll in
-                guard poll.id == self?.poll?.id else { return }
-                self?.poll = poll
-            },
-            pollVoteCasted: { [weak self] _, poll in
-                guard poll.id == self?.poll?.id else { return }
-                self?.poll = poll
-            },
-            pollVoteChanged: { [weak self] _, poll in
-                guard poll.id == self?.poll?.id else { return }
-                self?.poll = poll
-            },
-            pollVoteRemoved: { [weak self] _, poll in
-                guard poll.id == self?.poll?.id else { return }
-                self?.poll = poll
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        eventSubscription = publisher.subscribe { [weak self, activityId, feed] event in
+            switch event {
+            case .activityUpdated(let activityData, let eventFeedId):
+                guard activityData.id == activityId, eventFeedId == feed else { return }
+                await self?.setActivity(activityData)
+            case .pollDeleted(let pollId, let eventFeedId):
+                guard eventFeedId == feed else { return }
+                await self?.access { state in
+                    guard state.poll?.id == pollId else { return }
+                    state.poll = nil
+                }
+            case .pollUpdated(let pollData, let eventFeedId):
+                guard eventFeedId == feed else { return }
+                await self?.access { state in
+                    guard state.poll?.id == pollData.id else { return }
+                    state.poll = pollData
+                }
             }
-        )
+        }
     }
     
-    func updateActivity(_ activity: ActivityData) {
+    func setActivity(_ activity: ActivityData) {
         self.activity = activity
         poll = activity.poll
     }
     
-    func access<T>(_ actions: @MainActor (ActivityState) -> T) -> T {
+    private func access<T>(_ actions: @MainActor (ActivityState) -> T) -> T {
         actions(self)
     }
 }

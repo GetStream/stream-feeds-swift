@@ -10,10 +10,10 @@ extension CommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
         id: String = "comment-123",
-        text: String = "Test comment",
         objectId: String = "activity-123",
         objectType: String = "activity",
-        parentId: String? = nil
+        parentId: String? = nil,
+        text: String = "Test comment"
     ) -> CommentResponse {
         CommentResponse(
             attachments: nil,

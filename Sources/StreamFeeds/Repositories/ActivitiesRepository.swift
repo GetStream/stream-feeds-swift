@@ -96,8 +96,13 @@ final class ActivitiesRepository: Sendable {
     // MARK: - Activity Interactions
     
     func pin(_ flag: Bool, activityId: String, in feed: FeedId) async throws -> ActivityData {
-        let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
-        return response.activity.toModel()
+        if flag {
+            let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
+            return response.activity.toModel()
+        } else {
+            let response = try await apiClient.unpinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
+            return response.activity.toModel()
+        }
     }
     
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
@@ -116,14 +121,14 @@ final class ActivitiesRepository: Sendable {
     
     // MARK: - Reactions
     
-    func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
+    func addReaction(activityId: String, request: AddReactionRequest) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
         let response = try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
-        return response.reaction.toModel()
+        return (response.reaction.toModel(), response.activity.toModel())
     }
     
-    func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
+    func deleteReaction(activityId: String, type: String) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
         let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
-        return response.reaction.toModel()
+        return (response.reaction.toModel(), response.activity.toModel())
     }
     
     // MARK: - Activity Reactions Pagination

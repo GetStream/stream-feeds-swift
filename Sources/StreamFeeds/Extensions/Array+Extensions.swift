@@ -13,11 +13,14 @@ extension Array {
     /// Otherwise, the new element will be inserted at the start of the array.
     ///
     /// - Parameter element: The element to insert or replace.
-    mutating func insert(byId element: Element) where Element: Identifiable {
+    /// - Returns: True, if the element was inserted, false if the element exists and was updated.
+    @discardableResult mutating func insert(byId element: Element) -> Bool where Element: Identifiable {
         if let index = firstIndex(where: { $0.id == element.id }) {
             replaceSubrange(index...index, with: CollectionOfOne(element))
+            return false
         } else {
             insert(element, at: startIndex)
+            return true
         }
     }
     
@@ -25,11 +28,14 @@ extension Array {
     ///
     /// - Parameter id: The ID of the element to remove.
     /// - Parameter nesting: Optional key path to search for nested elements.
-    mutating func remove(
+    /// - Returns: True, if the element was removed, false if it did not exist.
+    @discardableResult mutating func remove(
         byId id: Element.ID,
         nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>? = nil
-    ) where Element: Identifiable {
+    ) -> Bool where Element: Identifiable {
+        let count = count
         _unsortedUpdate(ofId: id, nesting: nestingKeyPath, changes: { _ in nil })
+        return count != self.count
     }
     
     /// Removes elements from the non-sorted array based on ID.
@@ -71,7 +77,9 @@ extension Array where Element: Identifiable {
     ///
     /// - Parameter element: The element to insert.
     /// - Parameter sorting: Closure that defines the sorting order.
-    mutating func sortedInsert(_ element: Element, sorting: (Element, Element) -> Bool) {
+    /// - Returns: True, if the element was inserted, false if existed and was updated.
+    @discardableResult mutating func sortedInsert(_ element: Element, sorting: (Element, Element) -> Bool) -> Bool {
+        let count = count
         let insertionIndex = binarySearchInsertionIndex(for: element, sorting: sorting)
         insert(element, at: insertionIndex)
         // Look for duplicates
@@ -89,6 +97,7 @@ extension Array where Element: Identifiable {
             }
             distance += 1
         }
+        return self.count != count
     }
     
     /// Inserts an element into a sorted array using SortField configuration.
