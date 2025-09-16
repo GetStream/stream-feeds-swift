@@ -16,7 +16,7 @@ import StreamCore
     let currentUserId: String
     private let activityId: String
     private let feed: FeedId
-    private var eventObserver: StateLayerEventPublisher.ObservationToken?
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
     init(activityId: String, feed: FeedId, data: ActivityData?, currentUserId: String, eventPublisher: StateLayerEventPublisher, commentListState: ActivityCommentListState) {
         self.activityId = activityId
@@ -46,7 +46,7 @@ import StreamCore
 
 extension ActivityState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
-        eventObserver = publisher.subscribe { [weak self, activityId, feed] event in
+        eventSubscription = publisher.subscribe { [weak self, activityId, feed] event in
             switch event {
             case .activityUpdated(let activityData, let eventFeedId):
                 guard activityData.id == activityId, eventFeedId == feed else { return }

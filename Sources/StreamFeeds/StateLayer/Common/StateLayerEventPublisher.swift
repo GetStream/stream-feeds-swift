@@ -16,7 +16,7 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
     
     /// Send individual events to all the subscribers.
     ///
-    /// Triggered by incoming web-socket events and manunally after API calls.
+    /// Triggered by incoming web-socket events and manually after API calls.
     ///
     /// - Parameter event: The state layer change event.
     func sendEvent(_ event: StateLayerEvent) async {
@@ -30,10 +30,10 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
         }
     }
     
-    func subscribe(_ handler: @escaping @Sendable (StateLayerEvent) async -> Void) -> ObservationToken {
+    func subscribe(_ handler: @escaping @Sendable (StateLayerEvent) async -> Void) -> Subscription {
         let id = UUID()
         subscriptions.withLock { $0[id] = handler }
-        return ObservationToken { [weak self] in
+        return Subscription { [weak self] in
             self?.unsubscribe(id)
         }
     }
@@ -51,15 +51,15 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
 }
 
 extension StateLayerEventPublisher {
-    final class ObservationToken: Sendable {
-        private let action: @Sendable () -> Void
+    final class Subscription: Sendable {
+        private let cancel: @Sendable () -> Void
         
-        init(action: @escaping @Sendable () -> Void) {
-            self.action = action
+        init(cancel: @escaping @Sendable () -> Void) {
+            self.cancel = cancel
         }
         
         deinit {
-            action()
+            cancel()
         }
     }
 }
