@@ -15,6 +15,7 @@ public final class Activity: Sendable {
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
     private let pollsRepository: PollsRepository
+    private let eventPublisher: StateLayerEventPublisher
     @MainActor private let stateBuilder: StateBuilder<ActivityState>
     
     /// The unique identifier of this activity.
@@ -36,17 +37,17 @@ public final class Activity: Sendable {
         activityId = id
         activitiesRepository = client.activitiesRepository
         commentsRepository = client.commentsRepository
+        eventPublisher = client.stateLayerEventPublisher
         self.feed = feed
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { [currentUserId] in
+        stateBuilder = StateBuilder { [currentUserId, eventPublisher] in
             ActivityState(
                 activityId: id,
                 feed: feed,
                 data: data,
                 currentUserId: currentUserId,
-                events: events,
+                eventPublisher: eventPublisher,
                 commentListState: commentList.state
             )
         }
@@ -67,7 +68,7 @@ public final class Activity: Sendable {
         async let activity = activitiesRepository.getActivity(activityId: activityId)
         async let comments = queryComments()
         let (activityData, _) = try await (activity, comments)
-        await state.updateActivity(activityData)
+        await state.setActivity(activityData)
         return activityData
     }
     
@@ -200,7 +201,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func pin() async throws {
         let activity = try await activitiesRepository.pin(true, activityId: activityId, in: feed)
-        await state.changeHandlers.activityUpdated(activity)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
     }
     
     /// Unpins an activity from the feed.
@@ -209,7 +210,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func unpin() async throws {
         let activity = try await activitiesRepository.pin(false, activityId: activityId, in: feed)
-        await state.changeHandlers.activityUpdated(activity)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
     }
     
     // MARK: - Polls
@@ -220,9 +221,9 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func closePoll() async throws -> PollData {
-        let pollData = try await updatePollPartial(request: .init(set: ["is_closed": .bool(true)]))
-        await state.changeHandlers.pollUpdated(pollData)
-        return pollData
+        let poll = try await updatePollPartial(request: .init(set: ["is_closed": .bool(true)]))
+        await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+        return poll
     }
     
     /// Deletes a poll.
@@ -233,7 +234,7 @@ public final class Activity: Sendable {
     public func deletePoll(userId: String? = nil) async throws {
         let pollId = try await pollId()
         try await pollsRepository.deletePoll(pollId: pollId, userId: userId)
-        await state.changeHandlers.pollDeleted(pollId)
+        await eventPublisher.sendEvent(.pollDeleted(pollId, feed))
     }
 
     /// Gets a specific poll by its identifier.
@@ -245,7 +246,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func getPoll(userId: String? = nil) async throws -> PollData {
         let poll = try await pollsRepository.getPoll(pollId: pollId(), userId: userId)
-        await state.changeHandlers.pollUpdated(poll)
+        await eventPublisher.sendEvent(.pollUpdated(poll, feed))
         return poll
     }
 
@@ -259,7 +260,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func updatePollPartial(request: UpdatePollPartialRequest) async throws -> PollData {
         let poll = try await pollsRepository.updatePollPartial(pollId: pollId(), request: request)
-        await state.changeHandlers.pollUpdated(poll)
+        await eventPublisher.sendEvent(.pollUpdated(poll, feed))
         return poll
     }
     
@@ -272,7 +273,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func updatePoll(request: UpdatePollRequest) async throws -> PollData {
         let poll = try await pollsRepository.updatePoll(request: request)
-        await state.changeHandlers.pollUpdated(poll)
+        await eventPublisher.sendEvent(.pollUpdated(poll, feed))
         return poll
     }
     
@@ -287,7 +288,10 @@ public final class Activity: Sendable {
     @discardableResult
     public func createPollOption(request: CreatePollOptionRequest) async throws -> PollOptionData {
         let option = try await pollsRepository.createPollOption(pollId: pollId(), request: request)
-        await state.access { $0.poll?.addOption(option) }
+        if var poll = await state.poll {
+            poll.addOption(option)
+            await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+        }
         return option
     }
 
@@ -302,7 +306,10 @@ public final class Activity: Sendable {
         userId: String? = nil
     ) async throws {
         try await pollsRepository.deletePollOption(pollId: pollId(), optionId: optionId, userId: userId)
-        await state.access { $0.poll?.removeOption(withId: optionId) }
+        if var poll = await state.poll {
+            poll.removeOption(withId: optionId)
+            await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+        }
     }
 
     /// Gets a specific poll option by its identifier.
@@ -317,9 +324,12 @@ public final class Activity: Sendable {
         optionId: String,
         userId: String?
     ) async throws -> PollOptionData {
-        let pollOption = try await pollsRepository.getPollOption(pollId: pollId(), optionId: optionId, userId: userId)
-        await state.access { $0.poll?.updateOption(pollOption) }
-        return pollOption
+        let option = try await pollsRepository.getPollOption(pollId: pollId(), optionId: optionId, userId: userId)
+        if var poll = await state.poll {
+            poll.updateOption(option)
+            await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+        }
+        return option
     }
     
     /// Updates a poll option.
@@ -334,7 +344,10 @@ public final class Activity: Sendable {
             pollId: pollId(),
             request: request
         )
-        await state.access { $0.poll?.updateOption(option) }
+        if var poll = await state.poll {
+            poll.updateOption(option)
+            await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+        }
         return option
     }
     
@@ -350,7 +363,10 @@ public final class Activity: Sendable {
     public func castPollVote(request: CastPollVoteRequest) async throws -> PollVoteData? {
         let vote = try await pollsRepository.castPollVote(activityId: activityId, pollId: pollId(), request: request)
         if let vote {
-            await state.access { $0.poll?.castVote(vote, currentUserId: $0.currentUserId) }
+            if var poll = await state.poll {
+                await poll.castVote(vote, currentUserId: state.currentUserId)
+                await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+            }
         }
         return vote
     }
@@ -374,7 +390,10 @@ public final class Activity: Sendable {
             userId: userId
         )
         if let vote {
-            await state.access { $0.poll?.removeVote(vote, currentUserId: $0.currentUserId) }
+            if var poll = await state.poll {
+                await poll.removeVote(vote, currentUserId: state.currentUserId)
+                await eventPublisher.sendEvent(.pollUpdated(poll, feed))
+            }
         }
         return vote
     }

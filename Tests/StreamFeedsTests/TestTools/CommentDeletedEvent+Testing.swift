@@ -9,9 +9,9 @@ import StreamCore
 extension CommentDeletedEvent {
     static func dummy(
         comment: CommentResponse = .dummy(),
-        fid: String = "user:test",
         createdAt: Date = Date(),
         custom: [String: RawJSON] = [:],
+        fid: String = "user:test",
         user: UserResponseCommonFields? = nil
     ) -> CommentDeletedEvent {
         CommentDeletedEvent(

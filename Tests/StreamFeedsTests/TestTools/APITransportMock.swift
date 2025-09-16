@@ -4,14 +4,14 @@
 
 import Foundation
 import StreamCore
+import StreamFeeds
 
 final class APITransportMock: DefaultAPITransport {
     let responsePayloads = AllocatedUnfairLock<[any Encodable]>([])
     
     func execute(request: StreamCore.Request) async throws -> (Data, URLResponse) {
         let payload = try responsePayloads.withLock { payloads in
-            guard !payloads.isEmpty else { throw ClientError.Unexpected("Please setup responses") }
-            return payloads.removeFirst()
+            try Self.consumeResponsePayload(for: request, from: &payloads)
         }
         let data = try CodableHelper.jsonEncoder.encode(payload)
         let response = HTTPURLResponse(
@@ -21,6 +21,26 @@ final class APITransportMock: DefaultAPITransport {
             headerFields: nil
         )!
         return (data, response)
+    }
+    
+    private static func consumeResponsePayload(for request: StreamCore.Request, from payloads: inout [any Encodable]) throws -> any Encodable {
+        let payloadIndex = payloads.firstIndex { payload in
+            switch payload.self {
+            case is GetActivityResponse:
+                request.url.path.hasPrefix("/api/v2/feeds/activities/")
+            case is GetCommentsResponse:
+                request.url.path.hasPrefix("/api/v2/feeds/comments")
+            default:
+                // Otherwise just pick the first. Custom matching is needed only for tests which run API
+                // requests in parallel so the order of responsePayload does not match with the order of
+                // execute(request:) calls.
+                true
+            }
+        }
+        guard let payloadIndex else {
+            throw ClientError("Response payload is not available for request: \(request)")
+        }
+        return payloads.remove(at: payloadIndex)
     }
 }
 

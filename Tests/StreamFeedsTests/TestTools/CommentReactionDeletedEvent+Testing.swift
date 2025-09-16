@@ -9,10 +9,10 @@ import StreamCore
 extension CommentReactionDeletedEvent {
     static func dummy(
         comment: CommentResponse = .dummy(),
-        reaction: FeedsReactionResponse = .dummy(),
-        fid: String = "user:test",
         createdAt: Date = Date(),
-        custom: [String: RawJSON] = [:]
+        custom: [String: RawJSON] = [:],
+        fid: String = "user:test",
+        reaction: FeedsReactionResponse = .dummy()
     ) -> CommentReactionDeletedEvent {
         CommentReactionDeletedEvent(
             comment: comment,

@@ -35,8 +35,8 @@ struct Feed_Tests {
         
         await client.eventsMiddleware.sendEvent(
             ActivityAddedEvent.dummy(
-                fid: feed.feed.rawValue,
-                activity: .dummy(id: "new-activity", text: "New activity content")
+                activity: .dummy(id: "new-activity", text: "New activity content"),
+                fid: feed.feed.rawValue
             )
         )
         
@@ -64,24 +64,24 @@ struct Feed_Tests {
         // Send activity with expiresAt - should be inserted
         await client.eventsMiddleware.sendEvent(
             ActivityAddedEvent.dummy(
-                fid: feed.feed.rawValue,
                 activity: .dummy(
+                    expiresAt: Date.fixed().addingTimeInterval(3600),
                     id: "expiring-activity",
-                    text: "This activity expires",
-                    expiresAt: Date.fixed().addingTimeInterval(3600)
-                )
+                    text: "This activity expires"
+                ),
+                fid: feed.feed.rawValue
             )
         )
         
         // Send activity without expiresAt - should be ignored
         await client.eventsMiddleware.sendEvent(
             ActivityAddedEvent.dummy(
-                fid: feed.feed.rawValue,
                 activity: .dummy(
+                    expiresAt: nil,
                     id: "non-expiring-activity",
-                    text: "This activity doesn't expire",
-                    expiresAt: nil
-                )
+                    text: "This activity doesn't expire"
+                ),
+                fid: feed.feed.rawValue
             )
         )
         
@@ -113,12 +113,12 @@ struct Feed_Tests {
         // Send activity without expiresAt - should be ignored due to filter
         await client.eventsMiddleware.sendEvent(
             ActivityAddedEvent.dummy(
-                fid: feed.feed.rawValue,
                 activity: .dummy(
+                    expiresAt: nil,
                     id: "non-expiring-activity",
-                    text: "This activity doesn't expire",
-                    expiresAt: nil
-                )
+                    text: "This activity doesn't expire"
+                ),
+                fid: feed.feed.rawValue
             )
         )
         
@@ -138,8 +138,8 @@ struct Feed_Tests {
         
         await client.eventsMiddleware.sendEvent(
             ActivityUpdatedEvent.dummy(
-                fid: feed.feed.rawValue,
-                activity: .dummy(id: "1", text: "NEW TEXT")
+                activity: .dummy(id: "1", text: "NEW TEXT"),
+                fid: feed.feed.rawValue
             )
         )
         let result = await feed.state.activities.first?.text
@@ -159,8 +159,8 @@ struct Feed_Tests {
         
         await client.eventsMiddleware.sendEvent(
             ActivityUpdatedEvent.dummy(
-                fid: feed.feed.rawValue,
-                activity: .dummy(id: "2")
+                activity: .dummy(id: "2"),
+                fid: feed.feed.rawValue
             )
         )
         await #expect(feed.state.activities.map(\.id) == ["1"])

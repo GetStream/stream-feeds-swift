@@ -8,9 +8,10 @@ import StreamCore
 
 extension ActivityResponse {
     static func dummy(
+        expiresAt: Date? = nil,
         id: String = "activity-123",
-        text: String = "Test activity content",
-        expiresAt: Date? = nil
+        poll: PollResponseData? = nil,
+        text: String = "Test activity content"
     ) -> ActivityResponse {
         ActivityResponse(
             attachments: [],
@@ -35,7 +36,7 @@ extension ActivityResponse {
             ownBookmarks: [],
             ownReactions: [],
             parent: nil,
-            poll: nil,
+            poll: poll,
             popularity: 100,
             reactionCount: 25,
             reactionGroups: [:],
