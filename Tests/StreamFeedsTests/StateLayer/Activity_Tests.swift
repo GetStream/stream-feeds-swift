@@ -73,6 +73,92 @@ struct Activity_Tests {
         #expect(stateActivity.text == "Unpinned activity")
     }
     
+    @Test func addReactionUpdatesState() async throws {
+        let client = defaultClientWithActivityAndCommentsResponses([
+            AddReactionResponse.dummy(
+                activity: .dummy(
+                    id: "activity-123",
+                    latestReactions: [.dummy(type: "like"), .dummy(type: "like")],
+                    ownReactions: [.dummy(type: "like"), .dummy(type: "like")],
+                    reactionCount: 2,
+                    reactionGroups: ["like": .dummy(count: 2)],
+                    text: "Test activity content"
+                ),
+                reaction: .dummy(type: "like")
+            )
+        ])
+        let activity = client.activity(
+            for: "activity-123",
+            in: .init(group: "user", id: "jane")
+        )
+        try await activity.get()
+        
+        // Verify initial state has 1 reaction
+        let initialState = try #require(await activity.state.activity)
+        #expect(initialState.reactionCount == 1)
+        #expect(initialState.ownReactions.count == 1)
+        #expect(initialState.ownReactions.map(\.type) == ["like"])
+        #expect(initialState.latestReactions.count == 1)
+        #expect(initialState.latestReactions.map(\.type) == ["like"])
+        #expect(initialState.reactionGroups["like"]?.count == 1)
+        
+        // Add reaction
+        let reaction = try await activity.addReaction(request: .init(type: "like"))
+        
+        // Verify state is updated
+        let updatedState = try #require(await activity.state.activity)
+        #expect(reaction.type == "like")
+        #expect(updatedState.reactionCount == 2)
+        #expect(updatedState.ownReactions.count == 2)
+        #expect(updatedState.ownReactions.map(\.type) == ["like", "like"])
+        #expect(updatedState.latestReactions.count == 2)
+        #expect(updatedState.latestReactions.map(\.type) == ["like", "like"])
+        #expect(updatedState.reactionGroups["like"]?.count == 2)
+    }
+    
+    @Test func deleteReactionUpdatesState() async throws {
+        let client = defaultClientWithActivityAndCommentsResponses(
+            [
+                DeleteActivityReactionResponse.dummy(
+                    activity: .dummy(
+                        id: "activity-123",
+                        latestReactions: [],
+                        ownReactions: [],
+                        reactionCount: 0,
+                        reactionGroups: [:],
+                        text: "Test activity content"
+                    ),
+                    reaction: .dummy(type: "like")
+                )
+            ]
+        )
+        let activity = client.activity(
+            for: "activity-123",
+            in: .init(group: "user", id: "jane")
+        )
+        try await activity.get()
+        
+        // Verify initial state has one reaction
+        let initialState = try #require(await activity.state.activity)
+        #expect(initialState.reactionCount == 1)
+        #expect(initialState.ownReactions.count == 1)
+        #expect(initialState.ownReactions.first?.type == "like")
+        #expect(initialState.latestReactions.count == 1)
+        #expect(initialState.latestReactions.first?.type == "like")
+        #expect(initialState.reactionGroups["like"]?.count == 1)
+        
+        // Delete reaction
+        let reaction = try await activity.deleteReaction(type: "like")
+        
+        // Verify state is updated
+        let updatedState = try #require(await activity.state.activity)
+        #expect(reaction.type == "like")
+        #expect(updatedState.reactionCount == 0)
+        #expect(updatedState.ownReactions.isEmpty)
+        #expect(updatedState.latestReactions.isEmpty)
+        #expect(updatedState.reactionGroups.isEmpty)
+    }
+    
     @Test func closePollUpdatesState() async throws {
         let client = defaultClientWithActivityAndCommentsResponses([
             PollResponse.dummy(
@@ -660,6 +746,8 @@ struct Activity_Tests {
                     GetActivityResponse.dummy(
                         activity: .dummy(
                             id: "activity-123",
+                            latestReactions: [.dummy(type: "like")],
+                            ownReactions: [.dummy(type: "like")],
                             poll: .dummy(
                                 enforceUniqueVote: uniqueVotes,
                                 id: "poll-123",
@@ -678,6 +766,8 @@ struct Activity_Tests {
                                 voteCount: 1,
                                 voteCountsByOption: ["option-1": 1, "option-2": 0]
                             ),
+                            reactionCount: 1,
+                            reactionGroups: ["like": .dummy(count: 1)],
                             text: "Test activity content"
                         )
                     ),

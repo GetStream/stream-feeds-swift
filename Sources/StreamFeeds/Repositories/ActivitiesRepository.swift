@@ -121,14 +121,14 @@ final class ActivitiesRepository: Sendable {
     
     // MARK: - Reactions
     
-    func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
+    func addReaction(activityId: String, request: AddReactionRequest) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
         let response = try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
-        return response.reaction.toModel()
+        return (response.reaction.toModel(), response.activity.toModel())
     }
     
-    func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
+    func deleteReaction(activityId: String, type: String) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
         let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
-        return response.reaction.toModel()
+        return (response.reaction.toModel(), response.activity.toModel())
     }
     
     // MARK: - Activity Reactions Pagination

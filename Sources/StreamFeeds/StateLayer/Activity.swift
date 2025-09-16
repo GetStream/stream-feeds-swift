@@ -163,7 +163,31 @@ public final class Activity: Sendable {
         return comment
     }
     
-    // MARK: - Comment Reactions
+    // MARK: - Activity and Comment Reactions
+    
+    /// Adds a reaction to an activity.
+    ///
+    /// - Parameter request: The request containing the reaction data
+    /// - Returns: The created reaction data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func addReaction(request: AddReactionRequest) async throws -> FeedsReactionData {
+        let result = try await activitiesRepository.addReaction(activityId: activityId, request: request)
+        await eventPublisher.sendEvent(.activityUpdated(result.activity, feed))
+        return result.reaction
+    }
+    
+    /// Removes a reaction from an activity.
+    ///
+    /// - Parameter type: The type of reaction to remove
+    /// - Returns: The removed reaction data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func deleteReaction(type: String) async throws -> FeedsReactionData {
+        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
+        await eventPublisher.sendEvent(.activityUpdated(result.activity, feed))
+        return result.reaction
+    }
     
     /// Adds a reaction to a comment.
     ///
