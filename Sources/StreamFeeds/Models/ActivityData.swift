@@ -24,7 +24,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let location: ActivityLocation?
     public let mentionedUsers: [UserData]
     public let moderation: ModerationV2Response?
-    public let notificationContext: [String: RawJSON]?
+    public let notificationContext: NotificationContext?
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
     public var parent: ActivityData? { _parent?.getValue() }
