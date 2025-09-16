@@ -51,26 +51,34 @@ public typealias ActivityDataVisibility = ActivityResponse.ActivityResponseVisib
 
 extension ActivityData {
     mutating func addComment(_ comment: CommentData) {
-        comments.insert(byId: comment)
-        commentCount += 1
+        if comments.insert(byId: comment) {
+            commentCount += 1
+        }
     }
     
     mutating func deleteComment(_ comment: CommentData) {
-        commentCount = max(0, commentCount - 1)
-        comments.remove(byId: comment.id)
+        if comments.remove(byId: comment.id) {
+            commentCount = max(0, commentCount - 1)
+        }
     }
     
     mutating func addBookmark(_ bookmark: BookmarkData, currentUserId: String) {
         if bookmark.user.id == currentUserId {
-            ownBookmarks.insert(byId: bookmark)
+            if ownBookmarks.insert(byId: bookmark) {
+                bookmarkCount += 1
+            }
+        } else {
+            bookmarkCount += 1
         }
-        bookmarkCount += 1
     }
     
     mutating func deleteBookmark(_ bookmark: BookmarkData, currentUserId: String) {
-        bookmarkCount = max(0, bookmarkCount - 1)
         if bookmark.user.id == currentUserId {
-            ownBookmarks.remove(byId: bookmark.id)
+            if ownBookmarks.remove(byId: bookmark.id) {
+                bookmarkCount = max(0, bookmarkCount - 1)
+            }
+        } else {
+            bookmarkCount = max(0, bookmarkCount - 1)
         }
     }
     

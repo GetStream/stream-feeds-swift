@@ -28,7 +28,7 @@ extension FeedsReactionData {
         to latestReactions: inout [FeedsReactionData],
         reactionGroups: inout [String: ReactionGroupData]
     ) {
-        latestReactions.insert(byId: reaction)
+        guard latestReactions.insert(byId: reaction) else { return }
         var reactionGroup = reactionGroups[reaction.type] ?? ReactionGroupData(count: 1, firstReactionAt: reaction.createdAt, lastReactionAt: reaction.createdAt)
         reactionGroup.increment(with: reaction.createdAt)
         reactionGroups[reaction.type] = reactionGroup
@@ -39,7 +39,7 @@ extension FeedsReactionData {
         from latestReactions: inout [FeedsReactionData],
         reactionGroups: inout [String: ReactionGroupData]
     ) {
-        latestReactions.remove(byId: reaction.id)
+        guard latestReactions.remove(byId: reaction.id) else { return }
         if var reactionGroup = reactionGroups[reaction.type] {
             reactionGroup.decrement(with: reaction.createdAt)
             if !reactionGroup.isEmpty {
