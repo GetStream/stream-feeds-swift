@@ -1,14 +1,7 @@
 pre-commit:
   parallel: false
   jobs:
-    - run: mint run swiftformat --config .swiftformat {staged_files}
-      glob: "*.{swift}"
-      stage_fixed: true
-      skip:
-        - merge
-        - rebase
-
-    - run: mint run swiftlint lint --config .swiftlint.yml --fix --progress --reporter json {staged_files}
+    - run: swiftlint lint --config .swiftlint.yml --fix --progress --reporter json {staged_files}
       glob: "*.{swift}"
       stage_fixed: true
       exclude:
@@ -17,9 +10,16 @@ pre-commit:
         - merge
         - rebase
 
+    - run: swiftformat --config .swiftformat {staged_files}
+      glob: "*.{swift}"
+      stage_fixed: true
+      skip:
+        - merge
+        - rebase
+
 pre-push:
   jobs:
-    - run: mint run swiftlint lint --config .swiftlint.yml --strict --progress --reporter json {push_files}
+    - run: swiftlint lint --config .swiftlint.yml --strict --progress --reporter json {push_files}
       glob: "*.{swift}"
       exclude:
         - "**/generated/**"

@@ -5,13 +5,6 @@ runs:
   steps:
     - run: echo "IMAGE=${ImageOS}" >> $GITHUB_ENV
       shell: bash
-    - name: Cache Mint
-      uses: actions/cache@v4
-      id: mint-cache
-      with:
-        path: ~/.mint
-        key: ${{ env.IMAGE }}-mint-${{ hashFiles('**/Mintfile') }}
-        restore-keys: ${{ env.IMAGE }}-mint-
     - uses: ./.github/actions/ruby-cache
     - uses: ./.github/actions/xcode-cache
     - run: ./Scripts/bootstrap.sh
