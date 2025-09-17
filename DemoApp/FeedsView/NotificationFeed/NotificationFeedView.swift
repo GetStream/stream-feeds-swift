@@ -109,7 +109,7 @@ class ImagesCache: ObservableObject {
     }
     
     func check(activityData: ActivityData) async throws {
-        if let activityId = activityData.notificationContext?["activity_id"]?.stringValue {
+        if let activityId = activityData.notificationContext?.target?.id {
             let feedId = FeedId(group: "user", id: feedsClient.user.id)
             let activity = feedsClient.activity(for: activityId, in: feedId)
             try await activity.get()

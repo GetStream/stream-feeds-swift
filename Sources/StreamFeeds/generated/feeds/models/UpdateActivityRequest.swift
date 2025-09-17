@@ -9,6 +9,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     public var attachments: [Attachment]?
     public var custom: [String: RawJSON]?
     public var expiresAt: Date?
+    public var feeds: [String]?
     public var filterTags: [String]?
     public var interestTags: [String]?
     public var location: ActivityLocation?
@@ -16,10 +17,11 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     public var text: String?
     public var visibility: String?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, pollId: String? = nil, text: String? = nil, visibility: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, pollId: String? = nil, text: String? = nil, visibility: String? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
+        self.feeds = feeds
         self.filterTags = filterTags
         self.interestTags = interestTags
         self.location = location
@@ -32,6 +34,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         case attachments
         case custom
         case expiresAt = "expires_at"
+        case feeds
         case filterTags = "filter_tags"
         case interestTags = "interest_tags"
         case location
@@ -44,6 +47,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         lhs.attachments == rhs.attachments &&
             lhs.custom == rhs.custom &&
             lhs.expiresAt == rhs.expiresAt &&
+            lhs.feeds == rhs.feeds &&
             lhs.filterTags == rhs.filterTags &&
             lhs.interestTags == rhs.interestTags &&
             lhs.location == rhs.location &&
@@ -56,6 +60,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         hasher.combine(attachments)
         hasher.combine(custom)
         hasher.combine(expiresAt)
+        hasher.combine(feeds)
         hasher.combine(filterTags)
         hasher.combine(interestTags)
         hasher.combine(location)
