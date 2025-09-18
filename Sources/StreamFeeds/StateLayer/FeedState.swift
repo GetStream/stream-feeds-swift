@@ -13,16 +13,18 @@ import StreamCore
 @MainActor public class FeedState: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     let memberListState: MemberListState
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
-    let currentUserId: String
-    private var webSocketObserver: WebSocketObserver?
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(feedQuery: FeedQuery, currentUserId: String, events: WSEventsSubscribing, memberListState: MemberListState) {
+    init(
+        feedQuery: FeedQuery,
+        eventPublisher: StateLayerEventPublisher,
+        memberListState: MemberListState
+    ) {
         feed = feedQuery.feed
         self.feedQuery = feedQuery
         self.memberListState = memberListState
-        self.currentUserId = currentUserId
-        webSocketObserver = WebSocketObserver(query: feedQuery, subscribing: events, handlers: changeHandlers)
+        
+        subscribe(to: eventPublisher)
         memberListState.$members
             .assign(to: \.members, onWeak: self)
             .store(in: &cancellables)
@@ -62,7 +64,7 @@ import StreamCore
     @Published public private(set) var pinnedActivities = [ActivityPinData]()
     
     /// Returns information about the notification status (read / seen activities).
-    @Published public private(set) var notificationStatus: NotificationStatusResponse?
+    @Published public private(set) var notificationStatus: NotificationStatusData?
     
     // MARK: - Pagination State
     
@@ -86,156 +88,124 @@ import StreamCore
 // MARK: - Updating the State
 
 extension FeedState {
-    /// Handlers for various state change events.
-    ///
-    /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
-    struct ChangeHandlers {
-        let activityAdded: @MainActor (ActivityData) -> Void
-        let activityRemoved: @MainActor (ActivityData) -> Void
-        let activityUpdated: @MainActor (ActivityData) -> Void
-        let activityPinned: @MainActor (ActivityPinData) -> Void
-        let activityUnpinned: @MainActor (String) -> Void
-        let activityMarked: @MainActor (MarkActivityData) -> Void
-        let bookmarkAdded: @MainActor (BookmarkData) -> Void
-        let bookmarkRemoved: @MainActor (BookmarkData) -> Void
-        let commentAdded: @MainActor (CommentData) -> Void
-        let commentRemoved: @MainActor (CommentData) -> Void
-        let feedDeleted: @MainActor () -> Void
-        let feedUpdated: @MainActor (FeedData) -> Void
-        let followAdded: @MainActor (FollowData) -> Void
-        let followRemoved: @MainActor (FollowData) -> Void
-        let followUpdated: @MainActor (FollowData) -> Void
-        let reactionAdded: @MainActor (FeedsReactionData) -> Void
-        let reactionRemoved: @MainActor (FeedsReactionData) -> Void
-    }
-    
-    /// Creates the change handlers for state updates.
-    ///
-    /// - Returns: A ChangeHandlers instance with all the necessary update functions
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            activityAdded: { [weak self] activity in
-                guard let self else { return }
-                if let filter = feedQuery.activityFilter, !filter.matches(activity) {
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        eventSubscription = publisher.subscribe { [weak self, feed, feedQuery] event in
+            switch event {
+            case .activityAdded(let activityData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                if let filter = feedQuery.activityFilter, !filter.matches(activityData) {
                     return
                 }
-                activities.sortedInsert(activity, sorting: activitiesSorting)
-            },
-            activityRemoved: { [weak self] activity in
-                guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedRemove(activity, nesting: nil, sorting: sorting)
-            },
-            activityUpdated: { [weak self] activity in
-                guard let self else { return }
-                activities.sortedReplace(activity, nesting: nil, sorting: activitiesSorting)
-                pinnedActivities.updateFirstElement(
-                    where: { $0.activity.id == activity.id },
-                    changes: { $0.activity = activity }
-                )
-            },
-            activityPinned: { [weak self] pinned in
-                self?.pinnedActivities.insert(byId: pinned)
-            },
-            activityUnpinned: { [weak self] activityId in
-                guard let index = self?.pinnedActivities.firstIndex(where: { $0.activity.id == activityId }) else { return }
-                self?.pinnedActivities.remove(at: index)
-            },
-            activityMarked: { [weak self] markData in
-                if markData.markAllRead == true {
-                    let aggregatedActivities = self?.aggregatedActivities ?? []
-                    var readIds = [String]()
-                    for aggregated in aggregatedActivities {
-                        let acitivtyIds = aggregated.activities.map(\.id)
-                        readIds.append(contentsOf: acitivtyIds)
+                await self?.access { $0.activities.sortedInsert(activityData, sorting: $0.activitiesSorting) }
+            case .activityDeleted(let activityId, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { state in
+                    state.activities.remove(byId: activityId)
+                    state.pinnedActivities.removeAll(where: { $0.activity.id == activityId })
+                }
+            case .activityUpdated(let activityData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.updateActivity(activityData)
+            case .activityPinned(let pinData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                if let filter = feedQuery.activityFilter, !filter.matches(pinData.activity) {
+                    return
+                }
+                await self?.access { $0.pinnedActivities.insert(byId: pinData) }
+            case .activityUnpinned(let pinData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { $0.pinnedActivities.remove(byId: pinData.id) }
+            case .activityMarked(let markData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { state in
+                    if markData.markAllRead {
+                        let readActivityIds = Set(state.aggregatedActivities.map(\.activities).flatMap(\.self).map(\.id))
+                        state.notificationStatus?.setAllRead(readActivityIds)
+                    } else {
+                        state.notificationStatus?.addReadActivities(markData.markRead)
                     }
-                    self?.notificationStatus = NotificationStatusResponse(
-                        lastSeenAt: self?.notificationStatus?.lastSeenAt,
-                        readActivities: readIds,
-                        unread: 0,
-                        unseen: self?.notificationStatus?.unseen ?? 0
+                }
+            case .bookmarkAdded(let bookmarkData):
+                guard bookmarkData.activity.feeds.contains(feed.rawValue) else { return }
+                await self?.updateActivity(bookmarkData.activity)
+            case .bookmarkDeleted(let bookmarkData):
+                guard bookmarkData.activity.feeds.contains(feed.rawValue) else { return }
+                await self?.updateActivity(bookmarkData.activity)
+            case .bookmarkUpdated(let bookmarkData):
+                guard bookmarkData.activity.feeds.contains(feed.rawValue) else { return }
+                await self?.updateActivity(bookmarkData.activity)
+            case .commentAdded(_, let activityData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.updateActivity(activityData)
+            case .commentDeleted(let commentData, let activityId, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { $0.deleteComment(commentData) }
                     )
-                } else {
-                    var readActivities = self?.notificationStatus?.readActivities ?? []
-                    if let markRead = markData.markRead {
-                        readActivities.append(contentsOf: markRead)
-                    }
-                    var unreadCount = self?.notificationStatus?.unread ?? 0
-                    unreadCount = max(unreadCount - 1, 0)
-                    self?.notificationStatus = NotificationStatusResponse(
-                        lastSeenAt: self?.notificationStatus?.lastSeenAt,
-                        readActivities: readActivities,
-                        unread: unreadCount,
-                        unseen: self?.notificationStatus?.unseen ?? 0
+                    state.pinnedActivities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { $0.activity.deleteComment(commentData) }
                     )
                 }
-            },
-            bookmarkAdded: { [weak self] bookmark in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == bookmark.activity.id },
-                    changes: { $0.addBookmark(bookmark, currentUserId: currentUserId) }
-                )
-            },
-            bookmarkRemoved: { [weak self] bookmark in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == bookmark.activity.id },
-                    changes: { $0.deleteBookmark(bookmark, currentUserId: currentUserId) }
-                )
-            },
-            commentAdded: { [weak self] comment in
-                self?.activities.updateFirstElement(
-                    where: { $0.id == comment.objectId },
-                    changes: { $0.addComment(comment) }
-                )
-            },
-            commentRemoved: { [weak self] comment in
-                self?.activities.updateFirstElement(
-                    where: { $0.id == comment.objectId },
-                    changes: { $0.deleteComment(comment) }
-                )
-            },
-            feedDeleted: { [weak self] in
-                self?.activities.removeAll()
-                self?.feedData = nil
-                self?.followers.removeAll()
-                self?.following.removeAll()
-                self?.followRequests.removeAll()
-                self?.members.removeAll()
-                self?.ownCapabilities.removeAll()
-                
-            },
-            feedUpdated: { [weak self] feed in
-                self?.feedData = feed
-            },
-            followAdded: { [weak self] follow in
-                self?.addFollow(follow)
-            },
-            followRemoved: { [weak self] follow in
-                self?.removeFollow(follow)
-            },
-            followUpdated: { [weak self] follow in
-                self?.updateFollow(follow)
-            },
-            reactionAdded: { [weak self] reaction in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == reaction.activityId },
-                    changes: { $0.addReaction(reaction, currentUserId: currentUserId) }
-                )
-            },
-            reactionRemoved: { [weak self] reaction in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == reaction.activityId },
-                    changes: { $0.removeReaction(reaction, currentUserId: currentUserId) }
-                )
+            case .commentUpdated(let commentData, let activityId, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { $0.updateComment(commentData) }
+                    )
+                    state.pinnedActivities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { $0.activity.updateComment(commentData) }
+                    )
+                }
+            case .feedDeleted(let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { state in
+                    state.activities.removeAll()
+                    state.aggregatedActivities.removeAll()
+                    state.feedData = nil
+                    state.followers.removeAll()
+                    state.following.removeAll()
+                    state.followRequests.removeAll()
+                    state.members.removeAll()
+                    state.notificationStatus = nil
+                    state.ownCapabilities.removeAll()
+                    state.pinnedActivities.removeAll()
+                }
+            case .feedUpdated(let feedData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.access { $0.feedData = feedData }
+            case .feedFollowAdded(let followData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.addFollow(followData)
+            case .feedFollowDeleted(let followData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.removeFollow(followData)
+            case .feedFollowUpdated(let followData, let eventFeedId):
+                guard feed == eventFeedId else { return }
+                await self?.updateFollow(followData)
+            case .feedMemberAdded, .feedMemberDeleted, .feedMemberUpdated:
+                // Handled by member list
+                break
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (FeedState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (FeedState) -> T) -> T {
         actions(self)
+    }
+    
+    private func updateActivity(_ activityData: ActivityData) {
+        activities.sortedReplace(activityData, nesting: nil, sorting: activitiesSorting)
+        pinnedActivities.updateFirstElement(
+            where: { $0.activity.id == activityData.id },
+            changes: { $0.activity = activityData }
+        )
     }
     
     private func addFollow(_ follow: FollowData) {
@@ -245,6 +215,7 @@ extension FeedState {
             following.insert(byId: follow)
         } else if follow.isFollower(of: feed) {
             followers.insert(byId: follow)
+            followRequests.remove(byId: follow.id)
         }
     }
     

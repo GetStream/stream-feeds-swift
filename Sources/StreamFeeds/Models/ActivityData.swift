@@ -62,6 +62,10 @@ extension ActivityData {
         }
     }
     
+    mutating func updateComment(_ comment: CommentData) {
+        comments.replace(byId: comment)
+    }
+    
     mutating func addBookmark(_ bookmark: BookmarkData, currentUserId: String) {
         if bookmark.user.id == currentUserId {
             if ownBookmarks.insert(byId: bookmark) {

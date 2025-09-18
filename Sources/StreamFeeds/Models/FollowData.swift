@@ -42,7 +42,7 @@ public typealias FollowStatus = FollowResponse.FollowResponseStatus
 
 extension FollowData: Identifiable {
     public var id: String {
-        "\(sourceFeed.feed)\(targetFeed.feed)\(createdAt.timeIntervalSince1970)"
+        "\(sourceFeed.feed)\(targetFeed.feed)"
     }
 }
 

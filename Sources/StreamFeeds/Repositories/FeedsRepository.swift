@@ -46,12 +46,12 @@ final class FeedsRepository: Sendable {
             ownCapabilities: response.ownCapabilities,
             pinnedActivities: response.pinnedActivities.map { $0.toModel() },
             aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
-            notificationStatus: response.notificationStatus
+            notificationStatus: response.notificationStatus?.toModel()
         )
     }
     
-    func stopWatching(feedGroupId: String, feedId: String) async throws -> Response {
-        try await apiClient.stopWatchingFeed(
+    func stopWatching(feedGroupId: String, feedId: String) async throws {
+        _ = try await apiClient.stopWatchingFeed(
             feedGroupId: feedGroupId,
             feedId: feedId
         )
@@ -100,8 +100,9 @@ final class FeedsRepository: Sendable {
         return response.follow.toModel()
     }
     
-    func unfollow(source: FeedId, target: FeedId) async throws {
-        _ = try await apiClient.unfollow(source: source.rawValue, target: target.rawValue)
+    func unfollow(source: FeedId, target: FeedId) async throws -> FollowData {
+        let response = try await apiClient.unfollow(source: source.rawValue, target: target.rawValue)
+        return response.follow.toModel()
     }
     
     func acceptFollow(request: AcceptFollowRequest) async throws -> FollowData {
@@ -152,6 +153,6 @@ extension FeedsRepository {
         let ownCapabilities: [FeedOwnCapability]
         let pinnedActivities: [ActivityPinData]
         let aggregatedActivities: [AggregatedActivityData]
-        let notificationStatus: NotificationStatusResponse?
+        let notificationStatus: NotificationStatusData?
     }
 }

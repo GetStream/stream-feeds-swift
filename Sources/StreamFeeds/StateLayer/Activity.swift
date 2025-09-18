@@ -145,7 +145,7 @@ public final class Activity: Sendable {
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws {
-        try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+        _ = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
         await commentList.state.changeHandlers.commentRemoved(commentId)
     }
     
@@ -199,7 +199,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
-        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.commentId)
+        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.comment.id)
         return result.reaction
     }
 
@@ -213,7 +213,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
-        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.commentId)
+        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.comment.id)
         return result.reaction
     }
     

@@ -94,7 +94,7 @@ struct NotificationFeedView: View {
     }
     
     func isActivityRead(id: String) -> Bool {
-        state.notificationStatus?.readActivities?.contains(id) == true
+        state.notificationStatus?.readActivities.contains(id) == true
     }
 }
 

@@ -63,6 +63,8 @@ extension ActivityState {
                     guard state.poll?.id == pollData.id else { return }
                     state.poll = pollData
                 }
+            default:
+                break
             }
         }
     }
