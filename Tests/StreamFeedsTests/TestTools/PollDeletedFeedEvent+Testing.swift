@@ -11,7 +11,7 @@ extension PollDeletedFeedEvent {
         createdAt: Date = .fixed(),
         custom: [String: RawJSON] = [:],
         feedVisibility: String? = nil,
-        fid: String = "user:test",
+        fid: String,
         poll: PollResponseData = .dummy(),
         receivedAt: Date? = nil
     ) -> PollDeletedFeedEvent {

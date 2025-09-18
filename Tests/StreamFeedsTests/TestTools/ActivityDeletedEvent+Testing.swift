@@ -6,15 +6,14 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension CommentAddedEvent {
+extension ActivityDeletedEvent {
     static func dummy(
-        comment: CommentResponse = CommentResponse.dummy(),
+        activityId: String = "test-activity-id",
         fid: String,
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
-    ) -> CommentAddedEvent {
-        CommentAddedEvent(
-            activity: ActivityResponse.dummy(id: comment.objectId),
-            comment: comment,
+    ) -> ActivityDeletedEvent {
+        ActivityDeletedEvent(
+            activity: ActivityResponse.dummy(id: activityId),
             createdAt: Date.fixed(),
             custom: [:],
             feedVisibility: nil,

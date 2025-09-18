@@ -24,7 +24,7 @@ extension GetOrCreateFeedResponse {
         ownCapabilities: [FeedOwnCapability] = FeedOwnCapability.allCases,
         ownFollows: [FollowResponse]? = [FollowResponse.dummy()],
         ownMembership: FeedMemberResponse? = FeedMemberResponse.dummy(user: .dummy(id: "current-user-1")),
-        pinnedActivities: [ActivityPinResponse] = [ActivityPinResponse.dummy()],
+        pinnedActivities: [ActivityPinResponse] = [],
         prev: String? = nil
     ) -> GetOrCreateFeedResponse {
         GetOrCreateFeedResponse(

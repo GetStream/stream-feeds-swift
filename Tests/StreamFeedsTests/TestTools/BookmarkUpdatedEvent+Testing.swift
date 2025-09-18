@@ -6,19 +6,16 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension CommentAddedEvent {
+extension BookmarkUpdatedEvent {
     static func dummy(
-        comment: CommentResponse = CommentResponse.dummy(),
+        bookmark: BookmarkResponse = BookmarkResponse.dummy(),
         fid: String,
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
-    ) -> CommentAddedEvent {
-        CommentAddedEvent(
-            activity: ActivityResponse.dummy(id: comment.objectId),
-            comment: comment,
+    ) -> BookmarkUpdatedEvent {
+        BookmarkUpdatedEvent(
+            bookmark: bookmark,
             createdAt: Date.fixed(),
             custom: [:],
-            feedVisibility: nil,
-            fid: fid,
             receivedAt: Date.fixed(),
             user: user
         )

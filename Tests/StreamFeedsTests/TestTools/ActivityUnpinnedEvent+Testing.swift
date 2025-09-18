@@ -6,19 +6,18 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension CommentAddedEvent {
+extension ActivityUnpinnedEvent {
     static func dummy(
-        comment: CommentResponse = CommentResponse.dummy(),
+        pinnedActivity: PinActivityResponse,
         fid: String,
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
-    ) -> CommentAddedEvent {
-        CommentAddedEvent(
-            activity: ActivityResponse.dummy(id: comment.objectId),
-            comment: comment,
+    ) -> ActivityUnpinnedEvent {
+        ActivityUnpinnedEvent(
             createdAt: Date.fixed(),
             custom: [:],
             feedVisibility: nil,
             fid: fid,
+            pinnedActivity: pinnedActivity,
             receivedAt: Date.fixed(),
             user: user
         )

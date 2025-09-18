@@ -33,7 +33,8 @@ struct Activity_Tests {
                 [
                     PinActivityResponse.dummy(
                         activity: .dummy(id: "activity-123", text: "Pinned activity"),
-                        feed: "user:jane"
+                        feed: "user:jane",
+                        userId: "test-user-id"
                     )
                 ]
             )

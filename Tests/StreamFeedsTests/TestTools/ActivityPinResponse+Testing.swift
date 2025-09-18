@@ -10,7 +10,7 @@ extension ActivityPinResponse {
     static func dummy(
         activity: ActivityResponse = .dummy(),
         createdAt: Date = .fixed(),
-        feed: String = "user:test",
+        feed: String,
         updatedAt: Date = .fixed(),
         user: UserResponse = .dummy()
     ) -> ActivityPinResponse {

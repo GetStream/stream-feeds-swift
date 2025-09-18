@@ -11,7 +11,7 @@ extension CommentReactionAddedEvent {
         comment: CommentResponse = .dummy(),
         createdAt: Date = Date(),
         custom: [String: RawJSON] = [:],
-        fid: String = "user:test",
+        fid: String,
         reaction: FeedsReactionResponse = .dummy(),
         user: UserResponseCommonFields? = nil
     ) -> CommentReactionAddedEvent {

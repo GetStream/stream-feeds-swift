@@ -6,19 +6,17 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension CommentAddedEvent {
+extension FeedUpdatedEvent {
     static func dummy(
-        comment: CommentResponse = CommentResponse.dummy(),
-        fid: String,
+        feed: FeedResponse = FeedResponse.dummy(),
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
-    ) -> CommentAddedEvent {
-        CommentAddedEvent(
-            activity: ActivityResponse.dummy(id: comment.objectId),
-            comment: comment,
+    ) -> FeedUpdatedEvent {
+        FeedUpdatedEvent(
             createdAt: Date.fixed(),
             custom: [:],
+            feed: feed,
             feedVisibility: nil,
-            fid: fid,
+            fid: feed.feed,
             receivedAt: Date.fixed(),
             user: user
         )

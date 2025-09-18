@@ -700,17 +700,23 @@ struct Feed_Tests {
     // MARK: - Web-Socket Events
     
     @Test func activityAddedEventWithoutActivitiesFilterIsInserted() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetOrCreateFeedResponse.dummy(activities: [])
-            ])
-        )
-        let feed = client.feed(group: "user", id: "jane")
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
         
         let initialActivities = await feed.state.activities
-        #expect(initialActivities.isEmpty)
+        #expect(initialActivities.map(\.id) == ["1"])
         
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityAddedEvent.dummy(
+                activity: .dummy(id: "unmatching-activity", text: "Should be ignored"),
+                fid: "user:someoneelse"
+            )
+        )
+        
+        // Send matching event - should be inserted
         await client.eventsMiddleware.sendEvent(
             ActivityAddedEvent.dummy(
                 activity: .dummy(id: "new-activity", text: "New activity content"),
@@ -719,17 +725,14 @@ struct Feed_Tests {
         )
         
         let finalActivities = await feed.state.activities
-        #expect(finalActivities.count == 1)
-        #expect(finalActivities.first?.id == "new-activity")
+        #expect(finalActivities.count == 2)
+        #expect(finalActivities.map(\.id) == ["new-activity", "1"])
         #expect(finalActivities.first?.text == "New activity content")
     }
     
     @Test func activityAddedEventWithMatchingActivitiesFilterIsInserted() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetOrCreateFeedResponse.dummy(activities: [])
-            ])
-        )
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
         let feed = client.feed(
             for: FeedQuery(
                 group: "user",
@@ -738,7 +741,22 @@ struct Feed_Tests {
             )
         )
         try await feed.getOrCreate()
-                
+        
+        let initialActivities = await feed.state.activities
+        #expect(initialActivities.map(\.id) == ["1"])
+        
+        // Send activity without expiresAt first - should be ignored due to filter
+        await client.eventsMiddleware.sendEvent(
+            ActivityAddedEvent.dummy(
+                activity: .dummy(
+                    expiresAt: nil,
+                    id: "non-expiring-activity",
+                    text: "This activity doesn't expire"
+                ),
+                fid: feed.feed.rawValue
+            )
+        )
+        
         // Send activity with expiresAt - should be inserted
         await client.eventsMiddleware.sendEvent(
             ActivityAddedEvent.dummy(
@@ -751,31 +769,16 @@ struct Feed_Tests {
             )
         )
         
-        // Send activity without expiresAt - should be ignored
-        await client.eventsMiddleware.sendEvent(
-            ActivityAddedEvent.dummy(
-                activity: .dummy(
-                    expiresAt: nil,
-                    id: "non-expiring-activity",
-                    text: "This activity doesn't expire"
-                ),
-                fid: feed.feed.rawValue
-            )
-        )
-        
         // Verify only the activity with expiresAt was inserted
         let finalActivities = await feed.state.activities
-        #expect(finalActivities.count == 1)
-        #expect(finalActivities.first?.id == "expiring-activity")
+        #expect(finalActivities.count == 2)
+        #expect(finalActivities.map(\.id) == ["expiring-activity", "1"])
         #expect(finalActivities.first?.text == "This activity expires")
     }
     
     @Test func activityAddedEventWithoutMatchingActivitiesFilterIsIgnored() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetOrCreateFeedResponse.dummy(activities: [])
-            ])
-        )
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
         let feed = client.feed(
             for: FeedQuery(
                 group: "user",
@@ -786,7 +789,7 @@ struct Feed_Tests {
         try await feed.getOrCreate()
         
         let initialActivities = await feed.state.activities
-        #expect(initialActivities.isEmpty)
+        #expect(initialActivities.map(\.id) == ["1"])
         
         // Send activity without expiresAt - should be ignored due to filter
         await client.eventsMiddleware.sendEvent(
@@ -802,18 +805,24 @@ struct Feed_Tests {
         
         // Verify the activity was ignored and not inserted
         let finalActivities = await feed.state.activities
-        #expect(finalActivities.isEmpty)
+        #expect(finalActivities.map(\.id) == ["1"])
     }
     
     @Test func activityUpdatedEventChangesText() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetOrCreateFeedResponse.dummy(activities: [.dummy(id: "1")])
-            ])
-        )
-        let feed = client.feed(group: "user", id: "jane")
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
         
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "1", text: "IGNORED TEXT"),
+                fid: "user:someoneelse"
+            )
+        )
+        
+        // Send matching event - should update the text
         await client.eventsMiddleware.sendEvent(
             ActivityUpdatedEvent.dummy(
                 activity: .dummy(id: "1", text: "NEW TEXT"),
@@ -825,16 +834,22 @@ struct Feed_Tests {
     }
     
     @Test func activityUpdatedEventIsNotInsertedToFeedIfItWasNotPaginated() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetOrCreateFeedResponse.dummy(activities: [.dummy(id: "1")])
-            ])
-        )
-        let feed = client.feed(group: "user", id: "jane")
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
         
         await #expect(feed.state.activities.map(\.id) == ["1"])
         
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "2"),
+                fid: "user:someoneelse"
+            )
+        )
+        
+        // Send matching event for non-paginated activity - should be ignored
         await client.eventsMiddleware.sendEvent(
             ActivityUpdatedEvent.dummy(
                 activity: .dummy(id: "2"),
@@ -842,6 +857,531 @@ struct Feed_Tests {
             )
         )
         await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+    
+    @Test func activityAddedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let initialActivities = await feed.state.activities
+        #expect(initialActivities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityAddedEvent.dummy(
+                activity: .dummy(id: "evt-add-IGNORED", text: "Should not appear"),
+                fid: "user:someoneelse"
+            )
+        )
+
+        // Send matching event - should insert
+        await client.eventsMiddleware.sendEvent(
+            ActivityAddedEvent.dummy(
+                activity: .dummy(id: "evt-add-1", text: "Added by WS"),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["evt-add-1", "1"])
+    }
+
+    @Test func activityDeletedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching delete first - should not change
+        await client.eventsMiddleware.sendEvent(
+            ActivityDeletedEvent.dummy(
+                activityId: "2",
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching delete - removes the activity
+        await client.eventsMiddleware.sendEvent(
+            ActivityDeletedEvent.dummy(
+                activityId: "1",
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.isEmpty)
+    }
+
+    @Test func activityUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.first?.text == "Test activity content")
+
+        // Send unmatching update first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "1", text: "Ignored"),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.first?.text == "Test activity content")
+
+        // Send matching update - modifies the text
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "1", text: "New From WS"),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.first?.text == "New From WS")
+    }
+
+    @Test func activityPinnedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        // Start with one pinned activity from default setup
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["1"])
+
+        // Send unmatching pin first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityPinnedEvent.dummy(
+                activity: .dummy(id: "2", text: "B"),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["1"])
+
+        // Send matching pin for activity 2 - should add to pinnedActivities
+        await client.eventsMiddleware.sendEvent(
+            ActivityPinnedEvent.dummy(
+                activity: .dummy(id: "2", text: "B"),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["2", "1"])
+    }
+
+    @Test func activityUnpinnedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["1"])
+
+        // Send unmatching unpin first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            ActivityUnpinnedEvent.dummy(
+                pinnedActivity: PinActivityResponse.dummy(
+                    activity: .dummy(id: "2"),
+                    feed: "user:someoneelse",
+                    userId: "test-user-id"
+                ),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["1"])
+
+        // Send matching unpin - removes from pinnedActivities
+        await client.eventsMiddleware.sendEvent(
+            ActivityUnpinnedEvent.dummy(
+                pinnedActivity: .dummy(
+                    activity: .dummy(id: "1"),
+                    feed: feed.feed.rawValue,
+                    userId: "test-user-id"
+                ),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.pinnedActivities.isEmpty)
+    }
+
+    @Test func activityMarkedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let before = await feed.state.notificationStatus
+        #expect(before != nil)
+
+        // Send unmatching mark first - should not change status
+        await client.eventsMiddleware.sendEvent(
+            ActivityMarkedEvent.dummy(
+                markAllRead: true,
+                fid: "user:someoneelse"
+            )
+        )
+
+        let afterUnmatched = await feed.state.notificationStatus
+        #expect(afterUnmatched?.readActivities == before?.readActivities)
+
+        // Send matching mark-all-read - should mark all aggregated activity ids as read
+        await client.eventsMiddleware.sendEvent(
+            ActivityMarkedEvent.dummy(
+                markAllRead: true,
+                fid: feed.feed.rawValue
+            )
+        )
+
+        let after = await feed.state.notificationStatus
+        let readIds = await Set(feed.state.aggregatedActivities.map(\.id))
+        #expect(after?.readActivities == readIds)
+    }
+
+    @Test func bookmarkAddedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should not affect state
+        await client.eventsMiddleware.sendEvent(
+            BookmarkAddedEvent.dummy(
+                bookmark: .dummy(activity: .dummy(id: "1")),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching bookmark add - should not remove the activity and is tracked internally
+        await client.eventsMiddleware.sendEvent(
+            BookmarkAddedEvent.dummy(
+                bookmark: .dummy(activity: .dummy(id: "1")),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func bookmarkDeletedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should not change
+        await client.eventsMiddleware.sendEvent(
+            BookmarkDeletedEvent.dummy(
+                bookmark: .dummy(activity: .dummy(id: "1")),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching delete bookmark - should not remove the activity from feed
+        await client.eventsMiddleware.sendEvent(
+            BookmarkDeletedEvent.dummy(
+                bookmark: .dummy(activity: .dummy(id: "1")),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func bookmarkUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should not change state
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(activity: .dummy(id: "1")),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching update bookmark - should keep activity present
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(activity: .dummy(id: "1")),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func commentAddedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should not change
+        await client.eventsMiddleware.sendEvent(
+            CommentAddedEvent.dummy(
+                comment: .dummy(id: "c2", objectId: "1", text: "Ignored"),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching comment add - should keep activity and reflect potential internal counters
+        await client.eventsMiddleware.sendEvent(
+            CommentAddedEvent.dummy(
+                comment: .dummy(id: "c1", objectId: "1", text: "Hi"),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func commentDeletedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            CommentDeletedEvent.dummy(
+                comment: .dummy(id: "c2", objectId: "1"),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching delete comment - should keep activity list intact
+        await client.eventsMiddleware.sendEvent(
+            CommentDeletedEvent.dummy(
+                comment: .dummy(id: "c1", objectId: "1"),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func commentUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "c1", objectId: "1", text: "Ignored"),
+                fid: "user:someoneelse"
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching update comment - should not remove activity
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "c1", objectId: "1", text: "Edited"),
+                fid: feed.feed.rawValue
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func feedDeletedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send unmatching deletion first - should not affect this feed
+        await client.eventsMiddleware.sendEvent(
+            FeedDeletedEvent.dummy(
+                feed: .dummy(feed: "user:someoneelse")
+            )
+        )
+
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+
+        // Send matching deletion - clears state
+        await client.eventsMiddleware.sendEvent(
+            FeedDeletedEvent.dummy(
+                feed: .dummy(feed: feedId.rawValue)
+            )
+        )
+
+        await #expect(feed.state.activities.isEmpty)
+    }
+
+    @Test func feedUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.feedData?.name == "Test Feed")
+
+        // Send unmatching update first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            FeedUpdatedEvent.dummy(
+                feed: .dummy(feed: "user:someoneelse", name: "Ignored")
+            )
+        )
+
+        await #expect(feed.state.feedData?.name == "Test Feed")
+
+        // Send matching update - should refresh feed data
+        await client.eventsMiddleware.sendEvent(
+            FeedUpdatedEvent.dummy(
+                feed: .dummy(feed: feedId.rawValue, name: "New Name")
+            )
+        )
+
+        await #expect(feed.state.feedData?.name == "New Name")
+    }
+
+    @Test func feedFollowAddedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        // Start with existing followers from default setup
+        await #expect(feed.state.followers.count == 1)
+
+        // Send unmatching event first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowAddedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:alice"),
+                    status: .accepted,
+                    targetFeed: .dummy(feed: "user:someoneelse")
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followers.count == 1)
+
+        // Send matching follower added - should add to followers
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowAddedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:alice"),
+                    status: .accepted,
+                    targetFeed: .dummy(feed: feedId.rawValue)
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followers.count == 2)
+        await #expect(feed.state.followers.contains { $0.targetFeed.feed.rawValue == feedId.rawValue })
+    }
+
+    @Test func feedFollowDeletedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.followers.count == 1)
+
+        // Send unmatching deletion first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowDeletedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:alice"),
+                    targetFeed: .dummy(feed: "user:someoneelse")
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followers.count == 1)
+
+        // Send matching follower deleted - should remove from followers
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowDeletedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:bob"),
+                    targetFeed: .dummy(feed: feedId.rawValue)
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followers.isEmpty)
+    }
+
+    @Test func feedFollowUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.followRequests.map(\.status) == [.pending])
+
+        // Send unmatching update first - should be ignored
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowUpdatedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:alice"),
+                    status: .rejected,
+                    targetFeed: .dummy(feed: "user:someoneelse")
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followRequests.map(\.status) == [.pending])
+
+        // Send matching update - changes status
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowUpdatedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:bob"),
+                    status: .accepted,
+                    targetFeed: .dummy(feed: feedId.rawValue)
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followRequests.map(\.status) == [])
     }
     
     // MARK: -
@@ -873,7 +1413,11 @@ struct Feed_Tests {
                                 targetFeed: .dummy(feed: "user:bob")
                             )
                         ],
-                        members: [.dummy(user: .dummy(id: "feed-member-1"))]
+                        members: [.dummy(user: .dummy(id: "feed-member-1"))],
+                        pinnedActivities: [.dummy(
+                            activity: .dummy(id: "1"),
+                            feed: feed
+                        )]
                     )
                 ] + additionalPayloads
             )
