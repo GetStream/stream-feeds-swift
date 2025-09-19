@@ -69,6 +69,21 @@ extension ActivityState {
                 await self?.access { state in
                     state.activity?.merge(with: activityData, update: reactionData, currentUserId: currentUserId)
                 }
+            case .bookmarkAdded(let bookmarkData):
+                guard bookmarkData.activity.id == activityId else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: bookmarkData.activity, add: bookmarkData, currentUserId: currentUserId)
+                }
+            case .bookmarkDeleted(let bookmarkData):
+                guard bookmarkData.activity.id == activityId else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: bookmarkData.activity, remove: bookmarkData, currentUserId: currentUserId)
+                }
+            case .bookmarkUpdated(let bookmarkData):
+                guard bookmarkData.activity.id == activityId else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: bookmarkData.activity, update: bookmarkData, currentUserId: currentUserId)
+                }
             case .commentAdded(let commentData, let activityData, let eventFeedId):
                 guard activityData.id == activityId, eventFeedId == feed else { return }
                 await self?.access { state in
