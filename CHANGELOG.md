@@ -4,7 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
-### 🔄 Changed
+### ✅ Added
+- Support for stories
+- Web-socket reconnection for feeds
+- Support for local filtering of data
 
 # [0.2.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.2.0)
 _August 19, 2025_
