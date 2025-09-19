@@ -170,7 +170,6 @@ extension FeedState {
                     }
                 }
             case .bookmarkAdded(let bookmarkData):
-                guard bookmarkData.activity.feeds.contains(feed.rawValue) else { return }
                 await self?.access { state in
                     state.activities.sortedUpdate(
                         ofId: bookmarkData.activity.id,
@@ -184,7 +183,6 @@ extension FeedState {
                     )
                 }
             case .bookmarkDeleted(let bookmarkData):
-                guard bookmarkData.activity.feeds.contains(feed.rawValue) else { return }
                 await self?.access { state in
                     state.activities.sortedUpdate(
                         ofId: bookmarkData.activity.id,
@@ -198,7 +196,6 @@ extension FeedState {
                     )
                 }
             case .bookmarkUpdated(let bookmarkData):
-                guard bookmarkData.activity.feeds.contains(feed.rawValue) else { return }
                 await self?.access { state in
                     state.activities.sortedUpdate(
                         ofId: bookmarkData.activity.id,
