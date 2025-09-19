@@ -28,7 +28,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
     public var parent: ActivityData? { _parent?.getValue() }
-    public let poll: PollData?
+    public internal(set) var poll: PollData?
     public let popularity: Int
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
@@ -50,6 +50,83 @@ public typealias ActivityDataVisibility = ActivityResponse.ActivityResponseVisib
 // MARK: - Mutating the Data
 
 extension ActivityData {
+    // MARK: - Activity and Its Reactions
+
+    mutating func merge(with incomingData: ActivityData) {
+        let ownBookmarks = ownBookmarks
+        let ownReactions = ownReactions
+        self = incomingData
+        self.ownBookmarks = ownBookmarks
+        self.ownReactions = ownReactions
+    }
+    
+    mutating func merge(with incomingData: ActivityData, add reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.insert(byId: reaction)
+    }
+    
+    mutating func merge(with incomingData: ActivityData, remove reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.remove(byId: reaction.id)
+    }
+    
+    mutating func merge(with incomingData: ActivityData, update reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.replace(byId: reaction)
+    }
+    
+    // MARK: - Activity Bookmarks
+    
+    mutating func merge(with incomingData: ActivityData, add bookmark: BookmarkData, currentUserId: String) {
+        merge(with: incomingData)
+        guard bookmark.user.id == currentUserId else { return }
+        ownBookmarks.insert(byId: bookmark)
+    }
+    
+    mutating func merge(with incomingData: ActivityData, remove bookmark: BookmarkData, currentUserId: String) {
+        merge(with: incomingData)
+        guard bookmark.user.id == currentUserId else { return }
+        ownBookmarks.remove(byId: bookmark.id)
+    }
+    
+    mutating func merge(with incomingData: ActivityData, update bookmark: BookmarkData, currentUserId: String) {
+        merge(with: incomingData)
+        guard bookmark.user.id == currentUserId else { return }
+        ownBookmarks.replace(byId: bookmark)
+    }
+    
+    // MARK: - Activity Comments and Comment Reactions
+    
+    mutating func updateComment(_ incomingData: CommentData) {
+        comments.updateFirstElement(where: { $0.id == incomingData.id }, changes: { $0.merge(with: incomingData) })
+    }
+    
+    mutating func updateComment(_ incomingData: CommentData, add reaction: FeedsReactionData, currentUserId: String) {
+        comments.updateFirstElement(
+            where: { $0.id == incomingData.id },
+            changes: { $0.merge(with: incomingData, add: reaction, currentUserId: currentUserId) }
+        )
+    }
+    
+    mutating func updateComment(_ incomingData: CommentData, remove reaction: FeedsReactionData, currentUserId: String) {
+        comments.updateFirstElement(
+            where: { $0.id == incomingData.id },
+            changes: { $0.merge(with: incomingData, remove: reaction, currentUserId: currentUserId) }
+        )
+    }
+    
+    mutating func updateComment(_ incomingData: CommentData, update reaction: FeedsReactionData, currentUserId: String) {
+        comments.updateFirstElement(
+            where: { $0.id == incomingData.id },
+            changes: { $0.merge(with: incomingData, update: reaction, currentUserId: currentUserId) }
+        )
+    }
+    
+    // MARK: -
+    
     mutating func addComment(_ comment: CommentData) {
         if comments.insert(byId: comment) {
             commentCount += 1
@@ -60,10 +137,6 @@ extension ActivityData {
         if comments.remove(byId: comment.id) {
             commentCount = max(0, commentCount - 1)
         }
-    }
-    
-    mutating func updateComment(_ comment: CommentData) {
-        comments.replace(byId: comment)
     }
     
     mutating func addBookmark(_ bookmark: BookmarkData, currentUserId: String) {

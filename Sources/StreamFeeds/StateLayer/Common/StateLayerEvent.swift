@@ -6,12 +6,14 @@ import Foundation
 import StreamCore
 
 /// An event intended to be used for state-layer state mutations.
-///
-/// - Note: Many of the WS events are merged into a single update event.
 enum StateLayerEvent: Sendable {
     case activityAdded(ActivityData, FeedId)
     case activityDeleted(String, FeedId)
     case activityUpdated(ActivityData, FeedId)
+    
+    case activityReactionAdded(FeedsReactionData, ActivityData, FeedId)
+    case activityReactionDeleted(FeedsReactionData, ActivityData, FeedId)
+    case activityReactionUpdated(FeedsReactionData, ActivityData, FeedId)
     
     case activityMarked(ActivityMarkData, FeedId)
     case activityPinned(ActivityPinData, FeedId)
@@ -27,9 +29,16 @@ enum StateLayerEvent: Sendable {
     case commentAdded(CommentData, ActivityData, FeedId)
     case commentDeleted(CommentData, String, FeedId)
     case commentUpdated(CommentData, String, FeedId)
+    
+    case commentReactionAdded(FeedsReactionData, CommentData, FeedId)
+    case commentReactionDeleted(FeedsReactionData, CommentData, FeedId)
+    case commentReactionUpdated(FeedsReactionData, CommentData, FeedId)
         
     case pollDeleted(String, FeedId)
     case pollUpdated(PollData, FeedId)
+    case pollVoteCasted(PollVoteData, PollData, FeedId)
+    case pollVoteChanged(PollVoteData, PollData, FeedId)
+    case pollVoteDeleted(PollVoteData, PollData, FeedId)
     
     case feedAdded(FeedData, FeedId)
     case feedDeleted(FeedId)
@@ -62,12 +71,13 @@ extension StateLayerEvent {
         // Activity updated
         case let event as ActivityUpdatedEvent:
             self = .activityUpdated(event.activity.toModel(), FeedId(rawValue: event.fid))
+        // Activity reactions
         case let event as ActivityReactionAddedEvent:
-            self = .activityUpdated(event.activity.toModel(), FeedId(rawValue: event.fid))
+            self = .activityReactionAdded(event.reaction.toModel(), event.activity.toModel(), FeedId(rawValue: event.fid))
         case let event as ActivityReactionDeletedEvent:
-            self = .activityUpdated(event.activity.toModel(), FeedId(rawValue: event.fid))
+            self = .activityReactionDeleted(event.reaction.toModel(), event.activity.toModel(), FeedId(rawValue: event.fid))
         case let event as ActivityReactionUpdatedEvent:
-            self = .activityUpdated(event.activity.toModel(), FeedId(rawValue: event.fid))
+            self = .activityReactionUpdated(event.reaction.toModel(), event.activity.toModel(), FeedId(rawValue: event.fid))
         // Activity pinned
         case let event as ActivityPinnedEvent:
             self = .activityPinned(event.pinnedActivity.toModel(), FeedId(rawValue: event.fid))
@@ -90,21 +100,20 @@ extension StateLayerEvent {
             self = .bookmarkFolderDeleted(event.bookmarkFolder.toModel())
         case let event as BookmarkFolderUpdatedEvent:
             self = .bookmarkFolderUpdated(event.bookmarkFolder.toModel())
-        // Comment added
+        // Comment added, deleted, updated
         case let event as CommentAddedEvent:
             self = .commentAdded(event.comment.toModel(), event.activity.toModel(), FeedId(rawValue: event.fid))
-        // Comment deleted
         case let event as CommentDeletedEvent:
             self = .commentDeleted(event.comment.toModel(), event.comment.objectId, FeedId(rawValue: event.fid))
-        // Comment updated
         case let event as CommentUpdatedEvent:
             self = .commentUpdated(event.comment.toModel(), event.comment.objectId, FeedId(rawValue: event.fid))
+        // Comment reaction added, deleted, updated
         case let event as CommentReactionAddedEvent:
-            self = .commentUpdated(event.comment.toModel(), event.comment.objectId, FeedId(rawValue: event.fid))
+            self = .commentReactionAdded(event.reaction.toModel(), event.comment.toModel(), FeedId(rawValue: event.fid))
         case let event as CommentReactionDeletedEvent:
-            self = .commentUpdated(event.comment.toModel(), event.comment.objectId, FeedId(rawValue: event.fid))
+            self = .commentReactionDeleted(event.reaction.toModel(), event.comment.toModel(), FeedId(rawValue: event.fid))
         case let event as CommentReactionUpdatedEvent:
-            self = .commentUpdated(event.comment.toModel(), event.comment.objectId, FeedId(rawValue: event.fid))
+            self = .commentReactionUpdated(event.reaction.toModel(), event.comment.toModel(), FeedId(rawValue: event.fid))
         // Poll deleted
         case let event as PollDeletedFeedEvent:
             self = .pollDeleted(event.poll.id, FeedId(rawValue: event.fid))
@@ -113,12 +122,13 @@ extension StateLayerEvent {
             self = .pollUpdated(event.poll.toModel(), FeedId(rawValue: event.fid))
         case let event as PollClosedFeedEvent:
             self = .pollUpdated(event.poll.toModel(), FeedId(rawValue: event.fid))
+        // Poll votes
         case let event as PollVoteCastedFeedEvent:
-            self = .pollUpdated(event.poll.toModel(), FeedId(rawValue: event.fid))
+            self = .pollVoteCasted(event.pollVote.toModel(), event.poll.toModel(), FeedId(rawValue: event.fid))
         case let event as PollVoteChangedFeedEvent:
-            self = .pollUpdated(event.poll.toModel(), FeedId(rawValue: event.fid))
+            self = .pollVoteChanged(event.pollVote.toModel(), event.poll.toModel(), FeedId(rawValue: event.fid))
         case let event as PollVoteRemovedFeedEvent:
-            self = .pollUpdated(event.poll.toModel(), FeedId(rawValue: event.fid))
+            self = .pollVoteDeleted(event.pollVote.toModel(), event.poll.toModel(), FeedId(rawValue: event.fid))
         // Feed created, deleted, updated
         case let event as FeedCreatedEvent:
             self = .feedAdded(event.feed.toModel(), FeedId(rawValue: event.fid))

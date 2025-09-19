@@ -46,11 +46,45 @@ import StreamCore
 
 extension ActivityState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
-        eventSubscription = publisher.subscribe { [weak self, activityId, feed] event in
+        eventSubscription = publisher.subscribe { [weak self, activityId, currentUserId, feed] event in
             switch event {
+            case .activityDeleted(let eventActivityId, let eventFeedId):
+                guard eventActivityId == activityId, eventFeedId == feed else { return }
+                await self?.setActivity(nil)
             case .activityUpdated(let activityData, let eventFeedId):
                 guard activityData.id == activityId, eventFeedId == feed else { return }
                 await self?.setActivity(activityData)
+            case .activityReactionAdded(let reactionData, let activityData, let eventFeedId):
+                guard activityData.id == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: activityData, add: reactionData, currentUserId: currentUserId)
+                }
+            case .activityReactionDeleted(let reactionData, let activityData, let eventFeedId):
+                guard activityData.id == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: activityData, remove: reactionData, currentUserId: currentUserId)
+                }
+            case .activityReactionUpdated(let reactionData, let activityData, let eventFeedId):
+                guard activityData.id == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: activityData, update: reactionData, currentUserId: currentUserId)
+                }
+            case .commentAdded(let commentData, let activityData, let eventFeedId):
+                guard activityData.id == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    state.activity?.merge(with: activityData)
+                    state.activity?.updateComment(commentData)
+                }
+            case .commentDeleted(let commentData, let eventActivityId, let eventFeedId):
+                guard eventActivityId == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    state.activity?.deleteComment(commentData)
+                }
+            case .commentUpdated(let commentData, let eventActivityId, let eventFeedId):
+                guard eventActivityId == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    state.activity?.updateComment(commentData)
+                }
             case .pollDeleted(let pollId, let eventFeedId):
                 guard eventFeedId == feed else { return }
                 await self?.access { state in
@@ -61,7 +95,25 @@ extension ActivityState {
                 guard eventFeedId == feed else { return }
                 await self?.access { state in
                     guard state.poll?.id == pollData.id else { return }
-                    state.poll = pollData
+                    state.poll?.merge(with: pollData)
+                }
+            case .pollVoteCasted(let vote, let pollData, let eventFeedId):
+                guard eventFeedId == feed else { return }
+                await self?.access { state in
+                    guard state.poll?.id == pollData.id else { return }
+                    state.poll?.merge(with: pollData, add: vote, currentUserId: currentUserId)
+                }
+            case .pollVoteDeleted(let vote, let pollData, let eventFeedId):
+                guard eventFeedId == feed else { return }
+                await self?.access { state in
+                    guard state.poll?.id == pollData.id else { return }
+                    state.poll?.merge(with: pollData, remove: vote, currentUserId: currentUserId)
+                }
+            case .pollVoteChanged(let vote, let pollData, let eventFeedId):
+                guard eventFeedId == feed else { return }
+                await self?.access { state in
+                    guard state.poll?.id == pollData.id else { return }
+                    state.poll?.merge(with: pollData, change: vote, currentUserId: currentUserId)
                 }
             default:
                 break
@@ -69,9 +121,9 @@ extension ActivityState {
         }
     }
     
-    func setActivity(_ activity: ActivityData) {
+    func setActivity(_ activity: ActivityData?) {
         self.activity = activity
-        poll = activity.poll
+        poll = activity?.poll
     }
     
     private func access<T>(_ actions: @MainActor (ActivityState) -> T) -> T {

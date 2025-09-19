@@ -79,13 +79,13 @@ struct Activity_Tests {
             AddReactionResponse.dummy(
                 activity: .dummy(
                     id: "activity-123",
-                    latestReactions: [.dummy(type: "like"), .dummy(type: "like")],
-                    ownReactions: [.dummy(type: "like"), .dummy(type: "like")],
+                    latestReactions: [.dummy(type: "like"), .dummy(type: "happy")],
+                    ownReactions: [.dummy(type: "like", user: .dummy(id: "current-user-id")), .dummy(type: "happy", user: .dummy(id: "current-user-id"))],
                     reactionCount: 2,
                     reactionGroups: ["like": .dummy(count: 2)],
                     text: "Test activity content"
                 ),
-                reaction: .dummy(type: "like")
+                reaction: .dummy(type: "happy", user: .dummy(id: "current-user-id"))
             )
         ])
         let activity = client.activity(
@@ -104,16 +104,16 @@ struct Activity_Tests {
         #expect(initialState.reactionGroups["like"]?.count == 1)
         
         // Add reaction
-        let reaction = try await activity.addReaction(request: .init(type: "like"))
+        let reaction = try await activity.addReaction(request: .init(type: "happy"))
         
         // Verify state is updated
         let updatedState = try #require(await activity.state.activity)
-        #expect(reaction.type == "like")
+        #expect(reaction.type == "happy")
         #expect(updatedState.reactionCount == 2)
         #expect(updatedState.ownReactions.count == 2)
-        #expect(updatedState.ownReactions.map(\.type) == ["like", "like"])
+        #expect(updatedState.ownReactions.map(\.type) == ["happy", "like"])
         #expect(updatedState.latestReactions.count == 2)
-        #expect(updatedState.latestReactions.map(\.type) == ["like", "like"])
+        #expect(updatedState.latestReactions.map(\.type) == ["like", "happy"])
         #expect(updatedState.reactionGroups["like"]?.count == 2)
     }
     
@@ -129,7 +129,7 @@ struct Activity_Tests {
                         reactionGroups: [:],
                         text: "Test activity content"
                     ),
-                    reaction: .dummy(type: "like")
+                    reaction: .dummy(type: "like", user: .dummy(id: "current-user-id"))
                 )
             ]
         )
@@ -392,11 +392,18 @@ struct Activity_Tests {
     }
     
     @Test func castPollVoteUpdatesStateWhenEnforceUniqueVotes() async throws {
-        let client = defaultClientWithActivityAndCommentsResponses([
-            PollVoteResponse.dummy(
-                vote: .dummy(id: "vote-2", optionId: "option-2", pollId: "poll-123")
-            )
-        ])
+        let client = defaultClientWithActivityAndCommentsResponses(
+            [
+                PollVoteResponse.dummy(
+                    vote: .dummy(
+                        id: "vote-2",
+                        optionId: "option-2",
+                        pollId: "poll-123",
+                        user: .dummy(id: "current-user-id")
+                    )
+                )
+            ]
+        )
         let activity = client.activity(
             for: "activity-123",
             in: .init(group: "user", id: "jane")
@@ -415,7 +422,12 @@ struct Activity_Tests {
             uniqueVotes: false,
             [
                 PollVoteResponse.dummy(
-                    vote: .dummy(id: "vote-2", optionId: "option-2", pollId: "poll-123")
+                    vote: .dummy(
+                        id: "vote-2",
+                        optionId: "option-2",
+                        pollId: "poll-123",
+                        user: .dummy(id: "current-user-id")
+                    )
                 )
             ]
         )
@@ -435,7 +447,7 @@ struct Activity_Tests {
     @Test func deletePollVoteUpdatesState() async throws {
         let client = defaultClientWithActivityAndCommentsResponses([
             PollVoteResponse.dummy(
-                vote: .dummy(id: "vote-1", optionId: "option-1", pollId: "poll-123")
+                vote: .dummy(id: "vote-1", optionId: "option-1", pollId: "poll-123", user: .dummy(id: "current-user-id"))
             )
         ])
         let activity = client.activity(
@@ -583,7 +595,9 @@ struct Activity_Tests {
     }
     
     @Test func pollVoteCastedFeedEventUpdatesState() async throws {
-        let client = defaultClientWithActivityAndCommentsResponses()
+        let client = defaultClientWithActivityAndCommentsResponses(
+            hasOwnVote: false
+        )
         let feedId = FeedId(group: "user", id: "jane")
         let activity = client.activity(
             for: "activity-123",
@@ -593,9 +607,9 @@ struct Activity_Tests {
         
         let initialPoll = try #require(await activity.state.poll)
         #expect(initialPoll.id == "poll-123")
-        #expect(initialPoll.ownVotes.map(\.id) == ["vote-1"])
-        #expect(initialPoll.voteCount == 1)
-        #expect(initialPoll.voteCountsByOption == ["option-1": 1, "option-2": 0])
+        #expect(initialPoll.ownVotes.map(\.id) == [])
+        #expect(initialPoll.voteCount == 0)
+        #expect(initialPoll.voteCountsByOption == ["option-1": 0, "option-2": 0])
         
         // Unrelated event - should not affect poll
         await client.eventsMiddleware.sendEvent(
@@ -603,16 +617,16 @@ struct Activity_Tests {
                 fid: feedId.rawValue,
                 poll: .dummy(
                     id: "some-other-poll",
-                    ownVotes: [.dummy(id: "vote-other", optionId: "option-1", pollId: "some-other-poll")],
+                    ownVotes: [], // never set by backend
                     voteCount: 1,
                     voteCountsByOption: ["option-1": 1]
                 ),
-                pollVote: .dummy(id: "vote-other", optionId: "option-1", pollId: "some-other-poll")
+                pollVote: .dummy(id: "vote-other", optionId: "option-1", pollId: "some-other-poll", user: .dummy(id: "current-user-id"))
             )
         )
-        await #expect(activity.state.poll?.ownVotes.map(\.id) == ["vote-1"])
-        await #expect(activity.state.poll?.voteCount == 1)
-        await #expect(activity.state.poll?.voteCountsByOption == ["option-1": 1, "option-2": 0])
+        await #expect(activity.state.poll?.ownVotes.map(\.id) == [])
+        await #expect(activity.state.poll?.voteCount == 0)
+        await #expect(activity.state.poll?.voteCountsByOption == ["option-1": 0, "option-2": 0])
         
         // Matching event - should add vote
         await client.eventsMiddleware.sendEvent(
@@ -620,19 +634,16 @@ struct Activity_Tests {
                 fid: feedId.rawValue,
                 poll: .dummy(
                     id: "poll-123",
-                    ownVotes: [
-                        .dummy(id: "vote-1", optionId: "option-1", pollId: "poll-123"),
-                        .dummy(id: "vote-2", optionId: "option-2", pollId: "poll-123")
-                    ],
-                    voteCount: 2,
-                    voteCountsByOption: ["option-1": 1, "option-2": 1]
+                    ownVotes: [], // never set by backend
+                    voteCount: 1,
+                    voteCountsByOption: ["option-2": 1]
                 ),
-                pollVote: .dummy(id: "vote-2", optionId: "option-2", pollId: "poll-123")
+                pollVote: .dummy(id: "vote-2", optionId: "option-2", pollId: "poll-123", user: .dummy(id: "current-user-id"))
             )
         )
-        await #expect(activity.state.poll?.ownVotes.map(\.id).sorted() == ["vote-1", "vote-2"])
-        await #expect(activity.state.poll?.voteCount == 2)
-        await #expect(activity.state.poll?.voteCountsByOption == ["option-1": 1, "option-2": 1])
+        await #expect(activity.state.poll?.ownVotes.map(\.id).sorted() == ["vote-2"])
+        await #expect(activity.state.poll?.voteCount == 1)
+        await #expect(activity.state.poll?.voteCountsByOption == ["option-2": 1])
     }
     
     @Test func pollVoteChangedFeedEventUpdatesState() async throws {
@@ -673,14 +684,14 @@ struct Activity_Tests {
                 fid: feedId.rawValue,
                 poll: .dummy(
                     id: "poll-123",
-                    ownVotes: [.dummy(id: "vote-1-changed", optionId: "option-2", pollId: "poll-123")],
+                    ownVotes: [], // never set by backend
                     voteCount: 1,
                     voteCountsByOption: ["option-1": 0, "option-2": 1]
                 ),
-                pollVote: .dummy(id: "vote-1", optionId: "option-2", pollId: "poll-123")
+                pollVote: .dummy(id: "vote-1", optionId: "option-2", pollId: "poll-123", user: .dummy(id: "current-user-id"))
             )
         )
-        await #expect(activity.state.poll?.ownVotes.map(\.id) == ["vote-1-changed"])
+        await #expect(activity.state.poll?.ownVotes.map(\.id) == ["vote-1"])
         await #expect(activity.state.poll?.voteCount == 1)
         await #expect(activity.state.poll?.voteCountsByOption == ["option-1": 0, "option-2": 1])
     }
@@ -710,7 +721,7 @@ struct Activity_Tests {
                     voteCount: 0,
                     voteCountsByOption: [:]
                 ),
-                pollVote: .dummy(id: "vote-other", optionId: "option-1", pollId: "some-other-poll")
+                pollVote: .dummy(id: "vote-other", optionId: "option-1", pollId: "some-other-poll", user: .dummy(id: "current-user-id"))
             )
         )
         await #expect(activity.state.poll?.ownVotes.map(\.id) == ["vote-1"])
@@ -727,7 +738,7 @@ struct Activity_Tests {
                     voteCount: 0,
                     voteCountsByOption: ["option-1": 0, "option-2": 0]
                 ),
-                pollVote: .dummy(id: "vote-1", optionId: "option-1", pollId: "poll-123")
+                pollVote: .dummy(id: "vote-1", optionId: "option-1", pollId: "poll-123", user: .dummy(id: "current-user-id"))
             )
         )
         await #expect(activity.state.poll?.ownVotes.map(\.id) == [])
@@ -738,17 +749,30 @@ struct Activity_Tests {
     // MARK: -
     
     private func defaultClientWithActivityAndCommentsResponses(
+        hasOwnVote: Bool = true,
         uniqueVotes: Bool = true,
         _ additionalPayloads: [any Encodable] = []
     ) -> FeedsClient {
-        FeedsClient.mock(
+        var ownVotes = [PollVoteResponseData]()
+        if hasOwnVote {
+            ownVotes = [
+                .dummy(
+                    id: "vote-1",
+                    optionId: "option-1",
+                    pollId: "poll-123",
+                    user: .dummy(id: "current-user-id")
+                )
+            ]
+        }
+        
+        return FeedsClient.mock(
             apiTransport: .withPayloads(
                 [
                     GetActivityResponse.dummy(
                         activity: .dummy(
                             id: "activity-123",
                             latestReactions: [.dummy(type: "like")],
-                            ownReactions: [.dummy(type: "like")],
+                            ownReactions: [.dummy(type: "like", user: .dummy(id: "current-user-id"))],
                             poll: .dummy(
                                 enforceUniqueVote: uniqueVotes,
                                 id: "poll-123",
@@ -757,15 +781,9 @@ struct Activity_Tests {
                                     .dummy(id: "option-1", text: "Option 1"),
                                     .dummy(id: "option-2", text: "Option 2")
                                 ],
-                                ownVotes: [
-                                    .dummy(
-                                        id: "vote-1",
-                                        optionId: "option-1",
-                                        pollId: "poll-123"
-                                    )
-                                ],
-                                voteCount: 1,
-                                voteCountsByOption: ["option-1": 1, "option-2": 0]
+                                ownVotes: ownVotes,
+                                voteCount: ownVotes.count,
+                                voteCountsByOption: ["option-1": ownVotes.count, "option-2": 0]
                             ),
                             reactionCount: 1,
                             reactionGroups: ["like": .dummy(count: 1)],

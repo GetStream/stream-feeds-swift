@@ -32,6 +32,34 @@ public struct PollData: Identifiable, Equatable, Sendable {
 // MARK: - Mutating the Data
 
 extension PollData {
+    mutating func merge(with incomingData: PollData) {
+        let ownVotes = ownVotes
+        self = incomingData
+        self.ownVotes = ownVotes
+    }
+    
+    mutating func merge(with incomingData: PollData, add vote: PollVoteData, currentUserId: String) {
+        merge(with: incomingData)
+        guard vote.userId == currentUserId else { return }
+        if enforceUniqueVote {
+            ownVotes = [vote]
+        } else {
+            ownVotes.insert(byId: vote)
+        }
+    }
+    
+    mutating func merge(with incomingData: PollData, remove vote: PollVoteData, currentUserId: String) {
+        merge(with: incomingData)
+        guard vote.userId == currentUserId else { return }
+        ownVotes.remove(byId: vote.id)
+    }
+    
+    mutating func merge(with incomingData: PollData, change vote: PollVoteData, currentUserId: String) {
+        merge(with: incomingData)
+        guard vote.userId == currentUserId else { return }
+        ownVotes.replace(byId: vote)
+    }
+    
     // MARK: - Options
     
     mutating func addOption(_ option: PollOptionData) {

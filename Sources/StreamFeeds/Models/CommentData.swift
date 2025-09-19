@@ -148,6 +148,30 @@ public struct CommentData: Identifiable, Equatable, Sendable {
 // MARK: - Mutating the Data
 
 extension CommentData {
+    mutating func merge(with incomingData: CommentData) {
+        let ownReactions = ownReactions
+        self = incomingData
+        self.ownReactions = ownReactions
+    }
+    
+    mutating func merge(with incomingData: CommentData, add reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.insert(byId: reaction)
+    }
+    
+    mutating func merge(with incomingData: CommentData, remove reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.remove(byId: reaction.id)
+    }
+    
+    mutating func merge(with incomingData: CommentData, update reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.replace(byId: reaction)
+    }
+    
     mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }

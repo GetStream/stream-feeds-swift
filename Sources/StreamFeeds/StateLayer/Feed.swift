@@ -46,9 +46,11 @@ public final class Feed: Sendable {
         eventPublisher = client.stateLayerEventPublisher
         memberList = client.memberList(for: .init(feed: query.feed))
         pollsRepository = client.pollsRepository
+        let currentUserId = client.user.id
         stateBuilder = StateBuilder { [eventPublisher, memberList] in
             FeedState(
                 feedQuery: query,
+                currentUserId: currentUserId,
                 eventPublisher: eventPublisher,
                 memberListState: memberList.state
             )
@@ -492,7 +494,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
         let result = try await activitiesRepository.addReaction(activityId: activityId, request: request)
-        await eventPublisher.sendEvent(.activityUpdated(result.activity, feed))
+        await eventPublisher.sendEvent(.activityReactionAdded(result.reaction, result.activity, feed))
         return result.reaction
     }
     
@@ -506,7 +508,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
-        await eventPublisher.sendEvent(.activityUpdated(result.activity, feed))
+        await eventPublisher.sendEvent(.activityReactionDeleted(result.reaction, result.activity, feed))
         return result.reaction
     }
     
@@ -520,7 +522,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
-        await eventPublisher.sendEvent(.commentUpdated(result.comment, result.reaction.activityId, feed))
+        await eventPublisher.sendEvent(.commentReactionAdded(result.reaction, result.comment, feed))
         return result.reaction
     }
 
@@ -534,7 +536,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
-        await eventPublisher.sendEvent(.commentUpdated(result.comment, result.reaction.activityId, feed))
+        await eventPublisher.sendEvent(.commentReactionDeleted(result.reaction, result.comment, feed))
         return result.reaction
     }
     
