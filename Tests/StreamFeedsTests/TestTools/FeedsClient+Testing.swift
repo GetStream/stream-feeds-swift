@@ -10,7 +10,7 @@ extension FeedsClient {
     static func mock(apiTransport: APITransportMock) -> FeedsClient {
         FeedsClient(
             apiKey: APIKey("UnitTests"),
-            user: User.dummy(),
+            user: User.dummy(id: "current-user-id"),
             token: "UnitTestingToken",
             feedsConfig: .default,
             apiTransport: apiTransport

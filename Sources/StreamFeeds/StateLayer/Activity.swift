@@ -145,7 +145,7 @@ public final class Activity: Sendable {
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws {
-        try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+        _ = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
         await commentList.state.changeHandlers.commentRemoved(commentId)
     }
     
@@ -173,7 +173,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addReaction(request: AddReactionRequest) async throws -> FeedsReactionData {
         let result = try await activitiesRepository.addReaction(activityId: activityId, request: request)
-        await eventPublisher.sendEvent(.activityUpdated(result.activity, feed))
+        await eventPublisher.sendEvent(.activityReactionAdded(result.reaction, result.activity, feed))
         return result.reaction
     }
     
@@ -185,7 +185,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func deleteReaction(type: String) async throws -> FeedsReactionData {
         let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
-        await eventPublisher.sendEvent(.activityUpdated(result.activity, feed))
+        await eventPublisher.sendEvent(.activityReactionDeleted(result.reaction, result.activity, feed))
         return result.reaction
     }
     
@@ -199,7 +199,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
-        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.commentId)
+        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.comment.id)
         return result.reaction
     }
 
@@ -213,7 +213,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
-        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.commentId)
+        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.comment.id)
         return result.reaction
     }
     
@@ -386,11 +386,8 @@ public final class Activity: Sendable {
     @discardableResult
     public func castPollVote(request: CastPollVoteRequest) async throws -> PollVoteData? {
         let vote = try await pollsRepository.castPollVote(activityId: activityId, pollId: pollId(), request: request)
-        if let vote {
-            if var poll = await state.poll {
-                await poll.castVote(vote, currentUserId: state.currentUserId)
-                await eventPublisher.sendEvent(.pollUpdated(poll, feed))
-            }
+        if let vote, let poll = await state.poll {
+            await eventPublisher.sendEvent(.pollVoteCasted(vote, poll, feed))
         }
         return vote
     }
@@ -413,11 +410,8 @@ public final class Activity: Sendable {
             voteId: voteId,
             userId: userId
         )
-        if let vote {
-            if var poll = await state.poll {
-                await poll.removeVote(vote, currentUserId: state.currentUserId)
-                await eventPublisher.sendEvent(.pollUpdated(poll, feed))
-            }
+        if let vote, let poll = await state.poll {
+            await eventPublisher.sendEvent(.pollVoteDeleted(vote, poll, feed))
         }
         return vote
     }

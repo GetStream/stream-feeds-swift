@@ -7,18 +7,29 @@ import StreamCore
 @testable import StreamFeeds
 
 extension FollowResponse {
-    static func dummy() -> FollowResponse {
+    static func dummy(
+        createdAt: Date = .fixed(),
+        custom: [String: RawJSON]? = nil,
+        followerRole: String = "user",
+        pushPreference: FollowResponsePushPreference = .all,
+        requestAcceptedAt: Date? = nil,
+        requestRejectedAt: Date? = nil,
+        sourceFeed: FeedResponse = .dummy(),
+        status: FollowResponseStatus = .accepted,
+        targetFeed: FeedResponse = .dummy(),
+        updatedAt: Date = .fixed()
+    ) -> FollowResponse {
         FollowResponse(
-            createdAt: Date(timeIntervalSince1970: 1_640_995_200),
-            custom: nil,
-            followerRole: "user",
-            pushPreference: .all,
-            requestAcceptedAt: nil,
-            requestRejectedAt: nil,
-            sourceFeed: FeedResponse.dummy(),
-            status: .accepted,
-            targetFeed: FeedResponse.dummy(),
-            updatedAt: Date(timeIntervalSince1970: 1_640_995_200)
+            createdAt: createdAt,
+            custom: custom,
+            followerRole: followerRole,
+            pushPreference: pushPreference,
+            requestAcceptedAt: requestAcceptedAt,
+            requestRejectedAt: requestRejectedAt,
+            sourceFeed: sourceFeed,
+            status: status,
+            targetFeed: targetFeed,
+            updatedAt: updatedAt
         )
     }
 }

@@ -11,8 +11,8 @@ extension PinActivityResponse {
         activity: ActivityResponse = .dummy(),
         createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
         duration: String = "0.123s",
-        feed: String = "user:jane",
-        userId: String = "user-123"
+        feed: String,
+        userId: String
     ) -> PinActivityResponse {
         PinActivityResponse(
             activity: activity,

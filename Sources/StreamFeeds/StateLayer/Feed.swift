@@ -27,6 +27,7 @@ public final class Feed: Sendable {
     private let feedQuery: FeedQuery
     private let attachmentsUploader: StreamAttachmentUploader
     private let disposableBag = DisposableBag()
+    private let eventPublisher: StateLayerEventPublisher
     
     private let activitiesRepository: ActivitiesRepository
     private let bookmarksRepository: BookmarksRepository
@@ -42,15 +43,15 @@ public final class Feed: Sendable {
         commentsRepository = client.commentsRepository
         feedQuery = query
         feedsRepository = client.feedsRepository
+        eventPublisher = client.stateLayerEventPublisher
         memberList = client.memberList(for: .init(feed: query.feed))
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { [memberList] in
+        stateBuilder = StateBuilder { [eventPublisher, memberList] in
             FeedState(
                 feedQuery: query,
                 currentUserId: currentUserId,
-                events: events,
+                eventPublisher: eventPublisher,
                 memberListState: memberList.state
             )
         }
@@ -93,8 +94,7 @@ public final class Feed: Sendable {
     
     /// Stops watching the feed.
     /// When this method is called, you will not receive any web socket events for the feed anymore.
-    @discardableResult
-    public func stopWatching() async throws -> Response {
+    public func stopWatching() async throws {
         try await feedsRepository.stopWatching(feedGroupId: group, feedId: id)
     }
     
@@ -107,9 +107,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func updateFeed(request: UpdateFeedRequest) async throws -> FeedData {
-        let feed = try await feedsRepository.updateFeed(feedGroupId: group, feedId: id, request: request)
-        await state.changeHandlers.feedUpdated(feed)
-        return feed
+        let feedData = try await feedsRepository.updateFeed(feedGroupId: group, feedId: id, request: request)
+        await eventPublisher.sendEvent(.feedUpdated(feedData, feed))
+        return feedData
     }
     
     /// Deletes the feed.
@@ -118,7 +118,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteFeed(hardDelete: Bool = false) async throws {
         try await feedsRepository.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete)
-        await state.changeHandlers.feedDeleted()
+        await eventPublisher.sendEvent(.feedDeleted(feed))
     }
     
     // MARK: - Activities
@@ -131,7 +131,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func addActivity(request: FeedAddActivityRequest) async throws -> ActivityData {
         let activity = try await activitiesRepository.addActivity(request: request, in: feed)
-        await state.changeHandlers.activityAdded(activity)
+        await eventPublisher.sendEvent(.activityAdded(activity, feed))
         return activity
     }
     
@@ -143,7 +143,7 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteActivity(id: String, hardDelete: Bool = false) async throws {
         try await activitiesRepository.deleteActivity(activityId: id, hardDelete: hardDelete)
-        await state.access { $0.activities.removeAll(where: { $0.id == id }) }
+        await eventPublisher.sendEvent(.activityDeleted(id, feed))
     }
     
     /// Updates an existing activity in the feed.
@@ -156,7 +156,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func updateActivity(id: String, request: UpdateActivityRequest) async throws -> ActivityData {
         let activity = try await activitiesRepository.updateActivity(activityId: id, request: request)
-        await state.changeHandlers.activityUpdated(activity)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
         return activity
     }
     
@@ -167,7 +167,8 @@ public final class Feed: Sendable {
     /// - Parameter request: The request containing the mark activity data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func markActivity(request: MarkActivityRequest) async throws {
-        try await activitiesRepository.markActivity(feedGroupId: group, feedId: id, request: request)
+        let markData = try await activitiesRepository.markActivity(feedGroupId: group, feedId: id, request: request)
+        await eventPublisher.sendEvent(.activityMarked(markData, feed))
     }
     
     /// Creates a repost of an existing activity.
@@ -182,7 +183,7 @@ public final class Feed: Sendable {
         let activity = try await activitiesRepository.addActivity(
             request: .init(feeds: [feed.rawValue], parentId: activityId, text: text, type: "post")
         )
-        await state.changeHandlers.activityAdded(activity)
+        await eventPublisher.sendEvent(.activityAdded(activity, feed))
         return activity
     }
     
@@ -232,7 +233,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func addBookmark(activityId: String, request: AddBookmarkRequest = .init()) async throws -> BookmarkData {
         let bookmark = try await bookmarksRepository.addBookmark(activityId: activityId, request: request)
-        await state.changeHandlers.bookmarkAdded(bookmark)
+        await eventPublisher.sendEvent(.bookmarkAdded(bookmark))
         return bookmark
     }
     
@@ -246,7 +247,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func deleteBookmark(activityId: String, folderId: String? = nil) async throws -> BookmarkData {
         let bookmark = try await bookmarksRepository.deleteBookmark(activityId: activityId, folderId: folderId)
-        await state.changeHandlers.bookmarkRemoved(bookmark)
+        await eventPublisher.sendEvent(.bookmarkDeleted(bookmark))
         return bookmark
     }
     
@@ -282,7 +283,9 @@ public final class Feed: Sendable {
     ///   ```
     @discardableResult
     public func updateBookmark(activityId: String, request: UpdateBookmarkRequest) async throws -> BookmarkData {
-        try await bookmarksRepository.updateBookmark(activityId: activityId, request: request)
+        let bookmark = try await bookmarksRepository.updateBookmark(activityId: activityId, request: request)
+        await eventPublisher.sendEvent(.bookmarkUpdated(bookmark))
+        return bookmark
     }
     
     // MARK: - Comments
@@ -293,7 +296,9 @@ public final class Feed: Sendable {
     /// - Returns: The comment data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
-        try await commentsRepository.getComment(commentId: commentId)
+        let comment = try await commentsRepository.getComment(commentId: commentId)
+        await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
+        return comment
     }
     
     /// Adds a new comment to activity with id.
@@ -303,7 +308,11 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func addComment(request: AddCommentRequest) async throws -> CommentData {
-        try await commentsRepository.addComment(request: request)
+        let comment = try await commentsRepository.addComment(request: request)
+        if let activity = await state.activities.first(where: { $0.id == comment.objectId }) {
+            await eventPublisher.sendEvent(.commentAdded(comment, activity, feed))
+        }
+        return comment
     }
     
     /// Removes a comment for id.
@@ -311,7 +320,8 @@ public final class Feed: Sendable {
     /// - Parameter commentId: The unique identifier of the comment to remove
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func deleteComment(commentId: String, hardDelete: Bool? = false) async throws {
-        try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+        let response = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+        await eventPublisher.sendEvent(.commentDeleted(response.comment, response.activityId, feed))
     }
     
     /// Updates an existing comment with the provided request data.
@@ -326,7 +336,9 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
-        try await commentsRepository.updateComment(commentId: commentId, request: request)
+        let comment = try await commentsRepository.updateComment(commentId: commentId, request: request)
+        await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
+        return comment
     }
     
     // MARK: - Follows
@@ -364,7 +376,7 @@ public final class Feed: Sendable {
             target: targetFid.rawValue
         )
         let follow = try await feedsRepository.follow(request: request)
-        await state.changeHandlers.followAdded(follow)
+        await eventPublisher.sendEvent(.feedFollowAdded(follow, feed))
         return follow
     }
     
@@ -372,12 +384,12 @@ public final class Feed: Sendable {
     ///
     /// - Parameters:
     ///   - targetFeed: The target feed identifier to unfollow
+    /// - Returns: The data of the follow.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func unfollow(_ targetFeed: FeedId) async throws {
-        try await feedsRepository.unfollow(source: feed, target: targetFeed)
-        await state.access { state in
-            state.following.removeAll(where: { $0.sourceFeed.feed == feed && $0.targetFeed.feed == targetFeed })
-        }
+    @discardableResult public func unfollow(_ targetFeed: FeedId) async throws -> FollowData {
+        let follow = try await feedsRepository.unfollow(source: feed, target: targetFeed)
+        await eventPublisher.sendEvent(.feedFollowDeleted(follow, feed))
+        return follow
     }
     
     /// Accepts a follow request from another feed.
@@ -391,8 +403,7 @@ public final class Feed: Sendable {
     public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
         let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
-        await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
-        await state.changeHandlers.followAdded(follow)
+        await eventPublisher.sendEvent(.feedFollowAdded(follow, feed))
         return follow
     }
     
@@ -405,7 +416,7 @@ public final class Feed: Sendable {
     public func rejectFollow(_ sourceFid: FeedId) async throws -> FollowData {
         let request = RejectFollowRequest(source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.rejectFollow(request: request)
-        await state.access { $0.followRequests.removeAll(where: { $0.id == follow.id }) }
+        await eventPublisher.sendEvent(.feedFollowDeleted(follow, feed))
         return follow
     }
     
@@ -447,9 +458,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func updateFeedMembers(request: UpdateFeedMembersRequest) async throws -> ModelUpdates<FeedMemberData> {
         let updates = try await feedsRepository.updateFeedMembers(feedGroupId: group, feedId: id, request: request)
-        await state.access { state in
-            state.memberListState.applyUpdates(updates)
-        }
+        await eventPublisher.sendEvent(.feedMemberBatchUpdate(updates, feed))
         return updates
     }
 
@@ -458,7 +467,9 @@ public final class Feed: Sendable {
     /// - Returns: The accepted feed member data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func acceptFeedMember() async throws -> FeedMemberData {
-        try await feedsRepository.acceptFeedMember(feedId: id, feedGroupId: group)
+        let member = try await feedsRepository.acceptFeedMember(feedId: id, feedGroupId: group)
+        await eventPublisher.sendEvent(.feedMemberAdded(member, feed))
+        return member
     }
     
     /// Rejects a feed member invitation.
@@ -466,7 +477,9 @@ public final class Feed: Sendable {
     /// - Returns: The rejected feed member data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func rejectFeedMember() async throws -> FeedMemberData {
-        try await feedsRepository.rejectFeedMember(feedGroupId: group, feedId: id)
+        let member = try await feedsRepository.rejectFeedMember(feedGroupId: group, feedId: id)
+        await eventPublisher.sendEvent(.feedMemberDeleted(member.id, feed))
+        return member
     }
     
     // MARK: - Reactions
@@ -481,7 +494,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func addReaction(activityId: String, request: AddReactionRequest) async throws -> FeedsReactionData {
         let result = try await activitiesRepository.addReaction(activityId: activityId, request: request)
-        await state.changeHandlers.reactionAdded(result.reaction)
+        await eventPublisher.sendEvent(.activityReactionAdded(result.reaction, result.activity, feed))
         return result.reaction
     }
     
@@ -495,7 +508,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
         let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
-        await state.changeHandlers.reactionRemoved(result.reaction)
+        await eventPublisher.sendEvent(.activityReactionDeleted(result.reaction, result.activity, feed))
         return result.reaction
     }
     
@@ -509,6 +522,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
+        await eventPublisher.sendEvent(.commentReactionAdded(result.reaction, result.comment, feed))
         return result.reaction
     }
 
@@ -522,6 +536,7 @@ public final class Feed: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
+        await eventPublisher.sendEvent(.commentReactionDeleted(result.reaction, result.comment, feed))
         return result.reaction
     }
     
@@ -537,9 +552,11 @@ public final class Feed: Sendable {
     @discardableResult
     public func createPoll(request: CreatePollRequest, activityType: String) async throws -> ActivityData {
         let poll = try await pollsRepository.createPoll(request: request)
-        return try await activitiesRepository.addActivity(
+        let activity = try await activitiesRepository.addActivity(
             request: .init(feeds: [feed.rawValue], pollId: poll.id, type: activityType)
         )
+        await eventPublisher.sendEvent(.activityAdded(activity, feed))
+        return activity
     }
     
     // MARK: - private

@@ -8,17 +8,17 @@ import StreamCore
 
 extension CommentUpdatedEvent {
     static func dummy(
-        comment: CommentResponse = .dummy(),
-        createdAt: Date = Date(),
-        custom: [String: RawJSON] = [:],
-        fid: String = "user:test",
-        user: UserResponseCommonFields? = nil
+        comment: CommentResponse = CommentResponse.dummy(),
+        fid: String,
+        user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
     ) -> CommentUpdatedEvent {
         CommentUpdatedEvent(
             comment: comment,
-            createdAt: createdAt,
-            custom: custom,
+            createdAt: Date.fixed(),
+            custom: [:],
+            feedVisibility: nil,
             fid: fid,
+            receivedAt: Date.fixed(),
             user: user
         )
     }

@@ -1,0 +1,23 @@
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
+import Foundation
+import StreamCore
+@testable import StreamFeeds
+
+extension BookmarkAddedEvent {
+    static func dummy(
+        bookmark: BookmarkResponse = BookmarkResponse.dummy(),
+        fid: String,
+        user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
+    ) -> BookmarkAddedEvent {
+        BookmarkAddedEvent(
+            bookmark: bookmark,
+            createdAt: Date.fixed(),
+            custom: [:],
+            receivedAt: Date.fixed(),
+            user: user
+        )
+    }
+}

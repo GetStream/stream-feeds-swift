@@ -53,8 +53,9 @@ final class CommentsRepository: Sendable {
         return response.comments.map { $0.toModel() }
     }
     
-    func deleteComment(commentId: String, hardDelete: Bool?) async throws {
-        _ = try await apiClient.deleteComment(id: commentId, hardDelete: hardDelete)
+    func deleteComment(commentId: String, hardDelete: Bool?) async throws -> (comment: CommentData, activityId: String) {
+        let response = try await apiClient.deleteComment(id: commentId, hardDelete: hardDelete)
+        return (response.comment.toModel(), response.activity.id)
     }
     
     func getComment(commentId: String) async throws -> CommentData {
@@ -69,14 +70,14 @@ final class CommentsRepository: Sendable {
     
     // MARK: - Comment Reactions
     
-    func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, commentId: String) {
+    func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
         let response = try await apiClient.addCommentReaction(id: commentId, addCommentReactionRequest: request)
-        return (response.reaction.toModel(), response.comment.id)
+        return (response.reaction.toModel(), response.comment.toModel())
     }
 
-    func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, commentId: String) {
+    func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
         let response = try await apiClient.deleteCommentReaction(id: commentId, type: type)
-        return (response.reaction.toModel(), response.comment.id)
+        return (response.reaction.toModel(), response.comment.toModel())
     }
     
     // MARK: - Comment Reactions Pagination

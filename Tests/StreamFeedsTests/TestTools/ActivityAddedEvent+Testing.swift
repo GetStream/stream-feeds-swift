@@ -9,7 +9,7 @@ import StreamCore
 extension ActivityAddedEvent {
     static func dummy(
         activity: ActivityResponse = ActivityResponse.dummy(),
-        fid: String = "test-feed-id",
+        fid: String,
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
     ) -> ActivityAddedEvent {
         ActivityAddedEvent(

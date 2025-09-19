@@ -9,6 +9,15 @@
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:StreamFeeds.xcodeproj",
+          "identifier" : "845494E12DBA2E7C00211413",
+          "name" : "StreamFeeds"
+        }
+      ]
+    },
     "defaultTestExecutionTimeAllowance" : 60,
     "language" : "en",
     "region" : "US",

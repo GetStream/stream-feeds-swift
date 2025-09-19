@@ -8,7 +8,9 @@ import StreamCore
 
 extension ActivityResponse {
     static func dummy(
+        createdAt: Date = .fixed(),
         expiresAt: Date? = nil,
+        feeds: [String] = ["user:test"],
         id: String = "activity-123",
         latestReactions: [FeedsReactionResponse]? = nil,
         ownReactions: [FeedsReactionResponse]? = nil,
@@ -22,13 +24,13 @@ extension ActivityResponse {
             bookmarkCount: 0,
             commentCount: 1,
             comments: [CommentResponse.dummy()],
-            createdAt: Date(timeIntervalSince1970: 1_640_995_200), // 2022-01-01
+            createdAt: createdAt,
             currentFeed: FeedResponse.dummy(),
             custom: [:],
             deletedAt: nil,
             editedAt: nil,
             expiresAt: expiresAt,
-            feeds: ["user:test"],
+            feeds: feeds,
             filterTags: [],
             id: id,
             interestTags: [],
@@ -49,7 +51,7 @@ extension ActivityResponse {
             shareCount: 3,
             text: text,
             type: "post",
-            updatedAt: Date(timeIntervalSince1970: 1_640_995_200),
+            updatedAt: createdAt,
             user: UserResponse.dummy(),
             visibility: .public,
             visibilityTag: nil

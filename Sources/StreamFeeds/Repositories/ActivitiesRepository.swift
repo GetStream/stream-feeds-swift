@@ -105,8 +105,9 @@ final class ActivitiesRepository: Sendable {
         }
     }
     
-    func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws {
+    func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws -> ActivityMarkData {
         _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
+        return request.toModel(feed: FeedId(group: feedGroupId, id: feedId))
     }
     
     // MARK: - Activity Pagination

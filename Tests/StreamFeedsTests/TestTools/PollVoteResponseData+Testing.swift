@@ -15,8 +15,7 @@ extension PollVoteResponseData {
         optionId: String = "option-1",
         pollId: String = "poll-123",
         updatedAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
-        user: UserResponse? = UserResponse.dummy(),
-        userId: String = "user-123"
+        user: UserResponse? = UserResponse.dummy()
     ) -> PollVoteResponseData {
         PollVoteResponseData(
             answerText: answerText,
@@ -27,7 +26,7 @@ extension PollVoteResponseData {
             pollId: pollId,
             updatedAt: updatedAt,
             user: user,
-            userId: userId
+            userId: user?.id ?? ""
         )
     }
 }

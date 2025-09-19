@@ -127,7 +127,7 @@ struct ActivityCommentList_Tests {
         
         await client.eventsMiddleware.sendEvent(
             CommentDeletedEvent.dummy(
-                comment: .dummy(id: "comment-1"),
+                comment: .dummy(id: "comment-1", objectId: "activity-123"),
                 fid: "user:test"
             )
         )

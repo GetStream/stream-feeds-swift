@@ -16,7 +16,7 @@ public struct FeedsReactionData: Equatable, Sendable {
 
 extension FeedsReactionData: Identifiable {
     public var id: String {
-        activityId + user.id
+        activityId + user.id + type
     }
 }
 
