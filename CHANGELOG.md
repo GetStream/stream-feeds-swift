@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
+### 🔄 Changed
+
+# [0.3.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.3.0)
+_September 19, 2025_
+
 ### ✅ Added
 - Support for stories
 - Web-socket reconnection for feeds

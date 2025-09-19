@@ -6,5 +6,5 @@ import Foundation
 
 extension SystemEnvironment {
     /// A Stream Feeds version.
-    public static let version: String = "0.3.0-SNAPSHOT"
+    public static let version: String = "0.3.0"
 }
