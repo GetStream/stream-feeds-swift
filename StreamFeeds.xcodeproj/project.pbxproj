@@ -422,7 +422,6 @@
 		4F21D57E2E2645AE006288AF /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
@@ -504,7 +503,6 @@
 		845494F42DBA2E7C00211413 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
@@ -540,7 +538,6 @@
 		845494F52DBA2E7C00211413 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
