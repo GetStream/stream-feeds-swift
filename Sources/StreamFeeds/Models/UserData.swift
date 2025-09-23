@@ -79,3 +79,27 @@ extension UserResponseCommonFields {
         )
     }
 }
+
+extension UserResponsePrivacyFields {
+    func toModel() -> UserData {
+        UserData(
+            banned: banned,
+            blockedUserIds: blockedUserIds,
+            createdAt: createdAt,
+            custom: custom,
+            deactivatedAt: deactivatedAt,
+            deletedAt: deletedAt,
+            id: id,
+            image: image,
+            language: language,
+            lastActive: lastActive,
+            name: name,
+            online: online,
+            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
+            role: role,
+            teams: teams,
+            teamsRole: teamsRole,
+            updatedAt: updatedAt
+        )
+    }
+}

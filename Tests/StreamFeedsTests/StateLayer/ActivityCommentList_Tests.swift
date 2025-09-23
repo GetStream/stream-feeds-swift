@@ -7,14 +7,12 @@ import StreamCore
 import Testing
 
 struct ActivityCommentList_Tests {
+    static let activityId = "activity-123"
+    
     @Test func initialGetUpdatesState() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1")])
-            ])
-        )
+        let client = defaultClient()
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: ActivityCommentsQuery(objectId: Self.activityId, objectType: "activity")
         )
         let comments = try await commentList.get()
         let stateComments = await commentList.state.comments
@@ -24,28 +22,24 @@ struct ActivityCommentList_Tests {
     
     @Test func paginationLoadsMoreComments() async throws {
         // Sort by newest first
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads(
-                [
-                    GetCommentsResponse.dummy(
-                        comments: [.dummy(
-                            createdAt: .fixed(offset: 0),
-                            id: "comment-1"
-                        )],
-                        next: "next-cursor"
-                    ),
-                    GetCommentsResponse.dummy(
-                        comments: [.dummy(
+        let client = defaultClient(
+            additionalPayloads:
+            [
+                GetCommentsResponse.dummy(
+                    comments: [
+                        .dummy(
                             createdAt: .fixed(offset: -1),
-                            id: "comment-2"
-                        )],
-                        next: nil
-                    )
-                ]
-            )
+                            id: "comment-2",
+                            objectId: Self.activityId
+                        )
+                    ],
+                    next: nil
+                )
+            ]
         )
+
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         
         // Initial load
@@ -63,22 +57,12 @@ struct ActivityCommentList_Tests {
     }
     
     @Test func commentAddedEventUpdatesState() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(createdAt: .fixed(), id: "comment-1")])
-            ])
-        )
+        let client = defaultClient()
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         try await commentList.get()
         
-        await client.eventsMiddleware.sendEvent(
-            CommentAddedEvent.dummy(
-                comment: .dummy(createdAt: .fixed(offset: 1), id: "comment-2"),
-                fid: "user:test"
-            )
-        )
         // Unrelated event
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
@@ -87,24 +71,64 @@ struct ActivityCommentList_Tests {
             )
         )
         
+        await client.eventsMiddleware.sendEvent(
+            CommentAddedEvent.dummy(
+                comment: .dummy(createdAt: .fixed(offset: 1), id: "comment-2", objectId: Self.activityId),
+                fid: "user:test"
+            )
+        )
+        
         let result = await commentList.state.comments.map(\.id)
         #expect(result == ["comment-2", "comment-1"], "Newest first")
     }
     
-    @Test func commentUpdatedEventUpdatesState() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1", text: "Original text")])
-            ])
-        )
+    @Test func commentsAddedBatchEventUpdatesState() async throws {
+        let client = defaultClient()
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
+        )
+        try await commentList.get()
+        
+        // Verify initial state
+        let initialComments = await commentList.state.comments
+        #expect(initialComments.map(\.id) == ["comment-1"])
+        
+        // Send batch of new comments
+        let newComments = [
+            CommentResponse.dummy(
+                createdAt: .fixed(offset: 1),
+                id: "comment-2",
+                objectId: Self.activityId,
+                text: "Second comment"
+            ).toModel(),
+            CommentResponse.dummy(
+                createdAt: .fixed(offset: 2),
+                id: "comment-3",
+                objectId: Self.activityId,
+                text: "Third comment"
+            ).toModel()
+        ]
+        
+        await client.stateLayerEventPublisher.sendEvent(
+            .commentsAddedBatch(newComments, Self.activityId, FeedId(group: "user", id: "test"))
+        )
+        
+        // Verify all comments are added and sorted by newest first
+        let finalComments = await commentList.state.comments
+        #expect(finalComments.map(\.id) == ["comment-3", "comment-2", "comment-1"])
+        #expect(finalComments.map(\.text) == ["Third comment", "Second comment", "Test comment"])
+    }
+    
+    @Test func commentUpdatedEventUpdatesState() async throws {
+        let client = defaultClient()
+        let commentList = client.activityCommentList(
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         try await commentList.get()
         
         await client.eventsMiddleware.sendEvent(
             CommentUpdatedEvent.dummy(
-                comment: .dummy(id: "comment-1", text: "Updated text"),
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, text: "Updated text"),
                 fid: "user:test"
             )
         )
@@ -115,13 +139,9 @@ struct ActivityCommentList_Tests {
     }
     
     @Test func commentDeletedEventRemovesFromState() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1")])
-            ])
-        )
+        let client = defaultClient()
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         try await commentList.get()
         
@@ -137,80 +157,146 @@ struct ActivityCommentList_Tests {
     }
     
     @Test func commentReactionAddedEventUpdatesState() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1")])
-            ])
-        )
+        let client = defaultClient()
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         try await commentList.get()
         
         await client.eventsMiddleware.sendEvent(
             CommentReactionAddedEvent.dummy(
-                comment: .dummy(id: "comment-1"),
+                comment: .dummy(
+                    id: "comment-1",
+                    objectId: Self.activityId,
+                    ownReactions: [], // always empty
+                    reactionCount: 1,
+                    reactionGroups: ["heart": .dummy(count: 1)]
+                ),
                 fid: "user:test",
                 reaction: .dummy(type: "heart")
             )
         )
         
-        let result = await commentList.state.comments.first?.reactionGroups["heart"]?.count
-        #expect(result == 1)
+        let comments = await commentList.state.comments
+        #expect(comments.count == 1)
+        let comment = try #require(comments.first)
+        #expect(comment.ownReactions.map(\.type) == ["heart"])
+        #expect(comment.reactionCount == 1)
+        #expect(comment.reactionGroups.count == 1)
+        #expect(comment.reactionGroups["heart"]?.count == 1)
     }
     
     @Test func commentReactionDeletedEventUpdatesState() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1")])
-            ])
+        let client = defaultClient(
+            comments: [
+                .dummy(
+                    id: "comment-1",
+                    objectId: Self.activityId,
+                    ownReactions: [.dummy(activityId: Self.activityId, type: "heart")],
+                    reactionCount: 1,
+                    reactionGroups: ["heart": .dummy(count: 1)]
+                )
+            ]
         )
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
+        )
+        try await commentList.get()
+        await #expect(commentList.state.comments.count == 1)
+        await #expect(commentList.state.comments.first?.ownReactions.map(\.type) == ["heart"])
+        await #expect(commentList.state.comments.first?.reactionCount == 1)
+        await #expect(commentList.state.comments.first?.reactionGroups.count == 1)
+        await #expect(commentList.state.comments.first?.reactionGroups["heart"]?.count == 1)
+        
+        await client.eventsMiddleware.sendEvent(
+            CommentReactionDeletedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId),
+                fid: "user:test",
+                reaction: .dummy(type: "heart")
+            )
+        )
+        
+        await #expect(commentList.state.comments.count == 1)
+        await #expect(commentList.state.comments.first?.ownReactions.map(\.type) == [])
+        await #expect(commentList.state.comments.first?.reactionCount == 0)
+        await #expect(commentList.state.comments.first?.reactionGroups.isEmpty == true)
+    }
+    
+    @Test func commentReactionUpdatedEventUpdatesState() async throws {
+        let client = defaultClient(
+            comments: [
+                .dummy(
+                    id: "comment-1",
+                    objectId: Self.activityId,
+                    ownReactions: [.dummy(activityId: Self.activityId, type: "like")],
+                    reactionCount: 1,
+                    reactionGroups: ["like": .dummy(count: 1)]
+                )
+            ]
+        )
+        let commentList = client.activityCommentList(
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         try await commentList.get()
         
-        // Add reaction first
+        await #expect(commentList.state.comments.count == 1)
+        await #expect(commentList.state.comments.first?.ownReactions.map(\.custom) == [nil])
+        await #expect(commentList.state.comments.first?.ownReactions.map(\.type) == ["like"])
+        await #expect(commentList.state.comments.first?.reactionCount == 1)
+        await #expect(commentList.state.comments.first?.reactionGroups.count == 1)
+        await #expect(commentList.state.comments.first?.reactionGroups["like"]?.count == 1)
+        
+        // Update reaction's custom data
         await client.eventsMiddleware.sendEvent(
-            CommentReactionAddedEvent.dummy(
-                comment: .dummy(id: "comment-1"),
+            CommentReactionUpdatedEvent.dummy(
+                comment: .dummy(
+                    id: "comment-1",
+                    latestReactions: [.dummy(activityId: Self.activityId, custom: ["key": .string("UPDATED")], type: "like")],
+                    objectId: Self.activityId,
+                    ownReactions: [], // always empty
+                    reactionCount: 1,
+                    reactionGroups: ["like": .dummy(count: 1)]
+                ),
                 fid: "user:test",
-                reaction: .dummy(type: "heart")
+                reaction: .dummy(activityId: Self.activityId, custom: ["key": .string("UPDATED")], type: "like")
             )
         )
         
-        // Then remove it
-        await client.eventsMiddleware.sendEvent(
-            CommentReactionDeletedEvent.dummy(
-                comment: .dummy(id: "comment-1"),
-                fid: "user:test",
-                reaction: .dummy(type: "heart")
-            )
-        )
-        
-        let comment = try #require(await commentList.state.comments.first)
-        #expect(comment.reactionCount == 0)
-        #expect(comment.reactionGroups["heart"] == nil)
-        #expect(comment.ownReactions.isEmpty)
+        let comments = await commentList.state.comments
+        #expect(comments.count == 1)
+        let comment = try #require(comments.first)
+        #expect(comment.ownReactions.first?.custom == ["key": StreamCore.RawJSON.string("UPDATED")])
+        #expect(comment.ownReactions.map(\.type) == ["like"])
+        #expect(comment.reactionCount == 1)
+        #expect(comment.reactionGroups.count == 1)
+        #expect(comment.reactionGroups["like"]?.count == 1)
     }
     
     @Test func threadedCommentsHandleReplies() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [
-                    .dummy(id: "comment-1", replies: [.dummy(id: "reply-1")])
-                ])
-            ])
+        let client = defaultClient(
+            comments: [
+                .dummy(
+                    id: "comment-1",
+                    objectId: Self.activityId,
+                    replies: [.dummy(id: "reply-1", objectId: Self.activityId)]
+                )
+            ]
         )
+        
         let commentList = client.activityCommentList(
-            for: .init(objectId: "activity-123", objectType: "activity")
+            for: .init(objectId: Self.activityId, objectType: "activity")
         )
         try await commentList.get()
         
         // Add a reply to existing comment
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
-                comment: .dummy(createdAt: .fixed(offset: 1), id: "reply-2", parentId: "comment-1"),
+                comment: .dummy(
+                    createdAt: .fixed(offset: 1),
+                    id: "reply-2",
+                    objectId: Self.activityId,
+                    parentId: "comment-1"
+                ),
                 fid: "user:test"
             )
         )
@@ -220,10 +306,8 @@ struct ActivityCommentList_Tests {
     }
     
     @Test func eventsOnlyAffectMatchingObject() async throws {
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1")])
-            ])
+        let client = defaultClient(
+            comments: [.dummy(id: "comment-1", objectId: Self.activityId)]
         )
         let commentList = client.activityCommentList(
             for: .init(objectId: "activity-123", objectType: "activity")
@@ -240,5 +324,23 @@ struct ActivityCommentList_Tests {
         
         let result = await commentList.state.comments.map(\.id)
         #expect(result == ["comment-1"]) // Should not include comment-2
+    }
+    
+    // MARK: -
+    
+    private func defaultClient(
+        comments: [ThreadedCommentResponse] = [.dummy(id: "comment-1", objectId: Self.activityId, objectType: "activity")],
+        additionalPayloads: [any Encodable] = []
+    ) -> FeedsClient {
+        FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    GetCommentsResponse.dummy(
+                        comments: comments,
+                        next: "next-cursor"
+                    )
+                ] + additionalPayloads
+            )
+        )
     }
 }

@@ -106,7 +106,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
         let comment = try await commentsRepository.getComment(commentId: commentId)
-        await commentList.state.changeHandlers.commentUpdated(comment)
+        await eventPublisher.sendEvent(.commentUpdated(comment, activityId, feed))
         return comment
     }
     
@@ -120,7 +120,9 @@ public final class Activity: Sendable {
     @discardableResult
     public func addComment(request: ActivityAddCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.addComment(request: request.withActivityId(activityId))
-        await commentList.state.changeHandlers.commentAdded(ThreadedCommentData(from: comment))
+        if let activity = await state.activity {
+            await eventPublisher.sendEvent(.commentAdded(comment, activity, feed))
+        }
         return comment
     }
     
@@ -133,20 +135,20 @@ public final class Activity: Sendable {
     public func addCommentsBatch(requests: [ActivityAddCommentRequest]) async throws -> [CommentData] {
         let request = AddCommentsBatchRequest(comments: requests.map { $0.withActivityId(activityId) })
         let comments = try await commentsRepository.addCommentsBatch(request: request)
-        let threaded = comments.map { ThreadedCommentData(from: $0) }
-        await commentList.state.access { state in
-            threaded.forEach { state.changeHandlers.commentAdded($0) }
-        }
+        await eventPublisher.sendEvent(.commentsAddedBatch(comments, activityId, feed))
         return comments
     }
     
     /// Removes a comment from this activity.
     ///
     /// - Parameter commentId: The unique identifier of the comment to remove
+    /// - Returns: The data of the deleted comment
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws {
-        _ = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
-        await commentList.state.changeHandlers.commentRemoved(commentId)
+    @discardableResult
+    public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws -> CommentData {
+        let result = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+        await eventPublisher.sendEvent(.commentDeleted(result.comment, result.activityId, feed))
+        return result.comment
     }
     
     /// Updates an existing comment.
@@ -159,7 +161,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func updateComment(commentId: String, request: UpdateCommentRequest) async throws -> CommentData {
         let comment = try await commentsRepository.updateComment(commentId: commentId, request: request)
-        await commentList.state.changeHandlers.commentUpdated(comment)
+        await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
         return comment
     }
     
@@ -199,7 +201,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> FeedsReactionData {
         let result = try await commentsRepository.addCommentReaction(commentId: commentId, request: request)
-        await commentList.state.changeHandlers.commentReactionAdded(result.reaction, result.comment.id)
+        await eventPublisher.sendEvent(.commentReactionAdded(result.reaction, result.comment, feed))
         return result.reaction
     }
 
@@ -213,7 +215,7 @@ public final class Activity: Sendable {
     @discardableResult
     public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
         let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
-        await commentList.state.changeHandlers.commentReactionRemoved(result.reaction, result.comment.id)
+        await eventPublisher.sendEvent(.commentReactionDeleted(result.reaction, result.comment, feed))
         return result.reaction
     }
     

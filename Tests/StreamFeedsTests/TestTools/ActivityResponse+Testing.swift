@@ -8,6 +8,7 @@ import StreamCore
 
 extension ActivityResponse {
     static func dummy(
+        comments: [CommentResponse] = [],
         createdAt: Date = .fixed(),
         expiresAt: Date? = nil,
         feeds: [String] = ["user:test"],
@@ -23,7 +24,7 @@ extension ActivityResponse {
             attachments: [],
             bookmarkCount: 0,
             commentCount: 1,
-            comments: [CommentResponse.dummy()],
+            comments: comments,
             createdAt: createdAt,
             currentFeed: FeedResponse.dummy(),
             custom: [:],

@@ -74,7 +74,7 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     ///
     /// This property contains the list of users who were mentioned in the comment
     /// using @mentions or similar functionality.
-    public let mentionedUsers: [UserData]
+    public private(set) var mentionedUsers: [UserData]
     
     /// Metadata about the comment's replies structure.
     ///
@@ -146,7 +146,7 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     public let upvoteCount: Int
     
     /// The user who created the comment.
-    public let user: UserData
+    public private(set) var user: UserData
 }
 
 // MARK: - Initializers
@@ -193,6 +193,62 @@ extension ThreadedCommentData {
 // MARK: - Mutating the Data
 
 extension ThreadedCommentData {
+    mutating func merge(with incomingData: CommentData) {
+        // Web-socket events to not have own reactions
+        let ownReactions = ownReactions
+        self = ThreadedCommentData(
+            attachments: incomingData.attachments,
+            confidenceScore: incomingData.confidenceScore,
+            controversyScore: incomingData.controversyScore,
+            createdAt: incomingData.createdAt,
+            custom: incomingData.custom,
+            deletedAt: incomingData.deletedAt,
+            downvoteCount: incomingData.downvoteCount,
+            id: incomingData.id,
+            latestReactions: incomingData.latestReactions,
+            mentionedUsers: incomingData.mentionedUsers,
+            meta: meta,
+            moderation: incomingData.moderation,
+            objectId: incomingData.objectId,
+            objectType: incomingData.objectType,
+            ownReactions: ownReactions,
+            parentId: incomingData.parentId,
+            reactionCount: incomingData.reactionCount,
+            reactionGroups: incomingData.reactionGroups,
+            replies: replies,
+            replyCount: incomingData.replyCount,
+            score: incomingData.score,
+            status: incomingData.status,
+            text: incomingData.text,
+            updatedAt: incomingData.updatedAt,
+            upvoteCount: incomingData.upvoteCount,
+            user: incomingData.user
+        )
+    }
+    
+    mutating func merge(with incomingData: CommentData, add reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.insert(byId: reaction)
+    }
+    
+    mutating func merge(with incomingData: CommentData, remove reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.remove(byId: reaction.id)
+    }
+    
+    mutating func merge(with incomingData: CommentData, update reaction: FeedsReactionData, currentUserId: String) {
+        merge(with: incomingData)
+        guard reaction.user.id == currentUserId else { return }
+        ownReactions.replace(byId: reaction)
+    }
+    
+    mutating func updateUser(_ incomingData: UserData) {
+        mentionedUsers.updateAll(where: { $0.id == incomingData.id }, changes: { $0 = incomingData })
+        user = incomingData
+    }
+    
     mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
         FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
         reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }

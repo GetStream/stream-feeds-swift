@@ -8,7 +8,7 @@ import StreamCore
 
 extension CommentReactionDeletedEvent {
     static func dummy(
-        comment: CommentResponse = .dummy(),
+        comment: CommentResponse,
         createdAt: Date = Date(),
         custom: [String: RawJSON] = [:],
         fid: String,

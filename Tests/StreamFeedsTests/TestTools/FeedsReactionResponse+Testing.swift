@@ -13,7 +13,7 @@ extension FeedsReactionResponse {
         createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
         custom: [String: RawJSON]? = nil,
         type: String = "like",
-        user: UserResponse = .dummy()
+        user: UserResponse = .dummy(id: "current-user-id")
     ) -> FeedsReactionResponse {
         FeedsReactionResponse(
             activityId: activityId,

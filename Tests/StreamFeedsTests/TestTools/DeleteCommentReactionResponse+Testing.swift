@@ -8,9 +8,9 @@ import StreamCore
 
 extension DeleteCommentReactionResponse {
     static func dummy(
-        comment: CommentResponse = .dummy(),
+        comment: CommentResponse,
         duration: String = "1.23ms",
-        reaction: FeedsReactionResponse = .dummy()
+        reaction: FeedsReactionResponse
     ) -> DeleteCommentReactionResponse {
         DeleteCommentReactionResponse(
             comment: comment,

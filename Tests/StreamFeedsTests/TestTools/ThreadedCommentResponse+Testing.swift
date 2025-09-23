@@ -9,10 +9,13 @@ import StreamCore
 extension ThreadedCommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
-        id: String = "comment-123",
-        objectId: String = "activity-123",
+        id: String,
+        objectId: String,
         objectType: String = "activity",
+        ownReactions: [FeedsReactionResponse] = [],
         parentId: String? = nil,
+        reactionCount: Int = 0,
+        reactionGroups: [String: ReactionGroupResponse?]? = nil,
         replies: [ThreadedCommentResponse]? = nil,
         text: String = "Test comment"
     ) -> ThreadedCommentResponse {
@@ -31,10 +34,10 @@ extension ThreadedCommentResponse {
             moderation: nil,
             objectId: objectId,
             objectType: objectType,
-            ownReactions: [],
+            ownReactions: ownReactions,
             parentId: parentId,
-            reactionCount: 5,
-            reactionGroups: nil,
+            reactionCount: reactionCount,
+            reactionGroups: reactionGroups,
             replies: replies,
             replyCount: replies?.count ?? 0,
             score: 10,

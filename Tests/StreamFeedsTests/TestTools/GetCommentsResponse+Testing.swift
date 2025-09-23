@@ -8,7 +8,7 @@ import StreamCore
 
 extension GetCommentsResponse {
     static func dummy(
-        comments: [ThreadedCommentResponse] = [.dummy()],
+        comments: [ThreadedCommentResponse],
         duration: String = "0.123s",
         next: String? = nil,
         prev: String? = nil

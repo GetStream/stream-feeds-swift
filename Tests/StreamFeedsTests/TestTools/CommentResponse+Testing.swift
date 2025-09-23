@@ -10,10 +10,15 @@ extension CommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
         id: String = "comment-123",
-        objectId: String = "activity-123",
+        latestReactions: [FeedsReactionResponse]? = nil,
+        objectId: String,
         objectType: String = "activity",
+        ownReactions: [FeedsReactionResponse] = [],
         parentId: String? = nil,
-        text: String = "Test comment"
+        reactionCount: Int = 0,
+        reactionGroups: [String: ReactionGroupResponse?]? = nil,
+        text: String = "Test comment",
+        user: UserResponse = .dummy(id: "current-user-id")
     ) -> CommentResponse {
         CommentResponse(
             attachments: nil,
@@ -24,22 +29,22 @@ extension CommentResponse {
             deletedAt: nil,
             downvoteCount: 0,
             id: id,
-            latestReactions: nil,
+            latestReactions: latestReactions,
             mentionedUsers: [UserResponse.dummy()],
             moderation: nil,
             objectId: objectId,
             objectType: objectType,
-            ownReactions: [],
+            ownReactions: ownReactions,
             parentId: parentId,
-            reactionCount: 5,
-            reactionGroups: nil,
+            reactionCount: reactionCount,
+            reactionGroups: reactionGroups,
             replyCount: 2,
             score: 10,
             status: "active",
             text: text,
             updatedAt: Date(),
             upvoteCount: 3,
-            user: UserResponse.dummy()
+            user: user
         )
     }
 }
