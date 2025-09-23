@@ -225,3 +225,21 @@ extension CommentResponse {
         )
     }
 }
+
+// MARK: -
+
+extension Array where Element == CommentData {
+    func divideIntoParentsAndReplies() -> (parents: [CommentData], replies: [CommentData]) {
+        guard !isEmpty else { return ([], []) }
+        var parents = [Element]()
+        var replies = [Element]()
+        for comment in self {
+            if comment.parentId != nil {
+                replies.append(comment)
+            } else {
+                parents.append(comment)
+            }
+        }
+        return (parents, replies)
+    }
+}

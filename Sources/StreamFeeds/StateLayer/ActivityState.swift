@@ -88,7 +88,7 @@ extension ActivityState {
                 guard activityData.id == activityId, eventFeedId == feed else { return }
                 await self?.access { state in
                     state.activity?.merge(with: activityData)
-                    state.activity?.updateComment(commentData)
+                    state.activity?.addComment(commentData)
                 }
             case .commentDeleted(let commentData, let eventActivityId, let eventFeedId):
                 guard eventActivityId == activityId, eventFeedId == feed else { return }
@@ -99,6 +99,14 @@ extension ActivityState {
                 guard eventActivityId == activityId, eventFeedId == feed else { return }
                 await self?.access { state in
                     state.activity?.updateComment(commentData)
+                }
+            case .commentsAddedBatch(let commentDatas, let eventActivityId, let eventFeedId):
+                guard eventActivityId == activityId, eventFeedId == feed else { return }
+                await self?.access { state in
+                    guard state.activity != nil else { return }
+                    for commentData in commentDatas {
+                        state.activity?.addComment(commentData)
+                    }
                 }
             case .pollDeleted(let pollId, let eventFeedId):
                 guard eventFeedId == feed else { return }

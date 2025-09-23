@@ -29,6 +29,7 @@ enum StateLayerEvent: Sendable {
     case commentAdded(CommentData, ActivityData, FeedId)
     case commentDeleted(CommentData, String, FeedId)
     case commentUpdated(CommentData, String, FeedId)
+    case commentsAddedBatch([CommentData], String, FeedId)
     
     case commentReactionAdded(FeedsReactionData, CommentData, FeedId)
     case commentReactionDeleted(FeedsReactionData, CommentData, FeedId)
@@ -57,6 +58,8 @@ enum StateLayerEvent: Sendable {
     case feedMemberBatchUpdate(ModelUpdates<FeedMemberData>, FeedId)
     
     case notificationFeedUpdated(FeedId)
+    
+    case userUpdated(UserData)
 }
 
 extension StateLayerEvent {
@@ -158,6 +161,8 @@ extension StateLayerEvent {
             self = .feedFollowDeleted(event.follow.toModel(), FeedId(rawValue: event.fid))
         case let event as FollowUpdatedEvent:
             self = .feedFollowUpdated(event.follow.toModel(), FeedId(rawValue: event.fid))
+        case let event as UserUpdatedEvent:
+            self = .userUpdated(event.user.toModel())
             
         //
         // Unhandled events:
@@ -167,7 +172,6 @@ extension StateLayerEvent {
         // case let event as UserDeactivatedEvent:
         // case let event as UserMutedEvent:
         // case let event as UserReactivatedEvent:
-        // case let event as UserUpdatedEvent:
         // App events
         // case let event as AppUpdatedEvent:
         // Moderation events

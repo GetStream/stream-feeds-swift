@@ -100,6 +100,12 @@ extension ActivityData {
     
     // MARK: - Activity Comments and Comment Reactions
     
+    mutating func addComment(_ incomingData: CommentData) {
+        if comments.insert(byId: incomingData) {
+            commentCount += 1
+        }
+    }
+    
     mutating func updateComment(_ incomingData: CommentData) {
         comments.updateFirstElement(where: { $0.id == incomingData.id }, changes: { $0.merge(with: incomingData) })
     }
@@ -126,12 +132,6 @@ extension ActivityData {
     }
     
     // MARK: -
-    
-    mutating func addComment(_ comment: CommentData) {
-        if comments.insert(byId: comment) {
-            commentCount += 1
-        }
-    }
     
     mutating func deleteComment(_ comment: CommentData) {
         if comments.remove(byId: comment.id) {

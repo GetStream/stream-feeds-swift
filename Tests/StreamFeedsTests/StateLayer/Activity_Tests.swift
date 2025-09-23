@@ -791,8 +791,8 @@ struct Activity_Tests {
                         )
                     ),
                     GetCommentsResponse.dummy(comments: [
-                        .dummy(id: "comment-1", text: "First comment"),
-                        .dummy(id: "comment-2", text: "Second comment")
+                        .dummy(id: "comment-1", objectId: "activity-123", text: "First comment"),
+                        .dummy(id: "comment-2", objectId: "activity-123", text: "Second comment")
                     ])
                 ] + additionalPayloads
             )

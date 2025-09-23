@@ -377,4 +377,12 @@ extension Array {
         changes(&updatedElement)
         self[index] = updatedElement
     }
+    
+    mutating func updateAll(where predicate: (Element) -> Bool, changes: (inout Element) -> Void) {
+        for (index, element) in enumerated() where predicate(element) {
+            var updatedElement = element
+            changes(&updatedElement)
+            self[index] = updatedElement
+        }
+    }
 }

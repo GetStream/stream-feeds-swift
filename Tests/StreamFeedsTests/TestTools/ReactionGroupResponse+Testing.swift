@@ -9,8 +9,8 @@ import StreamCore
 extension ReactionGroupResponse {
     static func dummy(
         count: Int = 1,
-        firstReactionAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
-        lastReactionAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        firstReactionAt: Date = .fixed(),
+        lastReactionAt: Date = .fixed(),
         sumScores: Int? = nil
     ) -> ReactionGroupResponse {
         ReactionGroupResponse(
