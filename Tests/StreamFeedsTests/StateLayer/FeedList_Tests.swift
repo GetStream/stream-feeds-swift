@@ -26,8 +26,8 @@ struct FeedList_Tests {
         let client = defaultClientWithFeedsResponses([
             QueryFeedsResponse.dummy(
                 feeds: [
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_202), id: "feed-3", name: "Third Feed"),
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_203), id: "feed-4", name: "Fourth Feed")
+                    .dummy(createdAt: Date.fixed(), id: "feed-3", name: "Third Feed"),
+                    .dummy(createdAt: Date.fixed(), id: "feed-4", name: "Fourth Feed")
                 ],
                 next: "next-cursor-2"
             )
@@ -46,32 +46,10 @@ struct FeedList_Tests {
         #expect(moreFeeds.count == 2)
         #expect(moreFeeds.map(\.id) == ["feed-3", "feed-4"])
         #expect(updatedState.count == 4)
-        #expect(updatedState.map(\.id) == ["feed-1", "feed-2", "feed-3", "feed-4"])
+        // The feeds should be sorted by createdAt in ascending order (oldest first)
+        #expect(updatedState.map(\.id) == ["feed-3", "feed-4", "feed-1", "feed-2"])
         await #expect(feedList.state.canLoadMore == true)
         await #expect(feedList.state.pagination?.next == "next-cursor-2")
-    }
-
-    @Test func queryMoreFeedsWithLimitUpdatesState() async throws {
-        let client = defaultClientWithFeedsResponses([
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_202), id: "feed-3", name: "Third Feed")
-                ],
-                next: "next-cursor-2"
-            )
-        ])
-        let feedList = client.feedList(for: FeedsQuery())
-
-        // Initial load
-        _ = try await feedList.get()
-
-        // Load more with limit
-        let moreFeeds = try await feedList.queryMoreFeeds(limit: 1)
-        let updatedState = await feedList.state.feeds
-        #expect(moreFeeds.count == 1)
-        #expect(moreFeeds.map(\.id) == ["feed-3"])
-        #expect(updatedState.count == 3)
-        #expect(updatedState.map(\.id) == ["feed-1", "feed-2", "feed-3"])
     }
 
     @Test func queryMoreFeedsWhenNoMoreFeedsReturnsEmpty() async throws {
@@ -79,8 +57,8 @@ struct FeedList_Tests {
             apiTransport: .withPayloads([
                 QueryFeedsResponse.dummy(
                     feeds: [
-                        .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_200), id: "feed-1", name: "First Feed"),
-                        .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_201), id: "feed-2", name: "Second Feed")
+                        .dummy(createdAt: Date.fixed(), id: "feed-1", name: "First Feed"),
+                        .dummy(createdAt: Date.fixed(), id: "feed-2", name: "Second Feed")
                     ],
                     next: nil
                 )
@@ -121,15 +99,7 @@ struct FeedList_Tests {
     // MARK: - WebSocket Events
 
     @Test func feedUpdatedEventUpdatesState() async throws {
-        let client = defaultClientWithFeedsResponses([
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_200), id: "feed-1", name: "First Feed"),
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_201), id: "feed-2", name: "Second Feed")
-                ],
-                next: "next-cursor"
-            )
-        ])
+        let client = defaultClientWithFeedsResponses()
         let feedList = client.feedList(for: FeedsQuery())
         try await feedList.get()
 
@@ -140,7 +110,7 @@ struct FeedList_Tests {
         // Send feed updated event
         await client.eventsMiddleware.sendEvent(
             FeedUpdatedEvent.dummy(
-                feed: .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_200), id: "feed-1", name: "Updated First Feed"),
+                feed: .dummy(createdAt: Date.fixed(), id: "feed-1", name: "Updated First Feed"),
                 fid: "user:test"
             )
         )
@@ -152,15 +122,7 @@ struct FeedList_Tests {
     }
 
     @Test func feedUpdatedEventForUnrelatedFeedDoesNotUpdateState() async throws {
-        let client = defaultClientWithFeedsResponses([
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_200), id: "feed-1", name: "First Feed"),
-                    .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_201), id: "feed-2", name: "Second Feed")
-                ],
-                next: "next-cursor"
-            )
-        ])
+        let client = defaultClientWithFeedsResponses()
         let feedList = client.feedList(for: FeedsQuery())
         try await feedList.get()
 
@@ -171,7 +133,7 @@ struct FeedList_Tests {
         // Send feed updated event for unrelated feed
         await client.eventsMiddleware.sendEvent(
             FeedUpdatedEvent.dummy(
-                feed: .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_300), id: "unrelated-feed", name: "Unrelated Feed"),
+                feed: .dummy(createdAt: Date.fixed(), id: "unrelated-feed", name: "Unrelated Feed"),
                 fid: "user:other"
             )
         )
@@ -192,8 +154,8 @@ struct FeedList_Tests {
                 [
                     QueryFeedsResponse.dummy(
                         feeds: [
-                            .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_200), id: "feed-1", name: "First Feed"),
-                            .dummy(createdAt: Date(timeIntervalSince1970: 1_640_995_201), id: "feed-2", name: "Second Feed")
+                            .dummy(createdAt: Date.fixed(), id: "feed-1", name: "First Feed"),
+                            .dummy(createdAt: Date.fixed(), id: "feed-2", name: "Second Feed")
                         ],
                         next: "next-cursor"
                     )

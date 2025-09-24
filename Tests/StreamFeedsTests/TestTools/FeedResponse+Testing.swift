@@ -8,7 +8,7 @@ import StreamCore
 
 extension FeedResponse {
     static func dummy(
-        createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        createdAt: Date = Date.fixed(),
         createdBy: UserResponse = UserResponse.dummy(),
         custom: [String: RawJSON] = [:],
         deletedAt: Date? = nil,
@@ -23,7 +23,7 @@ extension FeedResponse {
         name: String = "Test Feed",
         ownFollows: [FollowResponse]? = nil,
         pinCount: Int = 2,
-        updatedAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        updatedAt: Date = Date.fixed(),
         visibility: String? = "public"
     ) -> FeedResponse {
         FeedResponse(
@@ -44,23 +44,6 @@ extension FeedResponse {
             pinCount: pinCount,
             updatedAt: updatedAt,
             visibility: visibility
-        )
-    }
-
-    // Backward compatibility method for old parameter order
-    static func dummy(
-        custom: [String: RawJSON] = [:],
-        createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
-        feed: String = "user:test",
-        id: String = "feed-123",
-        name: String = "Test Feed"
-    ) -> FeedResponse {
-        dummy(
-            createdAt: createdAt,
-            custom: custom,
-            feed: feed,
-            id: id,
-            name: name
         )
     }
 }
