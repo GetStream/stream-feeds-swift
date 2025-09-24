@@ -11,7 +11,7 @@ public struct FeedsReactionData: Equatable, Sendable {
     public let custom: [String: RawJSON]?
     public let type: String
     public let updatedAt: Date
-    public let user: UserData
+    public private(set) var user: UserData
 }
 
 extension FeedsReactionData: Identifiable {
@@ -48,6 +48,10 @@ extension FeedsReactionData {
                 reactionGroups.removeValue(forKey: reaction.type)
             }
         }
+    }
+    
+    mutating func updateUser(_ incomingData: UserData) {
+        user = incomingData
     }
 }
 
