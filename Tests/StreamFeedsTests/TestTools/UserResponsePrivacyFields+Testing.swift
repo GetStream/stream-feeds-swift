@@ -6,29 +6,32 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension UserResponse {
+extension UserResponsePrivacyFields {
     static func dummy(
         id: String = "test-user-id",
-        name: String = "Test User"
-    ) -> UserResponse {
-        UserResponse(
+        name: String? = "Test User"
+    ) -> UserResponsePrivacyFields {
+        UserResponsePrivacyFields(
+            avgResponseTime: 100,
             banned: false,
             blockedUserIds: [],
-            createdAt: .fixed(),
+            createdAt: Date(),
             custom: [:],
             deactivatedAt: nil,
             deletedAt: nil,
             id: id,
             image: "https://example.com/avatar.jpg",
+            invisible: false,
             language: "en",
-            lastActive: .fixed(),
+            lastActive: Date(),
             name: name,
             online: true,
+            privacySettings: nil,
             revokeTokensIssuedBefore: nil,
             role: "user",
             teams: ["team1"],
-            teamsRole: nil,
-            updatedAt: .fixed()
+            teamsRole: ["team1": "member"],
+            updatedAt: Date()
         )
     }
 }

@@ -6,12 +6,13 @@ import Combine
 import Foundation
 
 @MainActor public class CommentListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private let currentUserId: String
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(query: CommentsQuery, events: WSEventsSubscribing) {
+    init(query: CommentsQuery, currentUserId: String, eventPublisher: StateLayerEventPublisher) {
+        self.currentUserId = currentUserId
         self.query = query
-        webSocketObserver = WebSocketObserver(subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     public let query: CommentsQuery
@@ -38,29 +39,81 @@ import Foundation
 // MARK: - Updating the State
 
 extension CommentListState {
-    struct ChangeHandlers {
-        let commentRemoved: @MainActor (String) -> Void
-        let commentUpdated: @MainActor (CommentData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            commentRemoved: { [weak self] commentId in
-                self?.comments.remove(byId: commentId)
-            },
-            commentUpdated: { [weak self] comment in
-                guard let self else { return }
-                // Only update, do not insert
-                comments.sortedReplace(
-                    comment,
-                    nesting: nil,
-                    sorting: CommentsSort.areInIncreasingOrder(sortingKey)
-                )
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (CommentData) -> Bool = { [query] data in
+            guard let filter = query.filter else { return true }
+            return filter.matches(data)
+        }
+        eventSubscription = publisher.subscribe { [weak self, currentUserId] event in
+            switch event {
+            case .commentAdded(let commentData, _, _):
+                guard matchesQuery(commentData) else { return }
+                await self?.access { state in
+                    state.comments.sortedInsert(commentData, sorting: CommentsSort.areInIncreasingOrder(state.sortingKey))
+                }
+            case .commentsAddedBatch(let commentDatas, _, _):
+                let filteredComments = commentDatas.filter { matchesQuery($0) }
+                guard !filteredComments.isEmpty else { return }
+                await self?.access { state in
+                    let sorting = CommentsSort.areInIncreasingOrder(state.sortingKey)
+                    state.comments = state.comments.sortedMerge(filteredComments.sorted(by: sorting), sorting: sorting)
+                }
+            case .commentDeleted(let commentData, _, _):
+                guard matchesQuery(commentData) else { return }
+                await self?.access { $0.comments.remove(byId: commentData.id) }
+            case .commentUpdated(let commentData, _, _):
+                guard matchesQuery(commentData) else { return }
+                await self?.access { state in
+                    state.comments.sortedReplace(
+                        commentData,
+                        nesting: nil,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey)
+                    )
+                }
+            case .commentReactionAdded(let feedsReactionData, let commentData, _):
+                guard matchesQuery(commentData) else { return }
+                await self?.access { state in
+                    state.comments.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: nil,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData, add: feedsReactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .commentReactionDeleted(let feedsReactionData, let commentData, _):
+                guard matchesQuery(commentData) else { return }
+                await self?.access { state in
+                    state.comments.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: nil,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData, remove: feedsReactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .commentReactionUpdated(let feedsReactionData, let commentData, _):
+                guard matchesQuery(commentData) else { return }
+                await self?.access { state in
+                    state.comments.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: nil,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData, update: feedsReactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .userUpdated(let userData):
+                await self?.access { state in
+                    state.comments.updateAll(
+                        where: { $0.user.id == userData.id },
+                        changes: { $0.updateUser(userData) }
+                    )
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (CommentListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (CommentListState) -> T) -> T {
         actions(self)
     }
     

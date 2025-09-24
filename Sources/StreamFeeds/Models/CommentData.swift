@@ -86,7 +86,7 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     ///
     /// This property contains the list of users who were mentioned in the comment
     /// using @mentions or similar functionality.
-    public let mentionedUsers: [UserData]
+    public private(set) var mentionedUsers: [UserData]
     
     /// Moderation state for the comment.
     public let moderation: ModerationV2Response?
@@ -142,7 +142,7 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     public let upvoteCount: Int
     
     /// The user who created the comment.
-    public let user: UserData
+    public private(set) var user: UserData
 }
 
 // MARK: - Mutating the Data
@@ -186,6 +186,11 @@ extension CommentData {
         if reaction.user.id == currentUserId {
             ownReactions.remove(byId: reaction.id)
         }
+    }
+    
+    mutating func updateUser(_ incomingData: UserData) {
+        mentionedUsers.updateAll(where: { $0.id == incomingData.id }, changes: { $0 = incomingData })
+        user = incomingData
     }
 }
 

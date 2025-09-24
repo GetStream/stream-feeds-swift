@@ -8,12 +8,20 @@ import StreamCore
 public final class CommentList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<CommentListState>
     private let commentsRepository: CommentsRepository
+    private let eventPublisher: StateLayerEventPublisher
     
     init(query: CommentsQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { CommentListState(query: query, events: events) }
+        eventPublisher = client.stateLayerEventPublisher
+        let currentUserId = client.user.id
+        stateBuilder = StateBuilder { [eventPublisher] in
+            CommentListState(
+                query: query,
+                currentUserId: currentUserId,
+                eventPublisher: eventPublisher
+            )
+        }
     }
 
     public let query: CommentsQuery
