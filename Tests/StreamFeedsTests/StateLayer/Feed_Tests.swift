@@ -1056,8 +1056,7 @@ struct Feed_Tests {
         // Send unmatching event first - should not affect state
         await client.eventsMiddleware.sendEvent(
             BookmarkAddedEvent.dummy(
-                bookmark: .dummy(activity: .dummy(id: "1")),
-                fid: "user:someoneelse"
+                bookmark: .dummy(activity: .dummy(id: "1"))
             )
         )
 
@@ -1066,8 +1065,7 @@ struct Feed_Tests {
         // Send matching bookmark add - should not remove the activity and is tracked internally
         await client.eventsMiddleware.sendEvent(
             BookmarkAddedEvent.dummy(
-                bookmark: .dummy(activity: .dummy(id: "1")),
-                fid: feed.feed.rawValue
+                bookmark: .dummy(activity: .dummy(id: "1"))
             )
         )
 
@@ -1085,8 +1083,7 @@ struct Feed_Tests {
         // Send unmatching event first - should not change
         await client.eventsMiddleware.sendEvent(
             BookmarkDeletedEvent.dummy(
-                bookmark: .dummy(activity: .dummy(id: "1")),
-                fid: "user:someoneelse"
+                bookmark: .dummy(activity: .dummy(id: "1"))
             )
         )
 
@@ -1095,8 +1092,7 @@ struct Feed_Tests {
         // Send matching delete bookmark - should not remove the activity from feed
         await client.eventsMiddleware.sendEvent(
             BookmarkDeletedEvent.dummy(
-                bookmark: .dummy(activity: .dummy(id: "1")),
-                fid: feed.feed.rawValue
+                bookmark: .dummy(activity: .dummy(id: "1"))
             )
         )
 
@@ -1143,6 +1139,7 @@ struct Feed_Tests {
         // Send unmatching event first - should not change
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
+                activity: .dummy(id: "1"),
                 comment: .dummy(id: "c2", objectId: "1", text: "Ignored"),
                 fid: "user:someoneelse"
             )
@@ -1153,6 +1150,7 @@ struct Feed_Tests {
         // Send matching comment add - should keep activity and reflect potential internal counters
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
+                activity: .dummy(id: "1"),
                 comment: .dummy(id: "c1", objectId: "1", text: "Hi"),
                 fid: feed.feed.rawValue
             )

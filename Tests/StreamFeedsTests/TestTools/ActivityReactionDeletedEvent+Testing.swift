@@ -6,15 +6,20 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension BookmarkAddedEvent {
+extension ActivityReactionDeletedEvent {
     static func dummy(
-        bookmark: BookmarkResponse = .dummy(),
+        activity: ActivityResponse = .dummy(),
+        fid: String,
+        reaction: FeedsReactionResponse = .dummy(),
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
-    ) -> BookmarkAddedEvent {
-        BookmarkAddedEvent(
-            bookmark: bookmark,
+    ) -> ActivityReactionDeletedEvent {
+        ActivityReactionDeletedEvent(
+            activity: activity,
             createdAt: Date.fixed(),
             custom: [:],
+            feedVisibility: nil,
+            fid: fid,
+            reaction: reaction,
             receivedAt: Date.fixed(),
             user: user
         )

@@ -81,6 +81,7 @@ struct CommentList_Tests {
         // Unrelated event
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
+                activity: .dummy(id: "unrelated"),
                 comment: .dummy(id: "should-not-be-added", objectId: "unrelated"),
                 fid: "user:test"
             )
@@ -88,6 +89,7 @@ struct CommentList_Tests {
         
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
+                activity: .dummy(id: Self.activityId),
                 comment: .dummy(createdAt: .fixed(offset: 1), id: "comment-2", objectId: Self.activityId),
                 fid: "user:test"
             )
@@ -326,6 +328,7 @@ struct CommentList_Tests {
         // Send event for different activity
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
+                activity: .dummy(id: "activity-456"),
                 comment: .dummy(id: "comment-2", objectId: "activity-456"),
                 fid: "user:test"
             )
@@ -352,6 +355,7 @@ struct CommentList_Tests {
         // Send event for different object type
         await client.eventsMiddleware.sendEvent(
             CommentAddedEvent.dummy(
+                activity: .dummy(id: Self.activityId),
                 comment: .dummy(id: "comment-2", objectId: Self.activityId, objectType: "post"),
                 fid: "user:test"
             )

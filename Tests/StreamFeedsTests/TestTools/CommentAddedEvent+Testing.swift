@@ -8,12 +8,13 @@ import StreamCore
 
 extension CommentAddedEvent {
     static func dummy(
+        activity: ActivityResponse,
         comment: CommentResponse,
         fid: String,
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
     ) -> CommentAddedEvent {
         CommentAddedEvent(
-            activity: ActivityResponse.dummy(id: comment.objectId),
+            activity: activity,
             comment: comment,
             createdAt: Date.fixed(),
             custom: [:],
