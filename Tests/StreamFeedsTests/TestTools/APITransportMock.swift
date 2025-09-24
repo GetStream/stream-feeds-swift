@@ -8,7 +8,7 @@ import StreamFeeds
 
 final class APITransportMock: DefaultAPITransport {
     let responsePayloads = AllocatedUnfairLock<[any Encodable]>([])
-    
+
     func execute(request: StreamCore.Request) async throws -> (Data, URLResponse) {
         let payload = try responsePayloads.withLock { payloads in
             try Self.consumeResponsePayload(for: request, from: &payloads)
@@ -22,7 +22,7 @@ final class APITransportMock: DefaultAPITransport {
         )!
         return (data, response)
     }
-    
+
     private static func consumeResponsePayload(for request: StreamCore.Request, from payloads: inout [any Encodable]) throws -> any Encodable {
         let payloadIndex = payloads.firstIndex { payload in
             switch payload.self {
@@ -30,6 +30,8 @@ final class APITransportMock: DefaultAPITransport {
                 request.url.path.hasPrefix("/api/v2/feeds/activities/")
             case is GetCommentsResponse:
                 request.url.path.hasPrefix("/api/v2/feeds/comments")
+            case is QueryFeedsResponse:
+                request.url.path.hasPrefix("/api/v2/feeds/feeds/query")
             default:
                 // Otherwise just pick the first. Custom matching is needed only for tests which run API
                 // requests in parallel so the order of responsePayload does not match with the order of

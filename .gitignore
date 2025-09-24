@@ -15,6 +15,7 @@ StreamFeeds.xcodeproj/project.xcworkspace/xcuserdata
 build/
 DerivedData/
 *.xcframework
+*.xcresult
 
 # Interface Analyser
 stream-module-interface-analyser/
