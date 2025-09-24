@@ -43,7 +43,7 @@ final class FeedsRepository: Sendable {
                 models: response.members.map { $0.toModel() },
                 pagination: response.memberPagination?.toModel() ?? .empty
             ),
-            ownCapabilities: response.ownCapabilities,
+            ownCapabilities: response.feed.ownCapabilities ?? [],
             pinnedActivities: response.pinnedActivities.map { $0.toModel() },
             aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
             notificationStatus: response.notificationStatus?.toModel()

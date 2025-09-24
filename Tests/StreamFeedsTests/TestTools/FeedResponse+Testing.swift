@@ -10,7 +10,8 @@ extension FeedResponse {
     static func dummy(
         custom: [String: RawJSON] = [:],
         feed: String = "user:test",
-        name: String = "Test Feed"
+        name: String = "Test Feed",
+        ownCapabilities: [FeedOwnCapability] = FeedOwnCapability.allCases
     ) -> FeedResponse {
         FeedResponse(
             createdAt: Date(timeIntervalSince1970: 1_640_995_200),
@@ -26,6 +27,7 @@ extension FeedResponse {
             id: "feed-123",
             memberCount: 1,
             name: name,
+            ownCapabilities: ownCapabilities,
             pinCount: 2,
             updatedAt: Date(timeIntervalSince1970: 1_640_995_200),
             visibility: "public"
