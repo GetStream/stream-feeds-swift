@@ -17,7 +17,8 @@ extension ThreadedCommentResponse {
         reactionCount: Int = 0,
         reactionGroups: [String: ReactionGroupResponse?]? = nil,
         replies: [ThreadedCommentResponse]? = nil,
-        text: String = "Test comment"
+        text: String = "Test comment",
+        user: UserResponse = .dummy()
     ) -> ThreadedCommentResponse {
         ThreadedCommentResponse(
             attachments: nil,
@@ -45,7 +46,7 @@ extension ThreadedCommentResponse {
             text: text,
             updatedAt: Date(),
             upvoteCount: 3,
-            user: UserResponse.dummy()
+            user: user
         )
     }
 }

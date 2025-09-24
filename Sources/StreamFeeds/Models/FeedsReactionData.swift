@@ -16,8 +16,7 @@ public struct FeedsReactionData: Equatable, Sendable {
 
 extension FeedsReactionData: Identifiable {
     public var id: String {
-        // TODO: When FEEDS-787 is fixed, add activityId back (can be empty sometimes)
-        user.id + type
+        "\(user.id)-\(type)-\(activityId)"
     }
 }
 
