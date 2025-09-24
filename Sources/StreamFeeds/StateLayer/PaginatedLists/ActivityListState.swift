@@ -20,14 +20,13 @@ import StreamCore
 /// }
 /// ```
 @MainActor public class ActivityListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
     private let currentUserId: String
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(query: ActivitiesQuery, currentUserId: String, events: WSEventsSubscribing) {
+    init(query: ActivitiesQuery, currentUserId: String, eventPublisher: StateLayerEventPublisher) {
         self.currentUserId = currentUserId
         self.query = query
-        webSocketObserver = WebSocketObserver(subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     /// The query configuration used for fetching activities.
@@ -76,71 +75,153 @@ import StreamCore
 // MARK: - Updating the State
 
 extension ActivityListState {
-    struct ChangeHandlers {
-        let activityRemoved: @MainActor (ActivityData) -> Void
-        let activityUpdated: @MainActor (ActivityData) -> Void
-        let bookmarkAdded: @MainActor (BookmarkData) -> Void
-        let bookmarkRemoved: @MainActor (BookmarkData) -> Void
-        let commentAdded: @MainActor (CommentData) -> Void
-        let commentRemoved: @MainActor (CommentData) -> Void
-        let reactionAdded: @MainActor (FeedsReactionData) -> Void
-        let reactionRemoved: @MainActor (FeedsReactionData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            activityRemoved: { [weak self] activity in
-                guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedRemove(activity, nesting: nil, sorting: sorting)
-            },
-            activityUpdated: { [weak self] activity in
-                guard let sorting = self?.activitiesSorting else { return }
-                self?.activities.sortedInsert(activity, sorting: sorting)
-            },
-            bookmarkAdded: { [weak self] bookmark in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == bookmark.activity.id },
-                    changes: { $0.addBookmark(bookmark, currentUserId: currentUserId) }
-                )
-            },
-            bookmarkRemoved: { [weak self] bookmark in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == bookmark.activity.id },
-                    changes: { $0.deleteBookmark(bookmark, currentUserId: currentUserId) }
-                )
-            },
-            commentAdded: { [weak self] comment in
-                self?.activities.updateFirstElement(
-                    where: { $0.id == comment.objectId },
-                    changes: { $0.addComment(comment) }
-                )
-            },
-            commentRemoved: { [weak self] comment in
-                self?.activities.updateFirstElement(
-                    where: { $0.id == comment.objectId },
-                    changes: { $0.deleteComment(comment) }
-                )
-            },
-            reactionAdded: { [weak self] reaction in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == reaction.activityId },
-                    changes: { $0.addReaction(reaction, currentUserId: currentUserId) }
-                )
-            },
-            reactionRemoved: { [weak self] reaction in
-                guard let self else { return }
-                activities.updateFirstElement(
-                    where: { $0.id == reaction.activityId },
-                    changes: { $0.removeReaction(reaction, currentUserId: currentUserId) }
-                )
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (ActivityData) -> Bool = { [query] activity in
+            guard let filter = query.filter else { return true }
+            return filter.matches(activity)
+        }
+        eventSubscription = publisher.subscribe { [weak self, currentUserId] event in
+            switch event {
+            case .activityAdded(let activityData, let feedId):
+                guard matchesQuery(activityData) else { return }
+                await self?.access { state in
+                    state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                }
+            case .activityUpdated(let activityData, let feedId):
+                guard matchesQuery(activityData) else { return }
+                await self?.access { state in
+                    state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                }
+            case .activityDeleted(let activityId, let feedId):
+                await self?.access { state in
+                    state.activities.removeAll { $0.id == activityId }
+                }
+            case .activityReactionAdded(let reactionData, let activityData, let feedId):
+                guard matchesQuery(activityData) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityData.id },
+                        changes: { $0.merge(with: activityData, add: reactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .activityReactionDeleted(let reactionData, let activityData, let feedId):
+                guard matchesQuery(activityData) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityData.id },
+                        changes: { $0.merge(with: activityData, remove: reactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .activityReactionUpdated(let reactionData, let activityData, let feedId):
+                guard matchesQuery(activityData) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityData.id },
+                        changes: { $0.merge(with: activityData, update: reactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .bookmarkAdded(let bookmarkData):
+                guard matchesQuery(bookmarkData.activity) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == bookmarkData.activity.id },
+                        changes: { $0.merge(with: bookmarkData.activity, add: bookmarkData, currentUserId: currentUserId) }
+                    )
+                }
+            case .bookmarkDeleted(let bookmarkData):
+                guard matchesQuery(bookmarkData.activity) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == bookmarkData.activity.id },
+                        changes: { $0.merge(with: bookmarkData.activity, remove: bookmarkData, currentUserId: currentUserId) }
+                    )
+                }
+            case .bookmarkUpdated(let bookmarkData):
+                guard matchesQuery(bookmarkData.activity) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == bookmarkData.activity.id },
+                        changes: { $0.merge(with: bookmarkData.activity, update: bookmarkData, currentUserId: currentUserId) }
+                    )
+                }
+            case .commentAdded(let commentData, let activityData, let feedId):
+                guard matchesQuery(activityData) else { return }
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityData.id },
+                        changes: {
+                            $0.merge(with: activityData)
+                            $0.addComment(commentData)
+                        }
+                    )
+                }
+            case .commentDeleted(let commentData, let activityId, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { $0.deleteComment(commentData) }
+                    )
+                }
+            case .commentUpdated(let commentData, let activityId, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { $0.updateComment(commentData) }
+                    )
+                }
+            case .commentsAddedBatch(let commentDatas, let activityId, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.id == activityId },
+                        changes: { activity in
+                            for commentData in commentDatas {
+                                activity.addComment(commentData)
+                            }
+                        }
+                    )
+                }
+            case .pollUpdated(let pollData, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.poll?.id == pollData.id },
+                        changes: { $0.poll?.merge(with: pollData) }
+                    )
+                }
+            case .pollDeleted(let pollId, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.poll?.id == pollId },
+                        changes: { $0.poll = nil }
+                    )
+                }
+            case .pollVoteCasted(let vote, let pollData, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.poll?.id == pollData.id },
+                        changes: { $0.poll?.merge(with: pollData, add: vote, currentUserId: currentUserId) }
+                    )
+                }
+            case .pollVoteDeleted(let vote, let pollData, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.poll?.id == pollData.id },
+                        changes: { $0.poll?.merge(with: pollData, remove: vote, currentUserId: currentUserId) }
+                    )
+                }
+            case .pollVoteChanged(let vote, let pollData, let feedId):
+                await self?.access { state in
+                    state.activities.updateFirstElement(
+                        where: { $0.poll?.id == pollData.id },
+                        changes: { $0.poll?.merge(with: pollData, change: vote, currentUserId: currentUserId) }
+                    )
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (ActivityListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (ActivityListState) -> T) -> T {
         actions(self)
     }
     

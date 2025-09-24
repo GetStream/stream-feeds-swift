@@ -8,21 +8,25 @@ import StreamCore
 
 extension ActivityResponse {
     static func dummy(
+        bookmarkCount: Int = 0,
         comments: [CommentResponse] = [],
         createdAt: Date = .fixed(),
         expiresAt: Date? = nil,
         feeds: [String] = ["user:test"],
         id: String = "activity-123",
         latestReactions: [FeedsReactionResponse]? = nil,
+        ownBookmarks: [BookmarkResponse] = [],
         ownReactions: [FeedsReactionResponse]? = nil,
         poll: PollResponseData? = nil,
-        reactionCount: Int? = nil,
-        reactionGroups: [String: ReactionGroupResponse]? = nil,
-        text: String = "Test activity content"
+        reactionCount: Int = 0,
+        reactionGroups: [String: ReactionGroupResponse] = [:],
+        text: String = "Test activity content",
+        type: String = "post",
+        user: UserResponse = .dummy()
     ) -> ActivityResponse {
         ActivityResponse(
             attachments: [],
-            bookmarkCount: 0,
+            bookmarkCount: bookmarkCount,
             commentCount: 1,
             comments: comments,
             createdAt: createdAt,
@@ -40,20 +44,20 @@ extension ActivityResponse {
             mentionedUsers: [UserResponse.dummy()],
             moderation: nil,
             notificationContext: nil,
-            ownBookmarks: [],
+            ownBookmarks: ownBookmarks,
             ownReactions: ownReactions ?? [],
             parent: nil,
             poll: poll,
             popularity: 100,
-            reactionCount: reactionCount ?? 25,
-            reactionGroups: reactionGroups ?? [:],
+            reactionCount: reactionCount,
+            reactionGroups: reactionGroups,
             score: 1.0,
             searchData: [:],
             shareCount: 3,
             text: text,
-            type: "post",
+            type: type,
             updatedAt: createdAt,
-            user: UserResponse.dummy(),
+            user: user,
             visibility: .public,
             visibilityTag: nil
         )
