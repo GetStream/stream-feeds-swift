@@ -13,13 +13,20 @@ import StreamCore
 public final class ActivityList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<ActivityListState>
     private let activitiesRepository: ActivitiesRepository
+    private let eventPublisher: StateLayerEventPublisher
     
     init(query: ActivitiesQuery, client: FeedsClient) {
         activitiesRepository = client.activitiesRepository
         self.query = query
+        eventPublisher = client.stateLayerEventPublisher
         let currentUserId = client.user.id
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { ActivityListState(query: query, currentUserId: currentUserId, events: events) }
+        stateBuilder = StateBuilder { [eventPublisher] in
+            ActivityListState(
+                query: query,
+                currentUserId: currentUserId,
+                eventPublisher: eventPublisher
+            )
+        }
     }
 
     /// The query configuration used for fetching activities.
@@ -59,6 +66,7 @@ public final class ActivityList: Sendable {
     /// - Returns: An array of `ActivityData` objects representing the additional activities.
     ///   Returns an empty array if no more activities are available.
     /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
     public func queryMoreActivities(limit: Int? = nil) async throws -> [ActivityData] {
         let nextQuery: ActivitiesQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }

@@ -8,8 +8,7 @@ import StreamCore
 
 extension BookmarkDeletedEvent {
     static func dummy(
-        bookmark: BookmarkResponse = BookmarkResponse.dummy(),
-        fid: String,
+        bookmark: BookmarkResponse = .dummy(),
         user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
     ) -> BookmarkDeletedEvent {
         BookmarkDeletedEvent(

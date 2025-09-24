@@ -34,12 +34,11 @@ import StreamCore
 ///
 /// This class is marked with `@MainActor` and should only be accessed from the main thread.
 @MainActor public class ActivityReactionListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(query: ActivityReactionsQuery, events: WSEventsSubscribing) {
+    init(query: ActivityReactionsQuery, eventPublisher: StateLayerEventPublisher) {
         self.query = query
-        webSocketObserver = WebSocketObserver(activityId: query.activityId, subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     /// The query configuration used to fetch activity reactions.
@@ -97,19 +96,43 @@ import StreamCore
 // MARK: - Updating the State
 
 extension ActivityReactionListState {
-    struct ChangeHandlers {
-        let reactionRemoved: @MainActor (FeedsReactionData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            reactionRemoved: { [weak self] reaction in
-                self?.reactions.remove(byId: reaction.id)
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (FeedsReactionData) -> Bool = { [query] reaction in
+            guard let filter = query.filter else { return true }
+            return filter.matches(reaction)
+        }
+        eventSubscription = publisher.subscribe { [weak self, query] event in
+            switch event {
+            case .activityReactionAdded(let reactionData, let activityData, _):
+                guard activityData.id == query.activityId else { return }
+                guard matchesQuery(reactionData) else { return }
+                await self?.access { state in
+                    state.reactions.sortedInsert(reactionData, sorting: state.reactionsSorting)
+                }
+            case .activityReactionDeleted(let reactionData, let activityData, _):
+                guard activityData.id == query.activityId else { return }
+                await self?.access { state in
+                    state.reactions.remove(byId: reactionData.id)
+                }
+            case .activityReactionUpdated(let reactionData, let activityData, _):
+                guard activityData.id == query.activityId else { return }
+                await self?.access { state in
+                    state.reactions.sortedReplace(reactionData, nesting: nil, sorting: state.reactionsSorting)
+                }
+            case .userUpdated(let userData):
+                await self?.access { state in
+                    state.reactions.updateAll(
+                        where: { $0.user.id == userData.id },
+                        changes: { $0.updateUser(userData) }
+                    )
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (ActivityReactionListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (ActivityReactionListState) -> T) -> T {
         actions(self)
     }
     
