@@ -21,6 +21,7 @@ extension FeedResponse {
         id: String = "feed-123",
         memberCount: Int = 1,
         name: String = "Test Feed",
+        ownCapabilities: [FeedOwnCapability] = FeedOwnCapability.allCases,
         ownFollows: [FollowResponse]? = nil,
         pinCount: Int = 2,
         updatedAt: Date = Date.fixed(),
@@ -40,10 +41,11 @@ extension FeedResponse {
             id: id,
             memberCount: memberCount,
             name: name,
+            ownCapabilities: ownCapabilities,
             ownFollows: ownFollows,
             pinCount: pinCount,
             updatedAt: updatedAt,
-            visibility: visibility
+            visibility: "public"
         )
     }
 }

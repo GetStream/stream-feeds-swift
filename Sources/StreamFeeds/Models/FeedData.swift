@@ -22,6 +22,7 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let pinCount: Int
     public let updatedAt: Date
     public let visibility: String?
+    public let ownCapabilities: [FeedOwnCapability]?
     
     var localFilterData: LocalFilterData?
 }
@@ -46,7 +47,8 @@ extension FeedResponse {
             name: name,
             pinCount: pinCount,
             updatedAt: updatedAt,
-            visibility: visibility
+            visibility: visibility,
+            ownCapabilities: ownCapabilities
         )
     }
 }
