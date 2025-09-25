@@ -47,8 +47,11 @@ public final class ModerationConfigList: Sendable {
     init(query: ModerationConfigsQuery, client: FeedsClient) {
         moderationRepository = client.moderationRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { ModerationConfigListState(query: query, events: events) }
+        stateBuilder = StateBuilder {
+            ModerationConfigListState(
+                query: query
+            )
+        }
     }
 
     /// The query configuration used to fetch configurations.
@@ -98,8 +101,7 @@ public final class ModerationConfigList: Sendable {
     ///     print("Failed to fetch configurations: \(error)")
     /// }
     /// ```
-    @discardableResult
-    public func get() async throws -> [ModerationConfigData] {
+    @discardableResult public func get() async throws -> [ModerationConfigData] {
         try await queryConfigs(with: query)
     }
     
@@ -129,8 +131,7 @@ public final class ModerationConfigList: Sendable {
     ///     print("Failed to load more configurations: \(error)")
     /// }
     /// ```
-    @discardableResult
-    public func queryMoreConfigs(limit: Int? = nil) async throws -> [ModerationConfigData] {
+    @discardableResult public func queryMoreConfigs(limit: Int? = nil) async throws -> [ModerationConfigData] {
         let nextQuery: ModerationConfigsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return ModerationConfigsQuery(

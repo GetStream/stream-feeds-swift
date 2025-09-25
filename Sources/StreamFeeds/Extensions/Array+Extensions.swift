@@ -42,6 +42,7 @@ extension Array {
     ///
     /// - Parameter ids: Ids of elements to remove.
     mutating func remove(byIds ids: [Element.ID]) where Element: Identifiable {
+        guard !ids.isEmpty else { return }
         let lookup = Set(ids)
         removeAll(where: { lookup.contains($0.id) })
     }

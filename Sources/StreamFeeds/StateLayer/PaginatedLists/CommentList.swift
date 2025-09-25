@@ -8,12 +8,11 @@ import StreamCore
 public final class CommentList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<CommentListState>
     private let commentsRepository: CommentsRepository
-    private let eventPublisher: StateLayerEventPublisher
     
     init(query: CommentsQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
-        eventPublisher = client.stateLayerEventPublisher
+        let eventPublisher = client.stateLayerEventPublisher
         let currentUserId = client.user.id
         stateBuilder = StateBuilder { [eventPublisher] in
             CommentListState(
@@ -33,12 +32,11 @@ public final class CommentList: Sendable {
     
     // MARK: - Paginating the List of Comments
     
-    @discardableResult
-    public func get() async throws -> [CommentData] {
+    @discardableResult public func get() async throws -> [CommentData] {
         try await queryComments(with: query)
     }
     
-    public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
+    @discardableResult public func queryMoreComments(limit: Int? = nil) async throws -> [CommentData] {
         let nextQuery: CommentsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return CommentsQuery(

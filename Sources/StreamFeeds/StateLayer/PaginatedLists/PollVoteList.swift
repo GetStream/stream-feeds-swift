@@ -12,8 +12,13 @@ public final class PollVoteList: Sendable {
     init(query: PollVotesQuery, client: FeedsClient) {
         pollsRepository = client.pollsRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { PollVoteListState(query: query, events: events) }
+        let eventPublisher = client.stateLayerEventPublisher
+        stateBuilder = StateBuilder { [eventPublisher] in
+            PollVoteListState(
+                query: query,
+                eventPublisher: eventPublisher
+            )
+        }
     }
 
     public let query: PollVotesQuery
@@ -25,13 +30,11 @@ public final class PollVoteList: Sendable {
     
     // MARK: - Paginating the List of Poll Votes
     
-    @discardableResult
-    public func get() async throws -> [PollVoteData] {
+    @discardableResult public func get() async throws -> [PollVoteData] {
         try await queryPollVotes(with: query)
     }
     
-    @discardableResult
-    public func queryMorePollVotes(limit: Int? = nil) async throws -> [PollVoteData] {
+    @discardableResult public func queryMorePollVotes(limit: Int? = nil) async throws -> [PollVoteData] {
         let nextQuery: PollVotesQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return PollVotesQuery(

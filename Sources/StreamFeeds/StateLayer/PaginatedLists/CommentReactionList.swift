@@ -54,8 +54,13 @@ public final class CommentReactionList: Sendable {
     init(query: CommentReactionsQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { CommentReactionListState(query: query, events: events) }
+        let eventPublisher = client.stateLayerEventPublisher
+        stateBuilder = StateBuilder { [eventPublisher] in
+            CommentReactionListState(
+                query: query,
+                eventPublisher: eventPublisher
+            )
+        }
     }
 
     /// The query configuration used to fetch comment reactions.
@@ -108,8 +113,7 @@ public final class CommentReactionList: Sendable {
     ///     print("Failed to fetch reactions: \(error)")
     /// }
     /// ```
-    @discardableResult
-    public func get() async throws -> [FeedsReactionData] {
+    @discardableResult public func get() async throws -> [FeedsReactionData] {
         try await queryCommentReactions(with: query)
     }
     
@@ -139,7 +143,7 @@ public final class CommentReactionList: Sendable {
     ///     print("Failed to load more reactions: \(error)")
     /// }
     /// ```
-    public func queryMoreReactions(limit: Int? = nil) async throws -> [FeedsReactionData] {
+    @discardableResult public func queryMoreReactions(limit: Int? = nil) async throws -> [FeedsReactionData] {
         let nextQuery: CommentReactionsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             var nextQuery = query

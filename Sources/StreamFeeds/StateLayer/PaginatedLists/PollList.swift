@@ -16,8 +16,15 @@ public final class PollList: Sendable {
     init(query: PollsQuery, client: FeedsClient) {
         pollsRepository = client.pollsRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { PollListState(query: query, events: events) }
+        let eventPublisher = client.stateLayerEventPublisher
+        let currentUserId = client.user.id
+        stateBuilder = StateBuilder { [eventPublisher] in
+            PollListState(
+                query: query,
+                eventPublisher: eventPublisher,
+                currentUserId: currentUserId
+            )
+        }
     }
 
     public let query: PollsQuery
@@ -36,8 +43,7 @@ public final class PollList: Sendable {
     ///
     /// - Returns: An array of poll data matching the query criteria
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func get() async throws -> [PollData] {
+    @discardableResult public func get() async throws -> [PollData] {
         try await queryPolls(with: query)
     }
     
@@ -49,8 +55,7 @@ public final class PollList: Sendable {
     /// - Parameter limit: Optional limit for the number of polls to load. If `nil`, uses the default limit.
     /// - Returns: An array of additional poll data
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult
-    public func queryMorePolls(limit: Int? = nil) async throws -> [PollData] {
+    @discardableResult public func queryMorePolls(limit: Int? = nil) async throws -> [PollData] {
         let nextQuery: PollsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return PollsQuery(
