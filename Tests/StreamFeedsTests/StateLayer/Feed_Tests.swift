@@ -1394,7 +1394,7 @@ struct Feed_Tests {
                 [
                     GetOrCreateFeedResponse.dummy(
                         activities: [.dummy(id: "1")],
-                        feed: .dummy(feed: feed),
+                        feed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity]),
                         followers: [
                             FollowResponse.dummy(
                                 sourceFeed: .dummy(feed: "user:bob"),

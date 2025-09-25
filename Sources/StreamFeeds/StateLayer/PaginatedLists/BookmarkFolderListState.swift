@@ -45,11 +45,11 @@ extension BookmarkFolderListState {
         eventSubscription = publisher.subscribe { [weak self] event in
             switch event {
             case .bookmarkFolderDeleted(let folder):
-                await self?.access { state in
+                _ = await self?.access { state in
                     state.folders.remove(byId: folder.id)
                 }
             case .bookmarkFolderUpdated(let folder):
-                await self?.access { state in
+                _ = await self?.access { state in
                     state.folders.replace(byId: folder)
                 }
             default:
