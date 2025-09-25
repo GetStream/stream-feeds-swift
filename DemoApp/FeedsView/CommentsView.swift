@@ -42,13 +42,13 @@ struct CommentsView: View {
                         CommentView(
                             user: comment.user,
                             text: comment.text ?? "",
-                            canEdit: comment.user.id == userId && feed.state.ownCapabilities.contains(.updateComment),
+                            canEdit: comment.user.id == userId && feed.state.ownCapabilities.contains(.updateOwnComment),
                             onEdit: {
                                 editCommentId = comment.id
                                 editCommentShown = true
                                 self.comment = comment.text ?? ""
                             },
-                            canDelete: comment.user.id == userId && feed.state.ownCapabilities.contains(.deleteComment),
+                            canDelete: comment.user.id == userId && feed.state.ownCapabilities.contains(.deleteOwnComment),
                             onDelete: {
                                 Task {
                                     try await activity.deleteComment(commentId: comment.id)
@@ -72,13 +72,13 @@ struct CommentsView: View {
                                     CommentView(
                                         user: reply.user,
                                         text: reply.text ?? "",
-                                        canEdit: feed.state.ownCapabilities.contains(.updateComment),
+                                        canEdit: feed.state.ownCapabilities.contains(.updateOwnComment),
                                         onEdit: {
                                             editCommentId = reply.id
                                             editCommentShown = true
                                             self.comment = reply.text ?? ""
                                         },
-                                        canDelete: feed.state.ownCapabilities.contains(.deleteComment),
+                                        canDelete: feed.state.ownCapabilities.contains(.deleteOwnComment),
                                         onDelete: {
                                             Task {
                                                 try await activity.deleteComment(commentId: reply.id)
@@ -102,13 +102,13 @@ struct CommentsView: View {
                                                 CommentView(
                                                     user: nested.user,
                                                     text: nested.text ?? "",
-                                                    canEdit: comment.user.id == userId && feed.state.ownCapabilities.contains(.updateComment),
+                                                    canEdit: comment.user.id == userId && feed.state.ownCapabilities.contains(.updateOwnComment),
                                                     onEdit: {
                                                         editCommentId = nested.id
                                                         editCommentShown = true
                                                         self.comment = nested.text ?? ""
                                                     },
-                                                    canDelete: comment.user.id == userId && feed.state.ownCapabilities.contains(.deleteComment),
+                                                    canDelete: comment.user.id == userId && feed.state.ownCapabilities.contains(.deleteOwnComment),
                                                     onDelete: {
                                                         Task {
                                                             try await activity.deleteComment(commentId: nested.id)

@@ -19,12 +19,14 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
     public var id: String
     public var memberCount: Int
     public var name: String
+    public var ownCapabilities: [FeedOwnCapability]?
     public var ownFollows: [FollowResponse]?
+    public var ownMembership: FeedMemberResponse?
     public var pinCount: Int
     public var updatedAt: Date
     public var visibility: String?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownFollows: [FollowResponse]? = nil, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -38,7 +40,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         self.id = id
         self.memberCount = memberCount
         self.name = name
+        self.ownCapabilities = ownCapabilities
         self.ownFollows = ownFollows
+        self.ownMembership = ownMembership
         self.pinCount = pinCount
         self.updatedAt = updatedAt
         self.visibility = visibility
@@ -58,7 +62,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case id
         case memberCount = "member_count"
         case name
+        case ownCapabilities = "own_capabilities"
         case ownFollows = "own_follows"
+        case ownMembership = "own_membership"
         case pinCount = "pin_count"
         case updatedAt = "updated_at"
         case visibility
@@ -78,7 +84,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
             lhs.id == rhs.id &&
             lhs.memberCount == rhs.memberCount &&
             lhs.name == rhs.name &&
+            lhs.ownCapabilities == rhs.ownCapabilities &&
             lhs.ownFollows == rhs.ownFollows &&
+            lhs.ownMembership == rhs.ownMembership &&
             lhs.pinCount == rhs.pinCount &&
             lhs.updatedAt == rhs.updatedAt &&
             lhs.visibility == rhs.visibility
@@ -98,7 +106,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         hasher.combine(id)
         hasher.combine(memberCount)
         hasher.combine(name)
+        hasher.combine(ownCapabilities)
         hasher.combine(ownFollows)
+        hasher.combine(ownMembership)
         hasher.combine(pinCount)
         hasher.combine(updatedAt)
         hasher.combine(visibility)

@@ -13,8 +13,9 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
     public var score: Float
     public var updatedAt: Date
     public var userCount: Int
+    public var userCountTruncated: Bool
 
-    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, score: Float, updatedAt: Date, userCount: Int) {
+    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, score: Float, updatedAt: Date, userCount: Int, userCountTruncated: Bool) {
         self.activities = activities
         self.activityCount = activityCount
         self.createdAt = createdAt
@@ -22,6 +23,7 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
         self.score = score
         self.updatedAt = updatedAt
         self.userCount = userCount
+        self.userCountTruncated = userCountTruncated
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -32,6 +34,7 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
         case score
         case updatedAt = "updated_at"
         case userCount = "user_count"
+        case userCountTruncated = "user_count_truncated"
     }
 
     public static func == (lhs: AggregatedActivityResponse, rhs: AggregatedActivityResponse) -> Bool {
@@ -41,7 +44,8 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
             lhs.group == rhs.group &&
             lhs.score == rhs.score &&
             lhs.updatedAt == rhs.updatedAt &&
-            lhs.userCount == rhs.userCount
+            lhs.userCount == rhs.userCount &&
+            lhs.userCountTruncated == rhs.userCountTruncated
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -52,5 +56,6 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
         hasher.combine(score)
         hasher.combine(updatedAt)
         hasher.combine(userCount)
+        hasher.combine(userCountTruncated)
     }
 }

@@ -14,7 +14,8 @@ extension AggregatedActivityResponse {
         group: String = "like",
         score: Float = 1.0,
         updatedAt: Date = .fixed(),
-        userCount: Int = 1
+        userCount: Int = 1,
+        userCountTruncated: Bool = false
     ) -> AggregatedActivityResponse {
         AggregatedActivityResponse(
             activities: activities,
@@ -23,7 +24,8 @@ extension AggregatedActivityResponse {
             group: group,
             score: score,
             updatedAt: updatedAt,
-            userCount: userCount
+            userCount: userCount,
+            userCountTruncated: userCountTruncated
         )
     }
 }
