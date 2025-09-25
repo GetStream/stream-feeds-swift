@@ -12,8 +12,13 @@ public final class FollowList: Sendable {
     init(query: FollowsQuery, client: FeedsClient) {
         feedsRepository = client.feedsRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { FollowListState(query: query, events: events) }
+        let eventPublisher = client.stateLayerEventPublisher
+        stateBuilder = StateBuilder { [eventPublisher] in
+            FollowListState(
+                query: query,
+                eventPublisher: eventPublisher
+            )
+        }
     }
 
     public let query: FollowsQuery
@@ -25,12 +30,11 @@ public final class FollowList: Sendable {
     
     // MARK: - Paginating the List of Follows
     
-    @discardableResult
-    public func get() async throws -> [FollowData] {
+    @discardableResult public func get() async throws -> [FollowData] {
         try await queryFollows(with: query)
     }
     
-    public func queryMoreFollows(limit: Int? = nil) async throws -> [FollowData] {
+    @discardableResult public func queryMoreFollows(limit: Int? = nil) async throws -> [FollowData] {
         let nextQuery: FollowsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return FollowsQuery(

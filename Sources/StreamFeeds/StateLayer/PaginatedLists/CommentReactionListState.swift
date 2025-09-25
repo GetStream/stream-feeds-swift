@@ -32,12 +32,11 @@ import StreamCore
 ///
 /// This class is marked with `@MainActor` and should only be accessed from the main thread.
 @MainActor public class CommentReactionListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(query: CommentReactionsQuery, events: WSEventsSubscribing) {
+    init(query: CommentReactionsQuery, eventPublisher: StateLayerEventPublisher) {
         self.query = query
-        webSocketObserver = WebSocketObserver(commentId: query.commentId, subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     /// The query configuration used to fetch comment reactions.
@@ -107,19 +106,31 @@ import StreamCore
 // MARK: - Updating the State
 
 extension CommentReactionListState {
-    struct ChangeHandlers {
-        let reactionRemoved: @MainActor (FeedsReactionData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            reactionRemoved: { [weak self] reaction in
-                self?.reactions.remove(byId: reaction.id)
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        eventSubscription = publisher.subscribe { [weak self, query] event in
+            switch event {
+            case let .commentReactionAdded(reaction, comment, _):
+                guard comment.id == query.commentId else { return }
+                await self?.access { state in
+                    state.reactions.sortedInsert(reaction, sorting: state.reactionsSorting)
+                }
+            case let .commentReactionDeleted(reaction, comment, _):
+                guard comment.id == query.commentId else { return }
+                await self?.access { state in
+                    state.reactions.remove(byId: reaction.id)
+                }
+            case let .commentReactionUpdated(reaction, comment, _):
+                guard comment.id == query.commentId else { return }
+                await self?.access { state in
+                    state.reactions.sortedReplace(reaction, nesting: nil, sorting: state.reactionsSorting)
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (CommentReactionListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (CommentReactionListState) -> T) -> T {
         actions(self)
     }
     

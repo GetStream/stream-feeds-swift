@@ -82,21 +82,21 @@ extension ActivityListState {
         }
         eventSubscription = publisher.subscribe { [weak self, currentUserId] event in
             switch event {
-            case .activityAdded(let activityData, let feedId):
+            case .activityAdded(let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
                     state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
                 }
-            case .activityUpdated(let activityData, let feedId):
+            case .activityUpdated(let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
                     state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
                 }
-            case .activityDeleted(let activityId, let feedId):
+            case .activityDeleted(let activityId, _):
                 await self?.access { state in
                     state.activities.removeAll { $0.id == activityId }
                 }
-            case .activityReactionAdded(let reactionData, let activityData, let feedId):
+            case .activityReactionAdded(let reactionData, let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
                     state.activities.updateFirstElement(
@@ -104,7 +104,7 @@ extension ActivityListState {
                         changes: { $0.merge(with: activityData, add: reactionData, currentUserId: currentUserId) }
                     )
                 }
-            case .activityReactionDeleted(let reactionData, let activityData, let feedId):
+            case .activityReactionDeleted(let reactionData, let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
                     state.activities.updateFirstElement(
@@ -112,7 +112,7 @@ extension ActivityListState {
                         changes: { $0.merge(with: activityData, remove: reactionData, currentUserId: currentUserId) }
                     )
                 }
-            case .activityReactionUpdated(let reactionData, let activityData, let feedId):
+            case .activityReactionUpdated(let reactionData, let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
                     state.activities.updateFirstElement(
@@ -144,7 +144,7 @@ extension ActivityListState {
                         changes: { $0.merge(with: bookmarkData.activity, update: bookmarkData, currentUserId: currentUserId) }
                     )
                 }
-            case .commentAdded(let commentData, let activityData, let feedId):
+            case .commentAdded(let commentData, let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
                     state.activities.updateFirstElement(
@@ -155,21 +155,21 @@ extension ActivityListState {
                         }
                     )
                 }
-            case .commentDeleted(let commentData, let activityId, let feedId):
+            case .commentDeleted(let commentData, let activityId, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.id == activityId },
                         changes: { $0.deleteComment(commentData) }
                     )
                 }
-            case .commentUpdated(let commentData, let activityId, let feedId):
+            case .commentUpdated(let commentData, let activityId, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.id == activityId },
                         changes: { $0.updateComment(commentData) }
                     )
                 }
-            case .commentsAddedBatch(let commentDatas, let activityId, let feedId):
+            case .commentsAddedBatch(let commentDatas, let activityId, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.id == activityId },
@@ -180,35 +180,35 @@ extension ActivityListState {
                         }
                     )
                 }
-            case .pollUpdated(let pollData, let feedId):
+            case .pollUpdated(let pollData, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.poll?.id == pollData.id },
                         changes: { $0.poll?.merge(with: pollData) }
                     )
                 }
-            case .pollDeleted(let pollId, let feedId):
+            case .pollDeleted(let pollId, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.poll?.id == pollId },
                         changes: { $0.poll = nil }
                     )
                 }
-            case .pollVoteCasted(let vote, let pollData, let feedId):
+            case .pollVoteCasted(let vote, let pollData, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.poll?.id == pollData.id },
                         changes: { $0.poll?.merge(with: pollData, add: vote, currentUserId: currentUserId) }
                     )
                 }
-            case .pollVoteDeleted(let vote, let pollData, let feedId):
+            case .pollVoteDeleted(let vote, let pollData, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.poll?.id == pollData.id },
                         changes: { $0.poll?.merge(with: pollData, remove: vote, currentUserId: currentUserId) }
                     )
                 }
-            case .pollVoteChanged(let vote, let pollData, let feedId):
+            case .pollVoteChanged(let vote, let pollData, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(
                         where: { $0.poll?.id == pollData.id },

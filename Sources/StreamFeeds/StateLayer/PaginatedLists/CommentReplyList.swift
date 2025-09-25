@@ -59,9 +59,15 @@ public final class CommentReplyList: Sendable {
     init(query: CommentRepliesQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
+        let eventPublisher = client.stateLayerEventPublisher
         let currentUserId = client.user.id
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { CommentReplyListState(query: query, currentUserId: currentUserId, events: events) }
+        stateBuilder = StateBuilder { [eventPublisher] in
+            CommentReplyListState(
+                query: query,
+                currentUserId: currentUserId,
+                eventPublisher: eventPublisher
+            )
+        }
     }
 
     /// The query configuration used to fetch replies.
@@ -111,8 +117,7 @@ public final class CommentReplyList: Sendable {
     ///     print("Failed to fetch replies: \(error)")
     /// }
     /// ```
-    @discardableResult
-    public func get() async throws -> [ThreadedCommentData] {
+    @discardableResult public func get() async throws -> [ThreadedCommentData] {
         try await queryReplies(with: query)
     }
     
@@ -142,7 +147,7 @@ public final class CommentReplyList: Sendable {
     ///     print("Failed to load more replies: \(error)")
     /// }
     /// ```
-    public func queryMoreReplies(limit: Int? = nil) async throws -> [ThreadedCommentData] {
+    @discardableResult public func queryMoreReplies(limit: Int? = nil) async throws -> [ThreadedCommentData] {
         let nextQuery: CommentRepliesQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             var nextQuery = query

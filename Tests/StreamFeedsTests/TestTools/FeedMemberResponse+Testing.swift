@@ -8,16 +8,18 @@ import StreamCore
 
 extension FeedMemberResponse {
     static func dummy(
+        createdAt: Date = .fixed(),
+        updatedAt: Date = .fixed(),
         user: UserResponse
     ) -> FeedMemberResponse {
         FeedMemberResponse(
-            createdAt: Date.fixed(),
+            createdAt: createdAt,
             custom: nil,
             inviteAcceptedAt: nil,
             inviteRejectedAt: nil,
             role: "user",
             status: .member,
-            updatedAt: Date.fixed(),
+            updatedAt: updatedAt,
             user: user
         )
     }

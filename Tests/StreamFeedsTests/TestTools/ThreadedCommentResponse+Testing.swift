@@ -10,6 +10,7 @@ extension ThreadedCommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
         id: String,
+        latestReactions: [FeedsReactionResponse]? = nil,
         objectId: String,
         objectType: String = "activity",
         ownReactions: [FeedsReactionResponse] = [],
@@ -29,7 +30,7 @@ extension ThreadedCommentResponse {
             deletedAt: nil,
             downvoteCount: 0,
             id: id,
-            latestReactions: nil,
+            latestReactions: latestReactions,
             mentionedUsers: [UserResponse.dummy()],
             meta: nil,
             moderation: nil,
