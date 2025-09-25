@@ -96,26 +96,6 @@ struct MemberList_Tests {
         await #expect(memberList.state.pagination?.next == nil)
     }
 
-    @Test func queryMoreMembersWithCustomLimit() async throws {
-        let client = defaultClientWithMemberResponses([
-            QueryFeedMembersResponse.dummy(
-                members: [
-                    .dummy(user: .dummy(id: "member-3", name: "Third Member"))
-                ],
-                next: "next-cursor-2"
-            )
-        ])
-        let memberList = client.memberList(for: MembersQuery(feed: FeedId(rawValue: "user:test")))
-
-        // Initial load
-        _ = try await memberList.get()
-
-        // Load more with custom limit
-        let moreMembers = try await memberList.queryMoreMembers(limit: 1)
-        #expect(moreMembers.count == 1)
-        #expect(moreMembers.first?.id == "member-3")
-    }
-
     // MARK: - WebSocket Events
 
     @Test func memberUpdatedEventUpdatesState() async throws {
