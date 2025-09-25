@@ -21,9 +21,6 @@ extension GetOrCreateFeedResponse {
         members: [FeedMemberResponse] = [FeedMemberResponse.dummy(user: .dummy(id: "feed-member-1"))],
         next: String? = "next-cursor",
         notificationStatus: NotificationStatusResponse? = .dummy(),
-        ownCapabilities: [FeedOwnCapability] = FeedOwnCapability.allCases,
-        ownFollows: [FollowResponse]? = [FollowResponse.dummy()],
-        ownMembership: FeedMemberResponse? = FeedMemberResponse.dummy(user: .dummy(id: "current-user-1")),
         pinnedActivities: [ActivityPinResponse] = [],
         prev: String? = nil
     ) -> GetOrCreateFeedResponse {
@@ -41,9 +38,6 @@ extension GetOrCreateFeedResponse {
             members: members,
             next: next,
             notificationStatus: notificationStatus,
-            ownCapabilities: ownCapabilities,
-            ownFollows: ownFollows,
-            ownMembership: ownMembership,
             pinnedActivities: pinnedActivities,
             prev: prev
         )
