@@ -47,7 +47,7 @@ import StreamCore
 /// This class is designed to run on the main actor and all state updates
 /// are performed on the main thread to ensure UI consistency.
 @MainActor public class ModerationConfigListState: ObservableObject {
-    init(query: ModerationConfigsQuery, events: WSEventsSubscribing) {
+    init(query: ModerationConfigsQuery) {
         self.query = query
     }
     

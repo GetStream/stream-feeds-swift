@@ -50,12 +50,11 @@ import StreamCore
 public final class ActivityCommentList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<ActivityCommentListState>
     private let commentsRepository: CommentsRepository
-    private let eventPublisher: StateLayerEventPublisher
     
     init(query: ActivityCommentsQuery, client: FeedsClient) {
         commentsRepository = client.commentsRepository
         self.query = query
-        eventPublisher = client.stateLayerEventPublisher
+        let eventPublisher = client.stateLayerEventPublisher
         let currentUserId = client.user.id
         stateBuilder = StateBuilder { [eventPublisher] in
             ActivityCommentListState(
@@ -113,8 +112,7 @@ public final class ActivityCommentList: Sendable {
     ///     print("Failed to fetch comments: \(error)")
     /// }
     /// ```
-    @discardableResult
-    public func get() async throws -> [ThreadedCommentData] {
+    @discardableResult public func get() async throws -> [ThreadedCommentData] {
         try await queryComments(with: query)
     }
     
@@ -129,8 +127,7 @@ public final class ActivityCommentList: Sendable {
     /// - Returns: An array of `ThreadedCommentData` representing the additional comments.
     ///   Returns an empty array if no more comments are available.
     /// - Throws: An error if the network request fails or the response cannot be parsed.
-    @discardableResult
-    public func queryMoreComments(limit: Int? = nil) async throws -> [ThreadedCommentData] {
+    @discardableResult public func queryMoreComments(limit: Int? = nil) async throws -> [ThreadedCommentData] {
         let nextQuery: ActivityCommentsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             var nextQuery = query

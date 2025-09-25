@@ -7,12 +7,11 @@ import Foundation
 import StreamCore
 
 @MainActor public class FollowListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(query: FollowsQuery, events: WSEventsSubscribing) {
+    init(query: FollowsQuery, eventPublisher: StateLayerEventPublisher) {
         self.query = query
-        webSocketObserver = WebSocketObserver(subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     public let query: FollowsQuery
@@ -42,23 +41,33 @@ import StreamCore
 // MARK: - Updating the State
 
 extension FollowListState {
-    /// Handlers for various state change events.
-    ///
-    /// These handlers are called when WebSocket events are received and automatically update the state accordingly.
-    struct ChangeHandlers {
-        let followUpdated: @MainActor (FollowData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            followUpdated: { [weak self] feed in
-                // Only update, do not insert
-                self?.follows.replace(byId: feed)
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (FollowData) -> Bool = { [query] follow in
+            guard let filter = query.filter else { return true }
+            return filter.matches(follow)
+        }
+        eventSubscription = publisher.subscribe { [weak self] event in
+            switch event {
+            case let .feedFollowAdded(follow, _):
+                guard matchesQuery(follow) else { return }
+                await self?.access { state in
+                    state.follows.sortedInsert(follow, sorting: state.followsSorting)
+                }
+            case let .feedFollowDeleted(follow, _):
+                await self?.access { state in
+                    state.follows.remove(byId: follow.id)
+                }
+            case let .feedFollowUpdated(follow, _):
+                await self?.access { state in
+                    state.follows.sortedReplace(follow, nesting: nil, sorting: state.followsSorting)
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (FollowListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (FollowListState) -> T) -> T {
         actions(self)
     }
     

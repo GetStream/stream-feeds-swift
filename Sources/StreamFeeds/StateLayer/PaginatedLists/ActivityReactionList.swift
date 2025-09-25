@@ -40,12 +40,11 @@ import StreamCore
 public final class ActivityReactionList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<ActivityReactionListState>
     private let activitiesRepository: ActivitiesRepository
-    private let eventPublisher: StateLayerEventPublisher
     
     init(query: ActivityReactionsQuery, client: FeedsClient) {
         activitiesRepository = client.activitiesRepository
         self.query = query
-        eventPublisher = client.stateLayerEventPublisher
+        let eventPublisher = client.stateLayerEventPublisher
         stateBuilder = StateBuilder { [eventPublisher] in
             ActivityReactionListState(
                 query: query,
@@ -92,8 +91,7 @@ public final class ActivityReactionList: Sendable {
     ///   let reactions = try await reactionList.get()
     ///   print("Fetched \(reactions.count) reactions")
     ///   ```
-    @discardableResult
-    public func get() async throws -> [FeedsReactionData] {
+    @discardableResult public func get() async throws -> [FeedsReactionData] {
         try await queryActivityReactions(with: query)
     }
     
@@ -114,8 +112,7 @@ public final class ActivityReactionList: Sendable {
     ///       print("Loaded \(moreReactions.count) more reactions")
     ///   }
     ///   ```
-    @discardableResult
-    public func queryMoreReactions(limit: Int? = nil) async throws -> [FeedsReactionData] {
+    @discardableResult public func queryMoreReactions(limit: Int? = nil) async throws -> [FeedsReactionData] {
         let nextQuery: ActivityReactionsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return ActivityReactionsQuery(

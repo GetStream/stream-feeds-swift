@@ -7,12 +7,13 @@ import Foundation
 import StreamCore
 
 @MainActor public class PollListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private let currentUserId: String
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     
-    init(query: PollsQuery, events: WSEventsSubscribing) {
+    init(query: PollsQuery, eventPublisher: StateLayerEventPublisher, currentUserId: String) {
+        self.currentUserId = currentUserId
         self.query = query
-        webSocketObserver = WebSocketObserver(subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     public let query: PollsQuery
@@ -42,20 +43,58 @@ import StreamCore
 // MARK: - Updating the State
 
 extension PollListState {
-    struct ChangeHandlers {
-        let pollUpdated: @MainActor (PollData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            pollUpdated: { [weak self] poll in
-                // Only update, do not insert
-                self?.polls.replace(byId: poll)
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (PollData) -> Bool = { [query] poll in
+            guard let filter = query.filter else { return true }
+            return filter.matches(poll)
+        }
+        eventSubscription = publisher.subscribe { [weak self, currentUserId] event in
+            switch event {
+            case let .pollDeleted(pollId, _):
+                await self?.access { state in
+                    state.polls.remove(byId: pollId)
+                }
+            case let .pollUpdated(poll, _):
+                await self?.access { state in
+                    state.polls.sortedReplace(poll, nesting: nil, sorting: state.pollsSorting)
+                }
+            case .pollVoteCasted(let vote, let pollData, _):
+                guard matchesQuery(pollData) else { return }
+                await self?.access { state in
+                    state.polls.sortedUpdate(
+                        ofId: pollData.id,
+                        nesting: nil,
+                        sorting: state.pollsSorting.areInIncreasingOrder(),
+                        changes: { $0.merge(with: pollData, add: vote, currentUserId: currentUserId) }
+                    )
+                }
+            case .pollVoteDeleted(let vote, let pollData, _):
+                guard matchesQuery(pollData) else { return }
+                await self?.access { state in
+                    state.polls.sortedUpdate(
+                        ofId: pollData.id,
+                        nesting: nil,
+                        sorting: state.pollsSorting.areInIncreasingOrder(),
+                        changes: { $0.merge(with: pollData, remove: vote, currentUserId: currentUserId) }
+                    )
+                }
+            case .pollVoteChanged(let vote, let pollData, _):
+                guard matchesQuery(pollData) else { return }
+                await self?.access { state in
+                    state.polls.sortedUpdate(
+                        ofId: pollData.id,
+                        nesting: nil,
+                        sorting: state.pollsSorting.areInIncreasingOrder(),
+                        changes: { $0.merge(with: pollData, change: vote, currentUserId: currentUserId) }
+                    )
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (PollListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (PollListState) -> T) -> T {
         actions(self)
     }
     

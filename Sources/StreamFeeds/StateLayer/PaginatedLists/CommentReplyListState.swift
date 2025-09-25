@@ -47,14 +47,13 @@ import Foundation
 /// This class is designed to run on the main actor and all state updates
 /// are performed on the main thread to ensure UI consistency.
 @MainActor public class CommentReplyListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
     private let currentUserId: String
     
-    init(query: CommentRepliesQuery, currentUserId: String, events: WSEventsSubscribing) {
+    init(query: CommentRepliesQuery, currentUserId: String, eventPublisher: StateLayerEventPublisher) {
         self.currentUserId = currentUserId
         self.query = query
-        webSocketObserver = WebSocketObserver(parentId: query.commentId, subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
     
     /// The query configuration used to fetch replies.
@@ -125,63 +124,99 @@ import Foundation
 // MARK: - Updating the State
 
 extension CommentReplyListState {
-    struct ChangeHandlers {
-        let commentAdded: @MainActor (ThreadedCommentData) -> Void
-        let commentRemoved: @MainActor (String) -> Void
-        let commentUpdated: @MainActor (CommentData) -> Void
-        let commentReactionAdded: @MainActor (FeedsReactionData, String) -> Void
-        let commentReactionRemoved: @MainActor (FeedsReactionData, String) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            commentAdded: { [weak self] comment in
-                guard let self else { return }
-                if let parentId = comment.parentId {
-                    replies.sortedUpdate(
-                        ofId: parentId,
-                        nesting: \.replies,
-                        sorting: CommentsSort.areInIncreasingOrder(sortingKey),
-                        changes: { $0.addReply(comment, sort: CommentsSort.areInIncreasingOrder(sortingKey)) }
-                    )
-                } else {
-                    replies.sortedInsert(comment, sorting: CommentsSort.areInIncreasingOrder(sortingKey))
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        eventSubscription = publisher.subscribe { [weak self, currentUserId, query] event in
+            switch event {
+            case .commentAdded(let commentData, _, _):
+                guard let parentId = commentData.parentId else { return }
+                let threaded = ThreadedCommentData(from: commentData)
+                await self?.access { state in
+                    if parentId == query.commentId {
+                        state.replies.sortedInsert(threaded, sorting: CommentsSort.areInIncreasingOrder(state.sortingKey))
+                    } else {
+                        state.replies.sortedUpdate(
+                            ofId: parentId,
+                            nesting: \.replies,
+                            sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                            changes: { existing in
+                                existing.addReply(threaded, sort: CommentsSort.areInIncreasingOrder(state.sortingKey))
+                            }
+                        )
+                    }
                 }
-            },
-            commentRemoved: { [weak self] commentId in
-                self?.replies.remove(byId: commentId, nesting: \.replies)
-            },
-            commentUpdated: { [weak self] comment in
-                guard let self else { return }
-                replies.sortedUpdate(
-                    ofId: comment.id,
-                    nesting: \.replies,
-                    sorting: CommentsSort.areInIncreasingOrder(sortingKey),
-                    changes: { $0.setCommentData(comment) }
-                )
-            },
-            commentReactionAdded: { [weak self] reaction, commentId in
-                guard let self else { return }
-                replies.sortedUpdate(
-                    ofId: commentId,
-                    nesting: \.replies,
-                    sorting: CommentsSort.areInIncreasingOrder(sortingKey),
-                    changes: { $0.addReaction(reaction, currentUserId: currentUserId) }
-                )
-            },
-            commentReactionRemoved: { [weak self] reaction, commentId in
-                guard let self else { return }
-                replies.sortedUpdate(
-                    ofId: commentId,
-                    nesting: \.replies,
-                    sorting: CommentsSort.areInIncreasingOrder(sortingKey),
-                    changes: { $0.removeReaction(reaction, currentUserId: currentUserId) }
-                )
+            case .commentsAddedBatch(let commentDatas, _, _):
+                let filteredComments = commentDatas
+                    .filter { $0.parentId != nil }
+                    .map { ThreadedCommentData(from: $0) }
+                guard !filteredComments.isEmpty else { return }
+                await self?.access { state in
+                    let sorting = CommentsSort.areInIncreasingOrder(state.sortingKey)
+                    for reply in filteredComments {
+                        guard let parentId = reply.parentId else { continue }
+                        state.replies.sortedUpdate(
+                            ofId: parentId,
+                            nesting: \.replies,
+                            sorting: sorting,
+                            changes: { existing in
+                                existing.addReply(reply, sort: sorting)
+                            }
+                        )
+                    }
+                }
+            case .commentDeleted(let commentData, _, _):
+                await self?.access { state in
+                    state.replies.remove(byId: commentData.id, nesting: \.replies)
+                }
+            case .commentUpdated(let commentData, _, _):
+                await self?.access { state in
+                    state.replies.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: \.replies,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData) }
+                    )
+                }
+            case .commentReactionAdded(let feedsReactionData, let commentData, _):
+                await self?.access { state in
+                    state.replies.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: \.replies,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData, add: feedsReactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .commentReactionDeleted(let feedsReactionData, let commentData, _):
+                await self?.access { state in
+                    state.replies.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: \.replies,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData, remove: feedsReactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .commentReactionUpdated(let feedsReactionData, let commentData, _):
+                await self?.access { state in
+                    state.replies.sortedUpdate(
+                        ofId: commentData.id,
+                        nesting: \.replies,
+                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                        changes: { $0.merge(with: commentData, update: feedsReactionData, currentUserId: currentUserId) }
+                    )
+                }
+            case .userUpdated(let userData):
+                await self?.access { state in
+                    state.replies.updateAll(
+                        where: { $0.user.id == userData.id },
+                        changes: { $0.updateUser(userData) }
+                    )
+                }
+            default:
+                break
             }
-        )
+        }
     }
     
-    func access<T>(_ actions: @MainActor (CommentReplyListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (CommentReplyListState) -> T) -> T {
         actions(self)
     }
     
