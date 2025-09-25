@@ -1,0 +1,244 @@
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
+import StreamCore
+@testable import StreamFeeds
+import Testing
+
+struct BookmarkList_Tests {
+    // MARK: - Actions
+
+    @Test func getUpdatesState() async throws {
+        let client = defaultClientWithBookmarkResponses()
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        let bookmarks = try await bookmarkList.get()
+        let stateBookmarks = await bookmarkList.state.bookmarks
+        #expect(bookmarks.count == 2)
+        #expect(stateBookmarks.count == 2)
+        #expect(stateBookmarks.map(\.id) == ["activity-1user-1", "activity-2user-1"])
+        #expect(bookmarks.map(\.id) == stateBookmarks.map(\.id))
+        await #expect(bookmarkList.state.canLoadMore == true)
+        await #expect(bookmarkList.state.pagination?.next == "next-cursor")
+    }
+
+    @Test func queryMoreBookmarksUpdatesState() async throws {
+        let client = defaultClientWithBookmarkResponses([
+            QueryBookmarksResponse.dummy(
+                bookmarks: [
+                    .dummy(activity: .dummy(id: "activity-3"), user: .dummy(id: "user-1")),
+                    .dummy(activity: .dummy(id: "activity-4"), user: .dummy(id: "user-1"))
+                ],
+                next: "next-cursor-2"
+            )
+        ])
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+
+        // Initial load
+        _ = try await bookmarkList.get()
+        let initialState = await bookmarkList.state.bookmarks
+        #expect(initialState.count == 2)
+        #expect(initialState.map(\.id) == ["activity-1user-1", "activity-2user-1"])
+
+        // Load more
+        let moreBookmarks = try await bookmarkList.queryMoreBookmarks()
+        let updatedState = await bookmarkList.state.bookmarks
+        #expect(moreBookmarks.count == 2)
+        #expect(moreBookmarks.map(\.id) == ["activity-3user-1", "activity-4user-1"])
+        #expect(updatedState.count == 4)
+        // The bookmarks should be sorted by createdAt in ascending order (oldest first)
+        #expect(updatedState.map(\.id) == ["activity-3user-1", "activity-4user-1", "activity-1user-1", "activity-2user-1"])
+        await #expect(bookmarkList.state.canLoadMore == true)
+        await #expect(bookmarkList.state.pagination?.next == "next-cursor-2")
+    }
+
+    @Test func queryMoreBookmarksWhenNoMoreBookmarksReturnsEmpty() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                QueryBookmarksResponse.dummy(
+                    bookmarks: [
+                        .dummy(activity: .dummy(id: "activity-1"), user: .dummy(id: "user-1")),
+                        .dummy(activity: .dummy(id: "activity-2"), user: .dummy(id: "user-1"))
+                    ],
+                    next: nil
+                )
+            ])
+        )
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+
+        // Initial load
+        _ = try await bookmarkList.get()
+
+        // Check pagination state
+        let pagination = await bookmarkList.state.pagination
+        #expect(pagination?.next == nil)
+
+        // Try to load more when no more available - should return empty array
+        let moreBookmarks = try await bookmarkList.queryMoreBookmarks()
+        #expect(moreBookmarks.isEmpty)
+    }
+
+    @Test func getWithEmptyResponseUpdatesState() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                QueryBookmarksResponse.dummy(
+                    bookmarks: [],
+                    next: nil
+                )
+            ])
+        )
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        let bookmarks = try await bookmarkList.get()
+        let stateBookmarks = await bookmarkList.state.bookmarks
+        #expect(bookmarks.isEmpty)
+        #expect(stateBookmarks.isEmpty)
+        await #expect(bookmarkList.state.canLoadMore == false)
+        await #expect(bookmarkList.state.pagination?.next == nil)
+    }
+
+    @Test func queryMoreBookmarksWithCustomLimit() async throws {
+        let client = defaultClientWithBookmarkResponses([
+            QueryBookmarksResponse.dummy(
+                bookmarks: [
+                    .dummy(activity: .dummy(id: "activity-3"), user: .dummy(id: "user-1"))
+                ],
+                next: "next-cursor-2"
+            )
+        ])
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+
+        // Initial load
+        _ = try await bookmarkList.get()
+
+        // Load more with custom limit
+        let moreBookmarks = try await bookmarkList.queryMoreBookmarks(limit: 1)
+        #expect(moreBookmarks.count == 1)
+        #expect(moreBookmarks.first?.id == "activity-3user-1")
+    }
+
+    // MARK: - WebSocket Events
+
+    @Test func bookmarkUpdatedEventUpdatesState() async throws {
+        let client = defaultClientWithBookmarkResponses()
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+
+        let initialState = await bookmarkList.state.bookmarks
+        #expect(initialState.count == 2)
+        #expect(initialState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
+
+        // Send bookmark updated event
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(
+                    activity: .dummy(id: "activity-1", text: "Updated activity content"),
+                    user: .dummy(id: "user-1")
+                ),
+                fid: "user:test"
+            )
+        )
+
+        let updatedState = await bookmarkList.state.bookmarks
+        #expect(updatedState.count == 2)
+        #expect(updatedState.first { $0.id == "activity-1user-1" }?.activity.text == "Updated activity content")
+        #expect(updatedState.first { $0.id == "activity-2user-1" }?.activity.text == "Test activity content")
+    }
+
+    @Test func bookmarkFolderUpdatedEventUpdatesState() async throws {
+        let client = defaultClientWithBookmarkResponses()
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+
+        let initialState = await bookmarkList.state.bookmarks
+        #expect(initialState.count == 2)
+        #expect(initialState.first { $0.id == "activity-1user-1" }?.folder?.name == "Test Folder")
+
+        // Send bookmark folder updated event
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderUpdatedEvent.dummy(
+                bookmarkFolder: .dummy(id: "folder-1", name: "Updated Folder Name")
+            )
+        )
+
+        let updatedState = await bookmarkList.state.bookmarks
+        #expect(updatedState.count == 2)
+        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder?.name == "Updated Folder Name")
+        #expect(updatedState.first { $0.id == "activity-2user-1" }?.folder?.name == "Test Folder")
+    }
+
+    @Test func bookmarkFolderDeletedEventUpdatesState() async throws {
+        let client = defaultClientWithBookmarkResponses()
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+
+        let initialState = await bookmarkList.state.bookmarks
+        #expect(initialState.count == 2)
+        #expect(initialState.first { $0.id == "activity-1user-1" }?.folder?.name == "Test Folder")
+
+        // Send bookmark folder deleted event
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderDeletedEvent.dummy(
+                bookmarkFolder: .dummy(id: "folder-1", name: "Test Folder")
+            )
+        )
+
+        let updatedState = await bookmarkList.state.bookmarks
+        #expect(updatedState.count == 2)
+        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder == nil)
+        #expect(updatedState.first { $0.id == "activity-2user-1" }?.folder?.name == "Test Folder")
+    }
+
+    @Test func bookmarkUpdatedEventForUnrelatedUserDoesNotUpdateState() async throws {
+        let client = defaultClientWithBookmarkResponses()
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+
+        let initialState = await bookmarkList.state.bookmarks
+        #expect(initialState.count == 2)
+        #expect(initialState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
+
+        // Send bookmark updated event for unrelated user
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(
+                    activity: .dummy(id: "activity-1", text: "Updated activity content"),
+                    user: .dummy(id: "user-other")
+                ),
+                fid: "user:other"
+            )
+        )
+
+        let updatedState = await bookmarkList.state.bookmarks
+        #expect(updatedState.count == 2)
+        #expect(updatedState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
+        #expect(updatedState.first { $0.id == "activity-2user-1" }?.activity.text == "Test activity content")
+    }
+
+    // MARK: - Helper Methods
+
+    private func defaultClientWithBookmarkResponses(
+        _ additionalPayloads: [any Encodable] = []
+    ) -> FeedsClient {
+        FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryBookmarksResponse.dummy(
+                        bookmarks: [
+                            .dummy(
+                                activity: .dummy(id: "activity-1"),
+                                folder: .dummy(id: "folder-1", name: "Test Folder"),
+                                user: .dummy(id: "user-1")
+                            ),
+                            .dummy(
+                                activity: .dummy(id: "activity-2"),
+                                folder: .dummy(id: "folder-1", name: "Test Folder"),
+                                user: .dummy(id: "user-1")
+                            )
+                        ],
+                        next: "next-cursor"
+                    )
+                ] + additionalPayloads
+            )
+        )
+    }
+}
