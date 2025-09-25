@@ -7,30 +7,29 @@ import Foundation
 import StreamCore
 
 @MainActor public class BookmarkFolderListState: ObservableObject {
-    private var webSocketObserver: WebSocketObserver?
-    lazy var changeHandlers: ChangeHandlers = makeChangeHandlers()
-    
-    init(query: BookmarkFoldersQuery, events: WSEventsSubscribing) {
+    private var eventSubscription: StateLayerEventPublisher.Subscription?
+
+    init(query: BookmarkFoldersQuery, eventPublisher: StateLayerEventPublisher) {
         self.query = query
-        webSocketObserver = WebSocketObserver(subscribing: events, handlers: changeHandlers)
+        subscribe(to: eventPublisher)
     }
-    
+
     public let query: BookmarkFoldersQuery
-    
+
     /// All the paginated folders.
     @Published public private(set) var folders: [BookmarkFolderData] = []
-    
+
     // MARK: - Pagination State
-    
+
     /// Last pagination information.
     public private(set) var pagination: PaginationData?
-    
+
     /// Indicates whether there are more bookmark folders available to load.
     public var canLoadMore: Bool { pagination?.next != nil }
-    
+
     /// The configuration used for the last query.
     private(set) var queryConfig: QueryConfiguration<BookmarkFoldersFilter, BookmarkFoldersSortField>?
-    
+
     var bookmarksSorting: [Sort<BookmarkFoldersSortField>] {
         if let sort = queryConfig?.sort, !sort.isEmpty {
             return sort
@@ -42,26 +41,27 @@ import StreamCore
 // MARK: - Updating the State
 
 extension BookmarkFolderListState {
-    struct ChangeHandlers {
-        let bookmarkFolderRemoved: @MainActor (String) -> Void
-        let bookmarkFolderUpdated: @MainActor (BookmarkFolderData) -> Void
-    }
-    
-    private func makeChangeHandlers() -> ChangeHandlers {
-        ChangeHandlers(
-            bookmarkFolderRemoved: { [weak self] id in
-                self?.folders.remove(byId: id)
-            },
-            bookmarkFolderUpdated: { [weak self] folder in
-                self?.folders.replace(byId: folder)
+    private func subscribe(to publisher: StateLayerEventPublisher) {
+        eventSubscription = publisher.subscribe { [weak self] event in
+            switch event {
+            case .bookmarkFolderDeleted(let folder):
+                await self?.access { state in
+                    state.folders.remove(byId: folder.id)
+                }
+            case .bookmarkFolderUpdated(let folder):
+                await self?.access { state in
+                    state.folders.replace(byId: folder)
+                }
+            default:
+                break
             }
-        )
+        }
     }
-    
+
     func access<T>(_ actions: @MainActor (BookmarkFolderListState) -> T) -> T {
         actions(self)
     }
-    
+
     func didPaginate(
         with response: PaginationResult<BookmarkFolderData>,
         for queryConfig: QueryConfiguration<BookmarkFoldersFilter, BookmarkFoldersSortField>

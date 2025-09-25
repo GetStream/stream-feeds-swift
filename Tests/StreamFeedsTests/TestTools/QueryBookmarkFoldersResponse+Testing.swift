@@ -8,7 +8,7 @@ import StreamCore
 
 extension QueryBookmarkFoldersResponse {
     static func dummy(
-        bookmarkFolders: [BookmarkFolderResponse] = [.dummy()],
+        bookmarkFolders: [BookmarkFolderResponse] = [],
         duration: String = "1.23ms",
         next: String? = nil,
         prev: String? = nil

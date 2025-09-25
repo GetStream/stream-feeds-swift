@@ -6,14 +6,14 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension FeedResponse {
+extension FeedData {
     static func dummy(
         id: String = "feed-1",
         name: String = "Test Feed",
         createdAt: Date = .fixed(),
         updatedAt: Date = .fixed(),
-        createdBy: UserResponse = .dummy(),
-        feed: String = "user:feed-1",
+        createdBy: UserData = .dummy(id: "user-1"),
+        feed: FeedId = FeedId(rawValue: "user:feed-1"),
         custom: [String: RawJSON]? = nil,
         deletedAt: Date? = nil,
         description: String = "Test feed description",
@@ -25,8 +25,8 @@ extension FeedResponse {
         pinCount: Int = 0,
         visibility: String? = nil,
         ownCapabilities: [FeedOwnCapability]? = nil
-    ) -> FeedResponse {
-        FeedResponse(
+    ) -> FeedData {
+        FeedData(
             createdAt: createdAt,
             createdBy: createdBy,
             custom: custom,
@@ -40,12 +40,10 @@ extension FeedResponse {
             id: id,
             memberCount: memberCount,
             name: name,
-            ownCapabilities: ownCapabilities,
-            ownFollows: nil,
-            ownMembership: nil,
             pinCount: pinCount,
             updatedAt: updatedAt,
-            visibility: visibility
+            visibility: visibility,
+            ownCapabilities: ownCapabilities
         )
     }
 }

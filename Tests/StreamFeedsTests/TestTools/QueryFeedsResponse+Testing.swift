@@ -8,9 +8,9 @@ import StreamCore
 
 extension QueryFeedsResponse {
     static func dummy(
-        duration: String = "0.123s",
-        feeds: [FeedResponse] = [FeedResponse.dummy()],
-        next: String? = "next-cursor",
+        duration: String = "1.23ms",
+        feeds: [FeedResponse] = [],
+        next: String? = nil,
         prev: String? = nil
     ) -> QueryFeedsResponse {
         QueryFeedsResponse(

@@ -26,8 +26,8 @@ struct FeedList_Tests {
         let client = defaultClientWithFeedsResponses([
             QueryFeedsResponse.dummy(
                 feeds: [
-                    .dummy(createdAt: Date.fixed(), id: "feed-3", name: "Third Feed"),
-                    .dummy(createdAt: Date.fixed(), id: "feed-4", name: "Fourth Feed")
+                    .dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed()),
+                    .dummy(id: "feed-4", name: "Fourth Feed", createdAt: Date.fixed())
                 ],
                 next: "next-cursor-2"
             )
@@ -57,8 +57,8 @@ struct FeedList_Tests {
             apiTransport: .withPayloads([
                 QueryFeedsResponse.dummy(
                     feeds: [
-                        .dummy(createdAt: Date.fixed(), id: "feed-1", name: "First Feed"),
-                        .dummy(createdAt: Date.fixed(), id: "feed-2", name: "Second Feed")
+                        .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                        .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed())
                     ],
                     next: nil
                 )
@@ -110,7 +110,7 @@ struct FeedList_Tests {
         // Send feed updated event
         await client.eventsMiddleware.sendEvent(
             FeedUpdatedEvent.dummy(
-                feed: .dummy(createdAt: Date.fixed(), id: "feed-1", name: "Updated First Feed"),
+                feed: .dummy(id: "feed-1", name: "Updated First Feed", createdAt: Date.fixed()),
                 fid: "user:test"
             )
         )
@@ -133,7 +133,7 @@ struct FeedList_Tests {
         // Send feed updated event for unrelated feed
         await client.eventsMiddleware.sendEvent(
             FeedUpdatedEvent.dummy(
-                feed: .dummy(createdAt: Date.fixed(), id: "unrelated-feed", name: "Unrelated Feed"),
+                feed: .dummy(id: "unrelated-feed", name: "Unrelated Feed", createdAt: Date.fixed()),
                 fid: "user:other"
             )
         )
@@ -154,8 +154,8 @@ struct FeedList_Tests {
                 [
                     QueryFeedsResponse.dummy(
                         feeds: [
-                            .dummy(createdAt: Date.fixed(), id: "feed-1", name: "First Feed"),
-                            .dummy(createdAt: Date.fixed(), id: "feed-2", name: "Second Feed")
+                            .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed())
                         ],
                         next: "next-cursor"
                     )
