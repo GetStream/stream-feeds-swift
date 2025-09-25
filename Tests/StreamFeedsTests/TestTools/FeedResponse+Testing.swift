@@ -8,27 +8,42 @@ import StreamCore
 
 extension FeedResponse {
     static func dummy(
+        createdAt: Date = Date.fixed(),
+        createdBy: UserResponse = UserResponse.dummy(),
         custom: [String: RawJSON] = [:],
+        deletedAt: Date? = nil,
+        description: String = "Test feed description",
         feed: String = "user:test",
-        name: String = "Test Feed"
+        filterTags: [String]? = nil,
+        followerCount: Int = 50,
+        followingCount: Int = 25,
+        groupId: String = "user",
+        id: String = "feed-123",
+        memberCount: Int = 1,
+        name: String = "Test Feed",
+        ownFollows: [FollowResponse]? = nil,
+        pinCount: Int = 2,
+        updatedAt: Date = Date.fixed(),
+        visibility: String? = "public"
     ) -> FeedResponse {
         FeedResponse(
-            createdAt: Date(timeIntervalSince1970: 1_640_995_200),
-            createdBy: UserResponse.dummy(),
+            createdAt: createdAt,
+            createdBy: createdBy,
             custom: custom,
-            deletedAt: nil,
-            description: "Test feed description",
+            deletedAt: deletedAt,
+            description: description,
             feed: feed,
-            filterTags: nil,
-            followerCount: 50,
-            followingCount: 25,
-            groupId: "user",
-            id: "feed-123",
-            memberCount: 1,
+            filterTags: filterTags,
+            followerCount: followerCount,
+            followingCount: followingCount,
+            groupId: groupId,
+            id: id,
+            memberCount: memberCount,
             name: name,
-            pinCount: 2,
-            updatedAt: Date(timeIntervalSince1970: 1_640_995_200),
-            visibility: "public"
+            ownFollows: ownFollows,
+            pinCount: pinCount,
+            updatedAt: updatedAt,
+            visibility: visibility
         )
     }
 }

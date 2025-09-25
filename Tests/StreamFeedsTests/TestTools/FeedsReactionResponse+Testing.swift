@@ -10,7 +10,7 @@ extension FeedsReactionResponse {
     static func dummy(
         activityId: String = "activity-123",
         commentId: String? = nil,
-        createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        createdAt: Date = Date.fixed(),
         custom: [String: RawJSON]? = nil,
         type: String = "like",
         user: UserResponse = .dummy(id: "current-user-id")

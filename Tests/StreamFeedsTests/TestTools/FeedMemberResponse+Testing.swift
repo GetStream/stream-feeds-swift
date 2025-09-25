@@ -11,13 +11,13 @@ extension FeedMemberResponse {
         user: UserResponse
     ) -> FeedMemberResponse {
         FeedMemberResponse(
-            createdAt: Date(timeIntervalSince1970: 1_640_995_200),
+            createdAt: Date.fixed(),
             custom: nil,
             inviteAcceptedAt: nil,
             inviteRejectedAt: nil,
             role: "user",
             status: .member,
-            updatedAt: Date(timeIntervalSince1970: 1_640_995_200),
+            updatedAt: Date.fixed(),
             user: user
         )
     }

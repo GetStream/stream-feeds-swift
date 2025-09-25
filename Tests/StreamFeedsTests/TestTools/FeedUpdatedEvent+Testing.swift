@@ -8,16 +8,21 @@ import StreamCore
 
 extension FeedUpdatedEvent {
     static func dummy(
-        feed: FeedResponse = FeedResponse.dummy(),
-        user: UserResponseCommonFields? = UserResponseCommonFields.dummy()
+        createdAt: Date = .fixed(),
+        custom: [String: RawJSON] = [:],
+        feed: FeedResponse = .dummy(),
+        feedVisibility: String? = nil,
+        fid: String = "user:test",
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields? = nil
     ) -> FeedUpdatedEvent {
         FeedUpdatedEvent(
-            createdAt: Date.fixed(),
-            custom: [:],
+            createdAt: createdAt,
+            custom: custom,
             feed: feed,
-            feedVisibility: nil,
-            fid: feed.feed,
-            receivedAt: Date.fixed(),
+            feedVisibility: feedVisibility,
+            fid: fid,
+            receivedAt: receivedAt,
             user: user
         )
     }

@@ -9,7 +9,7 @@ import StreamCore
 extension PinActivityResponse {
     static func dummy(
         activity: ActivityResponse = .dummy(),
-        createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        createdAt: Date = Date.fixed(),
         duration: String = "0.123s",
         feed: String,
         userId: String

@@ -52,7 +52,7 @@ struct ActivityReactionList_Tests {
         
         // Check final state
         let finalStateReactions = await reactionList.state.reactions
-        #expect(finalStateReactions.map(\.id) == ["other-user-heart-\(Self.activityId)", "current-user-id-like-\(Self.activityId)"])
+        #expect(finalStateReactions.map(\.id) == ["current-user-id-like-\(Self.activityId)", "other-user-heart-\(Self.activityId)"])
     }
     
     @Test func activityReactionAddedEventUpdatesState() async throws {

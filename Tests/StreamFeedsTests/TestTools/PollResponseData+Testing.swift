@@ -11,7 +11,7 @@ extension PollResponseData {
         allowAnswers: Bool = true,
         allowUserSuggestedOptions: Bool = false,
         answersCount: Int = 0,
-        createdAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        createdAt: Date = Date.fixed(),
         createdBy: UserResponse? = UserResponse.dummy(),
         createdById: String = "user-123",
         custom: [String: RawJSON] = [:],
@@ -28,7 +28,7 @@ extension PollResponseData {
             .dummy(id: "option-2", text: "Option 2")
         ],
         ownVotes: [PollVoteResponseData] = [],
-        updatedAt: Date = Date(timeIntervalSince1970: 1_640_995_200),
+        updatedAt: Date = Date.fixed(),
         voteCount: Int = 0,
         voteCountsByOption: [String: Int] = [:],
         votingVisibility: String = "public"
