@@ -8,7 +8,6 @@ import StreamCore
 
 extension FeedMemberResponse {
     static func dummy(
-        id: String = "member-1",
         user: UserResponse = .dummy(),
         createdAt: Date = .fixed(),
         updatedAt: Date = .fixed(),

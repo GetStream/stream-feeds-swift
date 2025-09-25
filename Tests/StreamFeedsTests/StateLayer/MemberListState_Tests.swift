@@ -16,7 +16,7 @@ struct MemberListState_Tests {
         let stateMembers = await memberList.state.members
         #expect(members.count == 2)
         #expect(stateMembers.count == 2)
-        #expect(stateMembers.map(\.id) == ["member-1", "member-2"])
+        #expect(stateMembers.map(\.id) == ["user-1", "user-2"])
         #expect(members.map(\.id) == stateMembers.map(\.id))
         await #expect(memberList.state.canLoadMore == true)
         await #expect(memberList.state.pagination?.next == "next-cursor")
@@ -26,8 +26,8 @@ struct MemberListState_Tests {
         let client = defaultClientWithMemberResponses([
             QueryFeedMembersResponse.dummy(
                 members: [
-                    .dummy(id: "member-3", user: .dummy(id: "user-3")),
-                    .dummy(id: "member-4", user: .dummy(id: "user-4"))
+                    .dummy(user: .dummy(id: "user-3")),
+                    .dummy(user: .dummy(id: "user-4"))
                 ],
                 next: "next-cursor-2"
             )
@@ -38,13 +38,13 @@ struct MemberListState_Tests {
         _ = try await memberList.get()
         let initialState = await memberList.state.members
         #expect(initialState.count == 2)
-        #expect(initialState.map(\.id) == ["member-1", "member-2"])
+        #expect(initialState.map(\.id) == ["user-1", "user-2"])
 
         // Load more
         let moreMembers = try await memberList.queryMoreMembers()
         let updatedState = await memberList.state.members
         #expect(moreMembers.count == 2)
-        #expect(moreMembers.map(\.id) == ["member-3", "member-4"])
+        #expect(moreMembers.map(\.id) == ["user-3", "user-4"])
         #expect(updatedState.count == 4)
         await #expect(memberList.state.canLoadMore == true)
         await #expect(memberList.state.pagination?.next == "next-cursor-2")
@@ -61,12 +61,11 @@ struct MemberListState_Tests {
         _ = try await memberList.get()
         let initialState = await memberList.state.members
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "member-1" }?.user.id == "user-1")
+        #expect(initialState.first { $0.id == "user-1" }?.user.id == "user-1")
 
         // Send feed member updated event
         let updatedMember = FeedMemberResponse.dummy(
-            id: "member-1",
-            user: .dummy(id: "user-1-updated")
+            user: .dummy(id: "user-1", name: "Updated User Name")
         ).toModel()
         await client.stateLayerEventPublisher.sendEvent(.feedMemberUpdated(updatedMember, feedId))
 
@@ -75,7 +74,7 @@ struct MemberListState_Tests {
 
         let updatedState = await memberList.state.members
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "member-1" }?.user.id == "user-1-updated")
+        #expect(updatedState.first { $0.id == "user-1" }?.user.name == "Updated User Name")
     }
 
     @Test func feedMemberDeletedEventUpdatesState() async throws {
@@ -87,17 +86,17 @@ struct MemberListState_Tests {
         _ = try await memberList.get()
         let initialState = await memberList.state.members
         #expect(initialState.count == 2)
-        #expect(initialState.map(\.id) == ["member-1", "member-2"])
+        #expect(initialState.map(\.id) == ["user-1", "user-2"])
 
         // Send feed member deleted event
-        await client.stateLayerEventPublisher.sendEvent(.feedMemberDeleted("member-1", feedId))
+        await client.stateLayerEventPublisher.sendEvent(.feedMemberDeleted("user-1", feedId))
 
         // Wait a bit for the event to be processed
         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
 
         let updatedState = await memberList.state.members
         #expect(updatedState.count == 1)
-        #expect(updatedState.map(\.id) == ["member-2"])
+        #expect(updatedState.map(\.id) == ["user-2"])
     }
 
     @Test func feedMemberBatchUpdateEventUpdatesState() async throws {
@@ -109,16 +108,15 @@ struct MemberListState_Tests {
         _ = try await memberList.get()
         let initialState = await memberList.state.members
         #expect(initialState.count == 2)
-        #expect(initialState.map(\.id) == ["member-1", "member-2"])
+        #expect(initialState.map(\.id) == ["user-1", "user-2"])
 
         // Send feed member batch update event
         let updatedMember = FeedMemberResponse.dummy(
-            id: "member-1",
-            user: .dummy(id: "user-1-updated")
+            user: .dummy(id: "user-1", name: "Updated User Name")
         ).toModel()
         let updates = ModelUpdates<FeedMemberData>(
             added: [],
-            removedIds: ["member-2"],
+            removedIds: ["user-2"],
             updated: [updatedMember]
         )
         await client.stateLayerEventPublisher.sendEvent(.feedMemberBatchUpdate(updates, feedId))
@@ -128,8 +126,8 @@ struct MemberListState_Tests {
 
         let updatedState = await memberList.state.members
         #expect(updatedState.count == 1)
-        #expect(updatedState.first?.id == "member-1")
-        #expect(updatedState.first?.user.id == "user-1-updated")
+        #expect(updatedState.first?.id == "user-1")
+        #expect(updatedState.first?.user.name == "Updated User Name")
     }
 
     @Test func feedMemberEventForDifferentFeedIsIgnored() async throws {
@@ -142,11 +140,10 @@ struct MemberListState_Tests {
         _ = try await memberList.get()
         let initialState = await memberList.state.members
         #expect(initialState.count == 2)
-        #expect(initialState.map(\.id) == ["member-1", "member-2"])
+        #expect(initialState.map(\.id) == ["user-1", "user-2"])
 
         // Send feed member updated event for different feed
         let updatedMember = FeedMemberResponse.dummy(
-            id: "member-1",
             user: .dummy(id: "user-1-updated")
         ).toModel()
         await client.stateLayerEventPublisher.sendEvent(.feedMemberUpdated(updatedMember, otherFeedId))
@@ -156,8 +153,8 @@ struct MemberListState_Tests {
 
         let updatedState = await memberList.state.members
         #expect(updatedState.count == 2)
-        #expect(updatedState.map(\.id) == ["member-1", "member-2"])
-        #expect(updatedState.first { $0.id == "member-1" }?.user.id == "user-1") // Should not be updated
+        #expect(updatedState.map(\.id) == ["user-1", "user-2"])
+        #expect(updatedState.first { $0.id == "user-1" }?.user.id == "user-1") // Should not be updated
     }
 
     // MARK: - Helper Methods
@@ -170,8 +167,8 @@ struct MemberListState_Tests {
                 [
                     QueryFeedMembersResponse.dummy(
                         members: [
-                            .dummy(id: "member-1", user: .dummy(id: "user-1")),
-                            .dummy(id: "member-2", user: .dummy(id: "user-2"))
+                            .dummy(user: .dummy(id: "user-1")),
+                            .dummy(user: .dummy(id: "user-2"))
                         ],
                         next: "next-cursor"
                     )

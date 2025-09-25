@@ -1,7 +1,5 @@
 code_coverage(true)
 
-disable_concurrent_testing(true)
-
 configuration("Debug")
 
 result_bundle(true)
