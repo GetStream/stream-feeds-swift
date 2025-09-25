@@ -72,7 +72,7 @@ struct FollowList_Tests {
         )
         
         let result = await followList.state.follows.map(\.id)
-        #expect(result == ["user:current-user-id-user-2", "user:current-user-id-user-1"]) // New follow should be added
+        #expect(result == ["user:current-user-id-user:user-2", "user:current-user-id-user:user-1"]) // New follow should be added
         let newFollow = await followList.state.follows.first
         #expect(newFollow?.targetFeed.feed.rawValue == "user:user-2")
     }
