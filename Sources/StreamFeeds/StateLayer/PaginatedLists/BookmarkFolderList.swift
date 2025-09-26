@@ -25,12 +25,11 @@ public final class BookmarkFolderList: Sendable {
 
     // MARK: - Paginating the List of BookmarkFolders
 
-    @discardableResult
-    public func get() async throws -> [BookmarkFolderData] {
+    @discardableResult public func get() async throws -> [BookmarkFolderData] {
         try await queryBookmarkFolders(with: query)
     }
 
-    public func queryMoreBookmarkFolders(limit: Int? = nil) async throws -> [BookmarkFolderData] {
+    @discardableResult public func queryMoreBookmarkFolders(limit: Int? = nil) async throws -> [BookmarkFolderData] {
         let nextQuery: BookmarkFoldersQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return BookmarkFoldersQuery(

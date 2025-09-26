@@ -16,7 +16,7 @@ struct BookmarkList_Tests {
         let stateBookmarks = await bookmarkList.state.bookmarks
         #expect(bookmarks.count == 2)
         #expect(stateBookmarks.count == 2)
-        #expect(stateBookmarks.map(\.id) == ["activity-1user-1", "activity-2user-1"])
+        #expect(stateBookmarks.map(\.id) == ["user-1-activity-1", "user-1-activity-2"])
         #expect(bookmarks.map(\.id) == stateBookmarks.map(\.id))
         await #expect(bookmarkList.state.canLoadMore == true)
         await #expect(bookmarkList.state.pagination?.next == "next-cursor")
@@ -38,16 +38,16 @@ struct BookmarkList_Tests {
         _ = try await bookmarkList.get()
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.map(\.id) == ["activity-1user-1", "activity-2user-1"])
+        #expect(initialState.map(\.id) == ["user-1-activity-1", "user-1-activity-2"])
 
         // Load more
         let moreBookmarks = try await bookmarkList.queryMoreBookmarks()
         let updatedState = await bookmarkList.state.bookmarks
         #expect(moreBookmarks.count == 2)
-        #expect(moreBookmarks.map(\.id) == ["activity-3user-1", "activity-4user-1"])
+        #expect(moreBookmarks.map(\.id) == ["user-1-activity-3", "user-1-activity-4"])
         #expect(updatedState.count == 4)
         // The bookmarks should be sorted by createdAt in ascending order (oldest first)
-        #expect(updatedState.map(\.id) == ["activity-3user-1", "activity-4user-1", "activity-1user-1", "activity-2user-1"])
+        #expect(updatedState.map(\.id) == ["user-1-activity-3", "user-1-activity-4", "user-1-activity-1", "user-1-activity-2"])
         await #expect(bookmarkList.state.canLoadMore == true)
         await #expect(bookmarkList.state.pagination?.next == "next-cursor-2")
     }
@@ -113,7 +113,7 @@ struct BookmarkList_Tests {
         // Load more with custom limit
         let moreBookmarks = try await bookmarkList.queryMoreBookmarks(limit: 1)
         #expect(moreBookmarks.count == 1)
-        #expect(moreBookmarks.first?.id == "activity-3user-1")
+        #expect(moreBookmarks.first?.id == "user-1-activity-3")
     }
 
     // MARK: - WebSocket Events
@@ -125,7 +125,7 @@ struct BookmarkList_Tests {
 
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.activity.text == "Test activity content")
 
         // Send bookmark updated event
         await client.eventsMiddleware.sendEvent(
@@ -140,8 +140,8 @@ struct BookmarkList_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.activity.text == "Updated activity content")
-        #expect(updatedState.first { $0.id == "activity-2user-1" }?.activity.text == "Test activity content")
+        #expect(updatedState.first { $0.id == "user-1-activity-1" }?.activity.text == "Updated activity content")
+        #expect(updatedState.first { $0.id == "user-1-activity-2" }?.activity.text == "Test activity content")
     }
 
     @Test func bookmarkFolderUpdatedEventUpdatesState() async throws {
@@ -151,7 +151,7 @@ struct BookmarkList_Tests {
 
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.folder?.name == "Test Folder")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.folder?.name == "Test Folder")
 
         // Send bookmark folder updated event
         await client.eventsMiddleware.sendEvent(
@@ -162,8 +162,7 @@ struct BookmarkList_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder?.name == "Updated Folder Name")
-        #expect(updatedState.first { $0.id == "activity-2user-1" }?.folder?.name == "Test Folder")
+        #expect(updatedState.map(\.folder?.name) == ["Updated Folder Name", "Updated Folder Name"], "Same folder")
     }
 
     @Test func bookmarkFolderDeletedEventUpdatesState() async throws {
@@ -173,7 +172,7 @@ struct BookmarkList_Tests {
 
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.folder?.name == "Test Folder")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.folder?.name == "Test Folder")
 
         // Send bookmark folder deleted event
         await client.eventsMiddleware.sendEvent(
@@ -184,8 +183,7 @@ struct BookmarkList_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder == nil)
-        #expect(updatedState.first { $0.id == "activity-2user-1" }?.folder?.name == "Test Folder")
+        #expect(updatedState.map(\.folder) == [nil, nil], "Same folder")
     }
 
     @Test func bookmarkUpdatedEventForUnrelatedUserDoesNotUpdateState() async throws {
@@ -195,7 +193,7 @@ struct BookmarkList_Tests {
 
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.activity.text == "Test activity content")
 
         // Send bookmark updated event for unrelated user
         await client.eventsMiddleware.sendEvent(
@@ -210,8 +208,8 @@ struct BookmarkList_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
-        #expect(updatedState.first { $0.id == "activity-2user-1" }?.activity.text == "Test activity content")
+        #expect(updatedState.first { $0.id == "user-1-activity-1" }?.activity.text == "Test activity content")
+        #expect(updatedState.first { $0.id == "user-1-activity-2" }?.activity.text == "Test activity content")
     }
 
     // MARK: - Helper Methods

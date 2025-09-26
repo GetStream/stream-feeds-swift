@@ -19,10 +19,12 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let id: String
     public let memberCount: Int
     public let name: String
+    public let ownCapabilities: [FeedOwnCapability]?
+    public let ownFollows: [FollowData]?
+    public let ownMembership: FeedMemberData?
     public let pinCount: Int
     public let updatedAt: Date
     public let visibility: String?
-    public let ownCapabilities: [FeedOwnCapability]?
     
     var localFilterData: LocalFilterData?
 }
@@ -45,10 +47,12 @@ extension FeedResponse {
             id: id,
             memberCount: memberCount,
             name: name,
+            ownCapabilities: ownCapabilities,
+            ownFollows: ownFollows?.map { $0.toModel() },
+            ownMembership: ownMembership?.toModel(),
             pinCount: pinCount,
             updatedAt: updatedAt,
-            visibility: visibility,
-            ownCapabilities: ownCapabilities
+            visibility: visibility
         )
     }
 }

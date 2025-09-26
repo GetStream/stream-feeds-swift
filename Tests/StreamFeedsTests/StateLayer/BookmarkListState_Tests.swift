@@ -16,7 +16,7 @@ struct BookmarkListState_Tests {
         let stateBookmarks = await bookmarkList.state.bookmarks
         #expect(bookmarks.count == 2)
         #expect(stateBookmarks.count == 2)
-        #expect(stateBookmarks.map(\.id) == ["activity-1user-1", "activity-2user-1"])
+        #expect(stateBookmarks.map(\.id) == ["user-1-activity-1", "user-1-activity-2"])
         #expect(bookmarks.map(\.id) == stateBookmarks.map(\.id))
         await #expect(bookmarkList.state.canLoadMore == true)
         await #expect(bookmarkList.state.pagination?.next == "next-cursor")
@@ -38,13 +38,13 @@ struct BookmarkListState_Tests {
         _ = try await bookmarkList.get()
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.map(\.id) == ["activity-1user-1", "activity-2user-1"])
+        #expect(initialState.map(\.id) == ["user-1-activity-1", "user-1-activity-2"])
 
         // Load more
         let moreBookmarks = try await bookmarkList.queryMoreBookmarks()
         let updatedState = await bookmarkList.state.bookmarks
         #expect(moreBookmarks.count == 2)
-        #expect(moreBookmarks.map(\.id) == ["activity-3user-1", "activity-4user-1"])
+        #expect(moreBookmarks.map(\.id) == ["user-1-activity-3", "user-1-activity-4"])
         #expect(updatedState.count == 4)
         await #expect(bookmarkList.state.canLoadMore == true)
         await #expect(bookmarkList.state.pagination?.next == "next-cursor-2")
@@ -60,7 +60,7 @@ struct BookmarkListState_Tests {
         _ = try await bookmarkList.get()
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.activity.text == "Test activity content")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.activity.text == "Test activity content")
 
         // Send bookmark updated event
         let updatedBookmark = BookmarkResponse.dummy(
@@ -75,7 +75,7 @@ struct BookmarkListState_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.activity.text == "Updated activity content")
+        #expect(updatedState.first { $0.id == "user-1-activity-1" }?.activity.text == "Updated activity content")
     }
 
     @Test func bookmarkFolderUpdatedEventUpdatesState() async throws {
@@ -86,7 +86,7 @@ struct BookmarkListState_Tests {
         _ = try await bookmarkList.get()
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.folder?.name == "Test Folder")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.folder?.name == "Test Folder")
 
         // Send bookmark folder updated event
         let updatedFolder = BookmarkFolderResponse.dummy(id: "folder-1", name: "Updated Folder Name").toModel()
@@ -97,7 +97,7 @@ struct BookmarkListState_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder?.name == "Updated Folder Name")
+        #expect(updatedState.first { $0.id == "user-1-activity-1" }?.folder?.name == "Updated Folder Name")
     }
 
     @Test func bookmarkFolderDeletedEventUpdatesState() async throws {
@@ -108,7 +108,7 @@ struct BookmarkListState_Tests {
         _ = try await bookmarkList.get()
         let initialState = await bookmarkList.state.bookmarks
         #expect(initialState.count == 2)
-        #expect(initialState.first { $0.id == "activity-1user-1" }?.folder?.id == "folder-1")
+        #expect(initialState.first { $0.id == "user-1-activity-1" }?.folder?.id == "folder-1")
 
         // Send bookmark folder deleted event
         let deletedFolder = BookmarkFolderResponse.dummy(id: "folder-1", name: "Test Folder").toModel()
@@ -119,7 +119,7 @@ struct BookmarkListState_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder == nil)
+        #expect(updatedState.first { $0.id == "user-1-activity-1" }?.folder == nil)
     }
 
     // MARK: - Helper Methods

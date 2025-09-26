@@ -47,6 +47,16 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
     func onEvent(_ event: any Event) async {
         guard let stateLayerEvent = StateLayerEvent(event: event) else { return }
         await sendEvent(stateLayerEvent)
+        
+        switch stateLayerEvent {
+        case .activityAdded(let activityData, let eventFeedId):
+            // Parent does not get WS update, but reposting updates its data (e.g. share count)
+            if let parent = activityData.parent {
+                await sendEvent(.activityUpdated(parent, eventFeedId))
+            }
+        default:
+            break
+        }
     }
 }
 

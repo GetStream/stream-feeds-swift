@@ -45,12 +45,12 @@ extension BookmarkFolderListState {
         eventSubscription = publisher.subscribe { [weak self] event in
             switch event {
             case .bookmarkFolderDeleted(let folder):
-                _ = await self?.access { state in
+                await self?.access { state in
                     state.folders.remove(byId: folder.id)
                 }
             case .bookmarkFolderUpdated(let folder):
-                _ = await self?.access { state in
-                    state.folders.replace(byId: folder)
+                await self?.access { state in
+                    state.folders.sortedReplace(folder, nesting: nil, sorting: state.bookmarksSorting)
                 }
             default:
                 break
@@ -58,7 +58,7 @@ extension BookmarkFolderListState {
         }
     }
 
-    func access<T>(_ actions: @MainActor (BookmarkFolderListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (BookmarkFolderListState) -> T) -> T {
         actions(self)
     }
 

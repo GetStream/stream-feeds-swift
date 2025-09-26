@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public struct UserData: Identifiable, Equatable, Sendable, Hashable {
+    public let avgResponseTime: Int?
     public let banned: Bool
     public let blockedUserIds: [String]
     public let createdAt: Date
@@ -35,6 +36,7 @@ public struct UserData: Identifiable, Equatable, Sendable, Hashable {
 extension UserResponse {
     func toModel() -> UserData {
         UserData(
+            avgResponseTime: avgResponseTime,
             banned: banned,
             blockedUserIds: blockedUserIds,
             createdAt: createdAt,
@@ -59,6 +61,7 @@ extension UserResponse {
 extension UserResponseCommonFields {
     func toModel() -> UserData {
         UserData(
+            avgResponseTime: nil, // UserResponseCommonFields doesn't have avgResponseTime
             banned: banned,
             blockedUserIds: blockedUserIds,
             createdAt: createdAt,
@@ -83,6 +86,7 @@ extension UserResponseCommonFields {
 extension UserResponsePrivacyFields {
     func toModel() -> UserData {
         UserData(
+            avgResponseTime: nil, // UserResponsePrivacyFields doesn't have avgResponseTime
             banned: banned,
             blockedUserIds: blockedUserIds,
             createdAt: createdAt,

@@ -18,6 +18,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let expiresAt: Date?
     public let feeds: [String]
     public let filterTags: [String]
+    public let hidden: Bool
     public let id: String
     public let interestTags: [String]
     public private(set) var latestReactions: [FeedsReactionData]
@@ -106,6 +107,12 @@ extension ActivityData {
         }
     }
     
+    mutating func deleteComment(_ comment: CommentData) {
+        if comments.remove(byId: comment.id) {
+            commentCount = max(0, commentCount - 1)
+        }
+    }
+    
     mutating func updateComment(_ incomingData: CommentData) {
         comments.updateFirstElement(where: { $0.id == incomingData.id }, changes: { $0.merge(with: incomingData) })
     }
@@ -130,50 +137,6 @@ extension ActivityData {
             changes: { $0.merge(with: incomingData, update: reaction, currentUserId: currentUserId) }
         )
     }
-    
-    // MARK: -
-    
-    mutating func deleteComment(_ comment: CommentData) {
-        if comments.remove(byId: comment.id) {
-            commentCount = max(0, commentCount - 1)
-        }
-    }
-    
-    mutating func addBookmark(_ bookmark: BookmarkData, currentUserId: String) {
-        if bookmark.user.id == currentUserId {
-            if ownBookmarks.insert(byId: bookmark) {
-                bookmarkCount += 1
-            }
-        } else {
-            bookmarkCount += 1
-        }
-    }
-    
-    mutating func deleteBookmark(_ bookmark: BookmarkData, currentUserId: String) {
-        if bookmark.user.id == currentUserId {
-            if ownBookmarks.remove(byId: bookmark.id) {
-                bookmarkCount = max(0, bookmarkCount - 1)
-            }
-        } else {
-            bookmarkCount = max(0, bookmarkCount - 1)
-        }
-    }
-    
-    mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
-        FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
-        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == currentUserId {
-            ownReactions.insert(byId: reaction)
-        }
-    }
-    
-    mutating func removeReaction(_ reaction: FeedsReactionData, currentUserId: String) {
-        FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
-        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == currentUserId {
-            ownReactions.remove(byId: reaction.id)
-        }
-    }
 }
 
 // MARK: - Model Conversions
@@ -193,6 +156,7 @@ extension ActivityResponse {
             expiresAt: expiresAt,
             feeds: feeds,
             filterTags: filterTags,
+            hidden: hidden ?? false,
             id: id,
             interestTags: interestTags,
             latestReactions: latestReactions.map { $0.toModel() },

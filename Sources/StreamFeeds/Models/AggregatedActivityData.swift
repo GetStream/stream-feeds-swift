@@ -13,6 +13,7 @@ public struct AggregatedActivityData: Identifiable, Equatable, Sendable {
     public var score: Float
     public var updatedAt: Date
     public var userCount: Int
+    public var userCountTruncated: Bool
     
     public var id: String {
         if let first = activities.first?.id {
@@ -32,7 +33,8 @@ extension AggregatedActivityResponse {
             group: group,
             score: score,
             updatedAt: updatedAt,
-            userCount: userCount
+            userCount: userCount,
+            userCountTruncated: userCountTruncated
         )
     }
 }
