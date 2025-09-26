@@ -16,8 +16,8 @@ struct CommentReactionList_Tests {
         )
         let reactions = try await reactionList.get()
         let stateReactions = await reactionList.state.reactions
-        #expect(reactions.map(\.id) == ["current-user-id-like-activity-123"])
-        #expect(stateReactions.map(\.id) == ["current-user-id-like-activity-123"])
+        #expect(reactions.map(\.id) == ["current-user-id-like-comment-123-activity-123"])
+        #expect(stateReactions.map(\.id) == ["current-user-id-like-comment-123-activity-123"])
     }
     
     @Test func paginationLoadsMoreReactions() async throws {
@@ -42,17 +42,17 @@ struct CommentReactionList_Tests {
         )
         
         // Initial load
-        #expect(try await reactionList.get().map(\.id) == ["current-user-id-like-activity-123"])
+        #expect(try await reactionList.get().map(\.id) == ["current-user-id-like-comment-123-activity-123"])
         #expect(await reactionList.state.canLoadMore == true)
         
         // Load more
         let moreReactions = try await reactionList.queryMoreReactions()
-        #expect(moreReactions.map(\.id) == ["other-user-heart-activity-123"])
+        #expect(moreReactions.map(\.id) == ["other-user-heart-comment-123-activity-123"])
         #expect(await reactionList.state.canLoadMore == false)
         
         // Check final state
         let finalStateReactions = await reactionList.state.reactions
-        #expect(finalStateReactions.map(\.id) == ["current-user-id-like-activity-123", "other-user-heart-activity-123"], "Newest first")
+        #expect(finalStateReactions.map(\.id) == ["current-user-id-like-comment-123-activity-123", "other-user-heart-comment-123-activity-123"], "Newest first")
     }
     
     @Test func commentReactionAddedEventUpdatesState() async throws {
@@ -75,7 +75,7 @@ struct CommentReactionList_Tests {
         )
         
         let result = await reactionList.state.reactions.map(\.id)
-        #expect(result == ["other-user-heart-activity-123", "current-user-id-like-activity-123"])
+        #expect(result == ["other-user-heart-comment-123-activity-123", "current-user-id-like-comment-123-activity-123"])
         let reactions = await reactionList.state.reactions
         #expect(reactions.map(\.type) == ["heart", "like"])
         #expect(reactions.map(\.user.id) == ["other-user", "current-user-id"])
@@ -97,7 +97,7 @@ struct CommentReactionList_Tests {
         )
         
         let result = await reactionList.state.reactions.map(\.id)
-        #expect(result == ["current-user-id-like-activity-123"])
+        #expect(result == ["current-user-id-like-comment-123-activity-123"])
         let updatedReaction = await reactionList.state.reactions.first
         #expect(updatedReaction?.custom == ["key": RawJSON.string("UPDATED")])
     }
@@ -137,7 +137,7 @@ struct CommentReactionList_Tests {
         )
         
         let result = await reactionList.state.reactions.map(\.id)
-        #expect(result == ["current-user-id-like-activity-123"]) // Should not be affected
+        #expect(result == ["current-user-id-like-comment-123-activity-123"]) // Should not be affected
     }
     
     @Test func addedEventsOnlyAffectMatchingComment() async throws {
@@ -156,7 +156,7 @@ struct CommentReactionList_Tests {
         )
         
         let result = await reactionList.state.reactions.map(\.id)
-        #expect(result == ["current-user-id-like-activity-123"])
+        #expect(result == ["current-user-id-like-comment-123-activity-123"])
         let reaction = await reactionList.state.reactions.first
         #expect(reaction?.type == "like") // Should remain unchanged
     }
@@ -177,7 +177,7 @@ struct CommentReactionList_Tests {
         )
         
         let result = await reactionList.state.reactions.map(\.id)
-        #expect(result == ["current-user-id-like-activity-123"])
+        #expect(result == ["current-user-id-like-comment-123-activity-123"])
         let reaction = await reactionList.state.reactions.first
         #expect(reaction?.type == "like")
     }
