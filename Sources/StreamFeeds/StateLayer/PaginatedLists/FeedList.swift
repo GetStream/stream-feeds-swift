@@ -25,12 +25,11 @@ public final class FeedList: Sendable {
 
     // MARK: - Paginating the List of Feeds
 
-    @discardableResult
-    public func get() async throws -> [FeedData] {
+    @discardableResult public func get() async throws -> [FeedData] {
         try await queryFeeds(with: query)
     }
 
-    public func queryMoreFeeds(limit: Int? = nil) async throws -> [FeedData] {
+    @discardableResult public func queryMoreFeeds(limit: Int? = nil) async throws -> [FeedData] {
         let nextQuery: FeedsQuery? = await state.access { state in
             guard let next = state.pagination?.next else { return nil }
             return FeedsQuery(

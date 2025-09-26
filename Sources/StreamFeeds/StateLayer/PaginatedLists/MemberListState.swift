@@ -64,24 +64,34 @@ import StreamCore
 
 extension MemberListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
-        eventSubscription = publisher.subscribe { [weak self] event in
+        let matchesQuery: @Sendable (FeedMemberData) -> Bool = { [query] member in
+            guard let filter = query.filter else { return true }
+            return filter.matches(member)
+        }
+        eventSubscription = publisher.subscribe { [weak self, query] event in
             switch event {
-            case .feedMemberDeleted(let memberId, let feedId):
-                guard feedId == self?.query.feed else { return }
+            case .feedMemberAdded(let memberData, let eventFeedId):
+                guard eventFeedId == query.feed else { return }
+                guard matchesQuery(memberData) else { return }
                 await self?.access { state in
-                    guard let index = state.members.firstIndex(where: { $0.id == memberId }) else { return }
-                    state.members.remove(at: index)
+                    state.members.sortedInsert(memberData, sorting: state.membersSorting)
                 }
-            case .feedMemberUpdated(let member, let feedId):
-                guard feedId == self?.query.feed else { return }
+            case .feedMemberDeleted(let memberId, let eventFeedId):
+                guard eventFeedId == query.feed else { return }
                 await self?.access { state in
-                    state.members.replace(byId: member)
+                    state.members.remove(byId: memberId)
                 }
-            case .feedMemberBatchUpdate(let updates, let feedId):
-                guard feedId == self?.query.feed else { return }
+            case .feedMemberUpdated(let memberData, let eventFeedId):
+                guard eventFeedId == query.feed else { return }
                 await self?.access { state in
-                    // Skip added because the it might not belong to this list
-                    state.members.replace(byIds: updates.updated)
+                    state.members.sortedReplace(memberData, nesting: nil, sorting: state.membersSorting)
+                }
+            case .feedMemberBatchUpdate(let updates, let eventFeedId):
+                guard eventFeedId == query.feed else { return }
+                let added = updates.added.filter(matchesQuery)
+                await self?.access { state in
+                    added.forEach { state.members.sortedInsert($0, sorting: state.membersSorting) }
+                    updates.updated.forEach { state.members.sortedReplace($0, nesting: nil, sorting: state.membersSorting) }
                     state.members.remove(byIds: updates.removedIds)
                 }
             default:
@@ -90,7 +100,7 @@ extension MemberListState {
         }
     }
 
-    func access<T>(_ actions: @MainActor (MemberListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (MemberListState) -> T) -> T {
         actions(self)
     }
 

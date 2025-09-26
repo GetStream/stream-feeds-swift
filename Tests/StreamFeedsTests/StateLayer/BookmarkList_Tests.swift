@@ -162,8 +162,7 @@ struct BookmarkList_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder?.name == "Updated Folder Name")
-        #expect(updatedState.first { $0.id == "activity-2user-1" }?.folder?.name == "Test Folder")
+        #expect(updatedState.map(\.folder?.name) == ["Updated Folder Name", "Updated Folder Name"], "Same folder")
     }
 
     @Test func bookmarkFolderDeletedEventUpdatesState() async throws {
@@ -184,8 +183,7 @@ struct BookmarkList_Tests {
 
         let updatedState = await bookmarkList.state.bookmarks
         #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "activity-1user-1" }?.folder == nil)
-        #expect(updatedState.first { $0.id == "activity-2user-1" }?.folder?.name == "Test Folder")
+        #expect(updatedState.map(\.folder) == [nil, nil], "Same folder")
     }
 
     @Test func bookmarkUpdatedEventForUnrelatedUserDoesNotUpdateState() async throws {

@@ -46,16 +46,21 @@ extension BookmarkListState {
             switch event {
             case .bookmarkFolderDeleted(let folder):
                 await self?.access { state in
-                    state.updateBookmarkFolder(with: folder.id, changes: { $0.folder = nil })
+                    state.bookmarks.updateAll(
+                        where: { $0.folder?.id == folder.id },
+                        changes: { $0.folder = nil }
+                    )
                 }
             case .bookmarkFolderUpdated(let folder):
                 await self?.access { state in
-                    state.updateBookmarkFolder(with: folder.id, changes: { $0.folder = folder })
+                    state.bookmarks.updateAll(
+                        where: { $0.folder?.id == folder.id },
+                        changes: { $0.folder = folder }
+                    )
                 }
             case .bookmarkUpdated(let bookmark):
                 await self?.access { state in
-                    // Only update, do not insert
-                    state.bookmarks.replace(byId: bookmark)
+                    state.bookmarks.sortedReplace(bookmark, nesting: nil, sorting: state.bookmarkFoldersSorting)
                 }
             default:
                 break

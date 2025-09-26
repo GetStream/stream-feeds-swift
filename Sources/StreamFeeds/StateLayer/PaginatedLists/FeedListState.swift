@@ -42,12 +42,24 @@ import StreamCore
 
 extension FeedListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (FeedData) -> Bool = { [query] feedData in
+            guard let filter = query.filter else { return true }
+            return filter.matches(feedData)
+        }
         eventSubscription = publisher.subscribe { [weak self] event in
             switch event {
+            case .feedAdded(let feed, _):
+                guard matchesQuery(feed) else { return }
+                await self?.access { state in
+                    state.feeds.sortedInsert(feed, sorting: state.feedsSorting)
+                }
+            case .feedDeleted(let feedId):
+                await self?.access { state in
+                    state.feeds.remove(byId: feedId.rawValue)
+                }
             case .feedUpdated(let feed, _):
                 await self?.access { state in
-                    // Only update, do not insert
-                    state.feeds.replace(byId: feed)
+                    state.feeds.sortedReplace(feed, nesting: nil, sorting: state.feedsSorting)
                 }
             default:
                 break
@@ -55,7 +67,7 @@ extension FeedListState {
         }
     }
 
-    func access<T>(_ actions: @MainActor (FeedListState) -> T) -> T {
+    @discardableResult func access<T>(_ actions: @MainActor (FeedListState) -> T) -> T {
         actions(self)
     }
 
