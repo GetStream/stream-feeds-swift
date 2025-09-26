@@ -172,22 +172,6 @@ extension CommentData {
         ownReactions.replace(byId: reaction)
     }
     
-    mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
-        FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
-        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == currentUserId {
-            ownReactions.append(reaction)
-        }
-    }
-    
-    mutating func removeReaction(_ reaction: FeedsReactionData, currentUserId: String) {
-        FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
-        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == currentUserId {
-            ownReactions.remove(byId: reaction.id)
-        }
-    }
-    
     mutating func updateUser(_ incomingData: UserData) {
         mentionedUsers.updateAll(where: { $0.id == incomingData.id }, changes: { $0 = incomingData })
         user = incomingData

@@ -249,22 +249,6 @@ extension ThreadedCommentData {
         user = incomingData
     }
     
-    mutating func addReaction(_ reaction: FeedsReactionData, currentUserId: String) {
-        FeedsReactionData.updateByAdding(reaction: reaction, to: &latestReactions, reactionGroups: &reactionGroups)
-        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == currentUserId {
-            ownReactions.append(reaction)
-        }
-    }
-    
-    mutating func removeReaction(_ reaction: FeedsReactionData, currentUserId: String) {
-        FeedsReactionData.updateByRemoving(reaction: reaction, from: &latestReactions, reactionGroups: &reactionGroups)
-        reactionCount = reactionGroups.values.reduce(0) { $0 + $1.count }
-        if reaction.user.id == currentUserId {
-            ownReactions.remove(byId: reaction.id)
-        }
-    }
-    
     // MARK: - Replies
     
     mutating func addReply(_ comment: ThreadedCommentData, sort areInIncreasingOrder: (ThreadedCommentData, ThreadedCommentData) -> Bool) {
@@ -291,39 +275,6 @@ extension ThreadedCommentData {
         var replies = replies ?? []
         replies.sortedReplace(comment, nesting: nil, sorting: areInIncreasingOrder)
         self.replies = replies
-    }
-    
-    // MARK: - Updating
-    
-    mutating func setCommentData(_ comment: CommentData) {
-        self = ThreadedCommentData(
-            attachments: comment.attachments,
-            confidenceScore: comment.confidenceScore,
-            controversyScore: comment.controversyScore,
-            createdAt: comment.createdAt,
-            custom: comment.custom,
-            deletedAt: comment.deletedAt,
-            downvoteCount: comment.downvoteCount,
-            id: comment.id,
-            latestReactions: comment.latestReactions,
-            mentionedUsers: comment.mentionedUsers,
-            meta: meta,
-            moderation: comment.moderation,
-            objectId: comment.objectId,
-            objectType: comment.objectType,
-            ownReactions: comment.ownReactions,
-            parentId: comment.parentId,
-            reactionCount: comment.reactionCount,
-            reactionGroups: comment.reactionGroups,
-            replies: replies,
-            replyCount: comment.replyCount,
-            score: comment.score,
-            status: comment.status,
-            text: comment.text,
-            updatedAt: comment.updatedAt,
-            upvoteCount: comment.upvoteCount,
-            user: comment.user
-        )
     }
 }
 

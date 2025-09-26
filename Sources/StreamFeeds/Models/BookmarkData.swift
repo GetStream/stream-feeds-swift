@@ -16,7 +16,7 @@ public struct BookmarkData: Equatable, Sendable {
 
 extension BookmarkData: Identifiable {
     public var id: String {
-        activity.id + user.id
+        "\(user.id)-\(activity.id)"
     }
 }
 
