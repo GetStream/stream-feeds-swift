@@ -6,15 +6,15 @@ import Foundation
 import StreamCore
 @testable import StreamFeeds
 
-extension BookmarkFolderResponse {
+extension BookmarkFolderData {
     static func dummy(
         id: String = "folder-1",
         name: String = "Test Folder",
         createdAt: Date = .fixed(),
         updatedAt: Date = .fixed(),
         custom: [String: RawJSON]? = nil
-    ) -> BookmarkFolderResponse {
-        BookmarkFolderResponse(
+    ) -> BookmarkFolderData {
+        BookmarkFolderData(
             createdAt: createdAt,
             custom: custom,
             id: id,

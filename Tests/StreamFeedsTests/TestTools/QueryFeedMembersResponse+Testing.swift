@@ -9,7 +9,7 @@ import StreamCore
 extension QueryFeedMembersResponse {
     static func dummy(
         duration: String = "1.23ms",
-        members: [FeedMemberResponse] = [.dummy(user: .dummy(id: "feed-member-1"))],
+        members: [FeedMemberResponse] = [],
         next: String? = nil,
         prev: String? = nil
     ) -> QueryFeedMembersResponse {

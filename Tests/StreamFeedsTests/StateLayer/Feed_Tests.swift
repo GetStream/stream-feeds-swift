@@ -26,8 +26,8 @@ struct Feed_Tests {
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
             UpdateFeedResponse.dummy(
                 feed: .dummy(
-                    custom: customData,
-                    name: "Updated Feed Name"
+                    name: "Updated Feed Name",
+                    custom: customData
                 )
             )
         ])
@@ -1256,7 +1256,7 @@ struct Feed_Tests {
         // Send unmatching update first - should be ignored
         await client.eventsMiddleware.sendEvent(
             FeedUpdatedEvent.dummy(
-                feed: .dummy(feed: "user:someoneelse", name: "Ignored")
+                feed: .dummy(name: "Ignored", feed: "user:someoneelse")
             )
         )
 
@@ -1265,7 +1265,7 @@ struct Feed_Tests {
         // Send matching update - should refresh feed data
         await client.eventsMiddleware.sendEvent(
             FeedUpdatedEvent.dummy(
-                feed: .dummy(feed: feedId.rawValue, name: "New Name")
+                feed: .dummy(name: "New Name", feed: feedId.rawValue)
             )
         )
 
@@ -1394,7 +1394,7 @@ struct Feed_Tests {
                 [
                     GetOrCreateFeedResponse.dummy(
                         activities: [.dummy(id: "1")],
-                        feed: .dummy(feed: feed),
+                        feed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity]),
                         followers: [
                             FollowResponse.dummy(
                                 sourceFeed: .dummy(feed: "user:bob"),

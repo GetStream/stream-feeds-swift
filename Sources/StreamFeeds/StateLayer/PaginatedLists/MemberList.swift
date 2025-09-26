@@ -13,12 +13,12 @@ import StreamCore
 public final class MemberList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<MemberListState>
     private let feedsRepository: FeedsRepository
-    
+
     init(query: MembersQuery, client: FeedsClient) {
         feedsRepository = client.feedsRepository
         self.query = query
-        let events = client.eventsMiddleware
-        stateBuilder = StateBuilder { MemberListState(query: query, events: events) }
+        let eventPublisher = client.stateLayerEventPublisher
+        stateBuilder = StateBuilder { MemberListState(query: query, eventPublisher: eventPublisher) }
     }
 
     /// The query configuration used to fetch members.
@@ -26,18 +26,18 @@ public final class MemberList: Sendable {
     /// This contains the feed ID, filters, sorting options, and pagination parameters
     /// that define which members are retrieved and how they are ordered.
     public let query: MembersQuery
-    
+
     // MARK: - Accessing the State
-    
+
     /// An observable object representing the current state of the member list.
     ///
     /// This property provides access to the current members, pagination state,
     /// and other state information. The state is automatically updated when
     /// new members are loaded or when real-time updates are received.
     @MainActor public var state: MemberListState { stateBuilder.state }
-    
+
     // MARK: - Paginating the List of Members
-    
+
     /// Fetches the initial list of members based on the current query configuration.
     ///
     /// This method loads the first page of members according to the query's filters,
@@ -50,7 +50,7 @@ public final class MemberList: Sendable {
     public func get() async throws -> [FeedMemberData] {
         try await queryMembers(with: query)
     }
-    
+
     /// Loads the next page of members if more are available.
     ///
     /// This method fetches additional members using the pagination information
@@ -78,9 +78,9 @@ public final class MemberList: Sendable {
         guard let nextQuery else { return [] }
         return try await queryMembers(with: nextQuery)
     }
-    
+
     // MARK: - Private
-    
+
     private func queryMembers(with query: MembersQuery) async throws -> [FeedMemberData] {
         let response = try await feedsRepository.queryFeedMembers(
             feedGroupId: query.feed.group,
