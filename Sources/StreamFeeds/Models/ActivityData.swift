@@ -18,6 +18,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let expiresAt: Date?
     public let feeds: [String]
     public let filterTags: [String]
+    public let hidden: Bool
     public let id: String
     public let interestTags: [String]
     public private(set) var latestReactions: [FeedsReactionData]
@@ -193,6 +194,7 @@ extension ActivityResponse {
             expiresAt: expiresAt,
             feeds: feeds,
             filterTags: filterTags,
+            hidden: hidden ?? false,
             id: id,
             interestTags: interestTags,
             latestReactions: latestReactions.map { $0.toModel() },

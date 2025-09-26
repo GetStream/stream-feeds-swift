@@ -7,6 +7,7 @@ import StreamCore
 
 public struct FeedsReactionData: Equatable, Sendable {
     public let activityId: String
+    public let commentId: String?
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let type: String
@@ -29,7 +30,7 @@ extension FeedsReactionData {
         reactionGroups: inout [String: ReactionGroupData]
     ) {
         guard latestReactions.insert(byId: reaction) else { return }
-        var reactionGroup = reactionGroups[reaction.type] ?? ReactionGroupData(count: 1, firstReactionAt: reaction.createdAt, lastReactionAt: reaction.createdAt)
+        var reactionGroup = reactionGroups[reaction.type] ?? ReactionGroupData(count: 1, firstReactionAt: reaction.createdAt, lastReactionAt: reaction.createdAt, sumScores: nil)
         reactionGroup.increment(with: reaction.createdAt)
         reactionGroups[reaction.type] = reactionGroup
     }
@@ -61,6 +62,7 @@ extension FeedsReactionResponse {
     func toModel() -> FeedsReactionData {
         FeedsReactionData(
             activityId: activityId,
+            commentId: commentId,
             createdAt: createdAt,
             custom: custom,
             type: type,

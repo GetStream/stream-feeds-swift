@@ -10,6 +10,7 @@ public struct FeedMemberData: Equatable, Sendable {
     public let custom: [String: RawJSON]?
     public let inviteAcceptedAt: Date?
     public let inviteRejectedAt: Date?
+    public let membershipLevel: MembershipLevelResponse?
     public let role: String
     public let status: FeedMemberStatus
     public let updatedAt: Date
@@ -35,6 +36,7 @@ extension FeedMemberResponse {
             custom: custom,
             inviteAcceptedAt: inviteAcceptedAt,
             inviteRejectedAt: inviteRejectedAt,
+            membershipLevel: membershipLevel,
             role: role,
             status: status,
             updatedAt: updatedAt,

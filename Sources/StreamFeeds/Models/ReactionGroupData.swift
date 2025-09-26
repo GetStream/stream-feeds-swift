@@ -9,6 +9,7 @@ public struct ReactionGroupData: Equatable, Sendable {
     public private(set) var count: Int
     public let firstReactionAt: Date
     public private(set) var lastReactionAt: Date
+    public let sumScores: Int?
 }
 
 extension ReactionGroupData {
@@ -33,7 +34,8 @@ extension ReactionGroupResponse {
         ReactionGroupData(
             count: count,
             firstReactionAt: firstReactionAt,
-            lastReactionAt: lastReactionAt
+            lastReactionAt: lastReactionAt,
+            sumScores: sumScores
         )
     }
 }
