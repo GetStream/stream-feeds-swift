@@ -56,9 +56,13 @@ extension PollVoteListState {
                 }
             case .pollVoteChanged(let vote, let pollData, _):
                 guard pollData.id == query.pollId else { return }
-                guard matchesQuery(vote) else { return }
+                let matches = matchesQuery(vote)
                 await self?.access { state in
-                    state.votes.sortedReplace(vote, nesting: nil, sorting: state.pollVotesSorting)
+                    if matches {
+                        state.votes.sortedReplace(vote, nesting: nil, sorting: state.pollVotesSorting)
+                    } else {
+                        state.votes.remove(byId: vote.id)
+                    }
                 }
             case .pollVoteDeleted(let vote, let pollData, _):
                 guard pollData.id == query.pollId else { return }

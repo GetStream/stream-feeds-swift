@@ -116,8 +116,13 @@ extension ActivityReactionListState {
                 }
             case .activityReactionUpdated(let reactionData, let activityData, _):
                 guard activityData.id == query.activityId else { return }
+                let matches = matchesQuery(reactionData)
                 await self?.access { state in
-                    state.reactions.sortedReplace(reactionData, nesting: nil, sorting: state.reactionsSorting)
+                    if matches {
+                        state.reactions.sortedReplace(reactionData, nesting: nil, sorting: state.reactionsSorting)
+                    } else {
+                        state.reactions.remove(byId: reactionData.id)
+                    }
                 }
             case .userUpdated(let userData):
                 await self?.access { state in

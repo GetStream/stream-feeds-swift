@@ -158,6 +158,37 @@ struct PollList_Tests {
         let updatedPoll = await pollList.state.polls.first
         #expect(updatedPoll?.voteCount == 0)
     }
+
+    @Test func pollUpdatedEventRemovesPollWhenNoLongerMatchingQuery() async throws {
+        let client = defaultClient(
+            polls: [.dummy(id: "poll-1", name: "Test Poll")]
+        )
+        let pollList = client.pollList(
+            for: PollsQuery(
+                filter: .equal(.name, "Test Poll")
+            )
+        )
+        try await pollList.get()
+
+        // Verify initial state has the poll that matches the filter
+        let initialPolls = await pollList.state.polls
+        #expect(initialPolls.count == 1)
+        #expect(initialPolls.first?.id == "poll-1")
+        #expect(initialPolls.first?.name == "Test Poll")
+
+        // Send poll updated event where the name changes to something that doesn't match the filter
+        // This should cause the poll to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            PollUpdatedFeedEvent.dummy(
+                poll: .dummy(id: "poll-1", name: "Updated Poll Name", updatedAt: .fixed(offset: 1)),
+                fid: "user:test"
+            )
+        )
+
+        // Poll should be removed since it no longer matches the name filter
+        let pollsAfterUpdate = await pollList.state.polls
+        #expect(pollsAfterUpdate.isEmpty)
+    }
     
     // MARK: -
     

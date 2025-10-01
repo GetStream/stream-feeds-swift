@@ -390,6 +390,41 @@ struct CommentList_Tests {
         let comment = try #require(comments.first)
         #expect(comment.user.name == "New Name")
     }
+
+    @Test func commentUpdatedEventRemovesCommentWhenNoLongerMatchingQuery() async throws {
+        let client = defaultClient(
+            comments: [.dummy(id: "comment-1", objectId: Self.activityId, objectType: "activity", user: .dummy(id: "user-123"))]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity"),
+                    .equal(.userId, "user-123")
+                ])
+            )
+        )
+        try await commentList.get()
+
+        // Verify initial state has the comment that matches the filter
+        let initialComments = await commentList.state.comments
+        #expect(initialComments.count == 1)
+        #expect(initialComments.first?.id == "comment-1")
+        #expect(initialComments.first?.user.id == "user-123")
+
+        // Send comment updated event where the user changes to someone else
+        // This should cause the comment to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, objectType: "activity", text: "Updated text", user: .dummy(id: "user-other")),
+                fid: "user:test"
+            )
+        )
+
+        // Comment should be removed since it no longer matches the userId filter
+        let commentsAfterUpdate = await commentList.state.comments
+        #expect(commentsAfterUpdate.isEmpty)
+    }
     
     // MARK: -
     

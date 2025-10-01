@@ -58,8 +58,13 @@ extension FollowListState {
                     state.follows.remove(byId: follow.id)
                 }
             case let .feedFollowUpdated(follow, _):
+                let matches = matchesQuery(follow)
                 await self?.access { state in
-                    state.follows.sortedReplace(follow, nesting: nil, sorting: state.followsSorting)
+                    if matches {
+                        state.follows.sortedReplace(follow, nesting: nil, sorting: state.followsSorting)
+                    } else {
+                        state.follows.remove(byId: follow.id)
+                    }
                 }
             default:
                 break

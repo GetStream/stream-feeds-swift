@@ -88,9 +88,13 @@ extension ActivityListState {
                     state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
                 }
             case .activityUpdated(let activityData, _):
-                guard matchesQuery(activityData) else { return }
+                let matches = matchesQuery(activityData)
                 await self?.access { state in
-                    state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                    if matches {
+                        state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                    } else {
+                        state.activities.remove(byId: activityData.id)
+                    }
                 }
             case .activityDeleted(let activityId, _):
                 await self?.access { state in

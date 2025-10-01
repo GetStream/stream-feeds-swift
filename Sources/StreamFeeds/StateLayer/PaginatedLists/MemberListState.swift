@@ -83,15 +83,22 @@ extension MemberListState {
                 }
             case .feedMemberUpdated(let memberData, let eventFeedId):
                 guard eventFeedId == query.feed else { return }
+                let matches = matchesQuery(memberData)
                 await self?.access { state in
-                    state.members.sortedReplace(memberData, nesting: nil, sorting: state.membersSorting)
+                    if matches {
+                        state.members.sortedReplace(memberData, nesting: nil, sorting: state.membersSorting)
+                    } else {
+                        state.members.remove(byId: memberData.id)
+                    }
                 }
             case .feedMemberBatchUpdate(let updates, let eventFeedId):
                 guard eventFeedId == query.feed else { return }
                 let added = updates.added.filter(matchesQuery)
+                let updatedNotMatching = updates.updated.filter { !matchesQuery($0) }.map(\.id)
                 await self?.access { state in
                     added.forEach { state.members.sortedInsert($0, sorting: state.membersSorting) }
                     updates.updated.forEach { state.members.sortedReplace($0, nesting: nil, sorting: state.membersSorting) }
+                    state.members.remove(byIds: updatedNotMatching)
                     state.members.remove(byIds: updates.removedIds)
                 }
             default:

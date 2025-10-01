@@ -123,6 +123,45 @@ struct PollVoteList_Tests {
         let result = await voteList.state.votes.map(\.id)
         #expect(result == ["vote-1"]) // Should not be affected
     }
+
+    @Test func pollVoteChangedEventRemovesVoteWhenNoLongerMatchingQuery() async throws {
+        let client = defaultClient(
+            votes: [.dummy(id: "vote-1", pollId: Self.pollId, user: .dummy(id: "user-123"))]
+        )
+        let voteList = client.pollVoteList(
+            for: PollVotesQuery(
+                pollId: Self.pollId,
+                filter: .equal(.userId, "user-123")
+            )
+        )
+        try await voteList.get()
+
+        // Verify initial state has the vote that matches the filter
+        let initialVotes = await voteList.state.votes
+        #expect(initialVotes.count == 1)
+        #expect(initialVotes.first?.id == "vote-1")
+        #expect(initialVotes.first?.user?.id == "user-123")
+
+        // Send poll vote changed event where the user changes to someone else
+        // This should cause the vote to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            PollVoteChangedFeedEvent.dummy(
+                poll: .dummy(id: Self.pollId),
+                vote: .dummy(
+                    id: "vote-1",
+                    optionId: "option-2",
+                    pollId: Self.pollId,
+                    updatedAt: .fixed(offset: 1),
+                    user: .dummy(id: "user-other")
+                ),
+                fid: "user:test"
+            )
+        )
+
+        // Vote should be removed since it no longer matches the userId filter
+        let votesAfterUpdate = await voteList.state.votes
+        #expect(votesAfterUpdate.isEmpty)
+    }
     
     // MARK: -
     

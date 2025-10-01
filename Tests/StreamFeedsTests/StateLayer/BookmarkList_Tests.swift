@@ -212,6 +212,56 @@ struct BookmarkList_Tests {
         #expect(updatedState.first { $0.id == "user-1-activity-2" }?.activity.text == "Test activity content")
     }
 
+    @Test func bookmarkUpdatedEventRemovesBookmarkWhenNoLongerMatchingQuery() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryBookmarksResponse.dummy(
+                        bookmarks: [
+                            .dummy(
+                                activity: .dummy(id: "activity-1"),
+                                folder: .dummy(id: "folder-1", name: "Test Folder"),
+                                updatedAt: .fixed(offset: 0),
+                                user: .dummy(id: "user-1")
+                            )
+                        ],
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let bookmarkList = client.bookmarkList(
+            for: BookmarksQuery(
+                filter: .less(.updatedAt, Date.fixed(offset: 1))
+            )
+        )
+        try await bookmarkList.get()
+
+        // Verify initial state has the bookmark that matches the filter
+        let initialBookmarks = await bookmarkList.state.bookmarks
+        #expect(initialBookmarks.count == 1)
+        #expect(initialBookmarks.first?.id == "user-1-activity-1")
+        #expect(initialBookmarks.first?.updatedAt == .fixed(offset: 0))
+
+        // Send bookmark updated event where the updatedAt changes to a later time
+        // This should cause the bookmark to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(
+                    activity: .dummy(id: "activity-1", text: "Updated activity content"),
+                    folder: .dummy(id: "folder-1", name: "Test Folder"),
+                    updatedAt: .fixed(offset: 2),
+                    user: .dummy(id: "user-1")
+                ),
+                fid: "user:test"
+            )
+        )
+
+        // Bookmark should be removed since it no longer matches the updatedAt filter
+        let bookmarksAfterUpdate = await bookmarkList.state.bookmarks
+        #expect(bookmarksAfterUpdate.isEmpty)
+    }
+
     // MARK: - Helper Methods
 
     private func defaultClientWithBookmarkResponses(

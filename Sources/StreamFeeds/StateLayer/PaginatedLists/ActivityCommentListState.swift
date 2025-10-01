@@ -128,6 +128,11 @@ extension ActivityCommentListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
         eventSubscription = publisher.subscribe { [weak self, currentUserId, query] event in
             switch event {
+            case .activityDeleted(let activityId, _):
+                guard query.objectId == activityId else { return }
+                await self?.access { state in
+                    state.comments.removeAll()
+                }
             case .commentAdded(let commentData, _, _):
                 guard query.objectId == commentData.objectId, query.objectType == commentData.objectType else { return }
                 await self?.access { state in
@@ -233,4 +238,8 @@ extension ActivityCommentListState {
         pagination = response.pagination
         comments = comments.sortedMerge(response.models, sorting: CommentsSort.areInIncreasingOrder(sortingKey))
     }
+}
+
+protocol StateAccessing {
+    @discardableResult func access<State, T>(_ actions: @MainActor (State) -> T) -> T where State: AnyObject
 }

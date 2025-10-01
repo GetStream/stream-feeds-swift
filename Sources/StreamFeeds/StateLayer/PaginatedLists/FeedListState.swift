@@ -58,8 +58,13 @@ extension FeedListState {
                     state.feeds.remove(byId: feedId.rawValue)
                 }
             case .feedUpdated(let feed, _):
+                let matches = matchesQuery(feed)
                 await self?.access { state in
-                    state.feeds.sortedReplace(feed, nesting: nil, sorting: state.feedsSorting)
+                    if matches {
+                        state.feeds.sortedReplace(feed, nesting: nil, sorting: state.feedsSorting)
+                    } else {
+                        state.feeds.remove(byId: feed.id)
+                    }
                 }
             default:
                 break

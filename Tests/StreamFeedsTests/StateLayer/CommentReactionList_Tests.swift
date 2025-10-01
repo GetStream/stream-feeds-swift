@@ -186,7 +186,7 @@ struct CommentReactionList_Tests {
         let reaction = await reactionList.state.reactions.first
         #expect(reaction?.type == "like")
     }
-    
+
     // MARK: -
     
     private func defaultClient(

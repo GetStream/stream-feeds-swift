@@ -50,13 +50,18 @@ extension PollListState {
         }
         eventSubscription = publisher.subscribe { [weak self, currentUserId] event in
             switch event {
-            case let .pollDeleted(pollId, _):
+            case .pollDeleted(let pollId, _):
                 await self?.access { state in
                     state.polls.remove(byId: pollId)
                 }
-            case let .pollUpdated(poll, _):
+            case .pollUpdated(let poll, _):
+                let matches = matchesQuery(poll)
                 await self?.access { state in
-                    state.polls.sortedReplace(poll, nesting: nil, sorting: state.pollsSorting)
+                    if matches {
+                        state.polls.sortedReplace(poll, nesting: nil, sorting: state.pollsSorting)
+                    } else {
+                        state.polls.remove(byId: poll.id)
+                    }
                 }
             case .pollVoteCasted(let vote, let pollData, _):
                 guard matchesQuery(pollData) else { return }

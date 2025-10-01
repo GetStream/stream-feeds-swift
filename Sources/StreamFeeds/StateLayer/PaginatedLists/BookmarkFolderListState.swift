@@ -42,6 +42,10 @@ import StreamCore
 
 extension BookmarkFolderListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (BookmarkFolderData) -> Bool = { [query] bookmarkFolder in
+            guard let filter = query.filter else { return true }
+            return filter.matches(bookmarkFolder)
+        }
         eventSubscription = publisher.subscribe { [weak self] event in
             switch event {
             case .bookmarkFolderDeleted(let folder):
@@ -49,8 +53,13 @@ extension BookmarkFolderListState {
                     state.folders.remove(byId: folder.id)
                 }
             case .bookmarkFolderUpdated(let folder):
+                let matches = matchesQuery(folder)
                 await self?.access { state in
-                    state.folders.sortedReplace(folder, nesting: nil, sorting: state.bookmarksSorting)
+                    if matches {
+                        state.folders.sortedReplace(folder, nesting: nil, sorting: state.bookmarksSorting)
+                    } else {
+                        state.folders.remove(byId: folder.id)
+                    }
                 }
             default:
                 break
