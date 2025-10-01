@@ -46,7 +46,7 @@ import StreamCore
 ///
 /// This class is designed to run on the main actor and all state updates
 /// are performed on the main thread to ensure UI consistency.
-@MainActor public class ModerationConfigListState: ObservableObject {
+@MainActor public final class ModerationConfigListState: ObservableObject, StateAccessing {
     init(query: ModerationConfigsQuery) {
         self.query = query
     }
@@ -89,10 +89,6 @@ import StreamCore
 // MARK: - Updating the State
 
 extension ModerationConfigListState {
-    func access<T>(_ actions: @MainActor (ModerationConfigListState) -> T) -> T {
-        actions(self)
-    }
-    
     func didPaginate(
         with response: PaginationResult<ModerationConfigData>,
         for queryConfig: QueryConfiguration<ModerationConfigsFilter, ModerationConfigsSortField>

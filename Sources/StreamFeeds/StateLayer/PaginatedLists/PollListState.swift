@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import StreamCore
 
-@MainActor public class PollListState: ObservableObject {
+@MainActor public final class PollListState: ObservableObject, StateAccessing {
     private let currentUserId: String
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -97,10 +97,6 @@ extension PollListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (PollListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

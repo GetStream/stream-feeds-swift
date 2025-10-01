@@ -5,7 +5,7 @@
 import Combine
 import Foundation
 
-@MainActor public class CommentListState: ObservableObject {
+@MainActor public final class CommentListState: ObservableObject, StateAccessing {
     private let currentUserId: String
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -115,10 +115,6 @@ extension CommentListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (CommentListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

@@ -11,7 +11,7 @@ import StreamCore
 /// `MemberListState` maintains the current list of members, pagination information,
 /// and provides real-time updates when members are added, removed, or modified.
 /// It automatically handles WebSocket events to keep the member list synchronized.
-@MainActor public class MemberListState: ObservableObject {
+@MainActor public final class MemberListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
 
     init(query: MembersQuery, eventPublisher: StateLayerEventPublisher) {
@@ -105,10 +105,6 @@ extension MemberListState {
                 break
             }
         }
-    }
-
-    @discardableResult func access<T>(_ actions: @MainActor (MemberListState) -> T) -> T {
-        actions(self)
     }
 
     func applyUpdates(_ updates: ModelUpdates<FeedMemberData>) {

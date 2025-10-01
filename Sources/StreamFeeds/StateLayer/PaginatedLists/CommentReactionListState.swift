@@ -31,7 +31,7 @@ import StreamCore
 /// ## Thread Safety
 ///
 /// This class is marked with `@MainActor` and should only be accessed from the main thread.
-@MainActor public class CommentReactionListState: ObservableObject {
+@MainActor public final class CommentReactionListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
     init(query: CommentReactionsQuery, eventPublisher: StateLayerEventPublisher) {
@@ -143,10 +143,6 @@ extension CommentReactionListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (CommentReactionListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

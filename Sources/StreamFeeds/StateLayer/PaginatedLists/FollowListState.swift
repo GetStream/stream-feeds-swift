@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import StreamCore
 
-@MainActor public class FollowListState: ObservableObject {
+@MainActor public final class FollowListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
     init(query: FollowsQuery, eventPublisher: StateLayerEventPublisher) {
@@ -70,10 +70,6 @@ extension FollowListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (FollowListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

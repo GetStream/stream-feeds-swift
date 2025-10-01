@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import StreamCore
 
-@MainActor public class FeedListState: ObservableObject {
+@MainActor public final class FeedListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
 
     init(query: FeedsQuery, eventPublisher: StateLayerEventPublisher) {
@@ -70,10 +70,6 @@ extension FeedListState {
                 break
             }
         }
-    }
-
-    @discardableResult func access<T>(_ actions: @MainActor (FeedListState) -> T) -> T {
-        actions(self)
     }
 
     func didPaginate(

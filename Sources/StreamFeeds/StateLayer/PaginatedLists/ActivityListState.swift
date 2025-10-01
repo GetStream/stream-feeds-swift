@@ -19,7 +19,7 @@ import StreamCore
 ///     // Update UI with new activities
 /// }
 /// ```
-@MainActor public class ActivityListState: ObservableObject {
+@MainActor public final class ActivityListState: ObservableObject, StateAccessing {
     private let currentUserId: String
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -223,10 +223,6 @@ extension ActivityListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (ActivityListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

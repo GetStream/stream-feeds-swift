@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import StreamCore
 
-@MainActor public class BookmarkListState: ObservableObject {
+@MainActor public final class BookmarkListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
 
     init(query: BookmarksQuery, eventPublisher: StateLayerEventPublisher) {
@@ -82,10 +82,6 @@ extension BookmarkListState {
         var bookmark = bookmarks[index]
         changes(&bookmark)
         bookmarks[index] = bookmark
-    }
-
-    func access<T>(_ actions: @MainActor (BookmarkListState) -> T) -> T {
-        actions(self)
     }
 
     func didPaginate(
