@@ -92,7 +92,8 @@ struct CommentReactionList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionUpdatedEvent.dummy(
                 comment: .dummy(id: Self.commentId, objectId: "activity-123"),
-                fid: "user:test", reaction: .dummy(commentId: Self.commentId, custom: ["key": .string("UPDATED")], type: "like", user: .dummy(id: "current-user-id"))
+                fid: "user:test",
+                reaction: .dummy(commentId: Self.commentId, custom: ["key": .string("UPDATED")], type: "like", user: .dummy(id: "current-user-id"))
             )
         )
         
@@ -113,7 +114,8 @@ struct CommentReactionList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionDeletedEvent.dummy(
                 comment: .dummy(id: Self.commentId, objectId: "activity-123"),
-                fid: "user:test", reaction: .dummy(commentId: Self.commentId, type: "like", user: .dummy(id: "current-user-id"))
+                fid: "user:test",
+                reaction: .dummy(commentId: Self.commentId, type: "like", user: .dummy(id: "current-user-id"))
             )
         )
         
@@ -132,7 +134,8 @@ struct CommentReactionList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionDeletedEvent.dummy(
                 comment: .dummy(id: "comment-456", objectId: "activity-123"),
-                fid: "user:test", reaction: .dummy(commentId: "comment-456", type: "like", user: .dummy(id: "current-user-id"))
+                fid: "user:test",
+                reaction: .dummy(commentId: "comment-456", type: "like", user: .dummy(id: "current-user-id"))
             )
         )
         
@@ -151,7 +154,8 @@ struct CommentReactionList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionAddedEvent.dummy(
                 comment: .dummy(id: "comment-456", objectId: "activity-123"),
-                fid: "user:test", reaction: .dummy(commentId: "comment-456", type: "heart", user: .dummy(id: "other-user"))
+                fid: "user:test",
+                reaction: .dummy(commentId: "comment-456", type: "heart", user: .dummy(id: "other-user"))
             )
         )
         
@@ -172,7 +176,8 @@ struct CommentReactionList_Tests {
         await client.eventsMiddleware.sendEvent(
             CommentReactionUpdatedEvent.dummy(
                 comment: .dummy(id: "comment-456", objectId: "activity-123"),
-                fid: "user:test", reaction: .dummy(commentId: "comment-456", type: "heart", user: .dummy(id: "current-user-id"))
+                fid: "user:test",
+                reaction: .dummy(commentId: "comment-456", type: "heart", user: .dummy(id: "current-user-id"))
             )
         )
         
