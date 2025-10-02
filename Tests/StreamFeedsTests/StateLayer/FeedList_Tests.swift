@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
 import StreamCore
 @testable import StreamFeeds
 import Testing
@@ -182,6 +183,55 @@ struct FeedList_Tests {
         #expect(feedsAfterUpdate.isEmpty)
     }
 
+    @Test @MainActor func feedAddedEventWithMembersFilterAndZeroRefetchDelayTriggersImmediateRefetch() async throws {
+        let client = defaultClientWithFeedsResponses([
+            // Additional response for the refetch
+            QueryFeedsResponse.dummy(
+                feeds: [
+                    .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                    .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1)),
+                    .dummy(id: "feed-3", name: "New Feed", createdAt: Date.fixed(offset: 2))
+                ],
+                next: nil
+            )
+        ])
+        
+        // Create FeedList with refetchDelay = 0 and members filter (which cannot be filtered locally)
+        let feedList = FeedList(
+            query: FeedsQuery(
+                filter: .in(.members, ["user:member1", "user:member2"])
+            ),
+            client: client,
+            refetchDelay: 0
+        )
+        
+        // Initial load
+        try await feedList.get()
+        let initialState = feedList.state.feeds
+        #expect(initialState.count == 2)
+        #expect(initialState.map(\.id) == ["feed-1", "feed-2"])
+        
+        let disposableBag = DisposableBag()
+        // Send feed added event - this should trigger immediate refetch
+        await client.eventsMiddleware.sendEvent(
+            FeedCreatedEvent.dummy(
+                feed: .dummy(id: "feed-3", name: "New Feed from Web Socket Event Which Should Not Be Added", createdAt: Date.fixed(offset: 2)),
+                fid: "user:test"
+            )
+        )
+        await withCheckedContinuation { continuation in
+            feedList.state.$feeds
+                .dropFirst()
+                .sink { feeds in
+                    let ids = feeds.map(\.name)
+                    #expect(ids == ["First Feed", "Second Feed", "New Feed"])
+                    continuation.resume()
+                }
+                .store(in: disposableBag)
+        }
+        disposableBag.removeAll()
+    }
+
     // MARK: - Helper Methods
 
     private func defaultClientWithFeedsResponses(
@@ -193,7 +243,7 @@ struct FeedList_Tests {
                     QueryFeedsResponse.dummy(
                         feeds: [
                             .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
-                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed())
+                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1))
                         ],
                         next: "next-cursor"
                     )

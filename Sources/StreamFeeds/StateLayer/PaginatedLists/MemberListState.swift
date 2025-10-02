@@ -66,7 +66,7 @@ extension MemberListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
         let matchesQuery: @Sendable (FeedMemberData) -> Bool = { [query] member in
             guard let filter = query.filter else { return true }
-            return filter.matches(member)
+            return filter.matches(member.toLocalFilterModel(feed: query.feed))
         }
         eventSubscription = publisher.subscribe { [weak self, query] event in
             switch event {

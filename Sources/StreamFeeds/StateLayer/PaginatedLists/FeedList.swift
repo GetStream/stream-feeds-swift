@@ -2,18 +2,26 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
 import Foundation
 import StreamCore
 
 public final class FeedList: Sendable {
-    @MainActor private let stateBuilder: StateBuilder<FeedListState>
     private let feedsRepository: FeedsRepository
+    private let disposableBag = DisposableBag()
+    private let refetchSubject = AllocatedUnfairLock(PassthroughSubject<Void, Never>())
+    private let refetchDelay: Int
+    @MainActor private let stateBuilder: StateBuilder<FeedListState>
 
-    init(query: FeedsQuery, client: FeedsClient) {
+    init(query: FeedsQuery, client: FeedsClient, refetchDelay: Int = 5) {
         feedsRepository = client.feedsRepository
         self.query = query
+        self.refetchDelay = refetchDelay
         let eventPublisher = client.stateLayerEventPublisher
-        stateBuilder = StateBuilder { FeedListState(query: query, eventPublisher: eventPublisher) }
+        stateBuilder = StateBuilder { [refetchSubject] in
+            FeedListState(query: query, eventPublisher: eventPublisher, refetchSubject: refetchSubject)
+        }
+        subscribeToRefetch()
     }
 
     public let query: FeedsQuery
@@ -54,5 +62,39 @@ public final class FeedList: Sendable {
             for: .init(filter: query.filter, sort: query.sort)
         )
         return result.models
+    }
+    
+    /// Refetches up to 30 feeds when feed added event is received and local filtering is unavailable.
+    ///
+    /// Example is query with member id filter where there can be many members, but fetching all of these
+    /// is expensive.
+    private func subscribeToRefetch() {
+        refetchSubject.withLock { [disposableBag, refetchDelay] subject in
+            subject
+                .debounce(for: .seconds(refetchDelay), scheduler: DispatchQueue.global(qos: .utility))
+                .asyncSink { [weak self] _ in
+                    guard let self else { return }
+                    do {
+                        let refetchQuery: FeedsQuery? = await self.state.access { state in
+                            let limit = min(state.feeds.count, 30)
+                            guard limit > 0 else { return nil }
+                            return FeedsQuery(
+                                filter: query.filter,
+                                sort: query.sort,
+                                limit: limit,
+                                next: nil,
+                                previous: nil,
+                                watch: query.watch
+                            )
+                        }
+                        guard let refetchQuery else { return }
+                        let result = try await self.feedsRepository.queryFeeds(with: refetchQuery)
+                        await self.state.didRefetch(with: result, refetchQuery: refetchQuery)
+                    } catch {
+                        log.error("Failed to refetch", subsystems: .other, error: error)
+                    }
+                }
+                .store(in: disposableBag)
+        }
     }
 }

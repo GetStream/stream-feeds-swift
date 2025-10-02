@@ -148,7 +148,7 @@ extension FeedsFilterField {
     /// Filter by specific members in the feed.
     ///
     /// **Supported operators:** `.in`
-    public static let members = Self("members", localValue: \.localFilterData?.memberIds)
+    public static let members = Self("members", localValue: { _ in [String]() /* local data unavailable */ })
     
     /// Filter by the name of the feed.
     ///
@@ -168,7 +168,7 @@ extension FeedsFilterField {
     /// Filter by feeds that this feed is following.
     ///
     /// **Supported operators:** `.in`
-    public static let followingFeeds = Self("following_feeds", localValue: \.localFilterData?.followingFeedIds)
+    public static let followingFeeds = Self("following_feeds", localValue: { _ in [String]() /* local data unavailable */ })
     
     /// Filter by filter tags associated with the feed.
     ///
@@ -303,5 +303,11 @@ extension FeedsQuery {
             sort: sort?.map { $0.toRequest() },
             watch: watch
         )
+    }
+    
+    var canFilterLocally: Bool {
+        guard let filter else { return true }
+        // No local data for these keys
+        return !filter.contains(.members) && !filter.contains(.followingFeeds)
     }
 }

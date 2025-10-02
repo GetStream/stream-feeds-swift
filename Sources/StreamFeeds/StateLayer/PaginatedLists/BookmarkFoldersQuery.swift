@@ -98,7 +98,7 @@ extension BookmarkFoldersFilterField {
     /// Filter by the user ID who owns the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let userId = Self("user_id", localValue: \.localFilterData?.userId)
+    public static let userId = Self("user_id", localValue: { _ -> String? in nil /* local data unavailable (FEEDS-801) */ })
 }
 
 /// A filter that can be applied to bookmark folders queries.
