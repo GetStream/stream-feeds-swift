@@ -857,8 +857,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
-				branch = "filter-contains-field";
-				kind = branch;
+				kind = exactVersion;
+				version = 0.3.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
