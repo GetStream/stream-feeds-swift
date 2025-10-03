@@ -97,12 +97,9 @@ extension FeedListState {
         feeds = feeds.sortedMerge(response.models, sorting: feedsSorting)
     }
     
-    func didRefetch(
-        with response: PaginationResult<FeedData>,
-        refetchQuery: FeedsQuery
-    ) {
-        guard let limit = refetchQuery.limit, limit > 0 else { return }
-        let existing = feeds.dropFirst(limit)
-        feeds = Array(existing).sortedMerge(response.models, sorting: feedsSorting)
+    func didRefetch(_ models: [FeedData]) {
+        guard !models.isEmpty else { return }
+        let existing = feeds.dropFirst(models.count)
+        feeds = Array(existing).sortedMerge(models, sorting: feedsSorting)
     }
 }
