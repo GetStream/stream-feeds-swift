@@ -273,6 +273,15 @@ extension Array where Element: Identifiable {
         case binarySearch(Element)
     }
     
+    func firstSortedIndex(of matchingElement: Element, sorting: (Element, Element) -> Bool) -> Index? {
+        // Here we are looking for existing element which might have a different state
+        // therefore if binary search fails, we still need to do linear search.
+        if let index = firstBinarySearchIndex(for: matchingElement, sorting: sorting) {
+            return index
+        }
+        return firstIndex(where: { $0.id == matchingElement.id })
+    }
+    
     @discardableResult private mutating func _sortedUpdate(
         searchStrategy: ElementSearch,
         nesting nestingKeyPath: WritableKeyPath<Element, [Element]?>?,
@@ -287,12 +296,7 @@ extension Array where Element: Identifiable {
             case .linear(let matchingId):
                 return updatedElements.firstIndex(where: { $0.id == matchingId })
             case .binarySearch(let matchingElement):
-                // Here we are looking for existing element which might have a different state
-                // therefore if binary search fails, we still need to do linear search.
-                if let index = firstSortedIndex(for: matchingElement, sorting: sorting) {
-                    return index
-                }
-                return updatedElements.firstIndex(where: { $0.id == matchingElement.id })
+                return updatedElements.firstSortedIndex(of: matchingElement, sorting: sorting)
             }
         }()
         if let matchingIndex {
@@ -334,7 +338,7 @@ extension Array where Element: Identifiable {
         _sortedUpdate(searchStrategy: .linear(id), nesting: nestingKeyPath, sorting: { _, _ in true }, changes: changes)
     }
     
-    private func firstSortedIndex(for element: Element, sorting: (Element, Element) -> Bool) -> Index? {
+    private func firstBinarySearchIndex(for element: Element, sorting: (Element, Element) -> Bool) -> Index? {
         var left = startIndex
         var right = endIndex
         while left < right {

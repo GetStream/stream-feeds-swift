@@ -67,9 +67,10 @@ extension FeedListState {
                     state.feeds.remove(byId: feedId.rawValue)
                 }
             case .feedUpdated(let feed, _):
+                guard let self else { return }
                 if canFilterLocally {
                     let matches = matchesQuery(feed)
-                    await self?.access { state in
+                    await self.access { state in
                         if matches {
                             state.feeds.sortedReplace(feed, nesting: nil, sorting: state.feedsSorting)
                         } else {
@@ -77,10 +78,19 @@ extension FeedListState {
                         }
                     }
                 } else {
-                    // Simplified for reducing API calls: update could also mean that the feed does not match with the query
-                    await self?.access { state in
-                        state.feeds.sortedReplace(feed, nesting: nil, sorting: state.feedsSorting)
+                    // Update can mean that the feed is not part of the query anymore
+                    let needsRefetch = await self.access { state in
+                        // If we have this feed loaded, update its state, but since we do not know if it matches to the query, we should refetch all
+                        if let index = state.feeds.firstSortedIndex(of: feed, sorting: state.feedsSorting.areInIncreasingOrder()) {
+                            state.feeds[index] = feed
+                            return true
+                        } else {
+                            // No need to refetch because it was not returned by the API before
+                            return false
+                        }
                     }
+                    guard needsRefetch else { return }
+                    refetchSubject.withLock { $0.send() }
                 }
             default:
                 break
