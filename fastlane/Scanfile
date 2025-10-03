@@ -1,7 +1,2 @@
-code_coverage(true)
-
-configuration("Debug")
-
+configuration('Debug')
 result_bundle(true)
-
-skip_slack(true)
