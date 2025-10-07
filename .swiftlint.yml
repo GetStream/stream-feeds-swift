@@ -4,13 +4,9 @@ excluded:
   - .ruby-lsp
   - .swiftpm
   - derived_data
-  - fastlane
-  - Package.swift
-  - Scripts
   - Sources/StreamFeeds/Generated
   - Sources/StreamFeeds/generated
   - spm_cache
-  - vendor
   - vendor/bundle
 
 only_rules:
