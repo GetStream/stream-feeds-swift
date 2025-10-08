@@ -4,8 +4,6 @@ pre-commit:
     - run: swiftlint lint --config .swiftlint.yml --fix --progress --reporter json {staged_files}
       glob: "*.{swift}"
       stage_fixed: true
-      exclude:
-        - "**/generated/**"
       skip:
         - merge
         - rebase
@@ -21,7 +19,5 @@ pre-push:
   jobs:
     - run: swiftlint lint --config .swiftlint.yml --strict --progress --reporter json {push_files}
       glob: "*.{swift}"
-      exclude:
-        - "**/generated/**"
       skip:
         - merge-commit
