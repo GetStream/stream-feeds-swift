@@ -5,7 +5,7 @@
 import Combine
 import Foundation
 
-@MainActor public class CommentListState: ObservableObject {
+@MainActor public final class CommentListState: ObservableObject, StateAccessing {
     private let currentUserId: String
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -62,13 +62,17 @@ extension CommentListState {
                 guard matchesQuery(commentData) else { return }
                 await self?.access { $0.comments.remove(byId: commentData.id) }
             case .commentUpdated(let commentData, _, _):
-                guard matchesQuery(commentData) else { return }
+                let matches = matchesQuery(commentData)
                 await self?.access { state in
-                    state.comments.sortedReplace(
-                        commentData,
-                        nesting: nil,
-                        sorting: CommentsSort.areInIncreasingOrder(state.sortingKey)
-                    )
+                    if matches {
+                        state.comments.sortedReplace(
+                            commentData,
+                            nesting: nil,
+                            sorting: CommentsSort.areInIncreasingOrder(state.sortingKey)
+                        )
+                    } else {
+                        state.comments.remove(byId: commentData.id)
+                    }
                 }
             case .commentReactionAdded(let feedsReactionData, let commentData, _):
                 guard matchesQuery(commentData) else { return }
@@ -111,10 +115,6 @@ extension CommentListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (CommentListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

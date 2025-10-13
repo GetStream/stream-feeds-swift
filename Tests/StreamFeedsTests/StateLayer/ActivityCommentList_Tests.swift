@@ -330,6 +330,46 @@ struct ActivityCommentList_Tests {
         #expect(result == ["comment-1"]) // Should not include comment-2
     }
     
+    @Test func activityDeletedEventClearsAllComments() async throws {
+        let client = defaultClient(
+            comments: [
+                .dummy(id: "comment-1", objectId: Self.activityId),
+                .dummy(id: "comment-2", objectId: Self.activityId)
+            ]
+        )
+        let commentList = client.activityCommentList(
+            for: .init(objectId: Self.activityId, objectType: "activity")
+        )
+        try await commentList.get()
+        
+        // Verify initial state has comments
+        let initialComments = await commentList.state.comments
+        #expect(initialComments.count == 2)
+        #expect(initialComments.map(\.id) == ["comment-1", "comment-2"])
+        
+        // Send activity deleted event for different activity - should not affect comments
+        await client.eventsMiddleware.sendEvent(
+            ActivityDeletedEvent.dummy(
+                activityId: "different-activity",
+                fid: "user:test"
+            )
+        )
+        
+        let commentsAfterUnrelatedEvent = await commentList.state.comments
+        #expect(commentsAfterUnrelatedEvent.count == 2) // Should remain unchanged
+        
+        // Send activity deleted event for matching activity - should clear all comments
+        await client.eventsMiddleware.sendEvent(
+            ActivityDeletedEvent.dummy(
+                activityId: Self.activityId,
+                fid: "user:test"
+            )
+        )
+        
+        let commentsAfterDeletion = await commentList.state.comments
+        #expect(commentsAfterDeletion.isEmpty) // All comments should be removed
+    }
+    
     // MARK: -
     
     private func defaultClient(

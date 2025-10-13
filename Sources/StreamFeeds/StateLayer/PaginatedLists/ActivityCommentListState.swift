@@ -47,7 +47,7 @@ import Foundation
 ///
 /// This class is designed to run on the main actor and all state updates
 /// are performed on the main thread to ensure UI consistency.
-@MainActor public class ActivityCommentListState: ObservableObject {
+@MainActor public final class ActivityCommentListState: ObservableObject, StateAccessing {
     private let currentUserId: String
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -128,6 +128,11 @@ extension ActivityCommentListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
         eventSubscription = publisher.subscribe { [weak self, currentUserId, query] event in
             switch event {
+            case .activityDeleted(let activityId, _):
+                guard query.objectId == activityId else { return }
+                await self?.access { state in
+                    state.comments.removeAll()
+                }
             case .commentAdded(let commentData, _, _):
                 guard query.objectId == commentData.objectId, query.objectType == commentData.objectType else { return }
                 await self?.access { state in
@@ -223,10 +228,6 @@ extension ActivityCommentListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (ActivityCommentListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(with response: PaginationResult<ThreadedCommentData>) {

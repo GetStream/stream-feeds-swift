@@ -10,7 +10,7 @@ import StreamCore
 ///
 /// This class manages the state of a feed including activities, followers, members, and pagination information.
 /// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
-@MainActor public class FeedState: ObservableObject {
+@MainActor public final class FeedState: ObservableObject, StateAccessing {
     private var cancellables = Set<AnyCancellable>()
     private let currentUserId: String
     let memberListState: MemberListState
@@ -374,10 +374,6 @@ extension FeedState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (FeedState) -> T) -> T {
-        actions(self)
     }
     
     private func updateActivity(_ activityData: ActivityData) {

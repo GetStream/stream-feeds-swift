@@ -31,7 +31,7 @@ import StreamCore
 /// ## Thread Safety
 ///
 /// This class is marked with `@MainActor` and should only be accessed from the main thread.
-@MainActor public class CommentReactionListState: ObservableObject {
+@MainActor public final class CommentReactionListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
     init(query: CommentReactionsQuery, eventPublisher: StateLayerEventPublisher) {
@@ -107,31 +107,42 @@ import StreamCore
 
 extension CommentReactionListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (FeedsReactionData) -> Bool = { [query] reaction in
+            guard let filter = query.filter else { return true }
+            return filter.matches(reaction)
+        }
         eventSubscription = publisher.subscribe { [weak self, query] event in
             switch event {
-            case let .commentReactionAdded(reaction, comment, _):
+            case .commentDeleted(let comment, _, _):
                 guard comment.id == query.commentId else { return }
+                await self?.access { state in
+                    state.reactions.removeAll()
+                }
+            case .commentReactionAdded(let reaction, let comment, _):
+                guard comment.id == query.commentId else { return }
+                guard matchesQuery(reaction) else { return }
                 await self?.access { state in
                     state.reactions.sortedInsert(reaction, sorting: state.reactionsSorting)
                 }
-            case let .commentReactionDeleted(reaction, comment, _):
+            case .commentReactionDeleted(let reaction, let comment, _):
                 guard comment.id == query.commentId else { return }
                 await self?.access { state in
                     state.reactions.remove(byId: reaction.id)
                 }
-            case let .commentReactionUpdated(reaction, comment, _):
+            case .commentReactionUpdated(let reaction, let comment, _):
                 guard comment.id == query.commentId else { return }
+                let matches = matchesQuery(reaction)
                 await self?.access { state in
-                    state.reactions.sortedReplace(reaction, nesting: nil, sorting: state.reactionsSorting)
+                    if matches {
+                        state.reactions.sortedReplace(reaction, nesting: nil, sorting: state.reactionsSorting)
+                    } else {
+                        state.reactions.remove(byId: reaction.id)
+                    }
                 }
             default:
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (CommentReactionListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

@@ -11,7 +11,7 @@ import StreamCore
 /// `MemberListState` maintains the current list of members, pagination information,
 /// and provides real-time updates when members are added, removed, or modified.
 /// It automatically handles WebSocket events to keep the member list synchronized.
-@MainActor public class MemberListState: ObservableObject {
+@MainActor public final class MemberListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
 
     init(query: MembersQuery, eventPublisher: StateLayerEventPublisher) {
@@ -66,7 +66,7 @@ extension MemberListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
         let matchesQuery: @Sendable (FeedMemberData) -> Bool = { [query] member in
             guard let filter = query.filter else { return true }
-            return filter.matches(member)
+            return filter.matches(member.toLocalFilterModel(feed: query.feed))
         }
         eventSubscription = publisher.subscribe { [weak self, query] event in
             switch event {
@@ -83,25 +83,28 @@ extension MemberListState {
                 }
             case .feedMemberUpdated(let memberData, let eventFeedId):
                 guard eventFeedId == query.feed else { return }
+                let matches = matchesQuery(memberData)
                 await self?.access { state in
-                    state.members.sortedReplace(memberData, nesting: nil, sorting: state.membersSorting)
+                    if matches {
+                        state.members.sortedReplace(memberData, nesting: nil, sorting: state.membersSorting)
+                    } else {
+                        state.members.remove(byId: memberData.id)
+                    }
                 }
             case .feedMemberBatchUpdate(let updates, let eventFeedId):
                 guard eventFeedId == query.feed else { return }
                 let added = updates.added.filter(matchesQuery)
+                let updatedNotMatching = updates.updated.filter { !matchesQuery($0) }.map(\.id)
                 await self?.access { state in
                     added.forEach { state.members.sortedInsert($0, sorting: state.membersSorting) }
                     updates.updated.forEach { state.members.sortedReplace($0, nesting: nil, sorting: state.membersSorting) }
+                    state.members.remove(byIds: updatedNotMatching)
                     state.members.remove(byIds: updates.removedIds)
                 }
             default:
                 break
             }
         }
-    }
-
-    @discardableResult func access<T>(_ actions: @MainActor (MemberListState) -> T) -> T {
-        actions(self)
     }
 
     func applyUpdates(_ updates: ModelUpdates<FeedMemberData>) {

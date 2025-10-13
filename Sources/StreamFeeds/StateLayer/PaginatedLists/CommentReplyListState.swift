@@ -46,7 +46,7 @@ import Foundation
 ///
 /// This class is designed to run on the main actor and all state updates
 /// are performed on the main thread to ensure UI consistency.
-@MainActor public class CommentReplyListState: ObservableObject {
+@MainActor public final class CommentReplyListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     private let currentUserId: String
     
@@ -214,10 +214,6 @@ extension CommentReplyListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (CommentReplyListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(with response: PaginationResult<ThreadedCommentData>) {
