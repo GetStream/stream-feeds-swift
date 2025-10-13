@@ -6,7 +6,7 @@ require 'json'
 require 'net/http'
 import 'Sonarfile'
 
-xcode_version = ENV['XCODE_VERSION'] || '26.0'
+xcode_version = ENV['XCODE_VERSION'] || '26.0.1'
 xcode_project = 'StreamFeeds.xcodeproj'
 sdk_names = ['StreamFeeds']
 github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-feeds-swift'
@@ -195,11 +195,9 @@ desc 'Run source code formatting/linting'
 lane :run_swift_format do |options|
   Dir.chdir('..') do
     strict = options[:strict] ? '--lint' : nil
-    sources_matrix[:swiftformat].each do |path|
-      sh("swiftformat #{strict} --config .swiftformat #{path}")
-      sh("swiftlint lint --config .swiftlint.yml --fix --progress --reporter json #{path}") unless strict
-      sh("swiftlint lint --config .swiftlint.yml --strict --progress --reporter json #{path}")
-    end
+    sh("swiftformat #{strict} --config .swiftformat .")
+    sh("swiftlint lint --config .swiftlint.yml --fix --progress --reporter json") unless strict
+    sh("swiftlint lint --config .swiftlint.yml --strict --progress --reporter json")
   end
 end
 
@@ -213,8 +211,7 @@ lane :sources_matrix do
     sample_apps: ['Sources', 'DemoApp', xcode_project],
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
-    public_interface: ['Sources'],
-    swiftformat: ['Sources', 'DemoApp', 'Tests', 'Package.swift']
+    public_interface: ['Sources']
   }
 end
 
@@ -286,7 +283,7 @@ lane :update_img_shields_sdk_sizes do |options|
   )
 end
 
-def frameworks_sizes
+private_lane :frameworks_sizes do
   root_dir = 'Build/SDKSize'
   archive_dir = "#{root_dir}/DemoApp.xcarchive"
 
@@ -298,7 +295,9 @@ def frameworks_sizes
     scheme: 'DemoApp',
     archive_path: archive_dir,
     export_method: 'ad-hoc',
-    export_options: 'fastlane/sdk_size_export_options.plist'
+    export_options: 'fastlane/sdk_size_export_options.plist',
+    derived_data_path: derived_data_path,
+    cloned_source_packages_path: source_packages_path
   )
 
   frameworks_path = "../#{archive_dir}/Products/Library/Frameworks/DemoApp.app/Frameworks"
@@ -308,4 +307,21 @@ def frameworks_sizes
   {
     StreamFeeds: stream_feeds_size_kb.round(0)
   }
+end
+
+lane :size_analyze do
+  next unless is_check_required(sources: sources_matrix[:size], force_check: @force_check)
+
+  gym(
+    scheme: 'DemoApp',
+    configuration: 'Release',
+    skip_archive: true,
+    skip_package_ipa: true,
+    skip_package_pkg: true,
+    skip_codesigning: true,
+    derived_data_path: derived_data_path,
+    cloned_source_packages_path: source_packages_path
+  )
+
+  show_detailed_sdk_size(sdk_names: sdk_names, threshold: 42)
 end

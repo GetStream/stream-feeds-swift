@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import StreamCore
 
-@MainActor public class FollowListState: ObservableObject {
+@MainActor public final class FollowListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
     init(query: FollowsQuery, eventPublisher: StateLayerEventPublisher) {
@@ -58,17 +58,18 @@ extension FollowListState {
                     state.follows.remove(byId: follow.id)
                 }
             case let .feedFollowUpdated(follow, _):
+                let matches = matchesQuery(follow)
                 await self?.access { state in
-                    state.follows.sortedReplace(follow, nesting: nil, sorting: state.followsSorting)
+                    if matches {
+                        state.follows.sortedReplace(follow, nesting: nil, sorting: state.followsSorting)
+                    } else {
+                        state.follows.remove(byId: follow.id)
+                    }
                 }
             default:
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (FollowListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

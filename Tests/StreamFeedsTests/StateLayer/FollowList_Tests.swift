@@ -123,6 +123,44 @@ struct FollowList_Tests {
         let result = await followList.state.follows.map(\.id)
         #expect(result == []) // Follow should be removed
     }
+
+    @Test func feedFollowUpdatedEventRemovesFollowWhenNoLongerMatchingQuery() async throws {
+        let client = defaultClient(
+            follows: [.dummy(
+                sourceFeed: .dummy(feed: "user:current-user-id"),
+                status: .accepted,
+                targetFeed: .dummy(feed: "user:user-1")
+            )]
+        )
+        let followList = client.followList(
+            for: FollowsQuery(filter: .equal(.status, FollowStatus.accepted.rawValue))
+        )
+        try await followList.get()
+
+        // Verify initial state has the follow that matches the filter
+        let initialFollows = await followList.state.follows
+        #expect(initialFollows.count == 1)
+        #expect(initialFollows.first?.id == "user:current-user-id-user:user-1")
+        #expect(initialFollows.first?.status == .accepted)
+
+        // Send follow updated event where the status changes to something that doesn't match the filter
+        // This should cause the follow to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            FollowUpdatedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:current-user-id"),
+                    status: .rejected,
+                    targetFeed: .dummy(feed: "user:user-1"),
+                    updatedAt: .fixed(offset: 1)
+                ),
+                fid: "user:test"
+            )
+        )
+
+        // Follow should be removed since it no longer matches the status filter
+        let followsAfterUpdate = await followList.state.follows
+        #expect(followsAfterUpdate.isEmpty)
+    }
     
     // MARK: -
     

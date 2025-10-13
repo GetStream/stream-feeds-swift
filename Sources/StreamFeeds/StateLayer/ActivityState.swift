@@ -10,7 +10,7 @@ import StreamCore
 ///
 /// This class manages the state of a single activity including its comments, poll data, and real-time updates.
 /// It automatically updates when WebSocket events are received and provides change handlers for state modifications.
-@MainActor public class ActivityState: ObservableObject {
+@MainActor public final class ActivityState: ObservableObject, StateAccessing {
     private var cancellables = Set<AnyCancellable>()
     private let commentListState: ActivityCommentListState
     let currentUserId: String
@@ -147,9 +147,5 @@ extension ActivityState {
     func setActivity(_ activity: ActivityData?) {
         self.activity = activity
         poll = activity?.poll
-    }
-    
-    private func access<T>(_ actions: @MainActor (ActivityState) -> T) -> T {
-        actions(self)
     }
 }

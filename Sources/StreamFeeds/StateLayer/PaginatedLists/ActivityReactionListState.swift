@@ -33,7 +33,7 @@ import StreamCore
 /// ## Thread Safety
 ///
 /// This class is marked with `@MainActor` and should only be accessed from the main thread.
-@MainActor public class ActivityReactionListState: ObservableObject {
+@MainActor public final class ActivityReactionListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
     init(query: ActivityReactionsQuery, eventPublisher: StateLayerEventPublisher) {
@@ -116,8 +116,13 @@ extension ActivityReactionListState {
                 }
             case .activityReactionUpdated(let reactionData, let activityData, _):
                 guard activityData.id == query.activityId else { return }
+                let matches = matchesQuery(reactionData)
                 await self?.access { state in
-                    state.reactions.sortedReplace(reactionData, nesting: nil, sorting: state.reactionsSorting)
+                    if matches {
+                        state.reactions.sortedReplace(reactionData, nesting: nil, sorting: state.reactionsSorting)
+                    } else {
+                        state.reactions.remove(byId: reactionData.id)
+                    }
                 }
             case .userUpdated(let userData):
                 await self?.access { state in
@@ -130,10 +135,6 @@ extension ActivityReactionListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (ActivityReactionListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(

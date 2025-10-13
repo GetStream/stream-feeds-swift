@@ -6,7 +6,7 @@ import Combine
 import Foundation
 import StreamCore
 
-@MainActor public class BookmarkListState: ObservableObject {
+@MainActor public final class BookmarkListState: ObservableObject, StateAccessing {
     private var eventSubscription: StateLayerEventPublisher.Subscription?
 
     init(query: BookmarksQuery, eventPublisher: StateLayerEventPublisher) {
@@ -42,6 +42,10 @@ import StreamCore
 
 extension BookmarkListState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesQuery: @Sendable (BookmarkData) -> Bool = { [query] bookmark in
+            guard let filter = query.filter else { return true }
+            return filter.matches(bookmark)
+        }
         eventSubscription = publisher.subscribe { [weak self] event in
             switch event {
             case .bookmarkFolderDeleted(let folder):
@@ -59,8 +63,13 @@ extension BookmarkListState {
                     )
                 }
             case .bookmarkUpdated(let bookmark):
+                let matches = matchesQuery(bookmark)
                 await self?.access { state in
-                    state.bookmarks.sortedReplace(bookmark, nesting: nil, sorting: state.bookmarkFoldersSorting)
+                    if matches {
+                        state.bookmarks.sortedReplace(bookmark, nesting: nil, sorting: state.bookmarkFoldersSorting)
+                    } else {
+                        state.bookmarks.remove(byId: bookmark.id)
+                    }
                 }
             default:
                 break
@@ -73,10 +82,6 @@ extension BookmarkListState {
         var bookmark = bookmarks[index]
         changes(&bookmark)
         bookmarks[index] = bookmark
-    }
-
-    func access<T>(_ actions: @MainActor (BookmarkListState) -> T) -> T {
-        actions(self)
     }
 
     func didPaginate(

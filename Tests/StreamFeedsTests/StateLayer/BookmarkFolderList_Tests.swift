@@ -206,6 +206,45 @@ struct BookmarkFolderList_Tests {
         #expect(updatedState.first { $0.id == "folder-2" }?.name == "Second Folder")
     }
 
+    @Test func bookmarkFolderUpdatedEventRemovesFolderWhenNoLongerMatchingQuery() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryBookmarkFoldersResponse.dummy(
+                        bookmarkFolders: [
+                            .dummy(id: "folder-1", name: "First Folder")
+                        ],
+                        next: "next-cursor"
+                    )
+                ]
+            )
+        )
+        let bookmarkFolderList = client.bookmarkFolderList(
+            for: BookmarkFoldersQuery(
+                filter: .equal(.folderName, "First Folder")
+            )
+        )
+        try await bookmarkFolderList.get()
+
+        // Verify initial state has the folder that matches the filter
+        let initialFolders = await bookmarkFolderList.state.folders
+        #expect(initialFolders.count == 1)
+        #expect(initialFolders.first?.id == "folder-1")
+        #expect(initialFolders.first?.name == "First Folder")
+
+        // Send bookmark folder updated event where the name changes to something that doesn't match the filter
+        // This should cause the folder to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderUpdatedEvent.dummy(
+                bookmarkFolder: .dummy(id: "folder-1", name: "Updated Folder Name")
+            )
+        )
+
+        // Folder should be removed since it no longer matches the folderName filter
+        let foldersAfterUpdate = await bookmarkFolderList.state.folders
+        #expect(foldersAfterUpdate.isEmpty)
+    }
+
     // MARK: - Helper Methods
 
     private func defaultClientWithBookmarkFolderResponses(

@@ -188,6 +188,89 @@ struct MemberList_Tests {
         #expect(updatedState.map(\.id) == ["member-1", "member-2"])
     }
 
+    @Test func feedMemberUpdatedEventRemovesMemberWhenNoLongerMatchingQuery() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                QueryFeedMembersResponse.dummy(
+                    members: [
+                        .dummy(user: .dummy(id: "member-1", name: "First Member"), role: "admin")
+                    ],
+                    next: nil
+                )
+            ])
+        )
+        let memberList = client.memberList(
+            for: MembersQuery(
+                feed: FeedId(rawValue: "user:test"),
+                filter: .equal(.role, "admin")
+            )
+        )
+        try await memberList.get()
+
+        // Verify initial state has the member that matches the filter
+        let initialMembers = await memberList.state.members
+        #expect(initialMembers.count == 1)
+        #expect(initialMembers.first?.id == "member-1")
+        #expect(initialMembers.first?.role == "admin")
+
+        // Send member updated event where the role changes to something that doesn't match the filter
+        // This should cause the member to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            FeedMemberUpdatedEvent.dummy(
+                fid: "user:test",
+                member: .dummy(user: .dummy(id: "member-1", name: "First Member"), role: "member")
+            )
+        )
+
+        // Member should be removed since it no longer matches the role filter
+        let membersAfterUpdate = await memberList.state.members
+        #expect(membersAfterUpdate.isEmpty)
+    }
+
+    @Test func feedMemberBatchUpdateEventRemovesMembersWhenNoLongerMatchingQuery() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                QueryFeedMembersResponse.dummy(
+                    members: [
+                        .dummy(user: .dummy(id: "member-1", name: "First Member"), role: "admin")
+                    ],
+                    next: nil
+                )
+            ])
+        )
+        let memberList = client.memberList(
+            for: MembersQuery(
+                feed: FeedId(rawValue: "user:test"),
+                filter: .equal(.role, "admin")
+            )
+        )
+        try await memberList.get()
+
+        // Verify initial state has the member that matches the filter
+        let initialMembers = await memberList.state.members
+        #expect(initialMembers.count == 1)
+        #expect(initialMembers.first?.id == "member-1")
+        #expect(initialMembers.first?.role == "admin")
+
+        // Send batch update event where the member role changes to something that doesn't match the filter
+        // This should cause the member to no longer match the query filter
+        let updatedResponses: [FeedMemberResponse] = [
+            .dummy(user: .dummy(id: "member-1", name: "First Member"), role: "member")
+        ]
+        let updates = ModelUpdates<FeedMemberData>(
+            added: [],
+            removedIds: [],
+            updated: updatedResponses.map { $0.toModel() }
+        )
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedMemberBatchUpdate(updates, FeedId(rawValue: "user:test"))
+        )
+
+        // Member should be removed since it no longer matches the role filter
+        let membersAfterUpdate = await memberList.state.members
+        #expect(membersAfterUpdate.isEmpty)
+    }
+
     // MARK: - Helper Methods
 
     private func defaultClientWithMemberResponses(

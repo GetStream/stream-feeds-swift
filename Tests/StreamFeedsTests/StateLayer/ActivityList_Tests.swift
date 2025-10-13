@@ -111,6 +111,35 @@ struct ActivityList_Tests {
         #expect(activities.first?.text == "Updated text")
     }
     
+    @Test func activityUpdatedEventRemovesActivityWhenNoLongerMatchingQuery() async throws {
+        let client = defaultClient()
+        let activityList = client.activityList(
+            for: ActivitiesQuery(
+                filter: .equal(.userId, "current-user-id")
+            )
+        )
+        try await activityList.get()
+        
+        // Verify initial state has the activity
+        let initialActivities = await activityList.state.activities
+        #expect(initialActivities.count == 1)
+        #expect(initialActivities.first?.id == "activity-1")
+        #expect(initialActivities.first?.user.id == "current-user-id")
+        
+        // Send activity updated event where the user changes to someone else
+        // This should cause the activity to no longer match the query filter
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-1", text: "Updated text", user: .dummy(id: "other-user")),
+                fid: Self.feedId.rawValue
+            )
+        )
+        
+        // Activity should be removed since it no longer matches the userId filter
+        let activitiesAfterUpdate = await activityList.state.activities
+        #expect(activitiesAfterUpdate.isEmpty)
+    }
+    
     @Test func activityDeletedEventRemovesFromState() async throws {
         let client = defaultClient()
         let activityList = client.activityList(

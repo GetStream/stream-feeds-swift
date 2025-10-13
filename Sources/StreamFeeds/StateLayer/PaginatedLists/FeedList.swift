@@ -2,18 +2,26 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Combine
 import Foundation
 import StreamCore
 
 public final class FeedList: Sendable {
-    @MainActor private let stateBuilder: StateBuilder<FeedListState>
     private let feedsRepository: FeedsRepository
+    private let disposableBag = DisposableBag()
+    private let refetchSubject = AllocatedUnfairLock(PassthroughSubject<Void, Never>())
+    private let refetchDelay: Int
+    @MainActor private let stateBuilder: StateBuilder<FeedListState>
 
-    init(query: FeedsQuery, client: FeedsClient) {
+    init(query: FeedsQuery, client: FeedsClient, refetchDelay: Int = 5) {
         feedsRepository = client.feedsRepository
         self.query = query
+        self.refetchDelay = refetchDelay
         let eventPublisher = client.stateLayerEventPublisher
-        stateBuilder = StateBuilder { FeedListState(query: query, eventPublisher: eventPublisher) }
+        stateBuilder = StateBuilder { [refetchSubject] in
+            FeedListState(query: query, eventPublisher: eventPublisher, refetchSubject: refetchSubject)
+        }
+        subscribeToRefetch()
     }
 
     public let query: FeedsQuery
@@ -54,5 +62,44 @@ public final class FeedList: Sendable {
             for: .init(filter: query.filter, sort: query.sort)
         )
         return result.models
+    }
+    
+    /// Refetches all the feeds and updates the state once when pagination has ended.
+    private func subscribeToRefetch() {
+        refetchSubject.withLock { [disposableBag, refetchDelay] subject in
+            subject
+                .debounce(for: .seconds(refetchDelay), scheduler: DispatchQueue.global(qos: .utility))
+                .asyncSink { [weak self] _ in
+                    guard let self else { return }
+                    do {
+                        let batches = await self.state.access { state in
+                            let limit = state.feeds.count
+                            let pageSize = 25
+                            return stride(from: 0, to: limit, by: pageSize).map { min(pageSize, limit - $0) }
+                        }
+                        guard !batches.isEmpty else { return }
+                        var next: String?
+                        var refetchedFeeds = [FeedData]()
+                        for batch in batches {
+                            let result = try await self.feedsRepository.queryFeeds(
+                                with: FeedsQuery(
+                                    filter: query.filter,
+                                    sort: query.sort,
+                                    limit: batch,
+                                    next: next,
+                                    previous: nil,
+                                    watch: query.watch
+                                )
+                            )
+                            next = result.pagination.next
+                            refetchedFeeds.append(contentsOf: result.models)
+                        }
+                        await self.state.didRefetch(refetchedFeeds)
+                    } catch {
+                        log.error("Failed to refetch", subsystems: .other, error: error)
+                    }
+                }
+                .store(in: disposableBag)
+        }
     }
 }

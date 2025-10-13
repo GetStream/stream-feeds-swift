@@ -19,7 +19,7 @@ import StreamCore
 ///     // Update UI with new activities
 /// }
 /// ```
-@MainActor public class ActivityListState: ObservableObject {
+@MainActor public final class ActivityListState: ObservableObject, StateAccessing {
     private let currentUserId: String
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -88,9 +88,13 @@ extension ActivityListState {
                     state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
                 }
             case .activityUpdated(let activityData, _):
-                guard matchesQuery(activityData) else { return }
+                let matches = matchesQuery(activityData)
                 await self?.access { state in
-                    state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                    if matches {
+                        state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                    } else {
+                        state.activities.remove(byId: activityData.id)
+                    }
                 }
             case .activityDeleted(let activityId, _):
                 await self?.access { state in
@@ -219,10 +223,6 @@ extension ActivityListState {
                 break
             }
         }
-    }
-    
-    @discardableResult func access<T>(_ actions: @MainActor (ActivityListState) -> T) -> T {
-        actions(self)
     }
     
     func didPaginate(
