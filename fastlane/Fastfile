@@ -133,6 +133,28 @@ lane :test do |options|
   slather unless options[:build_for_testing]
 end
 
+private_lane :retreive_failed_tests do
+  report_path = 'test_output/report.junit'
+  raise UI.user_error!('There is no junit report to parse') unless File.file?(report_path)
+
+  junit_report = Nokogiri::XML(File.read(report_path))
+  failed_tests = []
+  passed_tests = []
+  suite_name = junit_report.xpath('//testsuite').first['name'].split('.').first
+  junit_report.xpath('//testcase').each do |testcase|
+    class_name = testcase['classname'].split('.').last
+    test_name = testcase['name'].delete('()')
+
+    if testcase.at_xpath('failure')
+      failed_tests << "#{suite_name}/#{class_name}/#{test_name}"
+    else
+      passed_tests << "#{suite_name}/#{class_name}/#{test_name}"
+    end
+  end
+
+  (failed_tests - passed_tests).uniq
+end
+
 private_lane :update_testplan_on_ci do |options|
   update_testplan(path: options[:path], env_vars: { key: 'CI', value: 'TRUE' }) if is_ci || options[:force]
 end
