@@ -5,6 +5,6 @@
 import Foundation
 import StreamCore
 
-var log: Logger {
+public var log: Logger {
     LogConfig.logger
 }
