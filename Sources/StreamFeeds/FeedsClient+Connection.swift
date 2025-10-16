@@ -4,6 +4,7 @@
 
 import Foundation
 import StreamCore
+import StreamOpenAPI
 
 extension FeedsClient {
     /// When initializing we perform an automatic connection attempt.

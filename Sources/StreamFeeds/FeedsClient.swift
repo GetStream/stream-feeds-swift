@@ -4,7 +4,9 @@
 
 import Combine
 import Foundation
-@preconcurrency import StreamCore
+import StreamAttachments
+import StreamCore
+import StreamOpenAPI
 
 public final class FeedsClient: Sendable {
     public let apiKey: APIKey
