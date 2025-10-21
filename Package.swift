@@ -14,7 +14,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/GetStream/stream-core-swift.git", branch: "restructure-for-chat")
+        .package(url: "https://github.com/GetStream/stream-core-swift.git", exact: "0.4.0")
     ],
     targets: [
         .target(

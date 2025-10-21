@@ -4,4 +4,3 @@
 
 @_exported import StreamAttachments
 @_exported import StreamCore
-@_exported import StreamOpenAPI

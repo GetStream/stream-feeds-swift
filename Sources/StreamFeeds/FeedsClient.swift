@@ -6,7 +6,6 @@ import Combine
 import Foundation
 import StreamAttachments
 import StreamCore
-import StreamOpenAPI
 
 public final class FeedsClient: Sendable {
     public let apiKey: APIKey
