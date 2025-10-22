@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F0767B52EA0D0BB00E5FD18 /* StreamAttachments in Frameworks */ = {isa = PBXBuildFile; productRef = 4F0767B42EA0D0BB00E5FD18 /* StreamAttachments */; };
 		82C6B2B02E1D177D00CB3B23 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 82C6B2AF2E1D177D00CB3B23 /* PrivacyInfo.xcprivacy */; };
 		845494EB2DBA2E7C00211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8E632DCA45880030DD7D /* StreamCore */; };
@@ -105,6 +106,7 @@
 			files = (
 				84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */,
 				84B9B53B2E4A9F0300923DD8 /* StreamCore in Frameworks */,
+				4F0767B52EA0D0BB00E5FD18 /* StreamAttachments in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +192,7 @@
 			packageProductDependencies = (
 				84AA8E632DCA45880030DD7D /* StreamCore */,
 				84B9B53A2E4A9F0300923DD8 /* StreamCore */,
+				4F0767B42EA0D0BB00E5FD18 /* StreamAttachments */,
 			);
 			productName = StreamFeeds;
 			productReference = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */;
@@ -864,12 +867,17 @@
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.3.0;
+				version = 0.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4F0767B42EA0D0BB00E5FD18 /* StreamAttachments */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84B9B5392E4A9F0300923DD8 /* XCRemoteSwiftPackageReference "stream-core-swift" */;
+			productName = StreamAttachments;
+		};
 		84AA8E632DCA45880030DD7D /* StreamCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = StreamCore;
