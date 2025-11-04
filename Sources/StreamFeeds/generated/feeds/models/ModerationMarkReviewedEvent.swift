@@ -7,11 +7,11 @@ import StreamCore
 
 public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
     public var createdAt: Date
-    public var item: ReviewQueueItem?
+    public var item: ReviewQueueItemResponse?
     public var type: String = "moderation.mark_reviewed"
     public var user: User?
 
-    public init(createdAt: Date, item: ReviewQueueItem? = nil, user: User? = nil) {
+    public init(createdAt: Date, item: ReviewQueueItemResponse? = nil, user: User? = nil) {
         self.createdAt = createdAt
         self.item = item
         self.user = user

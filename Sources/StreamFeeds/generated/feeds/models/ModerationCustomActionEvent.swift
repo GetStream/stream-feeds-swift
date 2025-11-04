@@ -5,39 +5,51 @@
 import Foundation
 import StreamCore
 
-public final class ModerationCustomActionEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+public final class ModerationCustomActionEvent: @unchecked Sendable,  Event, Codable, JSONEncodable, Hashable {
+    public var actionId: String
+    public var actionOptions: [String: RawJSON]?
     public var createdAt: Date
-    public var item: ReviewQueueItem?
+    public var custom: [String: RawJSON]
+    public var receivedAt: Date?
+    public var reviewQueueItem: ReviewQueueItemResponse
     public var type: String = "moderation.custom_action"
-    public var user: User?
 
-    public init(createdAt: Date, item: ReviewQueueItem? = nil, user: User? = nil) {
+    public init(actionId: String, actionOptions: [String: RawJSON]? = nil, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, reviewQueueItem: ReviewQueueItemResponse) {
+        self.actionId = actionId
+        self.actionOptions = actionOptions
         self.createdAt = createdAt
-        self.item = item
-        self.user = user
+        self.custom = custom
+        self.receivedAt = receivedAt
+        self.reviewQueueItem = reviewQueueItem
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case actionId = "action_id"
+        case actionOptions = "action_options"
         case createdAt = "created_at"
-        case item
+        case custom
+        case receivedAt = "received_at"
+        case reviewQueueItem = "review_queue_item"
         case type
-        case user
     }
 
     public static func == (lhs: ModerationCustomActionEvent, rhs: ModerationCustomActionEvent) -> Bool {
+        lhs.actionId == rhs.actionId &&
+        lhs.actionOptions == rhs.actionOptions &&
         lhs.createdAt == rhs.createdAt &&
-            lhs.item == rhs.item &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+        lhs.custom == rhs.custom &&
+        lhs.receivedAt == rhs.receivedAt &&
+        lhs.reviewQueueItem == rhs.reviewQueueItem &&
+        lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(actionId)
+        hasher.combine(actionOptions)
         hasher.combine(createdAt)
-        hasher.combine(item)
+        hasher.combine(custom)
+        hasher.combine(receivedAt)
+        hasher.combine(reviewQueueItem)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }
-
-//TODO: fix this:
-public struct ReviewQueueItem: Codable, Equatable, Hashable {}
