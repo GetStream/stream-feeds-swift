@@ -123,7 +123,7 @@ final class ActivitiesRepository: Sendable {
     // MARK: - Reactions
     
     func addReaction(activityId: String, request: AddReactionRequest) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
-        let response = try await apiClient.addReaction(activityId: activityId, addReactionRequest: request)
+        let response = try await apiClient.addActivityReaction(activityId: activityId, addReactionRequest: request)
         return (response.reaction.toModel(), response.activity.toModel())
     }
     

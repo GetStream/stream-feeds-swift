@@ -13,6 +13,7 @@ public enum FeedsEvent: Codable, Hashable {
     case typeAppUpdatedEvent(AppUpdatedEvent)
     case typeActivityAddedEvent(ActivityAddedEvent)
     case typeActivityDeletedEvent(ActivityDeletedEvent)
+    case typeActivityFeedbackEvent(ActivityFeedbackEvent)
     case typeActivityMarkEvent(ActivityMarkEvent)
     case typeActivityPinnedEvent(ActivityPinnedEvent)
     case typeActivityReactionAddedEvent(ActivityReactionAddedEvent)
@@ -50,15 +51,15 @@ public enum FeedsEvent: Codable, Hashable {
     case typePollVoteCastedFeedEvent(PollVoteCastedFeedEvent)
     case typePollVoteChangedFeedEvent(PollVoteChangedFeedEvent)
     case typePollVoteRemovedFeedEvent(PollVoteRemovedFeedEvent)
+    case typeStoriesFeedUpdatedEvent(StoriesFeedUpdatedEvent)
     case typeHealthCheckEvent(HealthCheckEvent)
     case typeModerationCustomActionEvent(ModerationCustomActionEvent)
-    case typeModerationFlaggedEvent(ModerationFlaggedEvent)
     case typeModerationMarkReviewedEvent(ModerationMarkReviewedEvent)
+    case typeUserUpdatedEvent(UserUpdatedEvent)
     case typeUserBannedEvent(UserBannedEvent)
     case typeUserDeactivatedEvent(UserDeactivatedEvent)
     case typeUserMutedEvent(UserMutedEvent)
     case typeUserReactivatedEvent(UserReactivatedEvent)
-    case typeUserUpdatedEvent(UserUpdatedEvent)
     case typeConnectedEvent(ConnectedEvent)
     case typeConnectionErrorEvent(ConnectionErrorEvent)
 
@@ -148,8 +149,6 @@ public enum FeedsEvent: Codable, Hashable {
             value.type
         case .typeModerationCustomActionEvent(let value):
             value.type
-        case .typeModerationFlaggedEvent(let value):
-            value.type
         case .typeModerationMarkReviewedEvent(let value):
             value.type
         case .typeUserBannedEvent(let value):
@@ -165,6 +164,10 @@ public enum FeedsEvent: Codable, Hashable {
         case let .typeConnectedEvent(value):
             value.type
         case let .typeConnectionErrorEvent(value):
+            value.type
+        case let .typeActivityFeedbackEvent(value):
+            value.type
+        case let .typeStoriesFeedUpdatedEvent(value):
             value.type
         }
     }
@@ -255,8 +258,6 @@ public enum FeedsEvent: Codable, Hashable {
             value
         case .typeModerationCustomActionEvent(let value):
             value
-        case .typeModerationFlaggedEvent(let value):
-            value
         case .typeModerationMarkReviewedEvent(let value):
             value
         case .typeUserBannedEvent(let value):
@@ -272,6 +273,10 @@ public enum FeedsEvent: Codable, Hashable {
         case .typeConnectedEvent(let value):
             value
         case .typeConnectionErrorEvent(let value):
+            value
+        case .typeActivityFeedbackEvent(let value):
+            value
+        case .typeStoriesFeedUpdatedEvent(let value):
             value
         }
     }
@@ -363,8 +368,6 @@ public enum FeedsEvent: Codable, Hashable {
             try container.encode(value)
         case .typeModerationCustomActionEvent(let value):
             try container.encode(value)
-        case .typeModerationFlaggedEvent(let value):
-            try container.encode(value)
         case .typeModerationMarkReviewedEvent(let value):
             try container.encode(value)
         case .typeUserBannedEvent(let value):
@@ -381,6 +384,10 @@ public enum FeedsEvent: Codable, Hashable {
             try container.encode(value)
         case .typeConnectionErrorEvent(let value):
             try container.encode(value)
+        case .typeActivityFeedbackEvent(let value):
+            try container.encode(value)
+        case .typeStoriesFeedUpdatedEvent(let value):
+            try container.encode(value)
         }
     }
 
@@ -396,6 +403,9 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.activity.deleted" {
             let value = try container.decode(ActivityDeletedEvent.self)
             self = .typeActivityDeletedEvent(value)
+        } else if dto.type == "feeds.activity.feedback" {
+            let value = try container.decode(ActivityFeedbackEvent.self)
+            self = .typeActivityFeedbackEvent(value)
         } else if dto.type == "feeds.activity.marked" {
             let value = try container.decode(ActivityMarkEvent.self)
             self = .typeActivityMarkEvent(value)
@@ -507,15 +517,15 @@ public enum FeedsEvent: Codable, Hashable {
         } else if dto.type == "feeds.poll.vote_removed" {
             let value = try container.decode(PollVoteRemovedFeedEvent.self)
             self = .typePollVoteRemovedFeedEvent(value)
+        } else if dto.type == "feeds.stories_feed.updated" {
+            let value = try container.decode(StoriesFeedUpdatedEvent.self)
+            self = .typeStoriesFeedUpdatedEvent(value)
         } else if dto.type == "health.check" {
             let value = try container.decode(HealthCheckEvent.self)
             self = .typeHealthCheckEvent(value)
         } else if dto.type == "moderation.custom_action" {
             let value = try container.decode(ModerationCustomActionEvent.self)
             self = .typeModerationCustomActionEvent(value)
-        } else if dto.type == "moderation.flagged" {
-            let value = try container.decode(ModerationFlaggedEvent.self)
-            self = .typeModerationFlaggedEvent(value)
         } else if dto.type == "moderation.mark_reviewed" {
             let value = try container.decode(ModerationMarkReviewedEvent.self)
             self = .typeModerationMarkReviewedEvent(value)

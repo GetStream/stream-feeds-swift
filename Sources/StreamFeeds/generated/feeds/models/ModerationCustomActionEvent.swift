@@ -38,3 +38,6 @@ public final class ModerationCustomActionEvent: @unchecked Sendable, Event, Coda
         hasher.combine(user)
     }
 }
+
+//TODO: fix this:
+public struct ReviewQueueItem: Codable, Equatable, Hashable {}
