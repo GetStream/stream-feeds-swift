@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var aiProviders: [String]
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var id: String
@@ -17,7 +18,8 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
     public var user: UserResponse?
     public var userId: String
 
-    public init(createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
+    public init(aiProviders: [String], createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
+        self.aiProviders = aiProviders
         self.createdAt = createdAt
         self.custom = custom
         self.id = id
@@ -31,6 +33,7 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case aiProviders = "ai_providers"
         case createdAt = "created_at"
         case custom
         case id
@@ -44,7 +47,8 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public static func == (lhs: ActionLogResponse, rhs: ActionLogResponse) -> Bool {
-        lhs.createdAt == rhs.createdAt &&
+        lhs.aiProviders == rhs.aiProviders &&
+            lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&
             lhs.reason == rhs.reason &&
@@ -57,6 +61,7 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(aiProviders)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(id)

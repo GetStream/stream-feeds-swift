@@ -1,0 +1,127 @@
+import Foundation
+import StreamCore
+
+public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+    public var algorithmScores: [String: Float]?
+    public var createdAt: Date
+    public var createdBy: UserResponse
+    public var custom: [String: RawJSON]?
+    public var deletedAt: Date?
+    public var description: String
+    public var feed: String
+    public var filterTags: [String]?
+    public var followerCount: Int
+    public var followingCount: Int
+    public var groupId: String
+    public var id: String
+    public var memberCount: Int
+    public var name: String
+    public var ownCapabilities: [FeedOwnCapability]?
+    public var ownFollows: [FollowResponse]?
+    public var ownMembership: FeedMemberResponse?
+    public var pinCount: Int
+    public var reason: String?
+    public var recommendationScore: Float?
+    public var updatedAt: Date
+    public var visibility: String?
+
+    public init(algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: String? = nil) {
+        self.algorithmScores = algorithmScores
+        self.createdAt = createdAt
+        self.createdBy = createdBy
+        self.custom = custom
+        self.deletedAt = deletedAt
+        self.description = description
+        self.feed = feed
+        self.filterTags = filterTags
+        self.followerCount = followerCount
+        self.followingCount = followingCount
+        self.groupId = groupId
+        self.id = id
+        self.memberCount = memberCount
+        self.name = name
+        self.ownCapabilities = ownCapabilities
+        self.ownFollows = ownFollows
+        self.ownMembership = ownMembership
+        self.pinCount = pinCount
+        self.reason = reason
+        self.recommendationScore = recommendationScore
+        self.updatedAt = updatedAt
+        self.visibility = visibility
+    }
+
+public enum CodingKeys: String, CodingKey, CaseIterable {
+    case algorithmScores = "algorithm_scores"
+    case createdAt = "created_at"
+    case createdBy = "created_by"
+    case custom
+    case deletedAt = "deleted_at"
+    case description
+    case feed
+    case filterTags = "filter_tags"
+    case followerCount = "follower_count"
+    case followingCount = "following_count"
+    case groupId = "group_id"
+    case id
+    case memberCount = "member_count"
+    case name
+    case ownCapabilities = "own_capabilities"
+    case ownFollows = "own_follows"
+    case ownMembership = "own_membership"
+    case pinCount = "pin_count"
+    case reason
+    case recommendationScore = "recommendation_score"
+    case updatedAt = "updated_at"
+    case visibility
+}
+
+    public static func == (lhs: FeedSuggestionResponse, rhs: FeedSuggestionResponse) -> Bool {
+        lhs.algorithmScores == rhs.algorithmScores &&
+        lhs.createdAt == rhs.createdAt &&
+        lhs.createdBy == rhs.createdBy &&
+        lhs.custom == rhs.custom &&
+        lhs.deletedAt == rhs.deletedAt &&
+        lhs.description == rhs.description &&
+        lhs.feed == rhs.feed &&
+        lhs.filterTags == rhs.filterTags &&
+        lhs.followerCount == rhs.followerCount &&
+        lhs.followingCount == rhs.followingCount &&
+        lhs.groupId == rhs.groupId &&
+        lhs.id == rhs.id &&
+        lhs.memberCount == rhs.memberCount &&
+        lhs.name == rhs.name &&
+        lhs.ownCapabilities == rhs.ownCapabilities &&
+        lhs.ownFollows == rhs.ownFollows &&
+        lhs.ownMembership == rhs.ownMembership &&
+        lhs.pinCount == rhs.pinCount &&
+        lhs.reason == rhs.reason &&
+        lhs.recommendationScore == rhs.recommendationScore &&
+        lhs.updatedAt == rhs.updatedAt &&
+        lhs.visibility == rhs.visibility
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(algorithmScores)
+        hasher.combine(createdAt)
+        hasher.combine(createdBy)
+        hasher.combine(custom)
+        hasher.combine(deletedAt)
+        hasher.combine(description)
+        hasher.combine(feed)
+        hasher.combine(filterTags)
+        hasher.combine(followerCount)
+        hasher.combine(followingCount)
+        hasher.combine(groupId)
+        hasher.combine(id)
+        hasher.combine(memberCount)
+        hasher.combine(name)
+        hasher.combine(ownCapabilities)
+        hasher.combine(ownFollows)
+        hasher.combine(ownMembership)
+        hasher.combine(pinCount)
+        hasher.combine(reason)
+        hasher.combine(recommendationScore)
+        hasher.combine(updatedAt)
+        hasher.combine(visibility)
+    }
+}
