@@ -4,8 +4,6 @@
 
 import Combine
 import Foundation
-import StreamAttachments
-import StreamCore
 
 public final class FeedsClient: Sendable {
     public let apiKey: APIKey
@@ -30,7 +28,7 @@ public final class FeedsClient: Sendable {
     let webSocketClient = AllocatedUnfairLock<WebSocketClient?>(nil)
     
     let eventsMiddleware = WSEventsMiddleware()
-    let eventNotificationCenter: EventNotificationCenter
+    let eventNotificationCenter: DefaultEventNotificationCenter
     let stateLayerEventPublisher = StateLayerEventPublisher()
     
     let activitiesRepository: ActivitiesRepository
@@ -111,7 +109,7 @@ public final class FeedsClient: Sendable {
             transport: apiTransport,
             middlewares: [defaultParams]
         )
-        eventNotificationCenter = EventNotificationCenter()
+        eventNotificationCenter = DefaultEventNotificationCenter()
         requestEncoder = DefaultRequestEncoder(
             baseURL: URL(string: basePath)!,
             apiKey: apiKey

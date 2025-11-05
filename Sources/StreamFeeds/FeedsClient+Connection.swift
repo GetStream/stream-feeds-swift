@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import StreamCore
 
 extension FeedsClient {
     /// When initializing we perform an automatic connection attempt.
@@ -93,7 +92,7 @@ extension FeedsClient {
             eventDecoder: JSONEventDecoder(),
             eventNotificationCenter: eventNotificationCenter,
             webSocketClientType: .coordinator,
-            connectURL: url
+            connectRequest: URLRequest(url: url)
         )
         
         webSocketClient.connectionStateDelegate = self
