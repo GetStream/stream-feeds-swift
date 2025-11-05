@@ -1,7 +1,3 @@
-//
-// Copyright © 2025 Stream.io Inc. All rights reserved.
-//
-
 import Foundation
 import StreamCore
 
@@ -52,52 +48,52 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
         self.updatedAt = updatedAt
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case avgResponseTime = "avg_response_time"
-        case banCount = "ban_count"
-        case banned
-        case blockedUserIds = "blocked_user_ids"
-        case createdAt = "created_at"
-        case custom
-        case deactivatedAt = "deactivated_at"
-        case deletedAt = "deleted_at"
-        case deletedContentCount = "deleted_content_count"
-        case flaggedCount = "flagged_count"
-        case id
-        case image
-        case language
-        case lastActive = "last_active"
-        case name
-        case online
-        case revokeTokensIssuedBefore = "revoke_tokens_issued_before"
-        case role
-        case teams
-        case teamsRole = "teams_role"
-        case updatedAt = "updated_at"
-    }
+public enum CodingKeys: String, CodingKey, CaseIterable {
+    case avgResponseTime = "avg_response_time"
+    case banCount = "ban_count"
+    case banned
+    case blockedUserIds = "blocked_user_ids"
+    case createdAt = "created_at"
+    case custom
+    case deactivatedAt = "deactivated_at"
+    case deletedAt = "deleted_at"
+    case deletedContentCount = "deleted_content_count"
+    case flaggedCount = "flagged_count"
+    case id
+    case image
+    case language
+    case lastActive = "last_active"
+    case name
+    case online
+    case revokeTokensIssuedBefore = "revoke_tokens_issued_before"
+    case role
+    case teams
+    case teamsRole = "teams_role"
+    case updatedAt = "updated_at"
+}
 
     public static func == (lhs: EntityCreatorResponse, rhs: EntityCreatorResponse) -> Bool {
         lhs.avgResponseTime == rhs.avgResponseTime &&
-            lhs.banCount == rhs.banCount &&
-            lhs.banned == rhs.banned &&
-            lhs.blockedUserIds == rhs.blockedUserIds &&
-            lhs.createdAt == rhs.createdAt &&
-            lhs.custom == rhs.custom &&
-            lhs.deactivatedAt == rhs.deactivatedAt &&
-            lhs.deletedAt == rhs.deletedAt &&
-            lhs.deletedContentCount == rhs.deletedContentCount &&
-            lhs.flaggedCount == rhs.flaggedCount &&
-            lhs.id == rhs.id &&
-            lhs.image == rhs.image &&
-            lhs.language == rhs.language &&
-            lhs.lastActive == rhs.lastActive &&
-            lhs.name == rhs.name &&
-            lhs.online == rhs.online &&
-            lhs.revokeTokensIssuedBefore == rhs.revokeTokensIssuedBefore &&
-            lhs.role == rhs.role &&
-            lhs.teams == rhs.teams &&
-            lhs.teamsRole == rhs.teamsRole &&
-            lhs.updatedAt == rhs.updatedAt
+        lhs.banCount == rhs.banCount &&
+        lhs.banned == rhs.banned &&
+        lhs.blockedUserIds == rhs.blockedUserIds &&
+        lhs.createdAt == rhs.createdAt &&
+        lhs.custom == rhs.custom &&
+        lhs.deactivatedAt == rhs.deactivatedAt &&
+        lhs.deletedAt == rhs.deletedAt &&
+        lhs.deletedContentCount == rhs.deletedContentCount &&
+        lhs.flaggedCount == rhs.flaggedCount &&
+        lhs.id == rhs.id &&
+        lhs.image == rhs.image &&
+        lhs.language == rhs.language &&
+        lhs.lastActive == rhs.lastActive &&
+        lhs.name == rhs.name &&
+        lhs.online == rhs.online &&
+        lhs.revokeTokensIssuedBefore == rhs.revokeTokensIssuedBefore &&
+        lhs.role == rhs.role &&
+        lhs.teams == rhs.teams &&
+        lhs.teamsRole == rhs.teamsRole &&
+        lhs.updatedAt == rhs.updatedAt
     }
 
     public func hash(into hasher: inout Hasher) {

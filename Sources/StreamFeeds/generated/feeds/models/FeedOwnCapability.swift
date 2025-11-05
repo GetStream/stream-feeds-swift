@@ -20,13 +20,13 @@ public enum FeedOwnCapability: String, Sendable, Codable, CaseIterable {
     case deleteOwnActivityReaction = "delete-own-activity-reaction"
     case deleteOwnComment = "delete-own-comment"
     case deleteOwnCommentReaction = "delete-own-comment-reaction"
-    case follow
+    case follow = "follow"
     case pinActivity = "pin-activity"
     case queryFeedMembers = "query-feed-members"
     case queryFollows = "query-follows"
     case readActivities = "read-activities"
     case readFeed = "read-feed"
-    case unfollow
+    case unfollow = "unfollow"
     case updateAnyActivity = "update-any-activity"
     case updateAnyComment = "update-any-comment"
     case updateFeed = "update-feed"

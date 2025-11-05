@@ -1,0 +1,65 @@
+//
+// Copyright © 2025 Stream.io Inc. All rights reserved.
+//
+
+import Foundation
+import StreamCore
+
+public final class StoriesFeedUpdatedEvent: @unchecked Sendable,  Event, Codable, JSONEncodable, Hashable {
+    public var activities: [ActivityResponse]?
+    public var aggregatedActivities: [AggregatedActivityResponse]?
+    public var createdAt: Date
+    public var custom: [String: RawJSON]
+    public var feedVisibility: String?
+    public var fid: String
+    public var receivedAt: Date?
+    public var type: String = "feeds.stories_feed.updated"
+    public var user: UserResponseCommonFields?
+
+    public init(activities: [ActivityResponse]? = nil, aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+        self.activities = activities
+        self.aggregatedActivities = aggregatedActivities
+        self.createdAt = createdAt
+        self.custom = custom
+        self.feedVisibility = feedVisibility
+        self.fid = fid
+        self.receivedAt = receivedAt
+        self.user = user
+    }
+
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case activities
+        case aggregatedActivities = "aggregated_activities"
+        case createdAt = "created_at"
+        case custom
+        case feedVisibility = "feed_visibility"
+        case fid
+        case receivedAt = "received_at"
+        case type
+        case user
+    }
+
+    public static func == (lhs: StoriesFeedUpdatedEvent, rhs: StoriesFeedUpdatedEvent) -> Bool {
+        lhs.activities == rhs.activities &&
+        lhs.aggregatedActivities == rhs.aggregatedActivities &&
+        lhs.createdAt == rhs.createdAt &&
+        lhs.custom == rhs.custom &&
+        lhs.feedVisibility == rhs.feedVisibility &&
+        lhs.fid == rhs.fid &&
+        lhs.receivedAt == rhs.receivedAt &&
+        lhs.type == rhs.type &&
+        lhs.user == rhs.user
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(activities)
+        hasher.combine(aggregatedActivities)
+        hasher.combine(createdAt)
+        hasher.combine(custom)
+        hasher.combine(feedVisibility)
+        hasher.combine(fid)
+        hasher.combine(receivedAt)
+        hasher.combine(type)
+        hasher.combine(user)
+    }
+}

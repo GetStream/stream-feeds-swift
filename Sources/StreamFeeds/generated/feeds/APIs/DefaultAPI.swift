@@ -390,7 +390,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse {
+    open func addActivityReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse {
         var path = "/api/v2/feeds/activities/{activity_id}/reactions"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
@@ -1691,6 +1691,19 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             try self.jsonDecoder.decode(UnblockUsersResponse.self, from: $0)
         }
     }
+    
+    open func ownCapabilitiesBatch(ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest) async throws -> OwnCapabilitiesBatchResponse {
+        let path = "/api/v2/feeds/feeds/own_capabilities/batch"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: ownCapabilitiesBatchRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(OwnCapabilitiesBatchResponse.self, from: $0)
+        }
+    }
 }
 
 protocol DefaultAPIEndpoints {
@@ -1730,7 +1743,7 @@ protocol DefaultAPIEndpoints {
 
     func deletePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse
 
-    func addReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
+    func addActivityReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
     func queryActivityReactions(activityId: String, queryActivityReactionsRequest: QueryActivityReactionsRequest) async throws -> QueryActivityReactionsResponse
 
@@ -1887,4 +1900,6 @@ protocol DefaultAPIEndpoints {
     func updateLiveLocation(updateLiveLocationRequest: UpdateLiveLocationRequest) async throws -> SharedLocationResponse
 
     func unblockUsers(unblockUsersRequest: UnblockUsersRequest) async throws -> UnblockUsersResponse
+    
+    func ownCapabilitiesBatch(ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest) async throws -> OwnCapabilitiesBatchResponse
 }

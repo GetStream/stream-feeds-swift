@@ -7,40 +7,30 @@ import StreamCore
 
 public final class ActivityFeedbackRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
     public var hide: Bool?
-    public var muteUser: Bool?
-    public var reason: String?
-    public var report: Bool?
     public var showLess: Bool?
+    public var showMore: Bool?
 
-    public init(hide: Bool? = nil, muteUser: Bool? = nil, reason: String? = nil, report: Bool? = nil, showLess: Bool? = nil) {
+    public init(hide: Bool? = nil, showLess: Bool? = nil, showMore: Bool? = nil) {
         self.hide = hide
-        self.muteUser = muteUser
-        self.reason = reason
-        self.report = report
         self.showLess = showLess
+        self.showMore = showMore
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case hide
-        case muteUser = "mute_user"
-        case reason
-        case report
         case showLess = "show_less"
+        case showMore = "show_more"
     }
 
     public static func == (lhs: ActivityFeedbackRequest, rhs: ActivityFeedbackRequest) -> Bool {
         lhs.hide == rhs.hide &&
-            lhs.muteUser == rhs.muteUser &&
-            lhs.reason == rhs.reason &&
-            lhs.report == rhs.report &&
-            lhs.showLess == rhs.showLess
+        lhs.showLess == rhs.showLess &&
+        lhs.showMore == rhs.showMore
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(hide)
-        hasher.combine(muteUser)
-        hasher.combine(reason)
-        hasher.combine(report)
         hasher.combine(showLess)
+        hasher.combine(showMore)
     }
 }
