@@ -14,7 +14,7 @@ derived_data_path = 'derived_data'
 source_packages_path = 'spm_cache'
 swift_environment_path = File.absolute_path("../Sources/#{sdk_names.first}/Utils/SystemEnvironment+Version.swift")
 is_localhost = !is_ci
-@force_check = false
+@force_check = true
 
 before_all do |lane|
   if is_ci
