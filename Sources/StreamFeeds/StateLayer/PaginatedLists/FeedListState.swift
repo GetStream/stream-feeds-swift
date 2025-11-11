@@ -72,7 +72,12 @@ extension FeedListState {
                     let matches = matchesQuery(feed)
                     await self.access { state in
                         if matches {
-                            state.feeds.sortedReplace(feed, nesting: nil, sorting: state.feedsSorting)
+                            state.feeds.sortedUpdate(
+                                feed,
+                                nesting: nil,
+                                sorting: state.feedsSorting.areInIncreasingOrder(),
+                                changes: { existing in existing.merge(with: feed) }
+                            )
                         } else {
                             state.feeds.remove(byId: feed.id)
                         }
@@ -91,6 +96,13 @@ extension FeedListState {
                     }
                     guard needsRefetch else { return }
                     refetchSubject.withLock { $0.send() }
+                }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.feeds.updateAll(
+                        where: { capabilitiesMap.contains($0.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
                 }
             default:
                 break

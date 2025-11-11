@@ -33,8 +33,9 @@ public final class Feed: Sendable {
     private let bookmarksRepository: BookmarksRepository
     private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
-    private let pollsRepository: PollsRepository
     private let memberList: MemberList
+    private let ownCapabilitiesRepository: OwnCapabilitiesRepository
+    private let pollsRepository: PollsRepository
     
     init(query: FeedQuery, client: FeedsClient) {
         activitiesRepository = client.activitiesRepository
@@ -45,6 +46,7 @@ public final class Feed: Sendable {
         feedsRepository = client.feedsRepository
         eventPublisher = client.stateLayerEventPublisher
         memberList = client.memberList(for: .init(feed: query.feed))
+        ownCapabilitiesRepository = client.ownCapabilitiesRepository
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
         stateBuilder = StateBuilder { [eventPublisher, memberList] in
@@ -89,6 +91,9 @@ public final class Feed: Sendable {
     public func getOrCreate() async throws -> FeedData {
         let result = try await feedsRepository.getOrCreateFeed(with: feedQuery)
         await state.didQueryFeed(with: result)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(result.allOwnCapabilities) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
         return result.feed
     }
     

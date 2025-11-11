@@ -11,7 +11,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentData]
     public let createdAt: Date
-    public let currentFeed: FeedData?
+    public private(set) var currentFeed: FeedData?
     public let custom: [String: RawJSON]
     public let deletedAt: Date?
     public let editedAt: Date?
@@ -136,6 +136,24 @@ extension ActivityData {
             where: { $0.id == incomingData.id },
             changes: { $0.merge(with: incomingData, update: reaction, currentUserId: currentUserId) }
         )
+    }
+    
+    // MARK: - Current Feed Capabilities
+    
+    mutating func setFeedOwnCapabilities(_ capabilities: Set<FeedOwnCapability>) {
+        currentFeed?.setOwnCapabilities(capabilities)
+    }
+    
+    mutating func mergeFeedOwnCapabilities(from capabilitiesMap: [FeedId: Set<FeedOwnCapability>]) {
+        guard let feedId = currentFeed?.feed else { return }
+        guard let capabilities = capabilitiesMap[feedId] else { return }
+        currentFeed?.setOwnCapabilities(capabilities)
+    }
+    
+    func withFeedOwnCapabilities(from capabilitiesMap: [FeedId: Set<FeedOwnCapability>]) -> ActivityData {
+        var updated = self
+        updated.mergeFeedOwnCapabilities(from: capabilitiesMap)
+        return updated
     }
 }
 

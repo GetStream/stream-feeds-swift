@@ -211,7 +211,7 @@ struct ActivityView: View {
     @State var selectedAttachment: Attachment?
     
     let user: UserData
-    let ownCapabilities: [FeedOwnCapability]
+    let ownCapabilities: Set<FeedOwnCapability>
     let text: String
     var attachments: [Attachment]?
     var activity: ActivityData

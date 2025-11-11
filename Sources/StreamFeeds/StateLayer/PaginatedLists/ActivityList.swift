@@ -13,11 +13,14 @@ import StreamCore
 public final class ActivityList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<ActivityListState>
     private let activitiesRepository: ActivitiesRepository
+    private let eventPublisher: StateLayerEventPublisher
+    private let ownCapabilitiesRepository: OwnCapabilitiesRepository
     
     init(query: ActivitiesQuery, client: FeedsClient) {
         activitiesRepository = client.activitiesRepository
+        eventPublisher = client.stateLayerEventPublisher
+        ownCapabilitiesRepository = client.ownCapabilitiesRepository
         self.query = query
-        let eventPublisher = client.stateLayerEventPublisher
         let currentUserId = client.user.id
         stateBuilder = StateBuilder { [eventPublisher] in
             ActivityListState(
@@ -87,6 +90,9 @@ public final class ActivityList: Sendable {
             with: result,
             for: .init(filter: query.filter, sort: query.sort)
         )
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.compactMap(\.currentFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
         return result.models
     }
 }

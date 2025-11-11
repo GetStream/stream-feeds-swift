@@ -60,6 +60,22 @@ enum StateLayerEvent: Sendable {
     case notificationFeedUpdated(FeedId)
     
     case userUpdated(UserData)
+    
+    //
+    // Local events not related to any particular web-socket event
+    //
+    
+    // Web-socket events do not have `own_` fields set and state layer uses
+    // related WS events to keep the data up to date (e.g. activity reactions
+    // are managed by WS events). Which is OK because new entities should have
+    // own fields empty anyway (user has not interacted with it to add reactions etc).
+    // Capabilities are special because every feed has capabilities for the current
+    // user. New activity events contain feed data, and its `ownCapabilities` is going to
+    // be empty (`ActivityData.currentFeed.ownCapabilities`). For this particular case
+    // we have a bookkeeping and we making sure state-layer has `ownCapabilities` set
+    // correctly when WS events are flowing in.
+    /// Local capabilities tracking detected that capabilities changed for the feed.
+    case feedOwnCapabilitiesUpdated([FeedId: Set<FeedOwnCapability>])
 }
 
 extension StateLayerEvent {
