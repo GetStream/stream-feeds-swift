@@ -3,6 +3,7 @@
 //
 
 import Combine
+import Foundation
 import StreamCore
 @testable import StreamFeeds
 import Testing

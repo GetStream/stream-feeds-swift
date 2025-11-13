@@ -117,7 +117,8 @@ lane :test do |options|
     devices: options[:device],
     number_of_retries: 3,
     skip_build: options[:skip_build],
-    build_for_testing: options[:build_for_testing]
+    build_for_testing: options[:build_for_testing],
+    parallel_testing: !options[:cron]
   }
 
   begin
