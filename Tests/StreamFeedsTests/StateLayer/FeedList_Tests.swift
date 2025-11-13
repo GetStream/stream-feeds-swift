@@ -231,6 +231,117 @@ struct FeedList_Tests {
         }
         disposableBag.removeAll()
     }
+    
+    // MARK: - Own Capabilities
+    
+    @Test func getCachesCapabilities() async throws {
+        let feed1Id = FeedId(rawValue: "user:feed-1")
+        let feed2Id = FeedId(rawValue: "user:feed-2")
+        let feed3Id = FeedId(rawValue: "user:feed-3")
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryFeedsResponse.dummy(
+                        feeds: [
+                            .dummy(
+                                createdAt: Date.fixed(),
+                                feed: feed1Id.rawValue,
+                                ownCapabilities: [.readFeed, .createFeed]
+                            ),
+                            .dummy(
+                                createdAt: Date.fixed(offset: 1),
+                                feed: feed2Id.rawValue,
+                                ownCapabilities: [.readFeed, .updateFeed]
+                            ),
+                            .dummy(
+                                createdAt: Date.fixed(offset: 2),
+                                feed: feed3Id.rawValue,
+                                ownCapabilities: [.readFeed, .deleteFeed]
+                            )
+                        ],
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let feedList = client.feedList(for: FeedsQuery())
+        _ = try await feedList.get()
+        
+        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
+            feed1Id: [.readFeed, .createFeed],
+            feed2Id: [.readFeed, .updateFeed],
+            feed3Id: [.readFeed, .deleteFeed]
+        ]
+        
+        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
+        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
+        
+        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
+            #expect(cached[feedId] == expectedCapabilities)
+        }
+    }
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let feedListCapabilities: (FeedList) async -> [FeedId: Set<FeedOwnCapability>] = { feedList in
+            let pairs = await feedList.state.feeds.map { ($0.feed, $0.ownCapabilities) }
+            return Dictionary(uniqueKeysWithValues: pairs).compactMapValues { $0 }
+        }
+        let feed1Id = FeedId(group: "user", id: "feed-1")
+        let feed2Id = FeedId(group: "user", id: "feed-2")
+        let initialFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .createFeed]
+        let initialFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .updateFeed]
+        let initialCapabilities = [feed1Id: initialFeed1Capabilities, feed2Id: initialFeed2Capabilities]
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryFeedsResponse.dummy(
+                        feeds: [
+                            .dummy(
+                                createdAt: Date.fixed(),
+                                feed: feed1Id.rawValue,
+                                ownCapabilities: Array(initialFeed1Capabilities)
+                            ),
+                            .dummy(
+                                createdAt: Date.fixed(offset: 1),
+                                feed: feed2Id.rawValue,
+                                ownCapabilities: Array(initialFeed2Capabilities)
+                            )
+                        ],
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let feedList = client.feedList(for: FeedsQuery())
+        try await feedList.get()
+        await #expect(feedListCapabilities(feedList) == initialCapabilities)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        await #expect(feedListCapabilities(feedList) == initialCapabilities)
+        
+        // Send matching event with updated capabilities for feed1
+        let newFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .createFeed, .deleteFeed]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feed1Id: newFeed1Capabilities])
+        )
+        await #expect(feedListCapabilities(feedList)[feed1Id] == newFeed1Capabilities)
+        await #expect(feedListCapabilities(feedList)[feed2Id] == initialFeed2Capabilities)
+        
+        // Send matching event with updated capabilities for feed2
+        let newFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .updateFeed, .updateFeedMembers]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feed2Id: newFeed2Capabilities])
+        )
+        await #expect(feedListCapabilities(feedList)[feed1Id] == newFeed1Capabilities)
+        await #expect(feedListCapabilities(feedList)[feed2Id] == newFeed2Capabilities)
+    }
 
     // MARK: - Helper Methods
 

@@ -314,6 +314,7 @@ extension FeedState {
                 await self?.access { state in
                     if let capabilities = capabilitiesMap[feed] {
                         state.feedData?.setOwnCapabilities(capabilities)
+                        state.ownCapabilities = capabilities
                     }
                     state.activities.updateAll(
                         where: { capabilitiesMap.contains($0.currentFeed?.feed) },

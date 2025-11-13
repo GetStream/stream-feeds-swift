@@ -27,7 +27,7 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
     func sendEvent(_ event: StateLayerEvent, source: EventSource = .local) async {
         var event = event
         for middleware in middlewares.value {
-            event = await middleware.willPublish(event, from: source, with: self)
+            event = await middleware.willPublish(event, from: source)
         }
         let handlers = Array(subscriptions.value.values)
         await withTaskGroup(of: Void.self) { [event] group in
@@ -76,15 +76,19 @@ extension StateLayerEventPublisher {
 }
 
 protocol StateLayerEventMiddleware: Sendable {
-    func willPublish(_ event: StateLayerEvent, from source: StateLayerEventPublisher.EventSource, with eventPublisher: StateLayerEventPublisher) async -> StateLayerEvent
+    func willPublish(_ event: StateLayerEvent, from source: StateLayerEventPublisher.EventSource) async -> StateLayerEvent
 }
 
 extension StateLayerEventPublisher {
     final class Subscription: Sendable {
-        private let cancel: @Sendable () -> Void
+        private let cancellationHandler: @Sendable () -> Void
         
         init(cancel: @escaping @Sendable () -> Void) {
-            self.cancel = cancel
+            self.cancellationHandler = cancel
+        }
+        
+        func cancel() {
+            cancellationHandler()
         }
         
         deinit {

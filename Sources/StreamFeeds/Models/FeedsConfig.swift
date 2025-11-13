@@ -19,6 +19,9 @@ public struct FeedsConfig: Sendable {
         self.customCDNClient = customCDNClient
         self.pushNotificationsConfig = pushNotificationsConfig
     }
+    
+    /// A delay in seconds until feed own capabilities are fetched for feeds delivered through web-socket and there is no cached data available.
+    var automaticFeedOwnCapabilitiesFetchDelay: Int = 5
 }
 
 extension FeedsConfig {

@@ -746,6 +746,76 @@ struct Activity_Tests {
         await #expect(activity.state.poll?.voteCountsByOption == ["option-1": 0, "option-2": 0])
     }
     
+    // MARK: - Own Capabilities
+    
+    @Test func getCachesCapabilities() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    GetActivityResponse.dummy(
+                        activity: .dummy(
+                            currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity]),
+                            id: "activity-123"
+                        )
+                    ),
+                    GetCommentsResponse.dummy(comments: [])
+                ]
+            )
+        )
+        let activity = client.activity(for: "activity-123", in: feedId)
+        _ = try await activity.get()
+        
+        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
+            feedId: [.readFeed, .addActivity]
+        ]
+        
+        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
+        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
+        
+        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
+            #expect(cached[feedId] == expectedCapabilities)
+        }
+    }
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let initialCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    GetActivityResponse.dummy(
+                        activity: .dummy(
+                            currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: Array(initialCapabilities)),
+                            id: "activity-123"
+                        )
+                    ),
+                    GetCommentsResponse.dummy(comments: [])
+                ]
+            )
+        )
+        let activity = client.activity(for: "activity-123", in: feedId)
+        try await activity.get()
+        
+        await #expect(activity.state.activity?.currentFeed?.ownCapabilities == initialCapabilities)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        await #expect(activity.state.activity?.currentFeed?.ownCapabilities == initialCapabilities)
+        
+        // Send matching event with updated capabilities
+        let newCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity, .deleteOwnActivity]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feedId: newCapabilities])
+        )
+        await #expect(activity.state.activity?.currentFeed?.ownCapabilities == newCapabilities)
+    }
+    
     // MARK: -
     
     private func defaultClientWithActivityAndCommentsResponses(

@@ -16,14 +16,13 @@ final class OwnCapabilitiesRepository: Sendable {
     
     // MARK: - Get Capabilities
     
-    func capabilities(for feed: FeedId) async throws -> Set<FeedOwnCapability> {
-        guard let capabilities = try await self.capabilities(for: Set(arrayLiteral: feed))[feed] else {
-            throw ClientError.Unknown("Capabilities were not returned for requested \(feed)")
-        }
-        return capabilities
+    /// Returns locally cached capabilities if available.
+    func capabilities(for feed: FeedId) -> Set<FeedOwnCapability>? {
+        self.capabilities(for: Set(arrayLiteral: feed))?[feed]
     }
     
-    func capabilities(for feeds: Set<FeedId>) async throws -> [FeedId: Set<FeedOwnCapability>] {
+    /// Returns locally cached capabilities if available.
+    func capabilities(for feeds: Set<FeedId>) -> [FeedId: Set<FeedOwnCapability>]? {
         let cached = storage.withLock { storage in
             feeds.reduce(into: [FeedId: Set<FeedOwnCapability>](), { all, feedId in
                 guard let cached = storage[feedId] else { return }
@@ -33,7 +32,7 @@ final class OwnCapabilitiesRepository: Sendable {
         if cached.count == feeds.count {
             return cached
         }
-        return try await getCapabilities(for: feeds)
+        return nil
     }
     
     func getCapabilities(for feeds: Set<FeedId>) async throws -> [FeedId: Set<FeedOwnCapability>] {

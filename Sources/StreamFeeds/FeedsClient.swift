@@ -138,9 +138,15 @@ public final class FeedsClient: Sendable {
         eventsMiddleware.add(subscriber: stateLayerEventPublisher)
         eventNotificationCenter.add(middlewares: [eventsMiddleware])
         
-        stateLayerEventPublisher.addMiddlewares([
-            OwnCapabilitiesStateLayerEventMiddleware(ownCapabilitiesRepository: ownCapabilitiesRepository)
-        ])
+        stateLayerEventPublisher.addMiddlewares(
+            [
+                OwnCapabilitiesStateLayerEventMiddleware(
+                    ownCapabilitiesRepository: ownCapabilitiesRepository,
+                    fetchDelay: feedsConfig.automaticFeedOwnCapabilitiesFetchDelay,
+                    sendEvent: { [weak stateLayerEventPublisher] in await stateLayerEventPublisher?.sendEvent($0) }
+                )
+            ]
+        )
     }
     
     // MARK: - Connecting the User

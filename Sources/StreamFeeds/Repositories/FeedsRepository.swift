@@ -26,14 +26,21 @@ final class FeedsRepository: Sendable {
             getOrCreateFeedRequest: request
         )
         let rawFollowers = response.followers.map { $0.toModel() }
+        let rawFollowing = response.following.map { $0.toModel() }
         let activities = response.activities.map { $0.toModel() }
         let pinnedActivities = response.pinnedActivities.map { $0.toModel() }
         let ownCapabilities = response.feed.ownCapabilities.map(Set.init) ?? Set()
-        let allOwnCapabilities = (activities + pinnedActivities.map(\.activity))
-            .reduce(into: [feed: ownCapabilities], { all, activityData in
-                guard let currentFeed = activityData.currentFeed else { return }
-                guard let capabilities = currentFeed.ownCapabilities, !capabilities.isEmpty else { return }
-                all[currentFeed.feed] = capabilities
+        let allFeedDatas: [FeedData] =
+            activities.compactMap(\.currentFeed) +
+            pinnedActivities.compactMap(\.activity.currentFeed) +
+            rawFollowers.compactMap(\.sourceFeed) +
+            rawFollowers.compactMap(\.targetFeed) +
+            rawFollowing.compactMap(\.sourceFeed) +
+            rawFollowing.compactMap(\.targetFeed)
+        let allOwnCapabilities = allFeedDatas
+            .reduce(into: [feed: ownCapabilities], { all, feedData in
+                guard let capabilities = feedData.ownCapabilities, !capabilities.isEmpty else { return }
+                all[feedData.feed] = capabilities
             })
         return GetOrCreateInfo(
             activities: PaginationResult(
@@ -49,7 +56,7 @@ final class FeedsRepository: Sendable {
             feed: response.feed.toModel(),
             followRequests: rawFollowers.filter(\.isFollowRequest),
             followers: rawFollowers.filter { $0.isFollower(of: feed) },
-            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feed) },
+            following: rawFollowing.filter { $0.isFollowing(feed) },
             members: PaginationResult(
                 models: response.members.map { $0.toModel() },
                 pagination: response.memberPagination?.toModel() ?? .empty
