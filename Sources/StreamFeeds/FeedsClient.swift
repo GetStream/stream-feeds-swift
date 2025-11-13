@@ -374,14 +374,20 @@ public final class FeedsClient: Sendable {
         ActivityReactionList(query: query, client: self)
     }
     
-    /// Adds a new activity to the specified feeds.
+    // MARK: - Activity Batch Operations
+    
+    /// Adds a new activity to one or multiple feeds.
     ///
-    /// - Parameter request: The request containing the activity data to add
+    /// - Parameter request: The request containing the activity data to add and the list of feeds
     /// - Returns: A response containing the created activity
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func addActivity(request: AddActivityRequest) async throws -> AddActivityResponse {
-        try await apiClient.addActivity(addActivityRequest: request)
+    public func addActivity(request: AddActivityRequest) async throws -> ActivityData {
+        let activityData = try await activitiesRepository.addActivity(request: request)
+        for feed in request.feeds.map(FeedId.init) {
+            await stateLayerEventPublisher.sendEvent(.activityAdded(activityData, feed))
+        }
+        return activityData
     }
     
     /// Upserts (inserts or updates) multiple activities.
@@ -391,7 +397,16 @@ public final class FeedsClient: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func upsertActivities(_ activities: [ActivityRequest]) async throws -> [ActivityData] {
-        try await activitiesRepository.upsertActivities(activities)
+        let activities = try await activitiesRepository.upsertActivities(activities)
+        let updates = activities.reduce(into: ModelUpdates<ActivityData>()) { partialResult, activityData in
+            if activityData.updatedAt.timeIntervalSince(activityData.createdAt) > 0.1 || activityData.editedAt != nil {
+                partialResult.updated.append(activityData)
+            } else {
+                partialResult.added.append(activityData)
+            }
+        }
+        await stateLayerEventPublisher.sendEvent(.activityBatchUpdate(updates))
+        return activities
     }
     
     /// Deletes multiple activities from the specified feeds.
@@ -400,8 +415,10 @@ public final class FeedsClient: Sendable {
     /// - Returns: A response confirming the deletion of activities
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteActivities(request: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse {
-        try await apiClient.deleteActivities(deleteActivitiesRequest: request)
+    public func deleteActivities(request: DeleteActivitiesRequest) async throws -> Set<String> {
+        let response = try await apiClient.deleteActivities(deleteActivitiesRequest: request)
+        await stateLayerEventPublisher.sendEvent(.activityBatchUpdate(.init(added: [], removedIds: response.deletedIds, updated: [])))
+        return Set(response.deletedIds)
     }
     
     // MARK: - Bookmark Lists

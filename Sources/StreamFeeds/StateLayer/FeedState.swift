@@ -91,13 +91,15 @@ import StreamCore
 
 extension FeedState {
     private func subscribe(to publisher: StateLayerEventPublisher) {
+        let matchesActivityQuery: @Sendable (ActivityData) -> Bool = { [feedQuery] activity in
+            guard let filter = feedQuery.activityFilter else { return true }
+            return filter.matches(activity)
+        }
         eventSubscription = publisher.subscribe { [weak self, currentUserId, feed, feedQuery] event in
             switch event {
             case .activityAdded(let activityData, let eventFeedId):
                 guard feed == eventFeedId else { return }
-                if let filter = feedQuery.activityFilter, !filter.matches(activityData) {
-                    return
-                }
+                guard matchesActivityQuery(activityData) else { return }
                 await self?.access { $0.activities.sortedInsert(activityData, sorting: $0.activitiesSorting) }
             case .activityDeleted(let activityId, let eventFeedId):
                 guard feed == eventFeedId else { return }
@@ -108,6 +110,24 @@ extension FeedState {
             case .activityUpdated(let activityData, let eventFeedId):
                 guard feed == eventFeedId else { return }
                 await self?.updateActivity(activityData)
+            case .activityBatchUpdate(let updates):
+                let added = updates.added.filter(matchesActivityQuery)
+                let updated = updates.updated.filter(matchesActivityQuery)
+                let removedIds = updates.removedIds
+                guard !added.isEmpty || !updated.isEmpty || !removedIds.isEmpty else { return }
+                await self?.access { state in
+                    let sorting = state.activitiesSorting
+                    if !added.isEmpty {
+                        state.activities = state.activities.sortedMerge(added.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
+                    }
+                    if !updated.isEmpty {
+                        state.activities = state.activities.sortedMerge(updated.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
+                    }
+                    if !removedIds.isEmpty {
+                        state.activities.removeAll(where: { removedIds.contains($0.id) })
+                        state.pinnedActivities.removeAll(where: { removedIds.contains($0.activity.id) })
+                    }
+                }
             case .activityReactionAdded(let reactionData, let activityData, let eventFeedId):
                 guard feed == eventFeedId else { return }
                 await self?.access { state in

@@ -168,7 +168,7 @@ struct FeedsClient_Test {
         )
 
         let response = try await client.addActivity(request: activityRequest)
-        #expect(response.activity.id == mockResponse.activity.id)
+        #expect(response.id == mockResponse.activity.id)
     }
 
     @Test func upsertActivities() async throws {
@@ -201,7 +201,7 @@ struct FeedsClient_Test {
         )
 
         let response = try await client.deleteActivities(request: deleteRequest)
-        #expect(response.deletedIds == mockResponse.deletedIds)
+        #expect(response == Set(mockResponse.deletedIds))
     }
 
     // MARK: - Properties Tests

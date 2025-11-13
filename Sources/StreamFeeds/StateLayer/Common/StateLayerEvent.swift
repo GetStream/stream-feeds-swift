@@ -10,6 +10,7 @@ enum StateLayerEvent: Sendable {
     case activityAdded(ActivityData, FeedId)
     case activityDeleted(String, FeedId)
     case activityUpdated(ActivityData, FeedId)
+    case activityBatchUpdate(ModelUpdates<ActivityData>)
     
     case activityReactionAdded(FeedsReactionData, ActivityData, FeedId)
     case activityReactionDeleted(FeedsReactionData, ActivityData, FeedId)
