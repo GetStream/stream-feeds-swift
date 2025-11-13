@@ -485,6 +485,100 @@ struct ActivityList_Tests {
         #expect(result == ["activity-1"]) // Should not include activity-2
     }
     
+    @Test func activityBatchUpdateEventUpdatesState() async throws {
+        let client = defaultClient(
+            activities: [
+                .dummy(id: "activity-1", user: .dummy(id: "current-user-id")),
+                .dummy(id: "activity-2", user: .dummy(id: "current-user-id"))
+            ],
+            additionalPayloads: [
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            id: "activity-3",
+                            user: .dummy(id: "current-user-id")
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "activity-2",
+                            text: "UPDATED TEXT",
+                            user: .dummy(id: "current-user-id")
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: ["activity-1"]
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "unrelated-activity",
+                            user: .dummy(id: "different-user")
+                        )
+                    ],
+                    duration: "1.23ms"
+                )
+            ]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(
+                filter: .equal(.userId, "current-user-id")
+            )
+        )
+        try await activityList.get()
+        
+        await #expect(activityList.state.activities.map(\.id) == ["activity-1", "activity-2"])
+        
+        // Send batch update with added activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [Self.feedId.rawValue],
+                id: "activity-3",
+                type: "post"
+            )
+        ])
+        await #expect(activityList.state.activities.map(\.id).sorted() == ["activity-1", "activity-2", "activity-3"])
+        
+        // Send batch update with updated activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [Self.feedId.rawValue],
+                id: "activity-2",
+                text: "UPDATED TEXT",
+                type: "post"
+            )
+        ])
+        let afterUpdate = await activityList.state.activities
+        let updatedActivity = try #require(afterUpdate.first(where: { $0.id == "activity-2" }))
+        #expect(updatedActivity.text == "UPDATED TEXT")
+        
+        // Send batch update with removed activity
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: ["activity-1"])
+        )
+        let afterRemove = await activityList.state.activities
+        #expect(afterRemove.map(\.id) == ["activity-2", "activity-3"])
+        
+        // Send batch update with unrelated activity - should be ignored
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [Self.feedId.rawValue],
+                id: "unrelated-activity",
+                type: "post"
+            )
+        ])
+        await #expect(activityList.state.activities.map(\.id) == ["activity-2", "activity-3"])
+    }
+    
     // MARK: -
     
     private func defaultClient(

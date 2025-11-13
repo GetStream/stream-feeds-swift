@@ -945,6 +945,95 @@ struct Feed_Tests {
 
         await #expect(feed.state.activities.first?.text == "New From WS")
     }
+    
+    @Test func activityBatchUpdateEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(
+            feed: feedId.rawValue,
+            [
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            feeds: [feedId.rawValue],
+                            id: "2"
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            feeds: [feedId.rawValue],
+                            id: "1",
+                            text: "UPDATED TEXT"
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: ["1"]
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            feeds: ["user:someoneelse"],
+                            id: "unrelated-activity"
+                        )
+                    ],
+                    duration: "1.23ms"
+                )
+            ]
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+        
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["1"])
+        
+        // Send batch update with added activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [feedId.rawValue],
+                id: "2",
+                type: "post"
+            )
+        ])
+        await #expect(feed.state.activities.map(\.id).sorted() == ["1", "2"])
+        
+        // Send batch update with updated activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [feedId.rawValue],
+                id: "1",
+                text: "UPDATED TEXT",
+                type: "post"
+            )
+        ])
+        let afterUpdate = await feed.state.activities
+        let updatedActivity = try #require(afterUpdate.first(where: { $0.id == "1" }))
+        #expect(updatedActivity.text == "UPDATED TEXT")
+        
+        // Send batch update with removed activity - should remove from both activities and pinnedActivities
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: ["1"])
+        )
+        await #expect(feed.state.activities.map(\.id) == ["2"])
+        await #expect(feed.state.pinnedActivities.isEmpty)
+        
+        // Send batch update with unrelated activity - should be ignored
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: ["user:someoneelse"],
+                id: "unrelated-activity",
+                type: "post"
+            )
+        ])
+        await #expect(feed.state.activities.map(\.id) == ["2"])
+    }
 
     @Test func activityPinnedEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")

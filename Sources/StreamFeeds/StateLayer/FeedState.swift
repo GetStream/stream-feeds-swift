@@ -111,8 +111,8 @@ extension FeedState {
                 guard feed == eventFeedId else { return }
                 await self?.updateActivity(activityData)
             case .activityBatchUpdate(let updates):
-                let added = updates.added.filter(matchesActivityQuery)
-                let updated = updates.updated.filter(matchesActivityQuery)
+                let added = updates.added.filter { $0.feeds.contains(feed.rawValue) }.filter(matchesActivityQuery)
+                let updated = updates.updated.filter { $0.feeds.contains(feed.rawValue) }.filter(matchesActivityQuery)
                 let removedIds = updates.removedIds
                 guard !added.isEmpty || !updated.isEmpty || !removedIds.isEmpty else { return }
                 await self?.access { state in

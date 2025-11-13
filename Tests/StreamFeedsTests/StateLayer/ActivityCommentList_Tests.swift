@@ -370,6 +370,40 @@ struct ActivityCommentList_Tests {
         #expect(commentsAfterDeletion.isEmpty) // All comments should be removed
     }
     
+    @Test func activityBatchUpdateEventUpdatesState() async throws {
+        let client = defaultClient(
+            comments: [
+                .dummy(id: "comment-1", objectId: Self.activityId, objectType: "activity"),
+                .dummy(id: "comment-2", objectId: Self.activityId, objectType: "activity")
+            ],
+            additionalPayloads: [
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: ["different-activity"]
+                ),
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: [Self.activityId]
+                )
+            ]
+        )
+        let commentList = client.activityCommentList(
+            for: ActivityCommentsQuery(objectId: Self.activityId, objectType: "activity")
+        )
+        try await commentList.get()
+        await #expect(commentList.state.comments.map(\.id) == ["comment-1", "comment-2"])
+        
+        // Send batch update with unrelated activity removed - should not affect comments
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: ["different-activity"])
+        )
+        await #expect(commentList.state.comments.map(\.id) == ["comment-1", "comment-2"])
+        
+        // Send batch update with matching activity removed - should clear all comments
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: [Self.activityId])
+        )
+        await #expect(commentList.state.comments.isEmpty)
+    }
+    
     // MARK: -
     
     private func defaultClient(
