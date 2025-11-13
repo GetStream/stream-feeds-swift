@@ -24,6 +24,7 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
     /// Triggered by incoming web-socket events and manually after API calls.
     ///
     /// - Parameter event: The state layer change event.
+    /// - Parameter source: The source where the event is coming from: web-socket or internal.
     func sendEvent(_ event: StateLayerEvent, source: EventSource = .local) async {
         var event = event
         for middleware in middlewares.value {
@@ -71,7 +72,10 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
 
 extension StateLayerEventPublisher {
     enum EventSource {
-        case webSocket, local
+        /// Events which are coming in from the web-socket.
+        case webSocket
+        /// Events which are internally published with HTTP response data.
+        case local
     }
 }
 

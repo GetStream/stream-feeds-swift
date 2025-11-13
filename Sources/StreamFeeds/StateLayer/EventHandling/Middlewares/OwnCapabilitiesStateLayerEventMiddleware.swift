@@ -25,6 +25,10 @@ final class OwnCapabilitiesStateLayerEventMiddleware: StateLayerEventMiddleware 
     // MARK: - Processing Events
     
     /// Adds own capabilities to web-socket added events and extracts own capabilities from local events.
+    ///
+    /// - Note: Added events are only enriched because state-layer merged WS event data by keeping own fields. Therefore,
+    /// updated events do not need to have capabilities correctly set. Secondly, state-layer uses feedOwnCapabilitiesUpdated
+    /// to automatically apply updated capablities.
     func willPublish(_ event: StateLayerEvent, from source: StateLayerEventPublisher.EventSource) async -> StateLayerEvent {
         switch source {
         case .webSocket:
