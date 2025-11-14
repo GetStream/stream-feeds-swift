@@ -39,6 +39,8 @@ struct Feed_Tests {
         let updatedFeedData = try await feed.updateFeed(request: updateRequest)
         let stateFeedData = await feed.state.feedData
 
+        #expect(updatedFeedData.name == "Updated Feed Name")
+        #expect(updatedFeedData.custom == customData)
         #expect(stateFeedData?.name == "Updated Feed Name")
         #expect(stateFeedData?.custom == customData)
     }

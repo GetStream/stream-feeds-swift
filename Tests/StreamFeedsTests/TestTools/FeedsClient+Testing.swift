@@ -7,12 +7,12 @@ import StreamCore
 @testable import StreamFeeds
 
 extension FeedsClient {
-    static func mock(config: FeedsConfig = .default, apiTransport: APITransportMock) -> FeedsClient {
+    static func mock(apiTransport: APITransportMock) -> FeedsClient {
         FeedsClient(
             apiKey: APIKey("UnitTests"),
             user: User.dummy(id: "current-user-id"),
             token: "UnitTestingToken",
-            feedsConfig: config,
+            feedsConfig: .default,
             apiTransport: apiTransport
         )
     }

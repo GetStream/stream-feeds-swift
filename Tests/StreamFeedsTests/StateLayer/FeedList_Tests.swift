@@ -26,12 +26,15 @@ struct FeedList_Tests {
 
     @Test func queryMoreFeedsUpdatesState() async throws {
         let client = defaultClientWithFeedsResponses([
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed()),
-                    .dummy(id: "feed-4", name: "Fourth Feed", createdAt: Date.fixed())
-                ],
-                next: "next-cursor-2"
+            .init(
+                matching: .bodyType(QueryFeedsRequest.self),
+                payload: QueryFeedsResponse.dummy(
+                    feeds: [
+                        .dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed()),
+                        .dummy(id: "feed-4", name: "Fourth Feed", createdAt: Date.fixed())
+                    ],
+                    next: "next-cursor-2"
+                )
             )
         ])
         let feedList = client.feedList(for: FeedsQuery())
@@ -185,17 +188,23 @@ struct FeedList_Tests {
     }
 
     @Test @MainActor func feedAddedEventWithMembersFilterAndZeroRefetchDelayTriggersImmediateRefetch() async throws {
-        let client = defaultClientWithFeedsResponses([
-            // Additional response for the refetch
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
-                    .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1)),
-                    .dummy(id: "feed-3", name: "New Feed", createdAt: Date.fixed(offset: 2))
-                ],
-                next: nil
-            )
-        ])
+        let client = defaultClientWithFeedsResponses(
+            [
+                // Additional response for the refetch
+                .init(
+                    matching: .bodyType(QueryFeedsRequest.self),
+                    payload:
+                    QueryFeedsResponse.dummy(
+                        feeds: [
+                            .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1)),
+                            .dummy(id: "feed-3", name: "New Feed", createdAt: Date.fixed(offset: 2))
+                        ],
+                        next: nil
+                    )
+                )
+            ]
+        )
         
         // Create FeedList with refetchDelay = 0 and members filter (which cannot be filtered locally)
         let feedList = FeedList(
@@ -295,22 +304,26 @@ struct FeedList_Tests {
         let initialCapabilities = [feed1Id: initialFeed1Capabilities, feed2Id: initialFeed2Capabilities]
         
         let client = FeedsClient.mock(
-            apiTransport: .withPayloads(
+            apiTransport: .withMatchedResponses(
                 [
-                    QueryFeedsResponse.dummy(
-                        feeds: [
-                            .dummy(
-                                createdAt: Date.fixed(),
-                                feed: feed1Id.rawValue,
-                                ownCapabilities: Array(initialFeed1Capabilities)
-                            ),
-                            .dummy(
-                                createdAt: Date.fixed(offset: 1),
-                                feed: feed2Id.rawValue,
-                                ownCapabilities: Array(initialFeed2Capabilities)
-                            )
-                        ],
-                        next: nil
+                    .init(
+                        matching: .bodyType(QueryFeedsRequest.self),
+                        payload:
+                        QueryFeedsResponse.dummy(
+                            feeds: [
+                                .dummy(
+                                    createdAt: Date.fixed(),
+                                    feed: feed1Id.rawValue,
+                                    ownCapabilities: Array(initialFeed1Capabilities)
+                                ),
+                                .dummy(
+                                    createdAt: Date.fixed(offset: 1),
+                                    feed: feed2Id.rawValue,
+                                    ownCapabilities: Array(initialFeed2Capabilities)
+                                )
+                            ],
+                            next: nil
+                        )
                     )
                 ]
             )
@@ -347,17 +360,20 @@ struct FeedList_Tests {
     // MARK: - Helper Methods
 
     private func defaultClientWithFeedsResponses(
-        _ additionalPayloads: [any Encodable] = []
+        _ additionalPayloads: [APITransportMock.APIResponse] = []
     ) -> FeedsClient {
         FeedsClient.mock(
-            apiTransport: .withPayloads(
+            apiTransport: .withMatchedResponses(
                 [
-                    QueryFeedsResponse.dummy(
-                        feeds: [
-                            .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
-                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1))
-                        ],
-                        next: "next-cursor"
+                    .init(
+                        matching: .bodyType(QueryFeedsRequest.self),
+                        payload: QueryFeedsResponse.dummy(
+                            feeds: [
+                                .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                                .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1))
+                            ],
+                            next: "next-cursor"
+                        )
                     )
                 ] + additionalPayloads
             )

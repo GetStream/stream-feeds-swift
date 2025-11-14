@@ -112,10 +112,7 @@ struct OwnCapabilitiesStateLayerEventMiddleware_Tests {
     }
     
     @Test func automaticallyFetchCapabilitiesOnWebSocketEventWhenNotLocallyCached() async throws {
-        var config = FeedsConfig.default
-        config.automaticFeedOwnCapabilitiesFetchDelay = 0
         let client = FeedsClient.mock(
-            config: config,
             apiTransport: .withPayloads([
                 OwnCapabilitiesBatchResponse.dummy(capabilities: [
                     "user:john": [.addActivity, .readFeed]

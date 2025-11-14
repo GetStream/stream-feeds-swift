@@ -142,7 +142,6 @@ public final class FeedsClient: Sendable {
             [
                 OwnCapabilitiesStateLayerEventMiddleware(
                     ownCapabilitiesRepository: ownCapabilitiesRepository,
-                    fetchDelay: feedsConfig.automaticFeedOwnCapabilitiesFetchDelay,
                     sendEvent: { [weak stateLayerEventPublisher] in await stateLayerEventPublisher?.sendEvent($0) }
                 )
             ]

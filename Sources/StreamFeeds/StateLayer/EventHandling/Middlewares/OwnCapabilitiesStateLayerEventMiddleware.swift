@@ -9,17 +9,12 @@ import StreamCore
 /// Extracts own capabilities from events and saves it to the shared
 /// store in the capabilities repository.
 final class OwnCapabilitiesStateLayerEventMiddleware: StateLayerEventMiddleware {
-    private let capabilitiesFetchSubject = AllocatedUnfairLock(PassthroughSubject<Set<FeedId>, Never>())
-    private let disposableBag = DisposableBag()
-    private let fetchDelay: Int
     private let sendEvent: @Sendable (StateLayerEvent) async -> Void
     let ownCapabilitiesRepository: OwnCapabilitiesRepository
     
-    init(ownCapabilitiesRepository: OwnCapabilitiesRepository, fetchDelay: Int = 5, sendEvent: @escaping @Sendable (StateLayerEvent) async -> Void) {
+    init(ownCapabilitiesRepository: OwnCapabilitiesRepository, sendEvent: @escaping @Sendable (StateLayerEvent) async -> Void) {
         self.ownCapabilitiesRepository = ownCapabilitiesRepository
-        self.fetchDelay = fetchDelay
         self.sendEvent = sendEvent
-        subscribeToRefetch()
     }
     
     // MARK: - Processing Events
@@ -63,7 +58,7 @@ final class OwnCapabilitiesStateLayerEventMiddleware: StateLayerEventMiddleware 
     
     private func cachedCapabilities(for feed: FeedId) async -> [FeedId: Set<FeedOwnCapability>]? {
         guard let capabilities = ownCapabilitiesRepository.capabilities(for: feed) else {
-            capabilitiesFetchSubject.withLock { $0.send([feed]) }
+            scheduleFetchingMissingCapabilities(for: [feed])
             return nil
         }
         return [feed: capabilities]
@@ -71,7 +66,7 @@ final class OwnCapabilitiesStateLayerEventMiddleware: StateLayerEventMiddleware 
     
     private func cachedCapabilities(for feeds: Set<FeedId>) async -> [FeedId: Set<FeedOwnCapability>]? {
         guard let capabilities = ownCapabilitiesRepository.capabilities(for: feeds) else {
-            capabilitiesFetchSubject.withLock { $0.send(feeds) }
+            scheduleFetchingMissingCapabilities(for: feeds)
             return nil
         }
         return capabilities
@@ -79,28 +74,21 @@ final class OwnCapabilitiesStateLayerEventMiddleware: StateLayerEventMiddleware 
     
     // MARK: - Fetch Missing Capabilities
     
-    private func subscribeToRefetch() {
-        capabilitiesFetchSubject.withLock { [disposableBag, fetchDelay, ownCapabilitiesRepository, sendEvent] subject in
-            subject
-                .collect(.byTimeOrCount(DispatchQueue.global(qos: .utility), .seconds(fetchDelay), 50))
-                .map { $0.reduce(Set<FeedId>(), { $0.union($1) }) }
-                .map { feedIds in
-                    if let cachedIds = ownCapabilitiesRepository.capabilities(for: feedIds) {
-                        return feedIds.subtracting(cachedIds.keys)
-                    }
-                    return feedIds
-                }
-                .asyncSink { feedIds in
-                    do {
-                        let fetchedCapabilities = try await ownCapabilitiesRepository.getCapabilities(for: feedIds)
-                        _ = ownCapabilitiesRepository.saveCapabilities(fetchedCapabilities)
-                        // Here we explicitly send the update for making state-layer to fill in capabilities (default case is that newly inserted capabilities do not trigger local events)
-                        await sendEvent(.feedOwnCapabilitiesUpdated(fetchedCapabilities))
-                    } catch {
-                        log.error("Failed to fetch missing feed capabilities for number of feeds: \(feedIds.count)", error: error)
-                    }
-                }
-                .store(in: disposableBag)
+    /// Most of the case capabilities are cached since we read them from HTTP responses. One example where this
+    /// can not be the case is where timeline feed is getting new activities from other feeds. For these,
+    /// we still fill in capabilities automatically.
+    ///
+    /// - Note: This is not async function because we don't want suspend event handling while fetching additional capabilities
+    private func scheduleFetchingMissingCapabilities(for feedIds: Set<FeedId>) {
+        Task {
+            do {
+                let fetchedCapabilities = try await ownCapabilitiesRepository.getCapabilities(for: feedIds)
+                _ = ownCapabilitiesRepository.saveCapabilities(fetchedCapabilities)
+                // Here we explicitly send the update for making state-layer to fill in capabilities (default case is that newly inserted capabilities do not trigger local events)
+                await sendEvent(.feedOwnCapabilitiesUpdated(fetchedCapabilities))
+            } catch {
+                log.error("Failed to fetch missing feed capabilities for number of feeds: \(feedIds.count)", error: error)
+            }
         }
     }
 }

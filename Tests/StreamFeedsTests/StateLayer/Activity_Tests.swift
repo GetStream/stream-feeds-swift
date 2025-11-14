@@ -834,37 +834,42 @@ struct Activity_Tests {
                 )
             ]
         }
-        
         return FeedsClient.mock(
-            apiTransport: .withPayloads(
+            apiTransport: .withMatchedResponses(
                 [
-                    GetActivityResponse.dummy(
-                        activity: .dummy(
-                            id: "activity-123",
-                            latestReactions: [.dummy(type: "like")],
-                            ownReactions: [.dummy(type: "like", user: .dummy(id: "current-user-id"))],
-                            poll: .dummy(
-                                enforceUniqueVote: uniqueVotes,
-                                id: "poll-123",
-                                name: "Test Poll",
-                                options: [
-                                    .dummy(id: "option-1", text: "Option 1"),
-                                    .dummy(id: "option-2", text: "Option 2")
-                                ],
-                                ownVotes: ownVotes,
-                                voteCount: ownVotes.count,
-                                voteCountsByOption: ["option-1": ownVotes.count, "option-2": 0]
-                            ),
-                            reactionCount: 1,
-                            reactionGroups: ["like": .dummy(count: 1)],
-                            text: "Test activity content"
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/activities/"),
+                        payload: GetActivityResponse.dummy(
+                            activity: .dummy(
+                                id: "activity-123",
+                                latestReactions: [.dummy(type: "like")],
+                                ownReactions: [.dummy(type: "like", user: .dummy(id: "current-user-id"))],
+                                poll: .dummy(
+                                    enforceUniqueVote: uniqueVotes,
+                                    id: "poll-123",
+                                    name: "Test Poll",
+                                    options: [
+                                        .dummy(id: "option-1", text: "Option 1"),
+                                        .dummy(id: "option-2", text: "Option 2")
+                                    ],
+                                    ownVotes: ownVotes,
+                                    voteCount: ownVotes.count,
+                                    voteCountsByOption: ["option-1": ownVotes.count, "option-2": 0]
+                                ),
+                                reactionCount: 1,
+                                reactionGroups: ["like": .dummy(count: 1)],
+                                text: "Test activity content"
+                            )
                         )
                     ),
-                    GetCommentsResponse.dummy(comments: [
-                        .dummy(id: "comment-1", objectId: "activity-123", text: "First comment"),
-                        .dummy(id: "comment-2", objectId: "activity-123", text: "Second comment")
-                    ])
-                ] + additionalPayloads
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/comments"),
+                        payload: GetCommentsResponse.dummy(comments: [
+                            .dummy(id: "comment-1", objectId: "activity-123", text: "First comment"),
+                            .dummy(id: "comment-2", objectId: "activity-123", text: "Second comment")
+                        ])
+                    )
+                ] + additionalPayloads.map { .init(matching: .any, result: .success($0)) }
             )
         )
     }
