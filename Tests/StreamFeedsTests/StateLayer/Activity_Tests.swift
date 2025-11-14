@@ -499,6 +499,76 @@ struct Activity_Tests {
         await #expect(activity.state.activity?.text == "NEW TEXT")
     }
     
+    @Test func activityBatchUpdateEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivityAndCommentsResponses(
+            [
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "activity-123",
+                            text: "UPDATED TEXT"
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "different-activity",
+                            text: "SHOULD NOT CHANGE"
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: ["activity-123"]
+                )
+            ]
+        )
+        let activity = client.activity(
+            for: "activity-123",
+            in: feedId
+        )
+        try await activity.get()
+        
+        await #expect(activity.state.activity?.id == "activity-123")
+        await #expect(activity.state.activity?.text == "Test activity content")
+        
+        // Send batch update with updated activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [feedId.rawValue],
+                id: "activity-123",
+                text: "UPDATED TEXT",
+                type: "post"
+            )
+        ])
+        await #expect(activity.state.activity?.id == "activity-123")
+        await #expect(activity.state.activity?.text == "UPDATED TEXT")
+        
+        // Send batch update with unrelated activity - should be ignored
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [feedId.rawValue],
+                id: "different-activity",
+                text: "SHOULD NOT CHANGE",
+                type: "post"
+            )
+        ])
+        await #expect(activity.state.activity?.text == "UPDATED TEXT")
+        
+        // Send batch update with removed activity
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: ["activity-123"])
+        )
+        await #expect(activity.state.activity == nil)
+    }
+    
     @Test func pollDeletedFeedEventUpdatesState() async throws {
         let client = defaultClientWithActivityAndCommentsResponses()
         let feedId = FeedId(group: "user", id: "jane")

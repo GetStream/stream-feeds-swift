@@ -133,6 +133,11 @@ extension ActivityCommentListState {
                 await self?.access { state in
                     state.comments.removeAll()
                 }
+            case .activityBatchUpdate(let updates):
+                guard updates.removedIds.contains(query.objectId) else { return }
+                await self?.access { state in
+                    state.comments.removeAll()
+                }
             case .commentAdded(let commentData, _, _):
                 guard query.objectId == commentData.objectId, query.objectType == commentData.objectType else { return }
                 await self?.access { state in

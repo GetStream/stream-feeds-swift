@@ -42,9 +42,15 @@ extension Array {
     ///
     /// - Parameter ids: Ids of elements to remove.
     mutating func remove(byIds ids: [Element.ID]) where Element: Identifiable {
+        remove(byIds: Set(ids))
+    }
+    
+    /// Removes elements from the non-sorted array based on ID.
+    ///
+    /// - Parameter ids: Ids of elements to remove.
+    mutating func remove(byIds ids: Set<Element.ID>) where Element: Identifiable {
         guard !ids.isEmpty else { return }
-        let lookup = Set(ids)
-        removeAll(where: { lookup.contains($0.id) })
+        removeAll(where: { ids.contains($0.id) })
     }
     
     /// Replaces an element from the non-sorted array based on its ID.

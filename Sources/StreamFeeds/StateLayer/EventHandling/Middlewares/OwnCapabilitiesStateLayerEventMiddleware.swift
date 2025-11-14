@@ -95,7 +95,7 @@ final class OwnCapabilitiesStateLayerEventMiddleware: StateLayerEventMiddleware 
 
 private extension StateLayerEvent {
     var ownCapabilities: [FeedId: Set<FeedOwnCapability>] {
-        guard let feedDatas else { return [:] }
+        guard let feedDatas, !feedDatas.isEmpty else { return [:] }
         return feedDatas.reduce(into: [FeedId: Set<FeedOwnCapability>](), { all, feedData in
             guard let capabilities = feedData.ownCapabilities, !capabilities.isEmpty else { return }
             all[feedData.feed] = capabilities
@@ -108,6 +108,8 @@ private extension StateLayerEvent {
             return activityData.currentFeed.map { [$0] }
         case .activityUpdated(let activityData, _):
             return activityData.currentFeed.map { [$0] }
+        case .activityBatchUpdate(let updates):
+            return (updates.added + updates.updated).compactMap(\.currentFeed)
         case .activityReactionAdded(_, let activityData, _):
             return activityData.currentFeed.map { [$0] }
         case .activityReactionDeleted(_, let activityData, _):

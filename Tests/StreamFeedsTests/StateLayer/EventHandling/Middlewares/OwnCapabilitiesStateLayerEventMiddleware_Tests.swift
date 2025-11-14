@@ -261,6 +261,19 @@ struct OwnCapabilitiesStateLayerEventMiddleware_Tests {
         let user19FeedId = FeedId(rawValue: "user:user\(feedIdCounter)")
         let user19Capabilities: Set<FeedOwnCapability> = [.readFeed, .updateFeedFollowers]
         await client.stateLayerEventPublisher.sendEvent(.feedFollowUpdated(makeFollowData(user18FeedId.rawValue, user19FeedId.rawValue, user18Capabilities, user19Capabilities), user18FeedId), source: .local)
+        feedIdCounter += 1
+        
+        let user20FeedId = FeedId(rawValue: "user:user\(feedIdCounter)")
+        let user20Capabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
+        feedIdCounter += 1
+        let user21FeedId = FeedId(rawValue: "user:user\(feedIdCounter)")
+        let user21Capabilities: Set<FeedOwnCapability> = [.readFeed, .updateOwnActivity]
+        let batchUpdates = ModelUpdates<ActivityData>(
+            added: [makeActivityData(user20FeedId.rawValue, user20Capabilities)],
+            removedIds: [],
+            updated: [makeActivityData(user21FeedId.rawValue, user21Capabilities)]
+        )
+        await client.stateLayerEventPublisher.sendEvent(.activityBatchUpdate(batchUpdates), source: .local)
         
         #expect(client.ownCapabilitiesRepository.capabilities(for: user1FeedId) == user1Capabilities)
         #expect(client.ownCapabilitiesRepository.capabilities(for: user2FeedId) == user2Capabilities)
@@ -281,5 +294,7 @@ struct OwnCapabilitiesStateLayerEventMiddleware_Tests {
         #expect(client.ownCapabilitiesRepository.capabilities(for: user17FeedId) == user17Capabilities)
         #expect(client.ownCapabilitiesRepository.capabilities(for: user18FeedId) == user18Capabilities)
         #expect(client.ownCapabilitiesRepository.capabilities(for: user19FeedId) == user19Capabilities)
+        #expect(client.ownCapabilitiesRepository.capabilities(for: user20FeedId) == user20Capabilities)
+        #expect(client.ownCapabilitiesRepository.capabilities(for: user21FeedId) == user21Capabilities)
     }
 }

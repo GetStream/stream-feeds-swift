@@ -485,94 +485,49 @@ struct ActivityList_Tests {
         #expect(result == ["activity-1"]) // Should not include activity-2
     }
     
-    // MARK: - Own Capabilities
-    
-    @Test func getCachesCapabilities() async throws {
-        let feed1Id = FeedId(rawValue: "user:feed-1")
-        let feed2Id = FeedId(rawValue: "user:feed-2")
-        let feed3Id = FeedId(rawValue: "user:feed-3")
-        
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads(
-                [
-                    QueryActivitiesResponse.dummy(
-                        activities: [
-                            .dummy(
-                                currentFeed: .dummy(feed: feed1Id.rawValue, ownCapabilities: [.readFeed, .addActivity]),
-                                id: "activity-1",
-                                user: .dummy(id: "current-user-id")
-                            ),
-                            .dummy(
-                                currentFeed: .dummy(feed: feed2Id.rawValue, ownCapabilities: [.readFeed, .readActivities]),
-                                id: "activity-2",
-                                user: .dummy(id: "current-user-id")
-                            ),
-                            .dummy(
-                                currentFeed: .dummy(feed: feed3Id.rawValue, ownCapabilities: [.readFeed, .addComment]),
-                                id: "activity-3",
-                                user: .dummy(id: "current-user-id")
-                            )
-                        ],
-                        next: nil
-                    )
-                ]
-            )
-        )
-        let activityList = client.activityList(
-            for: ActivitiesQuery(
-                filter: .equal(.userId, "current-user-id")
-            )
-        )
-        _ = try await activityList.get()
-        
-        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
-            feed1Id: [.readFeed, .addActivity],
-            feed2Id: [.readFeed, .readActivities],
-            feed3Id: [.readFeed, .addComment]
-        ]
-        
-        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
-        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
-        
-        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
-            #expect(cached[feedId] == expectedCapabilities)
-        }
-    }
-    
-    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
-        let activityListCapabilities: (ActivityList) async -> [FeedId: Set<FeedOwnCapability>] = { activityList in
-            let pairs = await activityList.state.activities.compactMap { activity -> (FeedId, Set<FeedOwnCapability>)? in
-                guard let feedData = activity.currentFeed, let capabilities = feedData.ownCapabilities else { return nil }
-                return (feedData.feed, capabilities)
-            }
-            return Dictionary(pairs, uniquingKeysWith: { $1 })
-        }
-        let feed1Id = FeedId(group: "user", id: "feed-1")
-        let feed2Id = FeedId(group: "user", id: "feed-2")
-        let initialFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
-        let initialFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .readActivities]
-        let initialCapabilities = [feed1Id: initialFeed1Capabilities, feed2Id: initialFeed2Capabilities]
-        
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads(
-                [
-                    QueryActivitiesResponse.dummy(
-                        activities: [
-                            .dummy(
-                                currentFeed: .dummy(feed: feed1Id.rawValue, ownCapabilities: Array(initialFeed1Capabilities)),
-                                id: "activity-1",
-                                user: .dummy(id: "current-user-id")
-                            ),
-                            .dummy(
-                                currentFeed: .dummy(feed: feed2Id.rawValue, ownCapabilities: Array(initialFeed2Capabilities)),
-                                id: "activity-2",
-                                user: .dummy(id: "current-user-id")
-                            )
-                        ],
-                        next: nil
-                    )
-                ]
-            )
+    @Test func activityBatchUpdateEventUpdatesState() async throws {
+        let client = defaultClient(
+            activities: [
+                .dummy(id: "activity-1", user: .dummy(id: "current-user-id")),
+                .dummy(id: "activity-2", user: .dummy(id: "current-user-id"))
+            ],
+            additionalPayloads: [
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            id: "activity-3",
+                            user: .dummy(id: "current-user-id")
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "activity-2",
+                            text: "UPDATED TEXT",
+                            user: .dummy(id: "current-user-id")
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: ["activity-1"]
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "unrelated-activity",
+                            user: .dummy(id: "different-user")
+                        )
+                    ],
+                    duration: "1.23ms"
+                )
+            ]
         )
         let activityList = client.activityList(
             for: ActivitiesQuery(
@@ -580,31 +535,48 @@ struct ActivityList_Tests {
             )
         )
         try await activityList.get()
-        await #expect(activityListCapabilities(activityList) == initialCapabilities)
         
-        // Send unmatching event first - should be ignored
-        await client.stateLayerEventPublisher.sendEvent(
-            .feedOwnCapabilitiesUpdated([
-                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
-            ])
-        )
-        await #expect(activityListCapabilities(activityList) == initialCapabilities)
+        await #expect(activityList.state.activities.map(\.id) == ["activity-1", "activity-2"])
         
-        // Send matching event with updated capabilities for feed1
-        let newFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity, .updateOwnActivity]
-        await client.stateLayerEventPublisher.sendEvent(
-            .feedOwnCapabilitiesUpdated([feed1Id: newFeed1Capabilities])
-        )
-        await #expect(activityListCapabilities(activityList)[feed1Id] == newFeed1Capabilities)
-        await #expect(activityListCapabilities(activityList)[feed2Id] == initialFeed2Capabilities)
+        // Send batch update with added activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [Self.feedId.rawValue],
+                id: "activity-3",
+                type: "post"
+            )
+        ])
+        await #expect(activityList.state.activities.map(\.id).sorted() == ["activity-1", "activity-2", "activity-3"])
         
-        // Send matching event with updated capabilities for feed2
-        let newFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .readActivities, .addComment]
-        await client.stateLayerEventPublisher.sendEvent(
-            .feedOwnCapabilitiesUpdated([feed2Id: newFeed2Capabilities])
+        // Send batch update with updated activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [Self.feedId.rawValue],
+                id: "activity-2",
+                text: "UPDATED TEXT",
+                type: "post"
+            )
+        ])
+        let afterUpdate = await activityList.state.activities
+        let updatedActivity = try #require(afterUpdate.first(where: { $0.id == "activity-2" }))
+        #expect(updatedActivity.text == "UPDATED TEXT")
+        
+        // Send batch update with removed activity
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: ["activity-1"])
         )
-        await #expect(activityListCapabilities(activityList)[feed1Id] == newFeed1Capabilities)
-        await #expect(activityListCapabilities(activityList)[feed2Id] == newFeed2Capabilities)
+        let afterRemove = await activityList.state.activities
+        #expect(afterRemove.map(\.id) == ["activity-2", "activity-3"])
+        
+        // Send batch update with unrelated activity - should be ignored
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [Self.feedId.rawValue],
+                id: "unrelated-activity",
+                type: "post"
+            )
+        ])
+        await #expect(activityList.state.activities.map(\.id) == ["activity-2", "activity-3"])
     }
     
     // MARK: -
