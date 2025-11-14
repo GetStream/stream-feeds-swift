@@ -8,9 +8,13 @@ import StreamCore
 public final class BookmarkList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<BookmarkListState>
     private let bookmarksRepository: BookmarksRepository
+    private let eventPublisher: StateLayerEventPublisher
+    private let ownCapabilitiesRepository: OwnCapabilitiesRepository
 
     init(query: BookmarksQuery, client: FeedsClient) {
         bookmarksRepository = client.bookmarksRepository
+        eventPublisher = client.stateLayerEventPublisher
+        ownCapabilitiesRepository = client.ownCapabilitiesRepository
         self.query = query
         let eventPublisher = client.stateLayerEventPublisher
         stateBuilder = StateBuilder { BookmarkListState(query: query, eventPublisher: eventPublisher) }
@@ -52,6 +56,9 @@ public final class BookmarkList: Sendable {
             with: result,
             for: .init(filter: query.filter, sort: query.sort)
         )
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.compactMap(\.activity.currentFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
         return result.models
     }
 }

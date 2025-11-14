@@ -66,6 +66,13 @@ extension FollowListState {
                         state.follows.remove(byId: follow.id)
                     }
                 }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.follows.updateAll(
+                        where: { capabilitiesMap.contains($0.sourceFeed.feed) || capabilitiesMap.contains($0.targetFeed.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                }
             default:
                 break
             }

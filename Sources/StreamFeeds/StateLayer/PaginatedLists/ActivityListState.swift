@@ -201,6 +201,13 @@ extension ActivityListState {
                         }
                     )
                 }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.activities.updateAll(
+                        where: { capabilitiesMap.contains($0.currentFeed?.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                }
             case .pollUpdated(let pollData, _):
                 await self?.access { state in
                     state.activities.updateFirstElement(

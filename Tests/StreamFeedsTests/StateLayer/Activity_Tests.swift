@@ -816,6 +816,76 @@ struct Activity_Tests {
         await #expect(activity.state.poll?.voteCountsByOption == ["option-1": 0, "option-2": 0])
     }
     
+    // MARK: - Own Capabilities
+    
+    @Test func getCachesCapabilities() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    GetActivityResponse.dummy(
+                        activity: .dummy(
+                            currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity]),
+                            id: "activity-123"
+                        )
+                    ),
+                    GetCommentsResponse.dummy(comments: [])
+                ]
+            )
+        )
+        let activity = client.activity(for: "activity-123", in: feedId)
+        _ = try await activity.get()
+        
+        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
+            feedId: [.readFeed, .addActivity]
+        ]
+        
+        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
+        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
+        
+        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
+            #expect(cached[feedId] == expectedCapabilities)
+        }
+    }
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let initialCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    GetActivityResponse.dummy(
+                        activity: .dummy(
+                            currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: Array(initialCapabilities)),
+                            id: "activity-123"
+                        )
+                    ),
+                    GetCommentsResponse.dummy(comments: [])
+                ]
+            )
+        )
+        let activity = client.activity(for: "activity-123", in: feedId)
+        try await activity.get()
+        
+        await #expect(activity.state.activity?.currentFeed?.ownCapabilities == initialCapabilities)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        await #expect(activity.state.activity?.currentFeed?.ownCapabilities == initialCapabilities)
+        
+        // Send matching event with updated capabilities
+        let newCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity, .deleteOwnActivity]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feedId: newCapabilities])
+        )
+        await #expect(activity.state.activity?.currentFeed?.ownCapabilities == newCapabilities)
+    }
+    
     // MARK: -
     
     private func defaultClientWithActivityAndCommentsResponses(
@@ -834,37 +904,42 @@ struct Activity_Tests {
                 )
             ]
         }
-        
         return FeedsClient.mock(
-            apiTransport: .withPayloads(
+            apiTransport: .withMatchedResponses(
                 [
-                    GetActivityResponse.dummy(
-                        activity: .dummy(
-                            id: "activity-123",
-                            latestReactions: [.dummy(type: "like")],
-                            ownReactions: [.dummy(type: "like", user: .dummy(id: "current-user-id"))],
-                            poll: .dummy(
-                                enforceUniqueVote: uniqueVotes,
-                                id: "poll-123",
-                                name: "Test Poll",
-                                options: [
-                                    .dummy(id: "option-1", text: "Option 1"),
-                                    .dummy(id: "option-2", text: "Option 2")
-                                ],
-                                ownVotes: ownVotes,
-                                voteCount: ownVotes.count,
-                                voteCountsByOption: ["option-1": ownVotes.count, "option-2": 0]
-                            ),
-                            reactionCount: 1,
-                            reactionGroups: ["like": .dummy(count: 1)],
-                            text: "Test activity content"
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/activities/"),
+                        payload: GetActivityResponse.dummy(
+                            activity: .dummy(
+                                id: "activity-123",
+                                latestReactions: [.dummy(type: "like")],
+                                ownReactions: [.dummy(type: "like", user: .dummy(id: "current-user-id"))],
+                                poll: .dummy(
+                                    enforceUniqueVote: uniqueVotes,
+                                    id: "poll-123",
+                                    name: "Test Poll",
+                                    options: [
+                                        .dummy(id: "option-1", text: "Option 1"),
+                                        .dummy(id: "option-2", text: "Option 2")
+                                    ],
+                                    ownVotes: ownVotes,
+                                    voteCount: ownVotes.count,
+                                    voteCountsByOption: ["option-1": ownVotes.count, "option-2": 0]
+                                ),
+                                reactionCount: 1,
+                                reactionGroups: ["like": .dummy(count: 1)],
+                                text: "Test activity content"
+                            )
                         )
                     ),
-                    GetCommentsResponse.dummy(comments: [
-                        .dummy(id: "comment-1", objectId: "activity-123", text: "First comment"),
-                        .dummy(id: "comment-2", objectId: "activity-123", text: "Second comment")
-                    ])
-                ] + additionalPayloads
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/comments"),
+                        payload: GetCommentsResponse.dummy(comments: [
+                            .dummy(id: "comment-1", objectId: "activity-123", text: "First comment"),
+                            .dummy(id: "comment-2", objectId: "activity-123", text: "Second comment")
+                        ])
+                    )
+                ] + additionalPayloads.map { .init(matching: .any, result: .success($0)) }
             )
         )
     }

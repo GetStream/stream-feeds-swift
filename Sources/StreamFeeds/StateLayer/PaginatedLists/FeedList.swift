@@ -9,12 +9,16 @@ import StreamCore
 public final class FeedList: Sendable {
     private let feedsRepository: FeedsRepository
     private let disposableBag = DisposableBag()
+    private let eventPublisher: StateLayerEventPublisher
+    private let ownCapabilitiesRepository: OwnCapabilitiesRepository
     private let refetchSubject = AllocatedUnfairLock(PassthroughSubject<Void, Never>())
     private let refetchDelay: Int
     @MainActor private let stateBuilder: StateBuilder<FeedListState>
 
     init(query: FeedsQuery, client: FeedsClient, refetchDelay: Int = 5) {
+        eventPublisher = client.stateLayerEventPublisher
         feedsRepository = client.feedsRepository
+        ownCapabilitiesRepository = client.ownCapabilitiesRepository
         self.query = query
         self.refetchDelay = refetchDelay
         let eventPublisher = client.stateLayerEventPublisher
@@ -61,6 +65,9 @@ public final class FeedList: Sendable {
             with: result,
             for: .init(filter: query.filter, sort: query.sort)
         )
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
         return result.models
     }
     

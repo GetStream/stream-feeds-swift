@@ -114,6 +114,10 @@ extension ActivityState {
                         state.activity?.addComment(commentData)
                     }
                 }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.activity?.mergeFeedOwnCapabilities(from: capabilitiesMap)
+                }
             case .pollDeleted(let pollId, let eventFeedId):
                 guard eventFeedId == feed else { return }
                 await self?.access { state in

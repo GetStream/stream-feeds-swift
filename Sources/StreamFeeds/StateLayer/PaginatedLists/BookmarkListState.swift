@@ -71,6 +71,13 @@ extension BookmarkListState {
                         state.bookmarks.remove(byId: bookmark.id)
                     }
                 }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.bookmarks.updateAll(
+                        where: { capabilitiesMap.contains($0.activity.currentFeed?.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                }
             default:
                 break
             }

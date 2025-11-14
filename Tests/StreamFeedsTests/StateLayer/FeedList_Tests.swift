@@ -26,12 +26,15 @@ struct FeedList_Tests {
 
     @Test func queryMoreFeedsUpdatesState() async throws {
         let client = defaultClientWithFeedsResponses([
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed()),
-                    .dummy(id: "feed-4", name: "Fourth Feed", createdAt: Date.fixed())
-                ],
-                next: "next-cursor-2"
+            .init(
+                matching: .bodyType(QueryFeedsRequest.self),
+                payload: QueryFeedsResponse.dummy(
+                    feeds: [
+                        .dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed()),
+                        .dummy(id: "feed-4", name: "Fourth Feed", createdAt: Date.fixed())
+                    ],
+                    next: "next-cursor-2"
+                )
             )
         ])
         let feedList = client.feedList(for: FeedsQuery())
@@ -185,17 +188,23 @@ struct FeedList_Tests {
     }
 
     @Test @MainActor func feedAddedEventWithMembersFilterAndZeroRefetchDelayTriggersImmediateRefetch() async throws {
-        let client = defaultClientWithFeedsResponses([
-            // Additional response for the refetch
-            QueryFeedsResponse.dummy(
-                feeds: [
-                    .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
-                    .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1)),
-                    .dummy(id: "feed-3", name: "New Feed", createdAt: Date.fixed(offset: 2))
-                ],
-                next: nil
-            )
-        ])
+        let client = defaultClientWithFeedsResponses(
+            [
+                // Additional response for the refetch
+                .init(
+                    matching: .bodyType(QueryFeedsRequest.self),
+                    payload:
+                    QueryFeedsResponse.dummy(
+                        feeds: [
+                            .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1)),
+                            .dummy(id: "feed-3", name: "New Feed", createdAt: Date.fixed(offset: 2))
+                        ],
+                        next: nil
+                    )
+                )
+            ]
+        )
         
         // Create FeedList with refetchDelay = 0 and members filter (which cannot be filtered locally)
         let feedList = FeedList(
@@ -232,21 +241,139 @@ struct FeedList_Tests {
         }
         disposableBag.removeAll()
     }
-
-    // MARK: - Helper Methods
-
-    private func defaultClientWithFeedsResponses(
-        _ additionalPayloads: [any Encodable] = []
-    ) -> FeedsClient {
-        FeedsClient.mock(
+    
+    // MARK: - Own Capabilities
+    
+    @Test func getCachesCapabilities() async throws {
+        let feed1Id = FeedId(rawValue: "user:feed-1")
+        let feed2Id = FeedId(rawValue: "user:feed-2")
+        let feed3Id = FeedId(rawValue: "user:feed-3")
+        
+        let client = FeedsClient.mock(
             apiTransport: .withPayloads(
                 [
                     QueryFeedsResponse.dummy(
                         feeds: [
-                            .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
-                            .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1))
+                            .dummy(
+                                createdAt: Date.fixed(),
+                                feed: feed1Id.rawValue,
+                                ownCapabilities: [.readFeed, .createFeed]
+                            ),
+                            .dummy(
+                                createdAt: Date.fixed(offset: 1),
+                                feed: feed2Id.rawValue,
+                                ownCapabilities: [.readFeed, .updateFeed]
+                            ),
+                            .dummy(
+                                createdAt: Date.fixed(offset: 2),
+                                feed: feed3Id.rawValue,
+                                ownCapabilities: [.readFeed, .deleteFeed]
+                            )
                         ],
-                        next: "next-cursor"
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let feedList = client.feedList(for: FeedsQuery())
+        _ = try await feedList.get()
+        
+        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
+            feed1Id: [.readFeed, .createFeed],
+            feed2Id: [.readFeed, .updateFeed],
+            feed3Id: [.readFeed, .deleteFeed]
+        ]
+        
+        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
+        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
+        
+        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
+            #expect(cached[feedId] == expectedCapabilities)
+        }
+    }
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let feedListCapabilities: (FeedList) async -> [FeedId: Set<FeedOwnCapability>] = { feedList in
+            let pairs = await feedList.state.feeds.map { ($0.feed, $0.ownCapabilities) }
+            return Dictionary(uniqueKeysWithValues: pairs).compactMapValues { $0 }
+        }
+        let feed1Id = FeedId(group: "user", id: "feed-1")
+        let feed2Id = FeedId(group: "user", id: "feed-2")
+        let initialFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .createFeed]
+        let initialFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .updateFeed]
+        let initialCapabilities = [feed1Id: initialFeed1Capabilities, feed2Id: initialFeed2Capabilities]
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses(
+                [
+                    .init(
+                        matching: .bodyType(QueryFeedsRequest.self),
+                        payload:
+                        QueryFeedsResponse.dummy(
+                            feeds: [
+                                .dummy(
+                                    createdAt: Date.fixed(),
+                                    feed: feed1Id.rawValue,
+                                    ownCapabilities: Array(initialFeed1Capabilities)
+                                ),
+                                .dummy(
+                                    createdAt: Date.fixed(offset: 1),
+                                    feed: feed2Id.rawValue,
+                                    ownCapabilities: Array(initialFeed2Capabilities)
+                                )
+                            ],
+                            next: nil
+                        )
+                    )
+                ]
+            )
+        )
+        let feedList = client.feedList(for: FeedsQuery())
+        try await feedList.get()
+        await #expect(feedListCapabilities(feedList) == initialCapabilities)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        await #expect(feedListCapabilities(feedList) == initialCapabilities)
+        
+        // Send matching event with updated capabilities for feed1
+        let newFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .createFeed, .deleteFeed]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feed1Id: newFeed1Capabilities])
+        )
+        await #expect(feedListCapabilities(feedList)[feed1Id] == newFeed1Capabilities)
+        await #expect(feedListCapabilities(feedList)[feed2Id] == initialFeed2Capabilities)
+        
+        // Send matching event with updated capabilities for feed2
+        let newFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .updateFeed, .updateFeedMembers]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feed2Id: newFeed2Capabilities])
+        )
+        await #expect(feedListCapabilities(feedList)[feed1Id] == newFeed1Capabilities)
+        await #expect(feedListCapabilities(feedList)[feed2Id] == newFeed2Capabilities)
+    }
+
+    // MARK: - Helper Methods
+
+    private func defaultClientWithFeedsResponses(
+        _ additionalPayloads: [APITransportMock.APIResponse] = []
+    ) -> FeedsClient {
+        FeedsClient.mock(
+            apiTransport: .withMatchedResponses(
+                [
+                    .init(
+                        matching: .bodyType(QueryFeedsRequest.self),
+                        payload: QueryFeedsResponse.dummy(
+                            feeds: [
+                                .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),
+                                .dummy(id: "feed-2", name: "Second Feed", createdAt: Date.fixed(offset: 1))
+                            ],
+                            next: "next-cursor"
+                        )
                     )
                 ] + additionalPayloads
             )

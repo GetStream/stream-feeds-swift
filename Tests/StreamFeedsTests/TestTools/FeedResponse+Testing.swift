@@ -22,9 +22,9 @@ extension FeedResponse {
         followingCount: Int = 0,
         groupId: String = "user",
         memberCount: Int = 0,
+        ownCapabilities: [FeedOwnCapability]? = [.readFeed, .readActivities],
         pinCount: Int = 0,
-        visibility: String? = nil,
-        ownCapabilities: [FeedOwnCapability]? = nil
+        visibility: String? = nil
     ) -> FeedResponse {
         FeedResponse(
             createdAt: createdAt,

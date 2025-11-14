@@ -39,6 +39,7 @@ public final class FeedsClient: Sendable {
     let feedsRepository: FeedsRepository
     let moderationRepository: ModerationRepository
     let pollsRepository: PollsRepository
+    let ownCapabilitiesRepository: OwnCapabilitiesRepository
 
     private let _token: AllocatedUnfairLock<UserToken>
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
@@ -127,14 +128,24 @@ public final class FeedsClient: Sendable {
         commentsRepository = CommentsRepository(apiClient: apiClient)
         devicesRepository = DevicesRepository(devicesClient: devicesClient)
         feedsRepository = FeedsRepository(apiClient: apiClient)
-        pollsRepository = PollsRepository(apiClient: apiClient)
         moderationRepository = ModerationRepository(apiClient: apiClient)
+        ownCapabilitiesRepository = OwnCapabilitiesRepository(apiClient: apiClient)
+        pollsRepository = PollsRepository(apiClient: apiClient)
         
         moderation = Moderation(apiClient: apiClient)
         
         eventsMiddleware.add(subscriber: self)
         eventsMiddleware.add(subscriber: stateLayerEventPublisher)
         eventNotificationCenter.add(middlewares: [eventsMiddleware])
+        
+        stateLayerEventPublisher.addMiddlewares(
+            [
+                OwnCapabilitiesStateLayerEventMiddleware(
+                    ownCapabilitiesRepository: ownCapabilitiesRepository,
+                    sendEvent: { [weak stateLayerEventPublisher] in await stateLayerEventPublisher?.sendEvent($0) }
+                )
+            ]
+        )
     }
     
     // MARK: - Connecting the User

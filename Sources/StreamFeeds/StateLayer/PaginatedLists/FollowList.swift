@@ -7,10 +7,14 @@ import StreamCore
 
 public final class FollowList: Sendable {
     @MainActor private let stateBuilder: StateBuilder<FollowListState>
+    private let eventPublisher: StateLayerEventPublisher
     private let feedsRepository: FeedsRepository
+    private let ownCapabilitiesRepository: OwnCapabilitiesRepository
     
     init(query: FollowsQuery, client: FeedsClient) {
+        eventPublisher = client.stateLayerEventPublisher
         feedsRepository = client.feedsRepository
+        ownCapabilitiesRepository = client.ownCapabilitiesRepository
         self.query = query
         let eventPublisher = client.stateLayerEventPublisher
         stateBuilder = StateBuilder { [eventPublisher] in
@@ -57,6 +61,9 @@ public final class FollowList: Sendable {
             with: result,
             for: .init(filter: query.filter, sort: query.sort)
         )
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.map(\.sourceFeed) + result.models.map(\.targetFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
         return result.models
     }
 }

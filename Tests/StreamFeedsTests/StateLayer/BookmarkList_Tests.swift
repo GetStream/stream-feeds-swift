@@ -262,6 +262,130 @@ struct BookmarkList_Tests {
         let bookmarksAfterUpdate = await bookmarkList.state.bookmarks
         #expect(bookmarksAfterUpdate.isEmpty)
     }
+    
+    // MARK: - Own Capabilities
+    
+    @Test func getCachesCapabilities() async throws {
+        let feed1Id = FeedId(rawValue: "user:feed-1")
+        let feed2Id = FeedId(rawValue: "user:feed-2")
+        let feed3Id = FeedId(rawValue: "user:feed-3")
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryBookmarksResponse.dummy(
+                        bookmarks: [
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: feed1Id.rawValue, ownCapabilities: [.readFeed, .addActivityBookmark]),
+                                    id: "activity-1"
+                                ),
+                                user: .dummy(id: "user-1")
+                            ),
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: feed2Id.rawValue, ownCapabilities: [.readFeed, .deleteOwnActivityBookmark]),
+                                    id: "activity-2"
+                                ),
+                                user: .dummy(id: "user-1")
+                            ),
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: feed3Id.rawValue, ownCapabilities: [.readFeed, .updateOwnActivityBookmark]),
+                                    id: "activity-3"
+                                ),
+                                user: .dummy(id: "user-1")
+                            )
+                        ],
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        _ = try await bookmarkList.get()
+        
+        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
+            feed1Id: [.readFeed, .addActivityBookmark],
+            feed2Id: [.readFeed, .deleteOwnActivityBookmark],
+            feed3Id: [.readFeed, .updateOwnActivityBookmark]
+        ]
+        
+        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
+        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
+        
+        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
+            #expect(cached[feedId] == expectedCapabilities)
+        }
+    }
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let bookmarkListCapabilities: (BookmarkList) async -> [FeedId: Set<FeedOwnCapability>] = { bookmarkList in
+            let pairs = await bookmarkList.state.bookmarks.compactMap { bookmark -> (FeedId, Set<FeedOwnCapability>)? in
+                guard let feedData = bookmark.activity.currentFeed, let capabilities = feedData.ownCapabilities else { return nil }
+                return (feedData.feed, capabilities)
+            }
+            return Dictionary(pairs, uniquingKeysWith: { $1 })
+        }
+        let feed1Id = FeedId(group: "user", id: "feed-1")
+        let feed2Id = FeedId(group: "user", id: "feed-2")
+        let initialFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .addActivityBookmark]
+        let initialFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .deleteOwnActivityBookmark]
+        let initialCapabilities = [feed1Id: initialFeed1Capabilities, feed2Id: initialFeed2Capabilities]
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryBookmarksResponse.dummy(
+                        bookmarks: [
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: feed1Id.rawValue, ownCapabilities: Array(initialFeed1Capabilities)),
+                                    id: "activity-1"
+                                ),
+                                user: .dummy(id: "user-1")
+                            ),
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: feed2Id.rawValue, ownCapabilities: Array(initialFeed2Capabilities)),
+                                    id: "activity-2"
+                                ),
+                                user: .dummy(id: "user-1")
+                            )
+                        ],
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+        await #expect(bookmarkListCapabilities(bookmarkList) == initialCapabilities)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        await #expect(bookmarkListCapabilities(bookmarkList) == initialCapabilities)
+        
+        // Send matching event with updated capabilities for feed1
+        let newFeed1Capabilities: Set<FeedOwnCapability> = [.readFeed, .addActivityBookmark, .updateOwnActivityBookmark]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feed1Id: newFeed1Capabilities])
+        )
+        await #expect(bookmarkListCapabilities(bookmarkList)[feed1Id] == newFeed1Capabilities)
+        await #expect(bookmarkListCapabilities(bookmarkList)[feed2Id] == initialFeed2Capabilities)
+        
+        // Send matching event with updated capabilities for feed2
+        let newFeed2Capabilities: Set<FeedOwnCapability> = [.readFeed, .deleteOwnActivityBookmark, .addActivityBookmark]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feed2Id: newFeed2Capabilities])
+        )
+        await #expect(bookmarkListCapabilities(bookmarkList)[feed1Id] == newFeed1Capabilities)
+        await #expect(bookmarkListCapabilities(bookmarkList)[feed2Id] == newFeed2Capabilities)
+    }
 
     // MARK: - Helper Methods
 

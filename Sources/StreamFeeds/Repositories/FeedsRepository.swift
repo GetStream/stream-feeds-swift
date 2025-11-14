@@ -26,27 +26,44 @@ final class FeedsRepository: Sendable {
             getOrCreateFeedRequest: request
         )
         let rawFollowers = response.followers.map { $0.toModel() }
+        let rawFollowing = response.following.map { $0.toModel() }
+        let activities = response.activities.map { $0.toModel() }
+        let pinnedActivities = response.pinnedActivities.map { $0.toModel() }
+        let ownCapabilities = response.feed.ownCapabilities.map(Set.init) ?? Set()
+        let allFeedDatas: [FeedData] =
+            activities.compactMap(\.currentFeed) +
+            pinnedActivities.compactMap(\.activity.currentFeed) +
+            rawFollowers.compactMap(\.sourceFeed) +
+            rawFollowers.compactMap(\.targetFeed) +
+            rawFollowing.compactMap(\.sourceFeed) +
+            rawFollowing.compactMap(\.targetFeed)
+        let allOwnCapabilities = allFeedDatas
+            .reduce(into: [feed: ownCapabilities], { all, feedData in
+                guard let capabilities = feedData.ownCapabilities, !capabilities.isEmpty else { return }
+                all[feedData.feed] = capabilities
+            })
         return GetOrCreateInfo(
             activities: PaginationResult(
-                models: response.activities.map { $0.toModel() }.sorted(using: Sort<ActivitiesSortField>.defaultSorting),
+                models: activities.sorted(using: Sort<ActivitiesSortField>.defaultSorting),
                 pagination: PaginationData(next: response.next, previous: response.prev)
             ),
             activitiesQueryConfig: QueryConfiguration(
                 filter: query.activityFilter,
                 sort: Sort<ActivitiesSortField>.defaultSorting
             ),
+            aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
+            allOwnCapabilities: allOwnCapabilities,
             feed: response.feed.toModel(),
-            followers: rawFollowers.filter { $0.isFollower(of: feed) },
-            following: response.following.map { $0.toModel() }.filter { $0.isFollowing(feed) },
             followRequests: rawFollowers.filter(\.isFollowRequest),
+            followers: rawFollowers.filter { $0.isFollower(of: feed) },
+            following: rawFollowing.filter { $0.isFollowing(feed) },
             members: PaginationResult(
                 models: response.members.map { $0.toModel() },
                 pagination: response.memberPagination?.toModel() ?? .empty
             ),
-            ownCapabilities: response.feed.ownCapabilities ?? [],
-            pinnedActivities: response.pinnedActivities.map { $0.toModel() },
-            aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
-            notificationStatus: response.notificationStatus?.toModel()
+            notificationStatus: response.notificationStatus?.toModel(),
+            ownCapabilities: ownCapabilities,
+            pinnedActivities: pinnedActivities
         )
     }
     
@@ -145,14 +162,15 @@ extension FeedsRepository {
     struct GetOrCreateInfo {
         let activities: PaginationResult<ActivityData>
         let activitiesQueryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
+        let aggregatedActivities: [AggregatedActivityData]
+        let allOwnCapabilities: [FeedId: Set<FeedOwnCapability>]
         let feed: FeedData
+        let followRequests: [FollowData]
         let followers: [FollowData]
         let following: [FollowData]
-        let followRequests: [FollowData]
         let members: PaginationResult<FeedMemberData>
-        let ownCapabilities: [FeedOwnCapability]
-        let pinnedActivities: [ActivityPinData]
-        let aggregatedActivities: [AggregatedActivityData]
         let notificationStatus: NotificationStatusData?
+        let ownCapabilities: Set<FeedOwnCapability>
+        let pinnedActivities: [ActivityPinData]
     }
 }
