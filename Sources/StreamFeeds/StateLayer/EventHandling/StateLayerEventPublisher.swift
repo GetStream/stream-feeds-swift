@@ -13,15 +13,25 @@ import StreamCore
 /// filtering before consuming the event on the main thread.
 final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
     private let subscriptions = AllocatedUnfairLock<[UUID: @Sendable (StateLayerEvent) async -> Void]>([:])
+    private let middlewares = AllocatedUnfairLock([StateLayerEventMiddleware]())
+    
+    func addMiddlewares(_ additionalMiddlewares: [StateLayerEventMiddleware]) {
+        middlewares.withLock { $0.append(contentsOf: additionalMiddlewares) }
+    }
     
     /// Send individual events to all the subscribers.
     ///
     /// Triggered by incoming web-socket events and manually after API calls.
     ///
     /// - Parameter event: The state layer change event.
-    func sendEvent(_ event: StateLayerEvent) async {
+    /// - Parameter source: The source where the event is coming from: web-socket or internal.
+    func sendEvent(_ event: StateLayerEvent, source: EventSource = .local) async {
+        var event = event
+        for middleware in middlewares.value {
+            event = await middleware.willPublish(event, from: source)
+        }
         let handlers = Array(subscriptions.value.values)
-        await withTaskGroup(of: Void.self) { group in
+        await withTaskGroup(of: Void.self) { [event] group in
             for handler in handlers {
                 group.addTask {
                     await handler(event)
@@ -46,7 +56,7 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
     
     func onEvent(_ event: any Event) async {
         guard let stateLayerEvent = StateLayerEvent(event: event) else { return }
-        await sendEvent(stateLayerEvent)
+        await sendEvent(stateLayerEvent, source: .webSocket)
         
         switch stateLayerEvent {
         case .activityAdded(let activityData, let eventFeedId):
@@ -61,11 +71,28 @@ final class StateLayerEventPublisher: WSEventsSubscriber, Sendable {
 }
 
 extension StateLayerEventPublisher {
+    enum EventSource {
+        /// Events which are coming in from the web-socket.
+        case webSocket
+        /// Events which are internally published with HTTP response data.
+        case local
+    }
+}
+
+protocol StateLayerEventMiddleware: Sendable {
+    func willPublish(_ event: StateLayerEvent, from source: StateLayerEventPublisher.EventSource) async -> StateLayerEvent
+}
+
+extension StateLayerEventPublisher {
     final class Subscription: Sendable {
-        private let cancel: @Sendable () -> Void
+        private let cancellationHandler: @Sendable () -> Void
         
         init(cancel: @escaping @Sendable () -> Void) {
-            self.cancel = cancel
+            self.cancellationHandler = cancel
+        }
+        
+        func cancel() {
+            cancellationHandler()
         }
         
         deinit {

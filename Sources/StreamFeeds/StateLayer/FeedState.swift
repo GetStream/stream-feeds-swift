@@ -60,7 +60,7 @@ import StreamCore
     @Published public private(set) var members = [FeedMemberData]()
     
     /// The capabilities that the current user has for this feed.
-    @Published public internal(set) var ownCapabilities = [FeedOwnCapability]()
+    @Published public internal(set) var ownCapabilities = Set<FeedOwnCapability>()
     
     /// The list of pinned activities and its pinning state.
     @Published public private(set) var pinnedActivities = [ActivityPinData]()
@@ -297,7 +297,7 @@ extension FeedState {
                 }
             case .feedUpdated(let feedData, let eventFeedId):
                 guard feed == eventFeedId else { return }
-                await self?.access { $0.feedData = feedData }
+                await self?.access { $0.feedData?.merge(with: feedData) }
             case .feedFollowAdded(let followData, let eventFeedId):
                 guard feed == eventFeedId else { return }
                 await self?.addFollow(followData)
@@ -310,6 +310,33 @@ extension FeedState {
             case .feedMemberAdded, .feedMemberDeleted, .feedMemberUpdated:
                 // Handled by member list
                 break
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    if let capabilities = capabilitiesMap[feed] {
+                        state.feedData?.setOwnCapabilities(capabilities)
+                        state.ownCapabilities = capabilities
+                    }
+                    state.activities.updateAll(
+                        where: { capabilitiesMap.contains($0.currentFeed?.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                    state.pinnedActivities.updateAll(
+                        where: { capabilitiesMap.contains($0.activity.currentFeed?.feed) },
+                        changes: { $0.activity.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                    state.followers.updateAll(
+                        where: { capabilitiesMap.contains($0.sourceFeed.feed) || capabilitiesMap.contains($0.targetFeed.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                    state.following.updateAll(
+                        where: { capabilitiesMap.contains($0.sourceFeed.feed) || capabilitiesMap.contains($0.targetFeed.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                    state.followRequests.updateAll(
+                        where: { capabilitiesMap.contains($0.sourceFeed.feed) || capabilitiesMap.contains($0.targetFeed.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
+                    )
+                }
             case .pollDeleted(let pollId, let eventFeedId):
                 guard eventFeedId == feed else { return }
                 await self?.access { state in

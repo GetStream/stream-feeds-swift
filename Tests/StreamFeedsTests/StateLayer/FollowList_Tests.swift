@@ -162,6 +162,67 @@ struct FollowList_Tests {
         #expect(followsAfterUpdate.isEmpty)
     }
     
+    // MARK: - Own Capabilities
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let sourceFeedId = FeedId(group: "user", id: "current-user-id")
+        let targetFeedId = FeedId(group: "user", id: "user-1")
+        let initialSourceCapabilities: Set<FeedOwnCapability> = [.readFeed, .follow]
+        let initialTargetCapabilities: Set<FeedOwnCapability> = [.readFeed, .queryFollows]
+        
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    QueryFollowsResponse.dummy(
+                        follows: [
+                            .dummy(
+                                sourceFeed: .dummy(feed: sourceFeedId.rawValue, ownCapabilities: Array(initialSourceCapabilities)),
+                                targetFeed: .dummy(feed: targetFeedId.rawValue, ownCapabilities: Array(initialTargetCapabilities))
+                            )
+                        ],
+                        next: nil
+                    )
+                ]
+            )
+        )
+        let followList = client.followList(
+            for: FollowsQuery(filter: .equal(.sourceFeed, sourceFeedId.rawValue))
+        )
+        try await followList.get()
+        
+        let initialFollow = try #require(await followList.state.follows.first)
+        #expect(initialFollow.sourceFeed.ownCapabilities == initialSourceCapabilities)
+        #expect(initialFollow.targetFeed.ownCapabilities == initialTargetCapabilities)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        let followAfterUnmatching = try #require(await followList.state.follows.first)
+        #expect(followAfterUnmatching.sourceFeed.ownCapabilities == initialSourceCapabilities)
+        #expect(followAfterUnmatching.targetFeed.ownCapabilities == initialTargetCapabilities)
+        
+        // Send matching event with updated capabilities for source feed
+        let newSourceCapabilities: Set<FeedOwnCapability> = [.readFeed, .follow, .unfollow]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([sourceFeedId: newSourceCapabilities])
+        )
+        let followAfterSourceUpdate = try #require(await followList.state.follows.first)
+        #expect(followAfterSourceUpdate.sourceFeed.ownCapabilities == newSourceCapabilities)
+        #expect(followAfterSourceUpdate.targetFeed.ownCapabilities == initialTargetCapabilities)
+        
+        // Send matching event with updated capabilities for target feed
+        let newTargetCapabilities: Set<FeedOwnCapability> = [.readFeed, .queryFollows, .updateFeedFollowers]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([targetFeedId: newTargetCapabilities])
+        )
+        let followAfterTargetUpdate = try #require(await followList.state.follows.first)
+        #expect(followAfterTargetUpdate.sourceFeed.ownCapabilities == newSourceCapabilities)
+        #expect(followAfterTargetUpdate.targetFeed.ownCapabilities == newTargetCapabilities)
+    }
+    
     // MARK: -
     
     private func defaultClient(

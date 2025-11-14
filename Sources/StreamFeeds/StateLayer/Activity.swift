@@ -14,6 +14,7 @@ public final class Activity: Sendable {
     private let commentList: ActivityCommentList
     private let activitiesRepository: ActivitiesRepository
     private let commentsRepository: CommentsRepository
+    private let ownCapabilitiesRepository: OwnCapabilitiesRepository
     private let pollsRepository: PollsRepository
     private let eventPublisher: StateLayerEventPublisher
     @MainActor private let stateBuilder: StateBuilder<ActivityState>
@@ -39,6 +40,7 @@ public final class Activity: Sendable {
         commentsRepository = client.commentsRepository
         eventPublisher = client.stateLayerEventPublisher
         self.feed = feed
+        ownCapabilitiesRepository = client.ownCapabilitiesRepository
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
         stateBuilder = StateBuilder { [currentUserId, eventPublisher] in
@@ -69,6 +71,9 @@ public final class Activity: Sendable {
         async let comments = queryComments()
         let (activityData, _) = try await (activity, comments)
         await state.setActivity(activityData)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: activityData.currentFeed) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
         return activityData
     }
     
