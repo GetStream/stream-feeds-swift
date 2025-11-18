@@ -863,8 +863,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
-				branch = "add-filter-near-and-within-bounds";
-				kind = branch;
+				kind = exactVersion;
+				version = 0.6.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
