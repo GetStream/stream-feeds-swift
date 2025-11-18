@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### ✅ Added
 - Update local state when using activity batch operations in `FeedsClient` [#52](https://github.com/GetStream/stream-feeds-swift/pull/52)
 - Keep `FeedData.ownCapabilities` up to date in every model when handling web-socket events [#51](https://github.com/GetStream/stream-feeds-swift/pull/51)
-- Add filtering keys: [#53](https://github.com/GetStream/stream-feeds-swift/pull/53)
+- Add filtering and sorting keys: [#53](https://github.com/GetStream/stream-feeds-swift/pull/53)
     - `ActivitiesFilterField.feeds`
     - `ActivitiesFilterField.interestTags`
     - `ActivitiesFilterField.near`
