@@ -68,18 +68,9 @@ public struct BookmarkFoldersFilterField: FilterFieldRepresentable, Sendable {
         self.rawValue = rawValue
         matcher = AnyFilterMatcher(localValue: localValue)
     }
-    
-    init<Value>(_ codingKey: BookmarkFolderResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
-        self.init(codingKey.rawValue, localValue: localValue)
-    }
 }
 
 extension BookmarkFoldersFilterField {
-    /// Filter by the unique identifier of the bookmark folder.
-    ///
-    /// **Supported operators:** `.equal`, `.in`
-    public static let folderId = Self("folder_id", localValue: \.id)
-    
     /// Filter by the name of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.in`, `.contains`
@@ -88,12 +79,12 @@ extension BookmarkFoldersFilterField {
     /// Filter by the creation timestamp of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(.createdAt, localValue: \.createdAt)
+    public static let createdAt = Self("created_at", localValue: \.createdAt)
     
     /// Filter by the last update timestamp of the bookmark folder.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(.updatedAt, localValue: \.updatedAt)
+    public static let updatedAt = Self("updated_at", localValue: \.updatedAt)
     
     /// Filter by the user ID who owns the bookmark folder.
     ///
@@ -174,7 +165,9 @@ public struct BookmarkFoldersSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+ 
+extension BookmarkFoldersSortField {
     /// Sort by the creation timestamp of the bookmark folder.
     /// This field allows sorting bookmark folders by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -195,7 +188,7 @@ extension Sort where Field == BookmarkFoldersSortField {
 extension BookmarkFoldersQuery {
     func toRequest() -> QueryBookmarkFoldersRequest {
         QueryBookmarkFoldersRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,

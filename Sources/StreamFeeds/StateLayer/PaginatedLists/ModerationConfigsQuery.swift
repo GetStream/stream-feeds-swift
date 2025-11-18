@@ -181,14 +181,20 @@ public struct ModerationConfigsSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+
+extension ModerationConfigsSortField {
     /// Sort by the unique key of the configuration.
     /// This field allows sorting configurations by their key (alphabetical order).
-    public static let key = Self("id", localValue: \.key)
+    public static let key = Self("key", localValue: \.key)
     
     /// Sort by the creation timestamp of the configuration.
     /// This field allows sorting configurations by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
+    
+    /// Sort by the team associated with the configuration.
+    /// This field allows sorting configurations by team (alphabetical order).
+    public static let team = Self("team", localValue: \.team)
     
     /// Sort by the last update timestamp of the configuration.
     /// This field allows sorting configurations by when they were last updated (newest/oldest first).
@@ -206,7 +212,7 @@ extension Sort where Field == ModerationConfigsSortField {
 extension ModerationConfigsQuery {
     func toRequest() -> QueryModerationConfigsRequest {
         QueryModerationConfigsRequest(
-            filter: filter?.toRawJSON(),
+            filter: filter?.toRawJSONDictionary(),
             limit: limit,
             next: next,
             prev: previous,

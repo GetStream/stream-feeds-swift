@@ -161,7 +161,9 @@ public struct ActivityReactionsSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+
+extension ActivityReactionsSortField {
     /// Sort by the creation timestamp of the reaction.
     /// This field allows sorting reactions by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -178,7 +180,7 @@ extension Sort where Field == ActivityReactionsSortField {
 extension ActivityReactionsQuery {
     func toRequest() -> QueryActivityReactionsRequest {
         QueryActivityReactionsRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,

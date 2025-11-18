@@ -191,7 +191,9 @@ public struct PollVotesSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+ 
+extension PollVotesSortField {
     /// Sort by the answer text of the poll option.
     /// This field allows sorting poll votes by the text content of the selected option.
     public static let answerText = Self("answer_text", localValue: { $0.answerText ?? "" })
@@ -220,7 +222,7 @@ extension Sort where Field == PollVotesSortField {
 extension PollVotesQuery {
     func toRequest() -> QueryPollVotesRequest {
         QueryPollVotesRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,

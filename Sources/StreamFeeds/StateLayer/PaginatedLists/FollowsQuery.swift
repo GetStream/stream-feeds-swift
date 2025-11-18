@@ -160,7 +160,9 @@ public struct FollowsSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+
+extension FollowsSortField {
     /// Sort by the creation timestamp of the follow relationship.
     /// This field allows sorting follows by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -177,7 +179,7 @@ extension Sort where Field == FollowsSortField {
 extension FollowsQuery {
     func toRequest() -> QueryFollowsRequest {
         QueryFollowsRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,
