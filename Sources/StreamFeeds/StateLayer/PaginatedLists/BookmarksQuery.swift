@@ -68,10 +68,6 @@ public struct BookmarksFilterField: FilterFieldRepresentable, Sendable {
         self.rawValue = rawValue
         matcher = AnyFilterMatcher(localValue: localValue)
     }
-    
-    init<Value>(_ codingKey: BookmarkResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
-        self.init(codingKey.rawValue, localValue: localValue)
-    }
 }
 
 extension BookmarksFilterField {
@@ -93,12 +89,12 @@ extension BookmarksFilterField {
     /// Filter by the creation timestamp of the bookmark.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let createdAt = Self(.createdAt, localValue: \.createdAt)
+    public static let createdAt = Self("created_at", localValue: \.createdAt)
     
     /// Filter by the last update timestamp of the bookmark.
     ///
     /// **Supported operators:** `.equal`, `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
-    public static let updatedAt = Self(.updatedAt, localValue: \.updatedAt)
+    public static let updatedAt = Self("updated_at", localValue: \.updatedAt)
 }
 
 /// A filter that can be applied to bookmarks queries.
@@ -174,7 +170,9 @@ public struct BookmarksSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+
+extension BookmarksSortField {
     /// Sort by the creation timestamp of the bookmark.
     /// This field allows sorting bookmarks by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -195,7 +193,7 @@ extension Sort where Field == BookmarksSortField {
 extension BookmarksQuery {
     func toRequest() -> QueryBookmarksRequest {
         QueryBookmarksRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,

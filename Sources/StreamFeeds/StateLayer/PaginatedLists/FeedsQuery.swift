@@ -260,7 +260,9 @@ public struct FeedsSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+ 
+extension FeedsSortField {
     /// Sort by the creation timestamp of the feed.
     /// This field allows sorting feeds by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -296,7 +298,7 @@ extension FeedsQuery {
     /// - Returns: A `QueryFeedsRequest` object that can be sent to the API.
     func toRequest() -> QueryFeedsRequest {
         QueryFeedsRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,

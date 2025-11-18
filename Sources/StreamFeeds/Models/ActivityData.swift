@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import StreamCore
 
@@ -22,7 +23,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let id: String
     public let interestTags: [String]
     public private(set) var latestReactions: [FeedsReactionData]
-    public let location: ActivityLocation?
+    public let location: CLLocationCoordinate2D?
     public let mentionedUsers: [UserData]
     public let moderation: ModerationV2Response?
     public let notificationContext: NotificationContext?
@@ -178,7 +179,7 @@ extension ActivityResponse {
             id: id,
             interestTags: interestTags,
             latestReactions: latestReactions.map { $0.toModel() },
-            location: location,
+            location: location.flatMap { CLLocationCoordinate2D(latitude: CLLocationDegrees($0.lat), longitude: CLLocationDegrees($0.lng)) },
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             moderation: moderation,
             notificationContext: notificationContext,

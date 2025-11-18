@@ -467,7 +467,7 @@ struct ActivityList_Tests {
             for: ActivitiesQuery(
                 filter: .and([
                     .equal(.userId, "current-user-id"),
-                    .equal(.type, "post")
+                    .equal(.activityType, "post")
                 ])
             )
         )

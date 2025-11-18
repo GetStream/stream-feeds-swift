@@ -201,7 +201,9 @@ public struct PollsSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+
+extension PollsSortField {
     /// Sort by the creation timestamp of the poll.
     /// This field allows sorting polls by when they were created (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -209,10 +211,6 @@ public struct PollsSortField: SortField {
     /// Sort by the last update timestamp of the poll.
     /// This field allows sorting polls by when they were last updated (newest/oldest first).
     public static let updatedAt = Self("updated_at", localValue: \.updatedAt)
-    
-    /// Sort by the number of votes the poll has received.
-    /// This field allows sorting polls by popularity (most/least voted).
-    public static let voteCount = Self("vote_count", localValue: \.voteCount)
     
     /// Sort by the name of the poll.
     /// This field allows sorting polls alphabetically by name.
@@ -241,7 +239,7 @@ extension PollsQuery {
     /// - Returns: A `QueryPollsRequest` object that can be sent to the API.
     func toRequest() -> QueryPollsRequest {
         QueryPollsRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,

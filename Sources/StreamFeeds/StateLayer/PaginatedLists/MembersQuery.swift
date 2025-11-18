@@ -179,7 +179,9 @@ public struct MembersSortField: SortField {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
-    
+}
+
+extension MembersSortField {
     /// Sort by the creation timestamp of the member.
     /// This field allows sorting members by when they were added to the feed (newest/oldest first).
     public static let createdAt = Self("created_at", localValue: \.createdAt)
@@ -207,7 +209,7 @@ extension MembersQuery {
     /// - Returns: A `QueryFeedMembersRequest` object that can be sent to the API.
     func toRequest() -> QueryFeedMembersRequest {
         QueryFeedMembersRequest(
-            filter: filter.flatMap { $0.toRawJSON() },
+            filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,
             prev: previous,
