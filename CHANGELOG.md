@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
+### 🔄 Changed
+
+# [0.5.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.0)
+_November 19, 2025_
+
 ### ✅ Added
 - Update local state when using activity batch operations in `FeedsClient` [#52](https://github.com/GetStream/stream-feeds-swift/pull/52)
 - Keep `FeedData.ownCapabilities` up to date in every model when handling web-socket events [#51](https://github.com/GetStream/stream-feeds-swift/pull/51)
