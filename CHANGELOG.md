@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
+### 🔄 Changed
+
+# [0.5.1](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.1)
+_December 08, 2025_
+
 ### 🐞 Fixed
 - Fix `Package.swift` non-existent module [#56](https://github.com/GetStream/stream-feeds-swift/pull/56) 
 
