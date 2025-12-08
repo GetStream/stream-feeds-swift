@@ -21,8 +21,7 @@ let package = Package(
             name: "StreamFeeds",
             dependencies: [
                 .product(name: "StreamAttachments", package: "stream-core-swift"),
-                .product(name: "StreamCore", package: "stream-core-swift"),
-                .product(name: "StreamOpenAPI", package: "stream-core-swift")
+                .product(name: "StreamCore", package: "stream-core-swift")
             ]
         ),
         .testTarget(
