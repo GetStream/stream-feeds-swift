@@ -14,7 +14,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/GetStream/stream-core-swift.git", exact: "0.6.0")
+        .package(url: "https://github.com/GetStream/stream-core-swift.git", exact: "0.6.2")
     ],
     targets: [
         .target(
