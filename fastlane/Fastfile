@@ -214,7 +214,7 @@ lane :spm_integration do
     clean: is_localhost,
     derived_data_path: derived_data_path,
     cloned_source_packages_path: source_packages_path,
-    destination: 'generic/platform=iOS Simulator'
+    devices: options[:device]
   )
 end
 
