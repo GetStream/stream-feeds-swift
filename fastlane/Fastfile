@@ -203,7 +203,7 @@ private_lane :build_example_app do |options|
 end
 
 desc 'Test SPM Integration'
-lane :spm_integration do |options|
+lane :spm_integration do
   next unless is_check_required(sources: sources_matrix[:integration], force_check: @force_check)
 
   gym(
@@ -214,7 +214,7 @@ lane :spm_integration do |options|
     clean: is_localhost,
     derived_data_path: derived_data_path,
     cloned_source_packages_path: source_packages_path,
-    devices: options[:device]
+    destination: 'generic/platform=iOS Simulator'
   )
 end
 
