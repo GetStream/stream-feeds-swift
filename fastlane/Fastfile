@@ -214,8 +214,7 @@ lane :spm_integration do
     clean: is_localhost,
     derived_data_path: derived_data_path,
     cloned_source_packages_path: source_packages_path,
-    destination: 'generic/platform=iOS Simulator',
-    xcargs: buildcache_xcargs
+    destination: 'generic/platform=iOS Simulator'
   )
 end
 
@@ -249,6 +248,7 @@ lane :sources_matrix do
   {
     llc: ['Sources/StreamFeeds', 'Tests/StreamFeedsTests', 'Tests/Shared', xcode_project],
     sample_apps: ['Sources', 'DemoApp', xcode_project],
+    integration: ['Sources', 'Integration', xcode_project],
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
     size: ['Sources', xcode_project],
     public_interface: ['Sources']
