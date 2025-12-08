@@ -95,3 +95,13 @@ jobs:
     - uses: ./.github/actions/xcode-cache
     - name: Build Demo App
       run: bundle exec fastlane build_demo
+
+  build-spm-integration:
+    name: Build SPM Integration App
+    runs-on: macos-15
+    steps:
+    - uses: actions/checkout@v4.1.1
+    - uses: ./.github/actions/ruby-cache
+    - uses: ./.github/actions/xcode-cache
+    - name: Build SPM Integration App
+      run: bundle exec fastlane spm_integration

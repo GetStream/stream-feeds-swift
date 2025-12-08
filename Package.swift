@@ -14,15 +14,14 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/GetStream/stream-core-swift.git", exact: "0.6.0")
+        .package(url: "https://github.com/GetStream/stream-core-swift.git", exact: "0.6.2")
     ],
     targets: [
         .target(
             name: "StreamFeeds",
             dependencies: [
                 .product(name: "StreamAttachments", package: "stream-core-swift"),
-                .product(name: "StreamCore", package: "stream-core-swift"),
-                .product(name: "StreamOpenAPI", package: "stream-core-swift")
+                .product(name: "StreamCore", package: "stream-core-swift")
             ]
         ),
         .testTarget(
