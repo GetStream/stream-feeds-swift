@@ -92,7 +92,7 @@ extension CommentsFilterField {
     
     /// Filter by the type of object the comment belongs to (e.g., "activity", "post").
     ///
-    /// **Supported operators:** `.equal`, `.notEqual`, `.in`
+    /// **Supported operators:** `.equal`, `.in`
     public static let objectType = Self("object_type", localValue: \.objectType)
     
     /// Filter by the ID of the object the comment belongs to.
@@ -258,7 +258,7 @@ extension CommentsSort {
 extension CommentsQuery {
     func toRequest() -> QueryCommentsRequest {
         QueryCommentsRequest(
-            filter: filter?.toRawJSON() ?? [:],
+            filter: filter?.toRawJSONDictionary() ?? [:],
             limit: limit,
             next: next,
             prev: previous,

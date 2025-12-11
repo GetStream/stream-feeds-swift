@@ -11,7 +11,7 @@ struct Snippets_03_02_QueryingActivities {
     
     func activitySearchQueries() async throws {
         let query = ActivitiesQuery(
-            filter: .equal(.type, "post"),
+            filter: .equal(.activityType, "post"),
             sort: [Sort(field: .createdAt, direction: .reverse)],
             limit: 10
         )

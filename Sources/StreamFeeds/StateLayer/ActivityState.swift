@@ -54,6 +54,12 @@ extension ActivityState {
             case .activityUpdated(let activityData, let eventFeedId):
                 guard activityData.id == activityId, eventFeedId == feed else { return }
                 await self?.setActivity(activityData)
+            case .activityBatchUpdate(let updates):
+                if let updated = updates.updated.first(where: { $0.id == activityId }) {
+                    await self?.setActivity(updated)
+                } else if updates.removedIds.contains(activityId) {
+                    await self?.setActivity(nil)
+                }
             case .activityReactionAdded(let reactionData, let activityData, let eventFeedId):
                 guard activityData.id == activityId, eventFeedId == feed else { return }
                 await self?.access { state in
@@ -107,6 +113,10 @@ extension ActivityState {
                     for commentData in commentDatas {
                         state.activity?.addComment(commentData)
                     }
+                }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.activity?.mergeFeedOwnCapabilities(from: capabilitiesMap)
                 }
             case .pollDeleted(let pollId, let eventFeedId):
                 guard eventFeedId == feed else { return }

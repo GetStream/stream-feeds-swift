@@ -106,11 +106,11 @@ import StreamFeeds
             activityFilter: .or([
                 .and([
                     .in(.filterTags, ["green"]),
-                    .equal(.type, "post")
+                    .equal(.activityType, "post")
                 ]),
                 .and([
                     .in(.filterTags, ["orange"]),
-                    .equal(.type, "activity")
+                    .equal(.activityType, "activity")
                 ])
             ])
         )

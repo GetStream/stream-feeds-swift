@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 🔄 Changed
 
+# [0.5.1](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.1)
+_December 08, 2025_
+
+### 🐞 Fixed
+- Fix `Package.swift` non-existent module [#56](https://github.com/GetStream/stream-feeds-swift/pull/56) 
+
+# [0.5.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.0)
+_November 19, 2025_
+
+### ✅ Added
+- Update local state when using activity batch operations in `FeedsClient` [#52](https://github.com/GetStream/stream-feeds-swift/pull/52)
+- Keep `FeedData.ownCapabilities` up to date in every model when handling web-socket events [#51](https://github.com/GetStream/stream-feeds-swift/pull/51)
+- Add filtering and sorting keys: [#53](https://github.com/GetStream/stream-feeds-swift/pull/53)
+    - `ActivitiesFilterField.feeds`
+    - `ActivitiesFilterField.interestTags`
+    - `ActivitiesFilterField.near`
+    - `ActivitiesFilterField.withinBounds`
+    - `ModerationConfigsSortField.team`
+### 🐞 Fixed
+- Fix remote key for `ModerationConfigsSortField.key` [#53](https://github.com/GetStream/stream-feeds-swift/pull/53)
+### 🔄 Changed
+- Rename `ActivitiesFilterField.type` to `ActivitiesFilterField.activityType` [#53](https://github.com/GetStream/stream-feeds-swift/pull/53)
+
 # [0.4.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.4.0)
 _September 25, 2025_
 

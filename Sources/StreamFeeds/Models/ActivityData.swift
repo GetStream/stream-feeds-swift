@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import StreamCore
 
@@ -11,7 +12,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentData]
     public let createdAt: Date
-    public let currentFeed: FeedData?
+    public private(set) var currentFeed: FeedData?
     public let custom: [String: RawJSON]
     public let deletedAt: Date?
     public let editedAt: Date?
@@ -22,7 +23,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let id: String
     public let interestTags: [String]
     public private(set) var latestReactions: [FeedsReactionData]
-    public let location: ActivityLocation?
+    public let location: CLLocationCoordinate2D?
     public let mentionedUsers: [UserData]
     public let moderation: ModerationV2Response?
     public let notificationContext: NotificationContext?
@@ -137,6 +138,24 @@ extension ActivityData {
             changes: { $0.merge(with: incomingData, update: reaction, currentUserId: currentUserId) }
         )
     }
+    
+    // MARK: - Current Feed Capabilities
+    
+    mutating func setFeedOwnCapabilities(_ capabilities: Set<FeedOwnCapability>) {
+        currentFeed?.setOwnCapabilities(capabilities)
+    }
+    
+    mutating func mergeFeedOwnCapabilities(from capabilitiesMap: [FeedId: Set<FeedOwnCapability>]) {
+        guard let feedId = currentFeed?.feed else { return }
+        guard let capabilities = capabilitiesMap[feedId] else { return }
+        currentFeed?.setOwnCapabilities(capabilities)
+    }
+    
+    func withFeedOwnCapabilities(from capabilitiesMap: [FeedId: Set<FeedOwnCapability>]) -> ActivityData {
+        var updated = self
+        updated.mergeFeedOwnCapabilities(from: capabilitiesMap)
+        return updated
+    }
 }
 
 // MARK: - Model Conversions
@@ -160,7 +179,7 @@ extension ActivityResponse {
             id: id,
             interestTags: interestTags,
             latestReactions: latestReactions.map { $0.toModel() },
-            location: location,
+            location: location.flatMap { CLLocationCoordinate2D(latitude: CLLocationDegrees($0.lat), longitude: CLLocationDegrees($0.lng)) },
             mentionedUsers: mentionedUsers.map { $0.toModel() },
             moderation: moderation,
             notificationContext: notificationContext,

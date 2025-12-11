@@ -3,6 +3,7 @@
 //
 
 import Combine
+import Foundation
 import StreamCore
 import StreamFeeds
 

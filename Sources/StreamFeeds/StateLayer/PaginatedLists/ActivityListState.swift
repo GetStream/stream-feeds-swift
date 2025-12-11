@@ -100,6 +100,23 @@ extension ActivityListState {
                 await self?.access { state in
                     state.activities.removeAll { $0.id == activityId }
                 }
+            case .activityBatchUpdate(let updates):
+                let added = updates.added.filter(matchesQuery)
+                let updated = updates.updated.filter(matchesQuery)
+                let removedIds = updates.removedIds
+                guard !added.isEmpty || !updated.isEmpty || !removedIds.isEmpty else { return }
+                await self?.access { state in
+                    let sorting = state.activitiesSorting
+                    if !added.isEmpty {
+                        state.activities = state.activities.sortedMerge(added.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
+                    }
+                    if !updated.isEmpty {
+                        state.activities = state.activities.sortedMerge(updated.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
+                    }
+                    if !removedIds.isEmpty {
+                        state.activities.removeAll(where: { removedIds.contains($0.id) })
+                    }
+                }
             case .activityReactionAdded(let reactionData, let activityData, _):
                 guard matchesQuery(activityData) else { return }
                 await self?.access { state in
@@ -182,6 +199,13 @@ extension ActivityListState {
                                 activity.addComment(commentData)
                             }
                         }
+                    )
+                }
+            case .feedOwnCapabilitiesUpdated(let capabilitiesMap):
+                await self?.access { state in
+                    state.activities.updateAll(
+                        where: { capabilitiesMap.contains($0.currentFeed?.feed) },
+                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
                     )
                 }
             case .pollUpdated(let pollData, _):

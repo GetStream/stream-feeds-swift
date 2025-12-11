@@ -2,6 +2,7 @@
 // Copyright © 2025 Stream.io Inc. All rights reserved.
 //
 
+import Foundation
 import StreamCore
 @testable import StreamFeeds
 import Testing
@@ -38,7 +39,8 @@ struct Feed_Tests {
         let updatedFeedData = try await feed.updateFeed(request: updateRequest)
         let stateFeedData = await feed.state.feedData
 
-        #expect(stateFeedData == updatedFeedData)
+        #expect(updatedFeedData.name == "Updated Feed Name")
+        #expect(updatedFeedData.custom == customData)
         #expect(stateFeedData?.name == "Updated Feed Name")
         #expect(stateFeedData?.custom == customData)
     }
@@ -944,6 +946,95 @@ struct Feed_Tests {
 
         await #expect(feed.state.activities.first?.text == "New From WS")
     }
+    
+    @Test func activityBatchUpdateEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(
+            feed: feedId.rawValue,
+            [
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            feeds: [feedId.rawValue],
+                            id: "2"
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            feeds: [feedId.rawValue],
+                            id: "1",
+                            text: "UPDATED TEXT"
+                        )
+                    ],
+                    duration: "1.23ms"
+                ),
+                DeleteActivitiesResponse.dummy(
+                    deletedIds: ["1"]
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        ActivityResponse.dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            feeds: ["user:someoneelse"],
+                            id: "unrelated-activity"
+                        )
+                    ],
+                    duration: "1.23ms"
+                )
+            ]
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+        
+        await #expect(feed.state.activities.map(\.id) == ["1"])
+        await #expect(feed.state.pinnedActivities.map(\.activity.id) == ["1"])
+        
+        // Send batch update with added activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [feedId.rawValue],
+                id: "2",
+                type: "post"
+            )
+        ])
+        await #expect(feed.state.activities.map(\.id).sorted() == ["1", "2"])
+        
+        // Send batch update with updated activity
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: [feedId.rawValue],
+                id: "1",
+                text: "UPDATED TEXT",
+                type: "post"
+            )
+        ])
+        let afterUpdate = await feed.state.activities
+        let updatedActivity = try #require(afterUpdate.first(where: { $0.id == "1" }))
+        #expect(updatedActivity.text == "UPDATED TEXT")
+        
+        // Send batch update with removed activity - should remove from both activities and pinnedActivities
+        _ = try await client.deleteActivities(
+            request: DeleteActivitiesRequest(ids: ["1"])
+        )
+        await #expect(feed.state.activities.map(\.id) == ["2"])
+        await #expect(feed.state.pinnedActivities.isEmpty)
+        
+        // Send batch update with unrelated activity - should be ignored
+        _ = try await client.upsertActivities([
+            ActivityRequest(
+                feeds: ["user:someoneelse"],
+                id: "unrelated-activity",
+                type: "post"
+            )
+        ])
+        await #expect(feed.state.activities.map(\.id) == ["2"])
+    }
 
     @Test func activityPinnedEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
@@ -1383,6 +1474,95 @@ struct Feed_Tests {
         await #expect(feed.state.followRequests.map(\.status) == [])
     }
 
+    // MARK: - Own Capabilities
+
+    @Test func getOrCreateCachesCapabilities() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads(
+                [
+                    GetOrCreateFeedResponse.dummy(
+                        activities: [
+                            .dummy(
+                                currentFeed: .dummy(feed: "user:john", ownCapabilities: [.readFeed, .addActivityBookmark]), id: "1"
+                            )
+                        ],
+                        feed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity]),
+                        followers: [
+                            FollowResponse.dummy(
+                                sourceFeed: .dummy(feed: "user:bob", ownCapabilities: [.readFeed, .addActivityReaction]),
+                                status: .pending,
+                                targetFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity])
+                            ),
+                            FollowResponse.dummy(
+                                sourceFeed: .dummy(feed: "user:alice", ownCapabilities: [.readFeed, .addComment]),
+                                targetFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity])
+                            )
+                        ],
+                        following: [
+                            FollowResponse.dummy(
+                                sourceFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity]),
+                                targetFeed: .dummy(feed: "user:melissa", ownCapabilities: [.readFeed, .addCommentReaction])
+                            )
+                        ],
+                        members: [.dummy(user: .dummy(id: "feed-member-1"))],
+                        pinnedActivities: [
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: "user:lisa", ownCapabilities: [.readFeed, .createFeed]), id: "1"
+                                ),
+                                feed: feedId.rawValue
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+        let feed = client.feed(for: feedId)
+        _ = try await feed.getOrCreate()
+        
+        let expectedCapabilitiesMap: [FeedId: Set<FeedOwnCapability>] = [
+            feedId: [.readFeed, .addActivity],
+            FeedId(rawValue: "user:john"): [.readFeed, .addActivityBookmark],
+            FeedId(rawValue: "user:bob"): [.readFeed, .addActivityReaction],
+            FeedId(rawValue: "user:alice"): [.readFeed, .addComment],
+            FeedId(rawValue: "user:melissa"): [.readFeed, .addCommentReaction],
+            FeedId(rawValue: "user:lisa"): [.readFeed, .createFeed]
+        ]
+        
+        let cached = try #require(client.ownCapabilitiesRepository.capabilities(for: Set(expectedCapabilitiesMap.keys)))
+        #expect(cached.keys.map(\.rawValue).sorted() == expectedCapabilitiesMap.keys.map(\.rawValue).sorted())
+        
+        for (feedId, expectedCapabilities) in expectedCapabilitiesMap {
+            #expect(cached[feedId] == expectedCapabilities)
+        }
+    }
+    
+    @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let initialCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
+        await verifyOwnCapabilities(in: feed, equalTo: initialCapabilities, for: feedId)
+        
+        // Send unmatching event first - should be ignored
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([
+                FeedId(rawValue: "user:someoneelse"): [.readFeed, .addActivity, .deleteOwnActivity]
+            ])
+        )
+        await verifyOwnCapabilities(in: feed, equalTo: initialCapabilities, for: feedId)
+        
+        // Send matching event with updated capabilities
+        let newCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity, .deleteOwnActivity]
+        await client.stateLayerEventPublisher.sendEvent(
+            .feedOwnCapabilitiesUpdated([feedId: newCapabilities])
+        )
+        await verifyOwnCapabilities(in: feed, equalTo: newCapabilities, for: feedId)
+    }
+
     // MARK: -
 
     private func defaultClientWithActivities(
@@ -1393,33 +1573,76 @@ struct Feed_Tests {
             apiTransport: .withPayloads(
                 [
                     GetOrCreateFeedResponse.dummy(
-                        activities: [.dummy(id: "1")],
+                        activities: [
+                            .dummy(
+                                currentFeed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity]), id: "1"
+                            )
+                        ],
                         feed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity]),
                         followers: [
                             FollowResponse.dummy(
                                 sourceFeed: .dummy(feed: "user:bob"),
                                 status: .pending,
-                                targetFeed: .dummy(feed: feed)
+                                targetFeed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity])
                             ),
                             FollowResponse.dummy(
                                 sourceFeed: .dummy(feed: "user:bob"),
-                                targetFeed: .dummy(feed: feed)
+                                targetFeed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity])
                             )
                         ],
                         following: [
                             FollowResponse.dummy(
-                                sourceFeed: .dummy(feed: feed),
+                                sourceFeed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity]),
                                 targetFeed: .dummy(feed: "user:bob")
                             )
                         ],
                         members: [.dummy(user: .dummy(id: "feed-member-1"))],
-                        pinnedActivities: [.dummy(
-                            activity: .dummy(id: "1"),
-                            feed: feed
-                        )]
+                        pinnedActivities: [
+                            .dummy(
+                                activity: .dummy(
+                                    currentFeed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity]), id: "1"
+                                ),
+                                feed: feed
+                            )
+                        ]
                     )
                 ] + additionalPayloads
             )
         )
+    }
+    
+    private func verifyOwnCapabilities(in feed: Feed, equalTo expectedCapabilities: Set<FeedOwnCapability>, for feedId: FeedId) async {
+        await #expect(feed.state.ownCapabilities == expectedCapabilities)
+        await #expect(feed.state.feedData?.ownCapabilities == expectedCapabilities)
+        for activity in await feed.state.activities where activity.currentFeed?.feed == feedId {
+            #expect(activity.currentFeed?.ownCapabilities == expectedCapabilities)
+        }
+        for pinnedActivity in await feed.state.pinnedActivities where pinnedActivity.activity.currentFeed?.feed == feedId {
+            #expect(pinnedActivity.activity.currentFeed?.ownCapabilities == expectedCapabilities)
+        }
+        for follower in await feed.state.followers {
+            if follower.sourceFeed.feed == feedId {
+                #expect(follower.sourceFeed.ownCapabilities == expectedCapabilities)
+            }
+            if follower.targetFeed.feed == feedId {
+                #expect(follower.targetFeed.ownCapabilities == expectedCapabilities)
+            }
+        }
+        for follow in await feed.state.following {
+            if follow.sourceFeed.feed == feedId {
+                #expect(follow.sourceFeed.ownCapabilities == expectedCapabilities)
+            }
+            if follow.targetFeed.feed == feedId {
+                #expect(follow.targetFeed.ownCapabilities == expectedCapabilities)
+            }
+        }
+        for followRequest in await feed.state.followRequests {
+            if followRequest.sourceFeed.feed == feedId {
+                #expect(followRequest.sourceFeed.ownCapabilities == expectedCapabilities)
+            }
+            if followRequest.targetFeed.feed == feedId {
+                #expect(followRequest.targetFeed.ownCapabilities == expectedCapabilities)
+            }
+        }
     }
 }

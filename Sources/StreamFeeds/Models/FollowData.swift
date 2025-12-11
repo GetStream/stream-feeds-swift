@@ -12,9 +12,9 @@ public struct FollowData: Equatable, Sendable {
     public let pushPreference: String
     public let requestAcceptedAt: Date?
     public let requestRejectedAt: Date?
-    public let sourceFeed: FeedData
+    public private(set) var sourceFeed: FeedData
     public let status: FollowStatus
-    public let targetFeed: FeedData
+    public private(set) var targetFeed: FeedData
     public let updatedAt: Date
         
     var isFollower: Bool {
@@ -43,6 +43,27 @@ public typealias FollowStatus = FollowResponse.FollowResponseStatus
 extension FollowData: Identifiable {
     public var id: String {
         "\(sourceFeed.feed)-\(targetFeed.feed)"
+    }
+}
+
+// MARK: - Mutating the Data
+
+extension FollowData {
+    // MARK: - Current Feed Capabilities
+    
+    mutating func mergeFeedOwnCapabilities(from capabilitiesMap: [FeedId: Set<FeedOwnCapability>]) {
+        if let capabilities = capabilitiesMap[sourceFeed.feed] {
+            sourceFeed.setOwnCapabilities(capabilities)
+        }
+        if let capabilities = capabilitiesMap[targetFeed.feed] {
+            targetFeed.setOwnCapabilities(capabilities)
+        }
+    }
+    
+    func withFeedOwnCapabilities(from capabilitiesMap: [FeedId: Set<FeedOwnCapability>]) -> FollowData {
+        var updated = self
+        updated.mergeFeedOwnCapabilities(from: capabilitiesMap)
+        return updated
     }
 }
 
