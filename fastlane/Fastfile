@@ -6,7 +6,7 @@ require 'json'
 require 'net/http'
 import 'Sonarfile'
 
-xcode_version = ENV['XCODE_VERSION'] || '26.0.1'
+xcode_version = ENV['XCODE_VERSION'] || '26.1.1'
 xcode_project = 'StreamFeeds.xcodeproj'
 sdk_names = ['StreamFeeds']
 github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-feeds-swift'
