@@ -34,6 +34,7 @@ lane :release do |options|
     File.open(swift_environment_path, 'w') { |f| f.puts(new_content) }
   end
 
+  check_unsafe_flags
   match_me
   release_ios_sdk(
     version: options[:version],
