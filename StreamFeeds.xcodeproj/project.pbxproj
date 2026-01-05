@@ -433,7 +433,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/StreamFeeds/Info.plist";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Stream.io Inc. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Stream.io Inc. All rights reserved.";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_GENERATE_MAP_FILE = YES;
@@ -515,7 +515,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/StreamFeeds/Info.plist";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Stream.io Inc. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Stream.io Inc. All rights reserved.";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_GENERATE_MAP_FILE = YES;
@@ -551,7 +551,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/Sources/StreamFeeds/Info.plist";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Stream.io Inc. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Stream.io Inc. All rights reserved.";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_GENERATE_MAP_FILE = YES;
