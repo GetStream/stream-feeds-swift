@@ -25,7 +25,10 @@ DemoApp/               # The demo app for testing
 
 Use the closest folder’s conventions when editing. Query actual target/product names from Package.swift before building.
 
-Local setup (SPM)
+### New files & target membership
+  • When creating new source or resource files, add them to the correct Xcode target(s). Update the project (e.g. project.pbxproj) so each new file is included in the appropriate target's "Compile Sources" (or "Copy Bundle Resources" for assets). Match the target(s) used by sibling files in the same directory (e.g. Sources/StreamFeeds/ → StreamFeeds; Tests/StreamFeedsTests/ → StreamFeedsTests). Omitting target membership will cause build failures or unused files.
+
+### Local setup (SPM)
   1.  Clone the repository and open it in Xcode (root contains Package.swift).
   2.  Resolve packages.
   3.  Choose an iOS Simulator (e.g., iPhone 15) and Build.
