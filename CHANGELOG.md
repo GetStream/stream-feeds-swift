@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### 🔄 Changed
+- Updated add activity request and response [#60](https://github.com/GetStream/stream-feeds-swift/pull/60)
 
 # [0.5.1](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.1)
 _December 08, 2025_
