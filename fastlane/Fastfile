@@ -247,12 +247,12 @@ end
 
 lane :sources_matrix do
   {
-    llc: ['Sources/StreamFeeds', 'Tests/StreamFeedsTests', 'Tests/Shared', xcode_project],
-    sample_apps: ['Sources', 'DemoApp', xcode_project],
-    integration: ['Sources', 'Integration', xcode_project],
-    ruby: ['fastlane', 'Gemfile', 'Gemfile.lock'],
-    size: ['Sources', xcode_project],
-    public_interface: ['Sources']
+    llc: ['Sources/StreamFeeds', 'Tests/StreamFeedsTests', 'Tests/Shared', '.github/workflows/smoke-checks.yml', xcode_project],
+    sample_apps: ['Sources', 'DemoApp', '.github/workflows/smoke-checks.yml', xcode_project],
+    integration: ['Sources', 'Integration', '.github/workflows/smoke-checks.yml', xcode_project],
+    ruby: ['fastlane', 'Gemfile', 'Gemfile.lock', '.github/workflows/smoke-checks.yml'],
+    size: ['Sources', '.github/workflows/smoke-checks.yml', xcode_project],
+    public_interface: ['Sources', '.github/workflows/smoke-checks.yml']
   }
 end
 
