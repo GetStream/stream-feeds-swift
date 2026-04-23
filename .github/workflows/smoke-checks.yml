@@ -25,9 +25,19 @@ env:
   GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
 
 jobs:
+  guard:
+    name: Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - uses: ./.github/actions/ci-guard
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
   test-llc:
     name: Test LLC
     runs-on: macos-15
+    needs: guard
     steps:
     - uses: actions/checkout@v4.1.1
       with:
@@ -74,6 +84,7 @@ jobs:
   automated-code-review:
     name: Automated Code Review
     runs-on: macos-15
+    needs: guard
     env:
       XCODE_VERSION: "16.0"
     steps:
@@ -89,6 +100,7 @@ jobs:
   build-apps:
     name: Build Demo App
     runs-on: macos-15
+    needs: guard
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
@@ -99,6 +111,7 @@ jobs:
   build-spm-integration:
     name: Build SPM Integration App
     runs-on: macos-15
+    needs: guard
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
