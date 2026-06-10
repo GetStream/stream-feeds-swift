@@ -220,7 +220,7 @@ public struct ActivitiesSortField: SortField {
     /// - Parameters:
     ///   - rawValue: The string value representing the field name in the API.
     ///   - localValue: A closure that extracts the comparable value from the model.
-    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable & Sendable {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }

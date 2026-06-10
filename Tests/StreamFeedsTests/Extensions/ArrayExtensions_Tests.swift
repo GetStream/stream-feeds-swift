@@ -23,7 +23,7 @@ struct ArrayExtensions_Tests {
         public let comparator: AnySortComparator<Model>
         public let rawValue: String
         
-        public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+        public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable & Sendable {
             comparator = AnySortComparator(localValue: localValue)
             self.rawValue = rawValue
         }

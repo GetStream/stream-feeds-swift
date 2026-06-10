@@ -256,7 +256,7 @@ public struct FeedsSortField: SortField {
     /// The string value representing the field name in the API for remote sorting.
     public let rawValue: String
     
-    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable {
+    public init<Value>(_ rawValue: String, localValue: @escaping @Sendable (Model) -> Value) where Value: Comparable & Sendable {
         comparator = AnySortComparator(localValue: localValue)
         self.rawValue = rawValue
     }
