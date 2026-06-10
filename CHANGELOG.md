@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### 🔄 Changed
+- Update StreamCore to 0.7.0, which fixes `Sendable` errors when building with Xcode 27 [#68](https://github.com/GetStream/stream-feeds-swift/pull/68)
 
 # [0.5.2](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.2)
 _February 09, 2026_
