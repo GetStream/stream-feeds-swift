@@ -124,7 +124,7 @@ public struct SuggestionInfo: @unchecked Sendable {
 }
 
 /// Display information about a command.
-public struct CommandDisplayInfo: @unchecked Sendable {
+public struct CommandDisplayInfo: Sendable {
     public let displayName: String
     public let icon: UIImage
     public let format: String
