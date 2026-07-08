@@ -98,6 +98,10 @@ swiftlint --strict
 ### Documentation & examples
   • Update inline /// docs and any examples when changing public APIs.
   • Keep example/snippet code compilable. Use // MARK: sections for structure.
+  • Write doc comments (///) only for public declarations — types, methods, and properties that are part of the SDK's public API.
+  • Do not add doc comments to internal, private, or test code.
+  • Keep doc comments concise: a one-line summary; add parameter/return docs only when they are not obvious from the signature.
+  • Do not add inline comments narrating what the code or a change does; comment only non-obvious constraints or reasoning.
 
 ### Compatibility & dependencies
   • Maintain compatibility with deployment targets set in Package.swift.
