@@ -137,7 +137,7 @@ import SwiftUI
                 self.isCastingVote = false
             } catch {
                 log.error("Error casting poll vote \(error)")
-                try await Task.sleep(nanoseconds: 300_000_000)
+                try? await Task.sleep(nanoseconds: 300_000_000)
                 self.isCastingVote = false
             }
         }
@@ -150,9 +150,13 @@ import SwiftUI
     /// - Parameter comment: A comment added to the poll.
     public func add(comment: String) {
         Task {
-            try await activity.castPollVote(
-                request: .init(vote: .init(answerText: comment))
-            )
+            do {
+                try await activity.castPollVote(
+                    request: .init(vote: .init(answerText: comment))
+                )
+            } catch {
+                log.error("Error adding a poll comment \(error)")
+            }
         }
         commentText = ""
     }

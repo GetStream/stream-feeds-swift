@@ -45,7 +45,11 @@ struct ProfileView: View {
                                     Spacer()
                                     Button {
                                         Task {
-                                            try await feed.acceptFollow(request.sourceFeed.feed)
+                                            do {
+                                                try await feed.acceptFollow(request.sourceFeed.feed)
+                                            } catch {
+                                                log.error("Error accepting a follow request \(error)")
+                                            }
                                         }
                                     } label: {
                                         Image(systemName: "checkmark.circle.fill")
@@ -54,7 +58,11 @@ struct ProfileView: View {
                                     
                                     Button {
                                         Task {
-                                            try await feed.rejectFollow(request.sourceFeed.feed)
+                                            do {
+                                                try await feed.rejectFollow(request.sourceFeed.feed)
+                                            } catch {
+                                                log.error("Error rejecting a follow request \(error)")
+                                            }
                                         }
                                     } label: {
                                         Image(systemName: "xmark.circle.fill")
@@ -75,9 +83,13 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(follow.targetFeed.feed)
-                                    withAnimation {
-                                        followSuggestions.append(follow.targetFeed)
+                                    do {
+                                        try await feed.unfollow(follow.targetFeed.feed)
+                                        withAnimation {
+                                            followSuggestions.append(follow.targetFeed)
+                                        }
+                                    } catch {
+                                        log.error("Error unfollowing a feed \(error)")
                                     }
                                 }
                             } label: {
@@ -99,7 +111,11 @@ struct ProfileView: View {
                             Spacer()
                             Button {
                                 Task {
-                                    try await feed.unfollow(follow.sourceFeed.feed)
+                                    do {
+                                        try await feed.unfollow(follow.sourceFeed.feed)
+                                    } catch {
+                                        log.error("Error removing a follower \(error)")
+                                    }
                                 }
                             } label: {
                                 Text("Remove Follower")
@@ -135,8 +151,11 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .onAppear {
                 Task {
-                    let suggestionsResponse = try await feed.queryFollowSuggestions(limit: 10)
-                    followSuggestions = suggestionsResponse
+                    do {
+                        followSuggestions = try await feed.queryFollowSuggestions(limit: 10)
+                    } catch {
+                        log.error("Error querying follow suggestions \(error)")
+                    }
                 }
             }
         }
@@ -155,9 +174,13 @@ struct FollowSuggestionView: View {
             Text(owner.name ?? owner.id)
             Button {
                 Task {
-                    try await feed.follow(followedFeed, createNotificationActivity: true)
-                    withAnimation {
-                        followSuggestions.removeAll(where: { $0.feed == followedFeed })
+                    do {
+                        try await feed.follow(followedFeed, createNotificationActivity: true)
+                        withAnimation {
+                            followSuggestions.removeAll(where: { $0.feed == followedFeed })
+                        }
+                    } catch {
+                        log.error("Error following a feed \(error)")
                     }
                 }
             } label: {

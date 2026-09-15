@@ -27,7 +27,7 @@ private struct ErrorBanner: View {
         .shadow(radius: 4)
         .onAppear {
             Task {
-                try await Task.sleep(nanoseconds: .init(3_000_000_000))
+                try? await Task.sleep(nanoseconds: .init(3_000_000_000))
                 withAnimation(.easeInOut(duration: 0.3)) {
                     presented = false
                 }

@@ -61,7 +61,7 @@ private struct UIAlertControllerView: UIViewControllerRepresentable {
             )
             context.coordinator.alertController = alert
             alert.addTextField { textField in
-                let didEdit = UIAction { [weak alert, weak textField] _ in
+                let didEdit = UIAction { [weak alert = alert, weak textField] _ in
                     guard let defaultAction = alert?.actions.first(where: { $0.style == .default }) else { return }
                     defaultAction.isEnabled = validation(textField?.text ?? "")
                 }

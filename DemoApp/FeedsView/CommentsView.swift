@@ -51,7 +51,11 @@ struct CommentsView: View {
                             canDelete: comment.user.id == userId && feed.state.ownCapabilities.contains(.deleteOwnComment),
                             onDelete: {
                                 Task {
-                                    try await activity.deleteComment(commentId: comment.id)
+                                    do {
+                                        try await activity.deleteComment(commentId: comment.id)
+                                    } catch {
+                                        log.error("Error deleting a comment \(error)")
+                                    }
                                 }
                             }
                         )
@@ -81,7 +85,11 @@ struct CommentsView: View {
                                         canDelete: feed.state.ownCapabilities.contains(.deleteOwnComment),
                                         onDelete: {
                                             Task {
-                                                try await activity.deleteComment(commentId: reply.id)
+                                                do {
+                                                    try await activity.deleteComment(commentId: reply.id)
+                                                } catch {
+                                                    log.error("Error deleting a comment \(error)")
+                                                }
                                             }
                                         }
                                     )
@@ -111,7 +119,11 @@ struct CommentsView: View {
                                                     canDelete: comment.user.id == userId && feed.state.ownCapabilities.contains(.deleteOwnComment),
                                                     onDelete: {
                                                         Task {
-                                                            try await activity.deleteComment(commentId: nested.id)
+                                                            do {
+                                                                try await activity.deleteComment(commentId: nested.id)
+                                                            } catch {
+                                                                log.error("Error deleting a comment \(error)")
+                                                            }
                                                         }
                                                     }
                                                 )
@@ -210,7 +222,11 @@ struct CommentsView: View {
         }
         .onAppear {
             Task {
-                try await activity.get()
+                do {
+                    try await activity.get()
+                } catch {
+                    log.error("Error fetching an activity \(error)")
+                }
             }
         }
     }
@@ -269,10 +285,14 @@ struct ActivityActionsView: View {
         HStack {
             Button {
                 Task {
-                    if !containsUserReaction {
-                        try await activity.addCommentReaction(commentId: comment.id, request: .init(type: "heart"))
-                    } else {
-                        try await activity.deleteCommentReaction(commentId: comment.id, type: "heart")
+                    do {
+                        if !containsUserReaction {
+                            try await activity.addCommentReaction(commentId: comment.id, request: .init(type: "heart"))
+                        } else {
+                            try await activity.deleteCommentReaction(commentId: comment.id, type: "heart")
+                        }
+                    } catch {
+                        log.error("Error toggling a comment reaction \(error)")
                     }
                 }
             } label: {

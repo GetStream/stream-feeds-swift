@@ -76,10 +76,14 @@ import SwiftUI
     
     func add(comment: String) {
         Task { @MainActor in
-            try await activity.castPollVote(
-                request: .init(vote: .init(answerText: newCommentText))
-            )
-            newCommentText = ""
+            do {
+                try await activity.castPollVote(
+                    request: .init(vote: .init(answerText: newCommentText))
+                )
+                newCommentText = ""
+            } catch {
+                log.error("Error adding a poll comment \(error)")
+            }
         }
     }
 }

@@ -32,9 +32,13 @@ struct NotificationFeedView: View {
                     if state.notificationStatus?.unread ?? 0 > 0 {
                         Button {
                             Task {
-                                try await notificationFeed.markActivity(
-                                    request: .init(markAllRead: true)
-                                )
+                                do {
+                                    try await notificationFeed.markActivity(
+                                        request: .init(markAllRead: true)
+                                    )
+                                } catch {
+                                    log.error("Error marking all the activities as read: \(error)")
+                                }
                             }
                         } label: {
                             Text("Mark all as read")
