@@ -232,8 +232,12 @@ import SwiftUI
     private func showTypingSuggestions() {
         if let composerCommand {
             Task { @MainActor in
-                let suggestionInfo = try await commandsHandler.showSuggestions(for: composerCommand)
-                self.suggestions[suggestionInfo.key] = suggestionInfo.value
+                do {
+                    let suggestionInfo = try await commandsHandler.showSuggestions(for: composerCommand)
+                    self.suggestions[suggestionInfo.key] = suggestionInfo.value
+                } catch {
+                    log.error("Error loading typing suggestions \(error)")
+                }
             }
         }
     }
