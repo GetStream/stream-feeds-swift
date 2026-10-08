@@ -4,6 +4,7 @@
 
 import StreamCore
 import StreamFeeds
+import StreamFeedsLogsUI
 import SwiftUI
 
 struct RootView: View {
@@ -38,6 +39,7 @@ struct RootView: View {
             appState.client = client
             userId = credentials.id
             appState.viewState = .loggedIn(client)
+            LogViewer.showsFloatingButton = true
         } catch {
             appState.viewState = .loggedOut
             appState.showsLoginAlert = true
@@ -47,8 +49,7 @@ struct RootView: View {
 
 extension FeedsClient {
     static func client(for credentials: UserCredentials) -> FeedsClient {
-        LogConfig.level = .debug
-        return FeedsClient(
+        FeedsClient(
             apiKey: APIKey(DemoAppConfig.current.apiKey),
             user: credentials.user,
             token: credentials.token

@@ -13,6 +13,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        DemoAppLogging.setUp()
         UNUserNotificationCenter.current().delegate = self
         setUpRemoteNotifications()
 
