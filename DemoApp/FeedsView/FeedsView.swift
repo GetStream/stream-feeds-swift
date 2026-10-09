@@ -4,6 +4,7 @@
 
 import StreamCore
 import StreamFeeds
+import StreamFeedsLogsUI
 import SwiftUI
 
 struct FeedsView: View {
@@ -146,6 +147,7 @@ struct FeedsView: View {
             
             // Update view state to logged out
             appState.viewState = .loggedOut
+            LogViewer.showsFloatingButton = false
         }
     }
 }
