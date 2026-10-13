@@ -19,7 +19,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/GetStream/stream-core-swift.git", revision: "67f63d5c2a3cda32ee467b0e711ad150670edea7"),
+        .package(url: "https://github.com/GetStream/stream-core-swift.git", from: "0.13.0"),
         .package(url: "https://github.com/GetStream/stream-logs-ui-swift.git", from: "0.2.0")
     ],
     targets: [
