@@ -42,6 +42,7 @@ ignored_endpoints=(
     getUserLiveLocations # Chat only
     listQueues
     listUserGroups
+    longPoll # SDK uses WebSocket
     queryActivityShares
     queryAppeals
     queryCollections
@@ -82,7 +83,7 @@ rm -rf "$OUTPUT_DIR_FEEDS"
 rm -f "$OUTPUT_DIR_FEEDS/APIs/DefaultEndpoints.swift" "$OUTPUT_DIR_FEEDS/models/WSClientEvent.swift"
 
 # Already defined by StreamCore or Sources/StreamFeeds.
-for model in ConnectUserDetailsRequest ConnectedEvent ConnectionErrorEvent CreateDeviceRequest DeviceResponse HealthCheckEvent ListDevicesResponse OwnUserResponse User; do
+for model in APIError ConnectUserDetailsRequest ConnectedEvent ConnectionErrorEvent CreateDeviceRequest DeviceResponse HealthCheckEvent ListDevicesResponse OwnUserResponse User; do
   rm -f "$OUTPUT_DIR_FEEDS/models/$model.swift"
 done
 
@@ -166,7 +167,6 @@ remove_property AddReactionRequest copyCustomToNotification targetFeeds
 remove_property AddReactionResponse counterDelta notificationAccepted notificationCreated \
   notificationTaskId outcome previousReactionType referenceActivity
 remove_property AggregatedActivityResponse isRead isSeen
-remove_property APIError cooldownRemainingMs
 remove_property AWSRekognitionRule subclassifications
 remove_property BanInfoResponse user
 remove_property BanRequest deleteReactions
@@ -271,8 +271,7 @@ remove_property WSAuthMessage eventProtocol memberCustomInclude
 sed -i '' -E 's/[[:<:]]FeedsV3(Activity|Comment)Response[[:>:]]/\1Response/g' \
   "$OUTPUT_DIR_FEEDS/models/ReviewQueueItemResponse.swift"
 
-# APIError is referenced only by handwritten code.
-prune_unreachable_models APIError FeedsEvent
+prune_unreachable_models FeedsEvent
 prune_unused_string_coding_keys
 
 swiftformat --config "$REPO_ROOT/.swiftformat" --unexclude "$OUTPUT_DIR_FEEDS" "$OUTPUT_DIR_FEEDS"
