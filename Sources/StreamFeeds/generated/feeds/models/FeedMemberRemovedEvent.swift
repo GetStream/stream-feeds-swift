@@ -5,17 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class FeedMemberRemovedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a feed member is removed.
+public final class FeedMemberRemovedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var memberId: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.feed_member.removed" in this case
     public var type: String = "feeds.feed_member.removed"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, memberId: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feedVisibility: String? = nil,
+        fid: String,
+        memberId: String,
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields? = nil
+    ) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -35,7 +46,9 @@ public final class FeedMemberRemovedEvent: @unchecked Sendable, Event, Codable, 
         case type
         case user
     }
+}
 
+extension FeedMemberRemovedEvent: Hashable {
     public static func == (lhs: FeedMemberRemovedEvent, rhs: FeedMemberRemovedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

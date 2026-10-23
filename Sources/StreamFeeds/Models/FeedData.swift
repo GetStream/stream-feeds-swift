@@ -79,7 +79,33 @@ extension FeedResponse {
             ownMembership: ownMembership?.toModel(),
             pinCount: pinCount,
             updatedAt: updatedAt,
-            visibility: visibility
+            visibility: visibility?.rawValue
+        )
+    }
+}
+
+extension FeedSuggestionResponse {
+    func toModel() -> FeedData {
+        FeedData(
+            createdAt: createdAt,
+            createdBy: createdBy.toModel(),
+            custom: custom,
+            deletedAt: deletedAt,
+            description: description,
+            feed: FeedId(rawValue: feed),
+            filterTags: filterTags,
+            followerCount: followerCount,
+            followingCount: followingCount,
+            groupId: groupId,
+            id: id,
+            memberCount: memberCount,
+            name: name,
+            ownCapabilities: ownCapabilities.map(Set.init),
+            ownFollows: ownFollows?.map { $0.toModel() },
+            ownMembership: ownMembership?.toModel(),
+            pinCount: pinCount,
+            updatedAt: updatedAt,
+            visibility: visibility?.rawValue
         )
     }
 }

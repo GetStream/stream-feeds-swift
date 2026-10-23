@@ -5,14 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class QueryModerationConfigsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryModerationConfigsRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Filter conditions for moderation configs
     public var filter: [String: RawJSON]?
     public var limit: Int?
     public var next: String?
     public var prev: String?
+    /// Sorting parameters for the results
     public var sort: [SortParamRequest]?
 
-    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
+    public init(
+        filter: [String: RawJSON]? = nil,
+        limit: Int? = nil,
+        next: String? = nil,
+        prev: String? = nil,
+        sort: [SortParamRequest]? = nil
+    ) {
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -27,7 +35,9 @@ public final class QueryModerationConfigsRequest: @unchecked Sendable, Codable, 
         case prev
         case sort
     }
+}
 
+extension QueryModerationConfigsRequest: Hashable {
     public static func == (lhs: QueryModerationConfigsRequest, rhs: QueryModerationConfigsRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

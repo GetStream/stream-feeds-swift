@@ -1,8 +1,13 @@
+//
+// Copyright © 2026 Stream.io Inc. All rights reserved.
+//
+
 import Foundation
 import StreamCore
 
-public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var avgResponseTime: Int?
+    /// Number of minor actions performed on the user
     public var banCount: Int
     public var banned: Bool
     public var blockedUserIds: [String]
@@ -10,7 +15,9 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     public var custom: [String: RawJSON]
     public var deactivatedAt: Date?
     public var deletedAt: Date?
+    /// Number of major actions performed on the user
     public var deletedContentCount: Int
+    /// Number of flag actions performed on the user
     public var flaggedCount: Int
     public var id: String
     public var image: String?
@@ -18,13 +25,33 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     public var lastActive: Date?
     public var name: String?
     public var online: Bool
-    public var revokeTokensIssuedBefore: Date?
     public var role: String
     public var teams: [String]
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(avgResponseTime: Int? = nil, banCount: Int, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, deletedContentCount: Int, flaggedCount: Int, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+    public init(
+        avgResponseTime: Int? = nil,
+        banCount: Int,
+        banned: Bool,
+        blockedUserIds: [String],
+        createdAt: Date,
+        custom: [String: RawJSON],
+        deactivatedAt: Date? = nil,
+        deletedAt: Date? = nil,
+        deletedContentCount: Int,
+        flaggedCount: Int,
+        id: String,
+        image: String? = nil,
+        language: String,
+        lastActive: Date? = nil,
+        name: String? = nil,
+        online: Bool,
+        role: String,
+        teams: [String],
+        teamsRole: [String: String]? = nil,
+        updatedAt: Date
+    ) {
         self.avgResponseTime = avgResponseTime
         self.banCount = banCount
         self.banned = banned
@@ -41,59 +68,58 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
         self.lastActive = lastActive
         self.name = name
         self.online = online
-        self.revokeTokensIssuedBefore = revokeTokensIssuedBefore
         self.role = role
         self.teams = teams
         self.teamsRole = teamsRole
         self.updatedAt = updatedAt
     }
 
-public enum CodingKeys: String, CodingKey, CaseIterable {
-    case avgResponseTime = "avg_response_time"
-    case banCount = "ban_count"
-    case banned
-    case blockedUserIds = "blocked_user_ids"
-    case createdAt = "created_at"
-    case custom
-    case deactivatedAt = "deactivated_at"
-    case deletedAt = "deleted_at"
-    case deletedContentCount = "deleted_content_count"
-    case flaggedCount = "flagged_count"
-    case id
-    case image
-    case language
-    case lastActive = "last_active"
-    case name
-    case online
-    case revokeTokensIssuedBefore = "revoke_tokens_issued_before"
-    case role
-    case teams
-    case teamsRole = "teams_role"
-    case updatedAt = "updated_at"
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case avgResponseTime = "avg_response_time"
+        case banCount = "ban_count"
+        case banned
+        case blockedUserIds = "blocked_user_ids"
+        case createdAt = "created_at"
+        case custom
+        case deactivatedAt = "deactivated_at"
+        case deletedAt = "deleted_at"
+        case deletedContentCount = "deleted_content_count"
+        case flaggedCount = "flagged_count"
+        case id
+        case image
+        case language
+        case lastActive = "last_active"
+        case name
+        case online
+        case role
+        case teams
+        case teamsRole = "teams_role"
+        case updatedAt = "updated_at"
+    }
 }
 
+extension EntityCreatorResponse: Hashable {
     public static func == (lhs: EntityCreatorResponse, rhs: EntityCreatorResponse) -> Bool {
         lhs.avgResponseTime == rhs.avgResponseTime &&
-        lhs.banCount == rhs.banCount &&
-        lhs.banned == rhs.banned &&
-        lhs.blockedUserIds == rhs.blockedUserIds &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.custom == rhs.custom &&
-        lhs.deactivatedAt == rhs.deactivatedAt &&
-        lhs.deletedAt == rhs.deletedAt &&
-        lhs.deletedContentCount == rhs.deletedContentCount &&
-        lhs.flaggedCount == rhs.flaggedCount &&
-        lhs.id == rhs.id &&
-        lhs.image == rhs.image &&
-        lhs.language == rhs.language &&
-        lhs.lastActive == rhs.lastActive &&
-        lhs.name == rhs.name &&
-        lhs.online == rhs.online &&
-        lhs.revokeTokensIssuedBefore == rhs.revokeTokensIssuedBefore &&
-        lhs.role == rhs.role &&
-        lhs.teams == rhs.teams &&
-        lhs.teamsRole == rhs.teamsRole &&
-        lhs.updatedAt == rhs.updatedAt
+            lhs.banCount == rhs.banCount &&
+            lhs.banned == rhs.banned &&
+            lhs.blockedUserIds == rhs.blockedUserIds &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.deactivatedAt == rhs.deactivatedAt &&
+            lhs.deletedAt == rhs.deletedAt &&
+            lhs.deletedContentCount == rhs.deletedContentCount &&
+            lhs.flaggedCount == rhs.flaggedCount &&
+            lhs.id == rhs.id &&
+            lhs.image == rhs.image &&
+            lhs.language == rhs.language &&
+            lhs.lastActive == rhs.lastActive &&
+            lhs.name == rhs.name &&
+            lhs.online == rhs.online &&
+            lhs.role == rhs.role &&
+            lhs.teams == rhs.teams &&
+            lhs.teamsRole == rhs.teamsRole &&
+            lhs.updatedAt == rhs.updatedAt
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -113,7 +139,6 @@ public enum CodingKeys: String, CodingKey, CaseIterable {
         hasher.combine(lastActive)
         hasher.combine(name)
         hasher.combine(online)
-        hasher.combine(revokeTokensIssuedBefore)
         hasher.combine(role)
         hasher.combine(teams)
         hasher.combine(teamsRole)

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
     public enum FeedInputVisibility: String, Sendable, Codable, CaseIterable {
         case `private`
         case `public`
@@ -28,14 +28,24 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
     public var custom: [String: RawJSON]?
     public var description: String?
     public var filterTags: [String]?
+    public var location: Location?
     public var members: [FeedMemberRequest]?
     public var name: String?
     public var visibility: FeedInputVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
+    public init(
+        custom: [String: RawJSON]? = nil,
+        description: String? = nil,
+        filterTags: [String]? = nil,
+        location: Location? = nil,
+        members: [FeedMemberRequest]? = nil,
+        name: String? = nil,
+        visibility: FeedInputVisibility? = nil
+    ) {
         self.custom = custom
         self.description = description
         self.filterTags = filterTags
+        self.location = location
         self.members = members
         self.name = name
         self.visibility = visibility
@@ -45,15 +55,19 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
         case custom
         case description
         case filterTags = "filter_tags"
+        case location
         case members
         case name
         case visibility
     }
+}
 
+extension FeedInput: Hashable {
     public static func == (lhs: FeedInput, rhs: FeedInput) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.description == rhs.description &&
             lhs.filterTags == rhs.filterTags &&
+            lhs.location == rhs.location &&
             lhs.members == rhs.members &&
             lhs.name == rhs.name &&
             lhs.visibility == rhs.visibility
@@ -63,6 +77,7 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
         hasher.combine(custom)
         hasher.combine(description)
         hasher.combine(filterTags)
+        hasher.combine(location)
         hasher.combine(members)
         hasher.combine(name)
         hasher.combine(visibility)

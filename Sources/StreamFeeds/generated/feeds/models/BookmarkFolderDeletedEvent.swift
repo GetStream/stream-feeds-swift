@@ -5,15 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkFolderDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a bookmark folder is deleted.
+public final class BookmarkFolderDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var bookmarkFolder: BookmarkFolderResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var receivedAt: Date?
+    /// The type of event: "feeds.bookmark_folder.deleted" in this case
     public var type: String = "feeds.bookmark_folder.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(bookmarkFolder: BookmarkFolderResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(
+        bookmarkFolder: BookmarkFolderResponse,
+        createdAt: Date,
+        custom: [String: RawJSON],
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields? = nil
+    ) {
         self.bookmarkFolder = bookmarkFolder
         self.createdAt = createdAt
         self.custom = custom
@@ -29,7 +38,9 @@ public final class BookmarkFolderDeletedEvent: @unchecked Sendable, Event, Codab
         case type
         case user
     }
+}
 
+extension BookmarkFolderDeletedEvent: Hashable {
     public static func == (lhs: BookmarkFolderDeletedEvent, rhs: BookmarkFolderDeletedEvent) -> Bool {
         lhs.bookmarkFolder == rhs.bookmarkFolder &&
             lhs.createdAt == rhs.createdAt &&

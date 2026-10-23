@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class NotificationContext: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class NotificationContext: @unchecked Sendable, Codable, JSONEncodable {
     public var target: NotificationTarget?
     public var trigger: NotificationTrigger?
 
@@ -18,7 +18,9 @@ public final class NotificationContext: @unchecked Sendable, Codable, JSONEncoda
         case target
         case trigger
     }
+}
 
+extension NotificationContext: Hashable {
     public static func == (lhs: NotificationContext, rhs: NotificationContext) -> Bool {
         lhs.target == rhs.target &&
             lhs.trigger == rhs.trigger

@@ -5,39 +5,29 @@
 import Foundation
 import StreamCore
 
-public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum BanRequestDeleteMessages: String, Sendable, Codable, CaseIterable {
-        case hard
-        case pruning
-        case soft
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var bannedBy: UserRequest?
-    public var bannedById: String?
-    public var channelCid: String?
-    public var deleteMessages: BanRequestDeleteMessages?
+public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Whether to delete reactions by the banned user on other users' messages
+    public var deleteReactions: Bool?
+    /// Whether to ban the user's IP address
     public var ipBan: Bool?
+    /// Optional explanation for the ban
     public var reason: String?
+    /// Whether this is a shadow ban
     public var shadow: Bool?
+    /// ID of the user to ban
     public var targetUserId: String
+    /// Duration of the ban in minutes
     public var timeout: Int?
 
-    public init(bannedBy: UserRequest? = nil, bannedById: String? = nil, channelCid: String? = nil, deleteMessages: BanRequestDeleteMessages? = nil, ipBan: Bool? = nil, reason: String? = nil, shadow: Bool? = nil, targetUserId: String, timeout: Int? = nil) {
-        self.bannedBy = bannedBy
-        self.bannedById = bannedById
-        self.channelCid = channelCid
-        self.deleteMessages = deleteMessages
+    public init(
+        deleteReactions: Bool? = nil,
+        ipBan: Bool? = nil,
+        reason: String? = nil,
+        shadow: Bool? = nil,
+        targetUserId: String,
+        timeout: Int? = nil
+    ) {
+        self.deleteReactions = deleteReactions
         self.ipBan = ipBan
         self.reason = reason
         self.shadow = shadow
@@ -46,22 +36,18 @@ public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable, Hash
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case bannedBy = "banned_by"
-        case bannedById = "banned_by_id"
-        case channelCid = "channel_cid"
-        case deleteMessages = "delete_messages"
+        case deleteReactions = "delete_reactions"
         case ipBan = "ip_ban"
         case reason
         case shadow
         case targetUserId = "target_user_id"
         case timeout
     }
+}
 
+extension BanRequest: Hashable {
     public static func == (lhs: BanRequest, rhs: BanRequest) -> Bool {
-        lhs.bannedBy == rhs.bannedBy &&
-            lhs.bannedById == rhs.bannedById &&
-            lhs.channelCid == rhs.channelCid &&
-            lhs.deleteMessages == rhs.deleteMessages &&
+        lhs.deleteReactions == rhs.deleteReactions &&
             lhs.ipBan == rhs.ipBan &&
             lhs.reason == rhs.reason &&
             lhs.shadow == rhs.shadow &&
@@ -70,10 +56,7 @@ public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable, Hash
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(bannedBy)
-        hasher.combine(bannedById)
-        hasher.combine(channelCid)
-        hasher.combine(deleteMessages)
+        hasher.combine(deleteReactions)
         hasher.combine(ipBan)
         hasher.combine(reason)
         hasher.combine(shadow)

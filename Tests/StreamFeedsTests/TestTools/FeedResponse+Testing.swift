@@ -24,9 +24,10 @@ extension FeedResponse {
         memberCount: Int = 0,
         ownCapabilities: [FeedOwnCapability]? = [.readFeed, .readActivities],
         pinCount: Int = 0,
-        visibility: String? = nil
+        visibility: FeedResponse.FeedResponseVisibility? = nil
     ) -> FeedResponse {
         FeedResponse(
+            activityCount: 0,
             createdAt: createdAt,
             createdBy: createdBy,
             custom: custom,

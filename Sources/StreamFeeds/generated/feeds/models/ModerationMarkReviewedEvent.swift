@@ -5,36 +5,49 @@
 import Foundation
 import StreamCore
 
-public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// This event is sent when a moderation item is marked as reviewed
+public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var createdAt: Date
-    public var item: ReviewQueueItemResponse?
+    public var custom: [String: RawJSON]
+    public var item: ReviewQueueItemResponse
+    public var receivedAt: Date?
     public var type: String = "moderation.mark_reviewed"
-    public var user: User?
 
-    public init(createdAt: Date, item: ReviewQueueItemResponse? = nil, user: User? = nil) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        item: ReviewQueueItemResponse,
+        receivedAt: Date? = nil
+    ) {
         self.createdAt = createdAt
+        self.custom = custom
         self.item = item
-        self.user = user
+        self.receivedAt = receivedAt
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
+        case custom
         case item
+        case receivedAt = "received_at"
         case type
-        case user
     }
+}
 
+extension ModerationMarkReviewedEvent: Hashable {
     public static func == (lhs: ModerationMarkReviewedEvent, rhs: ModerationMarkReviewedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
             lhs.item == rhs.item &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
+        hasher.combine(custom)
         hasher.combine(item)
+        hasher.combine(receivedAt)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

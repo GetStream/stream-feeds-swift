@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum VelocityFilterConfigRuleAction: String, Sendable, Codable, CaseIterable {
         case ban
         case flag
@@ -57,7 +57,22 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
     public var slowSpamTtl: Int
     public var urlOnly: Bool
 
-    public init(action: VelocityFilterConfigRuleAction, banDuration: Int, cascadingAction: VelocityFilterConfigRuleCascadingAction, cascadingThreshold: Int, checkMessageContext: Bool, fastSpamThreshold: Int, fastSpamTtl: Int, ipBan: Bool, probationPeriod: Int, shadowBan: Bool, slowSpamBanDuration: Int? = nil, slowSpamThreshold: Int, slowSpamTtl: Int, urlOnly: Bool) {
+    public init(
+        action: VelocityFilterConfigRuleAction,
+        banDuration: Int,
+        cascadingAction: VelocityFilterConfigRuleCascadingAction,
+        cascadingThreshold: Int,
+        checkMessageContext: Bool,
+        fastSpamThreshold: Int,
+        fastSpamTtl: Int,
+        ipBan: Bool,
+        probationPeriod: Int,
+        shadowBan: Bool,
+        slowSpamBanDuration: Int? = nil,
+        slowSpamThreshold: Int,
+        slowSpamTtl: Int,
+        urlOnly: Bool
+    ) {
         self.action = action
         self.banDuration = banDuration
         self.cascadingAction = cascadingAction
@@ -90,7 +105,9 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
         case slowSpamTtl = "slow_spam_ttl"
         case urlOnly = "url_only"
     }
+}
 
+extension VelocityFilterConfigRule: Hashable {
     public static func == (lhs: VelocityFilterConfigRule, rhs: VelocityFilterConfigRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.banDuration == rhs.banDuration &&

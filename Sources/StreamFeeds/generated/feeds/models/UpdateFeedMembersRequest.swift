@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable {
     public enum UpdateFeedMembersRequestOperation: String, Sendable, Codable, CaseIterable {
         case remove
         case set
@@ -24,12 +24,20 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
     }
 
     public var limit: Int?
+    /// List of members to upsert, remove, or set
     public var members: [FeedMemberRequest]?
     public var next: String?
+    /// Type of update operation to perform. One of: upsert, remove, set
     public var operation: UpdateFeedMembersRequestOperation
     public var prev: String?
 
-    public init(limit: Int? = nil, members: [FeedMemberRequest]? = nil, next: String? = nil, operation: UpdateFeedMembersRequestOperation, prev: String? = nil) {
+    public init(
+        limit: Int? = nil,
+        members: [FeedMemberRequest]? = nil,
+        next: String? = nil,
+        operation: UpdateFeedMembersRequestOperation,
+        prev: String? = nil
+    ) {
         self.limit = limit
         self.members = members
         self.next = next
@@ -44,7 +52,9 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
         case operation
         case prev
     }
+}
 
+extension UpdateFeedMembersRequest: Hashable {
     public static func == (lhs: UpdateFeedMembersRequest, rhs: UpdateFeedMembersRequest) -> Bool {
         lhs.limit == rhs.limit &&
             lhs.members == rhs.members &&

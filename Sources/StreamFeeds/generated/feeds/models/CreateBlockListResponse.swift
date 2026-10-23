@@ -5,8 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class CreateBlockListResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class CreateBlockListResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Block list contains restricted words
     public var blocklist: BlockListResponse?
+    /// Duration of the request in milliseconds
     public var duration: String
 
     public init(blocklist: BlockListResponse? = nil, duration: String) {
@@ -18,7 +21,9 @@ public final class CreateBlockListResponse: @unchecked Sendable, Codable, JSONEn
         case blocklist
         case duration
     }
+}
 
+extension CreateBlockListResponse: Hashable {
     public static func == (lhs: CreateBlockListResponse, rhs: CreateBlockListResponse) -> Bool {
         lhs.blocklist == rhs.blocklist &&
             lhs.duration == rhs.duration

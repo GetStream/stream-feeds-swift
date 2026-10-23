@@ -5,17 +5,42 @@
 import Foundation
 import StreamCore
 
-public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// A comment with an optional, depth‑limited slice of nested replies.
+public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEncodable {
+    public enum ThreadedCommentResponseStatus: String, Sendable, Codable, CaseIterable {
+        case active
+        case deleted
+        case hidden
+        case removed
+        case shadowBlocked = "shadow_blocked"
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var attachments: [Attachment]?
+    public var bookmarkCount: Int
     public var confidenceScore: Float
     public var controversyScore: Float?
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var deletedAt: Date?
     public var downvoteCount: Int
+    public var editedAt: Date?
+    public var hidden: Bool
+    public var i18n: [String: String]?
     public var id: String
     public var latestReactions: [FeedsReactionResponse]?
     public var mentionedUsers: [UserResponse]
+    /// Cursor & depth information for a comment's direct replies. Mirrors Reddit's 'load more replies' semantics.
     public var meta: RepliesMeta?
     public var moderation: ModerationV2Response?
     public var objectId: String
@@ -23,24 +48,62 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var ownReactions: [FeedsReactionResponse]
     public var parentId: String?
     public var reactionCount: Int
-    public var reactionGroups: [String: ReactionGroupResponse?]?
+    public var reactionGroups: [String: FeedsReactionGroupResponse]?
+    /// Slice of nested comments (may be empty).
     public var replies: [ThreadedCommentResponse]?
     public var replyCount: Int
     public var score: Int
-    public var status: String
+    /// Status of the comment. One of: active, deleted, removed, hidden
+    public var status: ThreadedCommentResponseStatus
     public var text: String?
     public var updatedAt: Date
     public var upvoteCount: Int
+    /// User response object
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(
+        attachments: [Attachment]? = nil,
+        bookmarkCount: Int,
+        confidenceScore: Float,
+        controversyScore: Float? = nil,
+        createdAt: Date,
+        custom: [String: RawJSON]? = nil,
+        deletedAt: Date? = nil,
+        downvoteCount: Int,
+        editedAt: Date? = nil,
+        hidden: Bool,
+        i18n: [String: String]? = nil,
+        id: String,
+        latestReactions: [FeedsReactionResponse]? = nil,
+        mentionedUsers: [UserResponse],
+        meta: RepliesMeta? = nil,
+        moderation: ModerationV2Response? = nil,
+        objectId: String,
+        objectType: String,
+        ownReactions: [FeedsReactionResponse],
+        parentId: String? = nil,
+        reactionCount: Int,
+        reactionGroups: [String: FeedsReactionGroupResponse]? = nil,
+        replies: [ThreadedCommentResponse]? = nil,
+        replyCount: Int,
+        score: Int,
+        status: ThreadedCommentResponseStatus,
+        text: String? = nil,
+        updatedAt: Date,
+        upvoteCount: Int,
+        user: UserResponse
+    ) {
         self.attachments = attachments
+        self.bookmarkCount = bookmarkCount
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
         self.createdAt = createdAt
         self.custom = custom
         self.deletedAt = deletedAt
         self.downvoteCount = downvoteCount
+        self.editedAt = editedAt
+        self.hidden = hidden
+        self.i18n = i18n
         self.id = id
         self.latestReactions = latestReactions
         self.mentionedUsers = mentionedUsers
@@ -64,12 +127,16 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case attachments
+        case bookmarkCount = "bookmark_count"
         case confidenceScore = "confidence_score"
         case controversyScore = "controversy_score"
         case createdAt = "created_at"
         case custom
         case deletedAt = "deleted_at"
         case downvoteCount = "downvote_count"
+        case editedAt = "edited_at"
+        case hidden
+        case i18n
         case id
         case latestReactions = "latest_reactions"
         case mentionedUsers = "mentioned_users"
@@ -90,15 +157,21 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         case upvoteCount = "upvote_count"
         case user
     }
+}
 
+extension ThreadedCommentResponse: Hashable {
     public static func == (lhs: ThreadedCommentResponse, rhs: ThreadedCommentResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
+            lhs.bookmarkCount == rhs.bookmarkCount &&
             lhs.confidenceScore == rhs.confidenceScore &&
             lhs.controversyScore == rhs.controversyScore &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.deletedAt == rhs.deletedAt &&
             lhs.downvoteCount == rhs.downvoteCount &&
+            lhs.editedAt == rhs.editedAt &&
+            lhs.hidden == rhs.hidden &&
+            lhs.i18n == rhs.i18n &&
             lhs.id == rhs.id &&
             lhs.latestReactions == rhs.latestReactions &&
             lhs.mentionedUsers == rhs.mentionedUsers &&
@@ -122,12 +195,16 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
+        hasher.combine(bookmarkCount)
         hasher.combine(confidenceScore)
         hasher.combine(controversyScore)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(deletedAt)
         hasher.combine(downvoteCount)
+        hasher.combine(editedAt)
+        hasher.combine(hidden)
+        hasher.combine(i18n)
         hasher.combine(id)
         hasher.combine(latestReactions)
         hasher.combine(mentionedUsers)

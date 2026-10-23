@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ContentCountRuleParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ContentCountRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var threshold: Int?
     public var timeWindow: String?
 
@@ -18,7 +18,9 @@ public final class ContentCountRuleParameters: @unchecked Sendable, Codable, JSO
         case threshold
         case timeWindow = "time_window"
     }
+}
 
+extension ContentCountRuleParameters: Hashable {
     public static func == (lhs: ContentCountRuleParameters, rhs: ContentCountRuleParameters) -> Bool {
         lhs.threshold == rhs.threshold &&
             lhs.timeWindow == rhs.timeWindow

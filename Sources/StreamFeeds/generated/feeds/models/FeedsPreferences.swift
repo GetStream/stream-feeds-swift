@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable {
     public enum FeedsPreferencesComment: String, Sendable, Codable, CaseIterable {
         case all
         case none
@@ -22,7 +22,39 @@ public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable
         }
     }
     
+    public enum FeedsPreferencesCommentMention: String, Sendable, Codable, CaseIterable {
+        case all
+        case none
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+    
     public enum FeedsPreferencesCommentReaction: String, Sendable, Codable, CaseIterable {
+        case all
+        case none
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+    
+    public enum FeedsPreferencesCommentReply: String, Sendable, Codable, CaseIterable {
         case all
         case none
         case unknown = "_unknown"
@@ -86,16 +118,37 @@ public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable
         }
     }
 
+    /// Push notification preference for comments on user's activities. One of: all, none
     public var comment: FeedsPreferencesComment?
+    /// Push notification preference for mentions in comments. One of: all, none
+    public var commentMention: FeedsPreferencesCommentMention?
+    /// Push notification preference for reactions on comments. One of: all, none
     public var commentReaction: FeedsPreferencesCommentReaction?
+    /// Push notification preference for replies to comments. One of: all, none
+    public var commentReply: FeedsPreferencesCommentReply?
+    /// Push notification preferences for custom activity types. Map of activity type to preference (all or none)
     public var customActivityTypes: [String: String]?
+    /// Push notification preference for new followers. One of: all, none
     public var follow: FeedsPreferencesFollow?
+    /// Push notification preference for mentions in activities. One of: all, none
     public var mention: FeedsPreferencesMention?
+    /// Push notification preference for reactions on user's activities or comments. One of: all, none
     public var reaction: FeedsPreferencesReaction?
 
-    public init(comment: FeedsPreferencesComment? = nil, commentReaction: FeedsPreferencesCommentReaction? = nil, customActivityTypes: [String: String]? = nil, follow: FeedsPreferencesFollow? = nil, mention: FeedsPreferencesMention? = nil, reaction: FeedsPreferencesReaction? = nil) {
+    public init(
+        comment: FeedsPreferencesComment? = nil,
+        commentMention: FeedsPreferencesCommentMention? = nil,
+        commentReaction: FeedsPreferencesCommentReaction? = nil,
+        commentReply: FeedsPreferencesCommentReply? = nil,
+        customActivityTypes: [String: String]? = nil,
+        follow: FeedsPreferencesFollow? = nil,
+        mention: FeedsPreferencesMention? = nil,
+        reaction: FeedsPreferencesReaction? = nil
+    ) {
         self.comment = comment
+        self.commentMention = commentMention
         self.commentReaction = commentReaction
+        self.commentReply = commentReply
         self.customActivityTypes = customActivityTypes
         self.follow = follow
         self.mention = mention
@@ -104,16 +157,22 @@ public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case comment
+        case commentMention = "comment_mention"
         case commentReaction = "comment_reaction"
+        case commentReply = "comment_reply"
         case customActivityTypes = "custom_activity_types"
         case follow
         case mention
         case reaction
     }
+}
 
+extension FeedsPreferences: Hashable {
     public static func == (lhs: FeedsPreferences, rhs: FeedsPreferences) -> Bool {
         lhs.comment == rhs.comment &&
+            lhs.commentMention == rhs.commentMention &&
             lhs.commentReaction == rhs.commentReaction &&
+            lhs.commentReply == rhs.commentReply &&
             lhs.customActivityTypes == rhs.customActivityTypes &&
             lhs.follow == rhs.follow &&
             lhs.mention == rhs.mention &&
@@ -122,7 +181,9 @@ public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(comment)
+        hasher.combine(commentMention)
         hasher.combine(commentReaction)
+        hasher.combine(commentReply)
         hasher.combine(customActivityTypes)
         hasher.combine(follow)
         hasher.combine(mention)

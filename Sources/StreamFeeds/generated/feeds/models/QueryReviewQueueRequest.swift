@@ -5,18 +5,37 @@
 import Foundation
 import StreamCore
 
-public final class QueryReviewQueueRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryReviewQueueRequest: @unchecked Sendable, Codable, JSONEncodable {
+    public var excludeDefaultActionConfig: Bool?
+    /// Filter conditions for review queue items. Accepts built-in fields (e.g. status, channel_cid, severity, recommended_action) and customer-supplied moderation_payload.custom keys: any key that is not a built-in field is matched against the item's custom moderation data (e.g. {"location_id": "loc-42"}). Use filter_config.filterable_custom_keys to discover which custom keys the app exposes as chips. content_text searches the moderated text: "$q" is a keyword search (terms ANDed, no adjacency) over the indexed tsvector, while "$eq" (or "$in" for several wordings) matches the text exactly. The exact form is unindexed, so scope it with date_range rather than running it across the whole queue.
     public var filter: [String: RawJSON]?
     public var limit: Int?
+    /// Number of items to lock (1-25)
     public var lockCount: Int?
+    /// Duration for which items should be locked
     public var lockDuration: Int?
+    /// Whether to lock items for review (true), unlock items (false), or just fetch (nil)
     public var lockItems: Bool?
     public var next: String?
     public var prev: String?
+    /// Sorting parameters for the results
     public var sort: [SortParamRequest]?
+    /// Whether to return only statistics
     public var statsOnly: Bool?
 
-    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, lockCount: Int? = nil, lockDuration: Int? = nil, lockItems: Bool? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, statsOnly: Bool? = nil) {
+    public init(
+        excludeDefaultActionConfig: Bool? = nil,
+        filter: [String: RawJSON]? = nil,
+        limit: Int? = nil,
+        lockCount: Int? = nil,
+        lockDuration: Int? = nil,
+        lockItems: Bool? = nil,
+        next: String? = nil,
+        prev: String? = nil,
+        sort: [SortParamRequest]? = nil,
+        statsOnly: Bool? = nil
+    ) {
+        self.excludeDefaultActionConfig = excludeDefaultActionConfig
         self.filter = filter
         self.limit = limit
         self.lockCount = lockCount
@@ -29,6 +48,7 @@ public final class QueryReviewQueueRequest: @unchecked Sendable, Codable, JSONEn
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
+        case excludeDefaultActionConfig = "exclude_default_action_config"
         case filter
         case limit
         case lockCount = "lock_count"
@@ -39,9 +59,12 @@ public final class QueryReviewQueueRequest: @unchecked Sendable, Codable, JSONEn
         case sort
         case statsOnly = "stats_only"
     }
+}
 
+extension QueryReviewQueueRequest: Hashable {
     public static func == (lhs: QueryReviewQueueRequest, rhs: QueryReviewQueueRequest) -> Bool {
-        lhs.filter == rhs.filter &&
+        lhs.excludeDefaultActionConfig == rhs.excludeDefaultActionConfig &&
+            lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&
             lhs.lockCount == rhs.lockCount &&
             lhs.lockDuration == rhs.lockDuration &&
@@ -53,6 +76,7 @@ public final class QueryReviewQueueRequest: @unchecked Sendable, Codable, JSONEn
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(excludeDefaultActionConfig)
         hasher.combine(filter)
         hasher.combine(limit)
         hasher.combine(lockCount)

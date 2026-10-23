@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateBookmarkResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var bookmark: BookmarkResponse
     public var duration: String
 
@@ -18,7 +18,9 @@ public final class UpdateBookmarkResponse: @unchecked Sendable, Codable, JSONEnc
         case bookmark
         case duration
     }
+}
 
+extension UpdateBookmarkResponse: Hashable {
     public static func == (lhs: UpdateBookmarkResponse, rhs: UpdateBookmarkResponse) -> Bool {
         lhs.bookmark == rhs.bookmark &&
             lhs.duration == rhs.duration

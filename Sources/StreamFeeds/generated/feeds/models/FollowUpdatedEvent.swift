@@ -5,16 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a follow relationship is updated.
+public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var follow: FollowResponse
     public var receivedAt: Date?
+    /// The type of event: "feeds.follow.updated" in this case
     public var type: String = "feeds.follow.updated"
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feedVisibility: String? = nil,
+        fid: String,
+        follow: FollowResponse,
+        receivedAt: Date? = nil
+    ) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -32,7 +42,9 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
         case receivedAt = "received_at"
         case type
     }
+}
 
+extension FollowUpdatedEvent: Hashable {
     public static func == (lhs: FollowUpdatedEvent, rhs: FollowUpdatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

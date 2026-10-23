@@ -5,13 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class ImageUploadResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ImageUploadResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
     public var file: String?
     public var thumbUrl: String?
+    /// Array of image size configurations
     public var uploadSizes: [ImageSize]?
 
-    public init(duration: String, file: String? = nil, thumbUrl: String? = nil, uploadSizes: [ImageSize]? = nil) {
+    public init(
+        duration: String,
+        file: String? = nil,
+        thumbUrl: String? = nil,
+        uploadSizes: [ImageSize]? = nil
+    ) {
         self.duration = duration
         self.file = file
         self.thumbUrl = thumbUrl
@@ -24,7 +31,9 @@ public final class ImageUploadResponse: @unchecked Sendable, Codable, JSONEncoda
         case thumbUrl = "thumb_url"
         case uploadSizes = "upload_sizes"
     }
+}
 
+extension ImageUploadResponse: Hashable {
     public static func == (lhs: ImageUploadResponse, rhs: ImageUploadResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.file == rhs.file &&

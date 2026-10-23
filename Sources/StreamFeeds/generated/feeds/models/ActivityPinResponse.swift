@@ -5,14 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activity: ActivityResponse
+    /// When the pin was created
     public var createdAt: Date
+    /// ID of the feed where activity is pinned
     public var feed: String
+    /// When the pin was last updated
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse
 
-    public init(activity: ActivityResponse, createdAt: Date, feed: String, updatedAt: Date, user: UserResponse) {
+    public init(
+        activity: ActivityResponse,
+        createdAt: Date,
+        feed: String,
+        updatedAt: Date,
+        user: UserResponse
+    ) {
         self.activity = activity
         self.createdAt = createdAt
         self.feed = feed
@@ -27,7 +37,9 @@ public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncoda
         case updatedAt = "updated_at"
         case user
     }
+}
 
+extension ActivityPinResponse: Hashable {
     public static func == (lhs: ActivityPinResponse, rhs: ActivityPinResponse) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&

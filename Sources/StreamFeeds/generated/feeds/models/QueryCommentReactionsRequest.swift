@@ -5,14 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentReactionsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryCommentReactionsRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Filters to apply to the query
     public var filter: [String: RawJSON]?
     public var limit: Int?
     public var next: String?
     public var prev: String?
     public var sort: [SortParamRequest]?
 
-    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
+    public init(
+        filter: [String: RawJSON]? = nil,
+        limit: Int? = nil,
+        next: String? = nil,
+        prev: String? = nil,
+        sort: [SortParamRequest]? = nil
+    ) {
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -27,7 +34,9 @@ public final class QueryCommentReactionsRequest: @unchecked Sendable, Codable, J
         case prev
         case sort
     }
+}
 
+extension QueryCommentReactionsRequest: Hashable {
     public static func == (lhs: QueryCommentReactionsRequest, rhs: QueryCommentReactionsRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

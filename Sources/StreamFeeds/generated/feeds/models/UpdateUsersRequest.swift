@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class UpdateUsersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateUsersRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Object containing users
     public var users: [String: UserRequest]
 
     public init(users: [String: UserRequest]) {
@@ -15,7 +16,9 @@ public final class UpdateUsersRequest: @unchecked Sendable, Codable, JSONEncodab
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case users
     }
+}
 
+extension UpdateUsersRequest: Hashable {
     public static func == (lhs: UpdateUsersRequest, rhs: UpdateUsersRequest) -> Bool {
         lhs.users == rhs.users
     }

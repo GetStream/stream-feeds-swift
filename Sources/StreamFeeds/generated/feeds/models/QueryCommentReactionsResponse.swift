@@ -5,13 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
     public var next: String?
     public var prev: String?
     public var reactions: [FeedsReactionResponse]
 
-    public init(duration: String, next: String? = nil, prev: String? = nil, reactions: [FeedsReactionResponse]) {
+    public init(
+        duration: String,
+        next: String? = nil,
+        prev: String? = nil,
+        reactions: [FeedsReactionResponse]
+    ) {
         self.duration = duration
         self.next = next
         self.prev = prev
@@ -24,7 +31,9 @@ public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, 
         case prev
         case reactions
     }
+}
 
+extension QueryCommentReactionsResponse: Hashable {
     public static func == (lhs: QueryCommentReactionsResponse, rhs: QueryCommentReactionsResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PagerRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PagerRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var limit: Int?
     public var next: String?
     public var prev: String?
@@ -21,7 +21,9 @@ public final class PagerRequest: @unchecked Sendable, Codable, JSONEncodable, Ha
         case next
         case prev
     }
+}
 
+extension PagerRequest: Hashable {
     public static func == (lhs: PagerRequest, rhs: PagerRequest) -> Bool {
         lhs.limit == rhs.limit &&
             lhs.next == rhs.next &&

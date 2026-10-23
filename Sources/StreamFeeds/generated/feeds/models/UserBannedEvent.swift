@@ -5,54 +5,75 @@
 import Foundation
 import StreamCore
 
-public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var channelId: String
-    public var channelType: String
-    public var cid: String
+/// This event is sent when a user gets banned. The event contains information about the user that was banned.
+public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
-    public var createdBy: User
+    public var createdBy: UserResponseCommonFields?
+    public var custom: [String: RawJSON]
+    /// The expiration date of the ban
     public var expiration: Date?
+    /// The reason for the ban
     public var reason: String?
-    public var shadow: Bool
+    public var receivedAt: Date?
+    /// ID of the review queue item (flagged message) that triggered the ban, if the ban was applied from the moderation review queue
+    public var reviewQueueItemId: String?
+    /// Whether the user was shadow banned
+    public var shadow: Bool?
+    /// The team of the channel where the target user was banned
     public var team: String?
+    /// The type of event: "user.banned" in this case
     public var type: String = "user.banned"
-    public var user: User?
+    public var user: UserResponseCommonFields
 
-    public init(channelId: String, channelType: String, cid: String, createdAt: Date, createdBy: User, expiration: Date? = nil, reason: String? = nil, shadow: Bool, team: String? = nil, user: User? = nil) {
-        self.channelId = channelId
-        self.channelType = channelType
-        self.cid = cid
+    public init(
+        createdAt: Date,
+        createdBy: UserResponseCommonFields? = nil,
+        custom: [String: RawJSON],
+        expiration: Date? = nil,
+        reason: String? = nil,
+        receivedAt: Date? = nil,
+        reviewQueueItemId: String? = nil,
+        shadow: Bool? = nil,
+        team: String? = nil,
+        user: UserResponseCommonFields
+    ) {
         self.createdAt = createdAt
         self.createdBy = createdBy
+        self.custom = custom
         self.expiration = expiration
         self.reason = reason
+        self.receivedAt = receivedAt
+        self.reviewQueueItemId = reviewQueueItemId
         self.shadow = shadow
         self.team = team
         self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case channelId = "channel_id"
-        case channelType = "channel_type"
-        case cid
         case createdAt = "created_at"
         case createdBy = "created_by"
+        case custom
         case expiration
         case reason
+        case receivedAt = "received_at"
+        case reviewQueueItemId = "review_queue_item_id"
         case shadow
         case team
         case type
         case user
     }
+}
 
+extension UserBannedEvent: Hashable {
     public static func == (lhs: UserBannedEvent, rhs: UserBannedEvent) -> Bool {
-        lhs.channelId == rhs.channelId &&
-            lhs.channelType == rhs.channelType &&
-            lhs.cid == rhs.cid &&
-            lhs.createdAt == rhs.createdAt &&
+        lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
+            lhs.custom == rhs.custom &&
             lhs.expiration == rhs.expiration &&
             lhs.reason == rhs.reason &&
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.reviewQueueItemId == rhs.reviewQueueItemId &&
             lhs.shadow == rhs.shadow &&
             lhs.team == rhs.team &&
             lhs.type == rhs.type &&
@@ -60,13 +81,13 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(channelId)
-        hasher.combine(channelType)
-        hasher.combine(cid)
         hasher.combine(createdAt)
         hasher.combine(createdBy)
+        hasher.combine(custom)
         hasher.combine(expiration)
         hasher.combine(reason)
+        hasher.combine(receivedAt)
+        hasher.combine(reviewQueueItemId)
         hasher.combine(shadow)
         hasher.combine(team)
         hasher.combine(type)

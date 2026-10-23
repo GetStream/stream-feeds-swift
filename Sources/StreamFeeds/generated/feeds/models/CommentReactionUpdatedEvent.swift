@@ -5,19 +5,32 @@
 import Foundation
 import StreamCore
 
-public final class CommentReactionUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a reaction is updated on a comment.
+public final class CommentReactionUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var activity: ActivityResponse
     public var comment: CommentResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
+    /// The type of event: "feeds.comment.reaction.updated" in this case
     public var type: String = "feeds.comment.reaction.updated"
     public var user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(
+        activity: ActivityResponse,
+        comment: CommentResponse,
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feedVisibility: String? = nil,
+        fid: String,
+        reaction: FeedsReactionResponse,
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields? = nil
+    ) {
         self.activity = activity
         self.comment = comment
         self.createdAt = createdAt
@@ -41,7 +54,9 @@ public final class CommentReactionUpdatedEvent: @unchecked Sendable, Event, Coda
         case type
         case user
     }
+}
 
+extension CommentReactionUpdatedEvent: Hashable {
     public static func == (lhs: CommentReactionUpdatedEvent, rhs: CommentReactionUpdatedEvent) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.comment == rhs.comment &&

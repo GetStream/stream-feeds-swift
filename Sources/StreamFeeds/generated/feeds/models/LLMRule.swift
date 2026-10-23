@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum LLMRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
@@ -32,7 +32,12 @@ public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable, Hashabl
     public var label: String
     public var severityRules: [BodyguardSeverityRule]
 
-    public init(action: LLMRuleAction, description: String, label: String, severityRules: [BodyguardSeverityRule]) {
+    public init(
+        action: LLMRuleAction,
+        description: String,
+        label: String,
+        severityRules: [BodyguardSeverityRule]
+    ) {
         self.action = action
         self.description = description
         self.label = label
@@ -45,7 +50,9 @@ public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         case label
         case severityRules = "severity_rules"
     }
+}
 
+extension LLMRule: Hashable {
     public static func == (lhs: LLMRule, rhs: LLMRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.description == rhs.description &&

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UnfollowResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UnfollowResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
     public var follow: FollowResponse
 
@@ -18,7 +18,9 @@ public final class UnfollowResponse: @unchecked Sendable, Codable, JSONEncodable
         case duration
         case follow
     }
+}
 
+extension UnfollowResponse: Hashable {
     public static func == (lhs: UnfollowResponse, rhs: UnfollowResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.follow == rhs.follow

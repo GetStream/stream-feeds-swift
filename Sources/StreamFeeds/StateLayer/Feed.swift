@@ -207,7 +207,6 @@ public final class Feed: Sendable {
                 feed: feedQuery.feed,
                 activityFilter: state.activitiesQueryConfig?.filter,
                 activityLimit: limit ?? feedQuery.activityLimit,
-                activitySelectorOptions: nil,
                 data: nil,
                 externalRanking: nil,
                 followerLimit: 0,
@@ -399,14 +398,12 @@ public final class Feed: Sendable {
     
     /// Accepts a follow request from another feed.
     ///
-    /// - Parameters:
-    ///   - sourceFid: The feed if of the requested feed.
-    ///   - role: The role for the requesting feed.
+    /// - Parameter sourceFid: The feed if of the requested feed.
     /// - Returns: The updated follow data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
-        let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: feed.rawValue)
+    public func acceptFollow(_ sourceFid: FeedId) async throws -> FollowData {
+        let request = AcceptFollowRequest(source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
         await eventPublisher.sendEvent(.feedFollowAdded(follow, feed))
         return follow
