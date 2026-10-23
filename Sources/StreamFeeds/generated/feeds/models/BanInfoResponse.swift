@@ -17,16 +17,13 @@ public final class BanInfoResponse: @unchecked Sendable, Codable, JSONEncodable 
     public var reason: String?
     /// Whether this is a shadow ban
     public var shadow: Bool?
-    /// User response object
-    public var user: UserResponse?
 
-    public init(createdAt: Date, createdBy: UserResponse? = nil, expires: Date? = nil, reason: String? = nil, shadow: Bool? = nil, user: UserResponse? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse? = nil, expires: Date? = nil, reason: String? = nil, shadow: Bool? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.expires = expires
         self.reason = reason
         self.shadow = shadow
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -35,7 +32,6 @@ public final class BanInfoResponse: @unchecked Sendable, Codable, JSONEncodable 
         case expires
         case reason
         case shadow
-        case user
     }
 }
 
@@ -45,8 +41,7 @@ extension BanInfoResponse: Hashable {
             lhs.createdBy == rhs.createdBy &&
             lhs.expires == rhs.expires &&
             lhs.reason == rhs.reason &&
-            lhs.shadow == rhs.shadow &&
-            lhs.user == rhs.user
+            lhs.shadow == rhs.shadow
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -55,6 +50,5 @@ extension BanInfoResponse: Hashable {
         hasher.combine(expires)
         hasher.combine(reason)
         hasher.combine(shadow)
-        hasher.combine(user)
     }
 }

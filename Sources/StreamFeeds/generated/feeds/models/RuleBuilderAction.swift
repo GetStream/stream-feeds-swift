@@ -39,22 +39,16 @@ public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodabl
 
     public var banOptions: BanOptions?
     public var flagUserOptions: FlagUserOptions?
-    public var reason: String?
-    public var skipInbox: Bool?
     public var type: RuleBuilderActionType?
 
-    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil, reason: String? = nil, skipInbox: Bool? = nil) {
+    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil) {
         self.banOptions = banOptions
         self.flagUserOptions = flagUserOptions
-        self.reason = reason
-        self.skipInbox = skipInbox
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case banOptions = "ban_options"
         case flagUserOptions = "flag_user_options"
-        case reason
-        case skipInbox = "skip_inbox"
         case type
     }
 }
@@ -63,16 +57,12 @@ extension RuleBuilderAction: Hashable {
     public static func == (lhs: RuleBuilderAction, rhs: RuleBuilderAction) -> Bool {
         lhs.banOptions == rhs.banOptions &&
             lhs.flagUserOptions == rhs.flagUserOptions &&
-            lhs.reason == rhs.reason &&
-            lhs.skipInbox == rhs.skipInbox &&
             lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(banOptions)
         hasher.combine(flagUserOptions)
-        hasher.combine(reason)
-        hasher.combine(skipInbox)
         hasher.combine(type)
     }
 }

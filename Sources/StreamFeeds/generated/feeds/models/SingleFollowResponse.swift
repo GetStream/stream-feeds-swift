@@ -8,32 +8,26 @@ import StreamCore
 public final class SingleFollowResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
     public var follow: FollowResponse
-    /// Whether a notification activity was successfully created
-    public var notificationCreated: Bool?
 
-    public init(duration: String, follow: FollowResponse, notificationCreated: Bool? = nil) {
+    public init(duration: String, follow: FollowResponse) {
         self.duration = duration
         self.follow = follow
-        self.notificationCreated = notificationCreated
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case duration
         case follow
-        case notificationCreated = "notification_created"
     }
 }
 
 extension SingleFollowResponse: Hashable {
     public static func == (lhs: SingleFollowResponse, rhs: SingleFollowResponse) -> Bool {
         lhs.duration == rhs.duration &&
-            lhs.follow == rhs.follow &&
-            lhs.notificationCreated == rhs.notificationCreated
+            lhs.follow == rhs.follow
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(duration)
         hasher.combine(follow)
-        hasher.combine(notificationCreated)
     }
 }

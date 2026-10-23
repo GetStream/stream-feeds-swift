@@ -6,14 +6,11 @@ import Foundation
 import StreamCore
 
 public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var contentPublishedAt: Date?
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var entityCreatorId: String?
     public var entityId: String
     public var entityType: String
-    /// Unique identifier of the flag
-    public var id: String?
     public var labels: [String]?
     /// Content payload for moderation
     public var moderationPayload: ModerationPayloadResponse?
@@ -27,14 +24,12 @@ public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEnc
     public var user: UserResponse?
     public var userId: String
 
-    public init(contentPublishedAt: Date? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, id: String? = nil, labels: [String]? = nil, moderationPayload: ModerationPayloadResponse? = nil, reason: String? = nil, result: [[String: RawJSON]], reviewQueueItem: ReviewQueueItemResponse? = nil, reviewQueueItemId: String? = nil, type: String, updatedAt: Date, user: UserResponse? = nil, userId: String) {
-        self.contentPublishedAt = contentPublishedAt
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, labels: [String]? = nil, moderationPayload: ModerationPayloadResponse? = nil, reason: String? = nil, result: [[String: RawJSON]], reviewQueueItem: ReviewQueueItemResponse? = nil, reviewQueueItemId: String? = nil, type: String, updatedAt: Date, user: UserResponse? = nil, userId: String) {
         self.createdAt = createdAt
         self.custom = custom
         self.entityCreatorId = entityCreatorId
         self.entityId = entityId
         self.entityType = entityType
-        self.id = id
         self.labels = labels
         self.moderationPayload = moderationPayload
         self.reason = reason
@@ -48,13 +43,11 @@ public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEnc
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case contentPublishedAt = "content_published_at"
         case createdAt = "created_at"
         case custom
         case entityCreatorId = "entity_creator_id"
         case entityId = "entity_id"
         case entityType = "entity_type"
-        case id
         case labels
         case moderationPayload = "moderation_payload"
         case reason
@@ -70,13 +63,11 @@ public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEnc
 
 extension ModerationFlagResponse: Hashable {
     public static func == (lhs: ModerationFlagResponse, rhs: ModerationFlagResponse) -> Bool {
-        lhs.contentPublishedAt == rhs.contentPublishedAt &&
-            lhs.createdAt == rhs.createdAt &&
+        lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.entityCreatorId == rhs.entityCreatorId &&
             lhs.entityId == rhs.entityId &&
             lhs.entityType == rhs.entityType &&
-            lhs.id == rhs.id &&
             lhs.labels == rhs.labels &&
             lhs.moderationPayload == rhs.moderationPayload &&
             lhs.reason == rhs.reason &&
@@ -90,13 +81,11 @@ extension ModerationFlagResponse: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(contentPublishedAt)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(entityCreatorId)
         hasher.combine(entityId)
         hasher.combine(entityType)
-        hasher.combine(id)
         hasher.combine(labels)
         hasher.combine(moderationPayload)
         hasher.combine(reason)

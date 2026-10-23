@@ -14,10 +14,6 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
     public var createdAt: Date
     /// Grouping identifier
     public var group: String
-    /// Whether this aggregated group has been read. Only set for feed groups with notification config (track_seen/track_read enabled).
-    public var isRead: Bool?
-    /// Whether this aggregated group has been seen. Only set for feed groups with notification config (track_seen/track_read enabled).
-    public var isSeen: Bool?
     public var isWatched: Bool?
     /// Ranking score for this aggregation
     public var score: Float
@@ -28,13 +24,11 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
     /// Whether this activity group has been truncated due to exceeding the group size limit
     public var userCountTruncated: Bool
 
-    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, isRead: Bool? = nil, isSeen: Bool? = nil, isWatched: Bool? = nil, score: Float, updatedAt: Date, userCount: Int, userCountTruncated: Bool) {
+    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, isWatched: Bool? = nil, score: Float, updatedAt: Date, userCount: Int, userCountTruncated: Bool) {
         self.activities = activities
         self.activityCount = activityCount
         self.createdAt = createdAt
         self.group = group
-        self.isRead = isRead
-        self.isSeen = isSeen
         self.isWatched = isWatched
         self.score = score
         self.updatedAt = updatedAt
@@ -47,8 +41,6 @@ public final class AggregatedActivityResponse: @unchecked Sendable, Codable, JSO
         case activityCount = "activity_count"
         case createdAt = "created_at"
         case group
-        case isRead = "is_read"
-        case isSeen = "is_seen"
         case isWatched = "is_watched"
         case score
         case updatedAt = "updated_at"
@@ -63,8 +55,6 @@ extension AggregatedActivityResponse: Hashable {
             lhs.activityCount == rhs.activityCount &&
             lhs.createdAt == rhs.createdAt &&
             lhs.group == rhs.group &&
-            lhs.isRead == rhs.isRead &&
-            lhs.isSeen == rhs.isSeen &&
             lhs.isWatched == rhs.isWatched &&
             lhs.score == rhs.score &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -77,8 +67,6 @@ extension AggregatedActivityResponse: Hashable {
         hasher.combine(activityCount)
         hasher.combine(createdAt)
         hasher.combine(group)
-        hasher.combine(isRead)
-        hasher.combine(isSeen)
         hasher.combine(isWatched)
         hasher.combine(score)
         hasher.combine(updatedAt)

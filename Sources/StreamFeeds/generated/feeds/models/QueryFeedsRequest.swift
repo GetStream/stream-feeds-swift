@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var enrichOwnFields: Bool?
     /// Filters to apply to the query
     public var filter: [String: RawJSON]?
     public var limit: Int?
@@ -17,8 +16,7 @@ public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Whether to subscribe to realtime updates
     public var watch: Bool?
 
-    public init(enrichOwnFields: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, watch: Bool? = nil) {
-        self.enrichOwnFields = enrichOwnFields
+    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, watch: Bool? = nil) {
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -28,7 +26,6 @@ public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodabl
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enrichOwnFields = "enrich_own_fields"
         case filter
         case limit
         case next
@@ -40,8 +37,7 @@ public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodabl
 
 extension QueryFeedsRequest: Hashable {
     public static func == (lhs: QueryFeedsRequest, rhs: QueryFeedsRequest) -> Bool {
-        lhs.enrichOwnFields == rhs.enrichOwnFields &&
-            lhs.filter == rhs.filter &&
+        lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev &&
@@ -50,7 +46,6 @@ extension QueryFeedsRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(enrichOwnFields)
         hasher.combine(filter)
         hasher.combine(limit)
         hasher.combine(next)

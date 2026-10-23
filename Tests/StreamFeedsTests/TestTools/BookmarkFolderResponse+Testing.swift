@@ -19,8 +19,7 @@ extension BookmarkFolderResponse {
             custom: custom,
             id: id,
             name: name,
-            updatedAt: updatedAt,
-            user: .dummy()
+            updatedAt: updatedAt
         )
     }
 }

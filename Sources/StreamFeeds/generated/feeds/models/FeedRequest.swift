@@ -35,7 +35,6 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var feedId: String
     /// Tags used for filtering feeds
     public var filterTags: [String]?
-    public var location: Location?
     /// Initial members for the feed
     public var members: [FeedMemberRequest]?
     /// Name of the feed
@@ -43,13 +42,12 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Visibility setting for the feed. One of: public, visible, followers, members, private
     public var visibility: FeedRequestVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, location: Location? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.feedGroupId = feedGroupId
         self.feedId = feedId
         self.filterTags = filterTags
-        self.location = location
         self.members = members
         self.name = name
         self.visibility = visibility
@@ -61,7 +59,6 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
         case feedGroupId = "feed_group_id"
         case feedId = "feed_id"
         case filterTags = "filter_tags"
-        case location
         case members
         case name
         case visibility
@@ -75,7 +72,6 @@ extension FeedRequest: Hashable {
             lhs.feedGroupId == rhs.feedGroupId &&
             lhs.feedId == rhs.feedId &&
             lhs.filterTags == rhs.filterTags &&
-            lhs.location == rhs.location &&
             lhs.members == rhs.members &&
             lhs.name == rhs.name &&
             lhs.visibility == rhs.visibility
@@ -87,7 +83,6 @@ extension FeedRequest: Hashable {
         hasher.combine(feedGroupId)
         hasher.combine(feedId)
         hasher.combine(filterTags)
-        hasher.combine(location)
         hasher.combine(members)
         hasher.combine(name)
         hasher.combine(visibility)

@@ -29,7 +29,6 @@ extension ActivityResponse {
         ActivityResponse(
             attachments: [],
             bookmarkCount: bookmarkCount,
-            collections: [:],
             commentCount: 1,
             comments: comments,
             createdAt: createdAt,
@@ -53,10 +52,8 @@ extension ActivityResponse {
             parent: nil,
             poll: poll,
             popularity: 100,
-            preview: false,
             reactionCount: reactionCount,
             reactionGroups: reactionGroups,
-            restrictReplies: .everyone,
             score: 1.0,
             searchData: [:],
             shareCount: 3,

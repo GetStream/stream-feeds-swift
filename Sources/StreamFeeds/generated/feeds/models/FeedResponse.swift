@@ -25,7 +25,6 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
         }
     }
 
-    public var activityCount: Int
     /// When the feed was created
     public var createdAt: Date
     /// User response object
@@ -48,15 +47,12 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var groupId: String
     /// Unique identifier for the feed
     public var id: String
-    public var location: Location?
     /// Number of members in this feed
     public var memberCount: Int
     /// Name of the feed
     public var name: String
     /// Capabilities the current user has for this feed
     public var ownCapabilities: [FeedOwnCapability]?
-    /// Follow relationships where the feed owner’s feeds are following the current user's feeds
-    public var ownFollowings: [FollowResponse]?
     /// Follow relationships where the current user's feeds are following this feed
     public var ownFollows: [FollowResponse]?
     public var ownMembership: FeedMemberResponse?
@@ -67,8 +63,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     /// Visibility setting for the feed
     public var visibility: FeedResponseVisibility?
 
-    public init(activityCount: Int, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, location: Location? = nil, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedResponseVisibility? = nil) {
-        self.activityCount = activityCount
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedResponseVisibility? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -80,11 +75,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.followingCount = followingCount
         self.groupId = groupId
         self.id = id
-        self.location = location
         self.memberCount = memberCount
         self.name = name
         self.ownCapabilities = ownCapabilities
-        self.ownFollowings = ownFollowings
         self.ownFollows = ownFollows
         self.ownMembership = ownMembership
         self.pinCount = pinCount
@@ -93,7 +86,6 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityCount = "activity_count"
         case createdAt = "created_at"
         case createdBy = "created_by"
         case custom
@@ -105,11 +97,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
         case followingCount = "following_count"
         case groupId = "group_id"
         case id
-        case location
         case memberCount = "member_count"
         case name
         case ownCapabilities = "own_capabilities"
-        case ownFollowings = "own_followings"
         case ownFollows = "own_follows"
         case ownMembership = "own_membership"
         case pinCount = "pin_count"
@@ -120,8 +110,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
 
 extension FeedResponse: Hashable {
     public static func == (lhs: FeedResponse, rhs: FeedResponse) -> Bool {
-        lhs.activityCount == rhs.activityCount &&
-            lhs.createdAt == rhs.createdAt &&
+        lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
             lhs.custom == rhs.custom &&
             lhs.deletedAt == rhs.deletedAt &&
@@ -132,11 +121,9 @@ extension FeedResponse: Hashable {
             lhs.followingCount == rhs.followingCount &&
             lhs.groupId == rhs.groupId &&
             lhs.id == rhs.id &&
-            lhs.location == rhs.location &&
             lhs.memberCount == rhs.memberCount &&
             lhs.name == rhs.name &&
             lhs.ownCapabilities == rhs.ownCapabilities &&
-            lhs.ownFollowings == rhs.ownFollowings &&
             lhs.ownFollows == rhs.ownFollows &&
             lhs.ownMembership == rhs.ownMembership &&
             lhs.pinCount == rhs.pinCount &&
@@ -145,7 +132,6 @@ extension FeedResponse: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityCount)
         hasher.combine(createdAt)
         hasher.combine(createdBy)
         hasher.combine(custom)
@@ -157,11 +143,9 @@ extension FeedResponse: Hashable {
         hasher.combine(followingCount)
         hasher.combine(groupId)
         hasher.combine(id)
-        hasher.combine(location)
         hasher.combine(memberCount)
         hasher.combine(name)
         hasher.combine(ownCapabilities)
-        hasher.combine(ownFollowings)
         hasher.combine(ownFollows)
         hasher.combine(ownMembership)
         hasher.combine(pinCount)

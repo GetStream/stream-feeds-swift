@@ -8,8 +8,6 @@ import StreamCore
 public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
     /// API error code
     public var code: Int
-    /// Milliseconds until the user's slow mode cool down period ends. Only set on code 60 (cool down) errors
-    public var cooldownRemainingMs: Int?
     /// Additional error-specific information
     public var details: [Int]
     /// Request duration
@@ -25,9 +23,8 @@ public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
     /// Flag that indicates if the error is unrecoverable, requests that return unrecoverable errors should not be retried, this error only applies to the request that caused it
     public var unrecoverable: Bool?
 
-    public init(code: Int, cooldownRemainingMs: Int? = nil, details: [Int], duration: String, exceptionFields: [String: String]? = nil, message: String, moreInfo: String, statusCode: Int, unrecoverable: Bool? = nil) {
+    public init(code: Int, details: [Int], duration: String, exceptionFields: [String: String]? = nil, message: String, moreInfo: String, statusCode: Int, unrecoverable: Bool? = nil) {
         self.code = code
-        self.cooldownRemainingMs = cooldownRemainingMs
         self.details = details
         self.duration = duration
         self.exceptionFields = exceptionFields
@@ -39,7 +36,6 @@ public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case code
-        case cooldownRemainingMs = "cooldown_remaining_ms"
         case details
         case duration
         case exceptionFields = "exception_fields"
@@ -53,7 +49,6 @@ public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
 extension APIError: Hashable {
     public static func == (lhs: APIError, rhs: APIError) -> Bool {
         lhs.code == rhs.code &&
-            lhs.cooldownRemainingMs == rhs.cooldownRemainingMs &&
             lhs.details == rhs.details &&
             lhs.duration == rhs.duration &&
             lhs.exceptionFields == rhs.exceptionFields &&
@@ -65,7 +60,6 @@ extension APIError: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(code)
-        hasher.combine(cooldownRemainingMs)
         hasher.combine(details)
         hasher.combine(duration)
         hasher.combine(exceptionFields)
