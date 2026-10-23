@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class BlockListConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var async: Bool?
-    public var enabled: Bool
-    public var matchSubstring: Bool?
-    public var rules: [BlockListRule]
+public final class BlockListConfig: Sendable, Codable, JSONEncodable {
+    public let async: Bool?
+    public let enabled: Bool
+    public let matchSubstring: Bool?
+    public let rules: [BlockListRule]
 
     public init(async: Bool? = nil, enabled: Bool, matchSubstring: Bool? = nil, rules: [BlockListRule]) {
         self.async = async
@@ -18,11 +18,20 @@ public final class BlockListConfig: @unchecked Sendable, Codable, JSONEncodable 
         self.rules = rules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case async
-        case enabled
-        case matchSubstring = "match_substring"
-        case rules
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.matchSubstring = try container.decodeIfPresent(Bool.self, forKey: .matchSubstring)
+        self.rules = try container.decode([BlockListRule].self, forKey: .rules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encodeIfPresent(matchSubstring, forKey: .matchSubstring)
+        try container.encode(rules, forKey: .rules)
     }
 }
 

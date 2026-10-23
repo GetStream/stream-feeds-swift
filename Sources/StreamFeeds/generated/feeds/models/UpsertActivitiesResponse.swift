@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class UpsertActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpsertActivitiesResponse: Sendable, Codable, JSONEncodable {
     /// List of created or updated activities
-    public var activities: [ActivityResponse]
-    public var duration: String
+    public let activities: [ActivityResponse]
+    public let duration: String
     /// Total number of mention notification activities created for mentioned users across all activities
-    public var mentionNotificationsCreated: Int?
+    public let mentionNotificationsCreated: Int?
     /// IDs of activities left unchanged because they already existed. Only set when skip_existing is true.
-    public var skippedExisting: [String]?
+    public let skippedExisting: [String]?
 
     public init(activities: [ActivityResponse], duration: String, mentionNotificationsCreated: Int? = nil, skippedExisting: [String]? = nil) {
         self.activities = activities
@@ -21,11 +21,20 @@ public final class UpsertActivitiesResponse: @unchecked Sendable, Codable, JSONE
         self.skippedExisting = skippedExisting
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activities
-        case duration
-        case mentionNotificationsCreated = "mention_notifications_created"
-        case skippedExisting = "skipped_existing"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activities = try container.decode([ActivityResponse].self, forKey: .activities)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.mentionNotificationsCreated = try container.decodeIfPresent(Int.self, forKey: .mentionNotificationsCreated)
+        self.skippedExisting = try container.decodeIfPresent([String].self, forKey: .skippedExisting)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activities, forKey: .activities)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(mentionNotificationsCreated, forKey: .mentionNotificationsCreated)
+        try container.encodeIfPresent(skippedExisting, forKey: .skippedExisting)
     }
 }
 

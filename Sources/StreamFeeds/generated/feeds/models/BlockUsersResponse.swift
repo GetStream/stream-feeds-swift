@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class BlockUsersResponse: Sendable, Codable, JSONEncodable {
     /// User id who blocked another user
-    public var blockedByUserId: String
+    public let blockedByUserId: String
     /// User id who got blocked
-    public var blockedUserId: String
+    public let blockedUserId: String
     /// Timestamp when the user was blocked
-    public var createdAt: Date
+    public let createdAt: Date
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
 
     public init(blockedByUserId: String, blockedUserId: String, createdAt: Date, duration: String) {
         self.blockedByUserId = blockedByUserId
@@ -22,11 +22,20 @@ public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodab
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blockedByUserId = "blocked_by_user_id"
-        case blockedUserId = "blocked_user_id"
-        case createdAt = "created_at"
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.blockedByUserId = try container.decode(String.self, forKey: .blockedByUserId)
+        self.blockedUserId = try container.decode(String.self, forKey: .blockedUserId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.duration = try container.decode(String.self, forKey: .duration)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(blockedByUserId, forKey: .blockedByUserId)
+        try container.encode(blockedUserId, forKey: .blockedUserId)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(duration, forKey: .duration)
     }
 }
 

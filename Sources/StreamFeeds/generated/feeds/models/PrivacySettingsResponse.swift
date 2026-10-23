@@ -6,13 +6,13 @@ import Foundation
 import StreamCore
 
 /// The privacy settings of the user.
-public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class PrivacySettingsResponse: Sendable, Codable, JSONEncodable {
     /// The settings for the delivery receipt events.
-    public var deliveryReceipts: DeliveryReceiptsResponse?
+    public let deliveryReceipts: DeliveryReceiptsResponse?
     /// The settings for the read receipt events.
-    public var readReceipts: ReadReceiptsResponse?
+    public let readReceipts: ReadReceiptsResponse?
     /// The settings for typing indicator events.
-    public var typingIndicators: TypingIndicatorsResponse?
+    public let typingIndicators: TypingIndicatorsResponse?
 
     public init(deliveryReceipts: DeliveryReceiptsResponse? = nil, readReceipts: ReadReceiptsResponse? = nil, typingIndicators: TypingIndicatorsResponse? = nil) {
         self.deliveryReceipts = deliveryReceipts
@@ -20,10 +20,18 @@ public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEn
         self.typingIndicators = typingIndicators
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case deliveryReceipts = "delivery_receipts"
-        case readReceipts = "read_receipts"
-        case typingIndicators = "typing_indicators"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.deliveryReceipts = try container.decodeIfPresent(DeliveryReceiptsResponse.self, forKey: .deliveryReceipts)
+        self.readReceipts = try container.decodeIfPresent(ReadReceiptsResponse.self, forKey: .readReceipts)
+        self.typingIndicators = try container.decodeIfPresent(TypingIndicatorsResponse.self, forKey: .typingIndicators)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(deliveryReceipts, forKey: .deliveryReceipts)
+        try container.encodeIfPresent(readReceipts, forKey: .readReceipts)
+        try container.encodeIfPresent(typingIndicators, forKey: .typingIndicators)
     }
 }
 

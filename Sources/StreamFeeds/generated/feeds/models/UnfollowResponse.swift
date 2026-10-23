@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class UnfollowResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
-    public var follow: FollowResponse
+public final class UnfollowResponse: Sendable, Codable, JSONEncodable {
+    public let duration: String
+    public let follow: FollowResponse
 
     public init(duration: String, follow: FollowResponse) {
         self.duration = duration
         self.follow = follow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case follow
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.follow = try container.decode(FollowResponse.self, forKey: .follow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(follow, forKey: .follow)
     }
 }
 

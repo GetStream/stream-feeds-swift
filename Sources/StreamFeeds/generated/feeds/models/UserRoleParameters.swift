@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class UserRoleParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var `operator`: String?
-    public var role: String?
+public final class UserRoleParameters: Sendable, Codable, JSONEncodable {
+    public let `operator`: String?
+    public let role: String?
 
     public init(operator: String? = nil, role: String? = nil) {
         self.operator = `operator`
         self.role = role
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case `operator`
-        case role
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.operator = try container.decodeIfPresent(String.self, forKey: .operator)
+        self.role = try container.decodeIfPresent(String.self, forKey: .role)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(`operator`, forKey: .operator)
+        try container.encodeIfPresent(role, forKey: .role)
     }
 }
 

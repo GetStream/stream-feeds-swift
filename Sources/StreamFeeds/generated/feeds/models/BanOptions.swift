@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class BanOptions: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: Int?
-    public var ipBan: Bool?
-    public var reason: String?
-    public var shadowBan: Bool?
+public final class BanOptions: Sendable, Codable, JSONEncodable {
+    public let duration: Int?
+    public let ipBan: Bool?
+    public let reason: String?
+    public let shadowBan: Bool?
 
     public init(duration: Int? = nil, ipBan: Bool? = nil, reason: String? = nil, shadowBan: Bool? = nil) {
         self.duration = duration
@@ -18,11 +18,20 @@ public final class BanOptions: @unchecked Sendable, Codable, JSONEncodable {
         self.shadowBan = shadowBan
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case ipBan = "ip_ban"
-        case reason
-        case shadowBan = "shadow_ban"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decodeIfPresent(Int.self, forKey: .duration)
+        self.ipBan = try container.decodeIfPresent(Bool.self, forKey: .ipBan)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+        self.shadowBan = try container.decodeIfPresent(Bool.self, forKey: .shadowBan)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(duration, forKey: .duration)
+        try container.encodeIfPresent(ipBan, forKey: .ipBan)
+        try container.encodeIfPresent(reason, forKey: .reason)
+        try container.encodeIfPresent(shadowBan, forKey: .shadowBan)
     }
 }
 

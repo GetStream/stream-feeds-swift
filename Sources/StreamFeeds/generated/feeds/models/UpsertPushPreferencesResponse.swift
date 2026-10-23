@@ -5,20 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class UpsertPushPreferencesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpsertPushPreferencesResponse: Sendable, Codable, JSONEncodable {
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
     /// The user preferences, always returned regardless if you edited it
-    public var userPreferences: [String: PushPreferencesResponse]
+    public let userPreferences: [String: PushPreferencesResponse]
 
     public init(duration: String, userPreferences: [String: PushPreferencesResponse]) {
         self.duration = duration
         self.userPreferences = userPreferences
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case userPreferences = "user_preferences"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.userPreferences = try container.decode([String: PushPreferencesResponse].self, forKey: .userPreferences)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(userPreferences, forKey: .userPreferences)
     }
 }
 

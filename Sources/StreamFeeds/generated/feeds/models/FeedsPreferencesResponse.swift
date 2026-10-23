@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class FeedsPreferencesResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var comment: String?
-    public var commentMention: String?
-    public var commentReaction: String?
-    public var commentReply: String?
-    public var customActivityTypes: [String: String]?
-    public var follow: String?
-    public var mention: String?
-    public var reaction: String?
+public final class FeedsPreferencesResponse: Sendable, Codable, JSONEncodable {
+    public let comment: String?
+    public let commentMention: String?
+    public let commentReaction: String?
+    public let commentReply: String?
+    public let customActivityTypes: [String: String]?
+    public let follow: String?
+    public let mention: String?
+    public let reaction: String?
 
     public init(comment: String? = nil, commentMention: String? = nil, commentReaction: String? = nil, commentReply: String? = nil, customActivityTypes: [String: String]? = nil, follow: String? = nil, mention: String? = nil, reaction: String? = nil) {
         self.comment = comment
@@ -26,15 +26,28 @@ public final class FeedsPreferencesResponse: @unchecked Sendable, Codable, JSONE
         self.reaction = reaction
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case commentMention = "comment_mention"
-        case commentReaction = "comment_reaction"
-        case commentReply = "comment_reply"
-        case customActivityTypes = "custom_activity_types"
-        case follow
-        case mention
-        case reaction
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comment = try container.decodeIfPresent(String.self, forKey: .comment)
+        self.commentMention = try container.decodeIfPresent(String.self, forKey: .commentMention)
+        self.commentReaction = try container.decodeIfPresent(String.self, forKey: .commentReaction)
+        self.commentReply = try container.decodeIfPresent(String.self, forKey: .commentReply)
+        self.customActivityTypes = try container.decodeIfPresent([String: String].self, forKey: .customActivityTypes)
+        self.follow = try container.decodeIfPresent(String.self, forKey: .follow)
+        self.mention = try container.decodeIfPresent(String.self, forKey: .mention)
+        self.reaction = try container.decodeIfPresent(String.self, forKey: .reaction)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(comment, forKey: .comment)
+        try container.encodeIfPresent(commentMention, forKey: .commentMention)
+        try container.encodeIfPresent(commentReaction, forKey: .commentReaction)
+        try container.encodeIfPresent(commentReply, forKey: .commentReply)
+        try container.encodeIfPresent(customActivityTypes, forKey: .customActivityTypes)
+        try container.encodeIfPresent(follow, forKey: .follow)
+        try container.encodeIfPresent(mention, forKey: .mention)
+        try container.encodeIfPresent(reaction, forKey: .reaction)
     }
 }
 

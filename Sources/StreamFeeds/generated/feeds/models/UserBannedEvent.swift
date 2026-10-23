@@ -6,27 +6,27 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets banned. The event contains information about the user that was banned.
-public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class UserBannedEvent: Sendable, Event, Codable, JSONEncodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var createdBy: UserResponseCommonFields?
-    public var custom: [String: RawJSON]
+    public let createdAt: Date
+    public let createdBy: UserResponseCommonFields?
+    public let custom: [String: RawJSON]
     /// The expiration date of the ban
-    public var expiration: Date?
+    public let expiration: Date?
     /// The reason for the ban
-    public var reason: String?
-    public var receivedAt: Date?
+    public let reason: String?
+    public let receivedAt: Date?
     /// ID of the review queue item (flagged message) that triggered the ban, if the ban was applied from the moderation review queue
-    public var reviewQueueItemId: String?
+    public let reviewQueueItemId: String?
     /// Whether the user was shadow banned
-    public var shadow: Bool?
+    public let shadow: Bool?
     /// The team of the channel where the target user was banned
-    public var team: String?
+    public let team: String?
     /// The type of event: "user.banned" in this case
-    public var type: String = "user.banned"
-    public var user: UserResponseCommonFields
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], expiration: Date? = nil, reason: String? = nil, receivedAt: Date? = nil, reviewQueueItemId: String? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], expiration: Date? = nil, reason: String? = nil, receivedAt: Date? = nil, reviewQueueItemId: String? = nil, shadow: Bool? = nil, team: String? = nil, type: String = "user.banned", user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -36,21 +36,38 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
         self.reviewQueueItemId = reviewQueueItemId
         self.shadow = shadow
         self.team = team
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case custom
-        case expiration
-        case reason
-        case receivedAt = "received_at"
-        case reviewQueueItemId = "review_queue_item_id"
-        case shadow
-        case team
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .createdBy)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.expiration = try container.decodeIfPresent(Date.self, forKey: .expiration)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.reviewQueueItemId = try container.decodeIfPresent(String.self, forKey: .reviewQueueItemId)
+        self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
+        self.team = try container.decodeIfPresent(String.self, forKey: .team)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(createdBy, forKey: .createdBy)
+        try container.encode(custom, forKey: .custom)
+        try container.encodeIfPresent(expiration, forKey: .expiration)
+        try container.encodeIfPresent(reason, forKey: .reason)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encodeIfPresent(reviewQueueItemId, forKey: .reviewQueueItemId)
+        try container.encodeIfPresent(shadow, forKey: .shadow)
+        try container.encodeIfPresent(team, forKey: .team)
+        try container.encode(type, forKey: .type)
+        try container.encode(user, forKey: .user)
     }
 }
 

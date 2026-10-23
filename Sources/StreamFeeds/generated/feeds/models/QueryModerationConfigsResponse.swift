@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class QueryModerationConfigsResponse: Sendable, Codable, JSONEncodable {
     /// List of moderation configurations
-    public var configs: [ConfigResponse]
-    public var duration: String
-    public var next: String?
-    public var prev: String?
+    public let configs: [ConfigResponse]
+    public let duration: String
+    public let next: String?
+    public let prev: String?
 
     public init(configs: [ConfigResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.configs = configs
@@ -19,11 +19,20 @@ public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable,
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case configs
-        case duration
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.configs = try container.decode([ConfigResponse].self, forKey: .configs)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(configs, forKey: .configs)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

@@ -6,13 +6,13 @@ import Foundation
 import StreamCore
 
 /// Request to provide feedback on an activity
-public final class ActivityFeedbackRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class ActivityFeedbackRequest: Sendable, Codable, JSONEncodable {
     /// Whether to hide this activity
-    public var hide: Bool?
+    public let hide: Bool?
     /// Whether to show less content like this
-    public var showLess: Bool?
+    public let showLess: Bool?
     /// Whether to show more content like this
-    public var showMore: Bool?
+    public let showMore: Bool?
 
     public init(hide: Bool? = nil, showLess: Bool? = nil, showMore: Bool? = nil) {
         self.hide = hide
@@ -20,10 +20,18 @@ public final class ActivityFeedbackRequest: @unchecked Sendable, Codable, JSONEn
         self.showMore = showMore
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case hide
-        case showLess = "show_less"
-        case showMore = "show_more"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.hide = try container.decodeIfPresent(Bool.self, forKey: .hide)
+        self.showLess = try container.decodeIfPresent(Bool.self, forKey: .showLess)
+        self.showMore = try container.decodeIfPresent(Bool.self, forKey: .showMore)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(hide, forKey: .hide)
+        try container.encodeIfPresent(showLess, forKey: .showLess)
+        try container.encodeIfPresent(showMore, forKey: .showMore)
     }
 }
 

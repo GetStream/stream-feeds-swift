@@ -6,16 +6,22 @@ import Foundation
 import StreamCore
 
 /// Configuration for deleting the free-text poll answer a review item was raised for. Chat polls only. Deletion is permanent; the poll and other votes are kept.
-public final class DeletePollAnswerRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeletePollAnswerRequestPayload: Sendable, Codable, JSONEncodable {
     /// Reason for deletion
-    public var reason: String?
+    public let reason: String?
 
     public init(reason: String? = nil) {
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case reason
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
 }
 

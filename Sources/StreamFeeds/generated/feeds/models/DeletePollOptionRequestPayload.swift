@@ -6,20 +6,27 @@ import Foundation
 import StreamCore
 
 /// Configuration for deleting the single poll option a review item was raised for. Deletion is permanent; the rest of the poll is kept.
-public final class DeletePollOptionRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeletePollOptionRequestPayload: Sendable, Codable, JSONEncodable {
     /// Option to delete. Required on an item for a whole poll (create or edit); defaults to the option an add_option / update_option item was raised for
-    public var optionId: String?
+    public let optionId: String?
     /// Reason for deletion
-    public var reason: String?
+    public let reason: String?
 
     public init(optionId: String? = nil, reason: String? = nil) {
         self.optionId = optionId
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case optionId = "option_id"
-        case reason
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.optionId = try container.decodeIfPresent(String.self, forKey: .optionId)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(optionId, forKey: .optionId)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
 }
 

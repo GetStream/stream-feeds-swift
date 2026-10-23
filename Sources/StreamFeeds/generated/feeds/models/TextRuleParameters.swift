@@ -5,18 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var blocklistMatch: [String]?
-    public var containsUrl: Bool?
-    public var harmLabels: [String]?
-    public var llmHarmLabels: [String: String]?
-    public var semanticFilterMinThreshold: Float?
-    public var semanticFilterNames: [String]?
-    public var severity: String?
-    public var threshold: Int?
-    public var timeWindow: String?
+public final class TextRuleParameters: Sendable, Codable, JSONEncodable {
+    public let blocklistMatch: [String]?
+    public let containsUrl: Bool?
+    public let harmLabels: [String]?
+    public let llmHarmLabels: [String: String]?
+    public let semanticFilterMinThreshold: Double?
+    public let semanticFilterNames: [String]?
+    public let severity: String?
+    public let threshold: Int?
+    public let timeWindow: String?
 
-    public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, llmHarmLabels: [String: String]? = nil, semanticFilterMinThreshold: Float? = nil, semanticFilterNames: [String]? = nil, severity: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
+    public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, llmHarmLabels: [String: String]? = nil, semanticFilterMinThreshold: Double? = nil, semanticFilterNames: [String]? = nil, severity: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.blocklistMatch = blocklistMatch
         self.containsUrl = containsUrl
         self.harmLabels = harmLabels
@@ -28,16 +28,30 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blocklistMatch = "blocklist_match"
-        case containsUrl = "contains_url"
-        case harmLabels = "harm_labels"
-        case llmHarmLabels = "llm_harm_labels"
-        case semanticFilterMinThreshold = "semantic_filter_min_threshold"
-        case semanticFilterNames = "semantic_filter_names"
-        case severity
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.blocklistMatch = try container.decodeIfPresent([String].self, forKey: .blocklistMatch)
+        self.containsUrl = try container.decodeIfPresent(Bool.self, forKey: .containsUrl)
+        self.harmLabels = try container.decodeIfPresent([String].self, forKey: .harmLabels)
+        self.llmHarmLabels = try container.decodeIfPresent([String: String].self, forKey: .llmHarmLabels)
+        self.semanticFilterMinThreshold = try container.decodeIfPresent(Double.self, forKey: .semanticFilterMinThreshold)
+        self.semanticFilterNames = try container.decodeIfPresent([String].self, forKey: .semanticFilterNames)
+        self.severity = try container.decodeIfPresent(String.self, forKey: .severity)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(blocklistMatch, forKey: .blocklistMatch)
+        try container.encodeIfPresent(containsUrl, forKey: .containsUrl)
+        try container.encodeIfPresent(harmLabels, forKey: .harmLabels)
+        try container.encodeIfPresent(llmHarmLabels, forKey: .llmHarmLabels)
+        try container.encodeIfPresent(semanticFilterMinThreshold, forKey: .semanticFilterMinThreshold)
+        try container.encodeIfPresent(semanticFilterNames, forKey: .semanticFilterNames)
+        try container.encodeIfPresent(severity, forKey: .severity)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
     }
 }
 

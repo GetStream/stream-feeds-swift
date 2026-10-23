@@ -6,11 +6,11 @@ import Foundation
 import StreamCore
 
 /// Basic response information
-public final class ListBlockListResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var blocklists: [BlockListResponse]
+public final class ListBlockListResponse: Sendable, Codable, JSONEncodable {
+    public let blocklists: [BlockListResponse]
     /// Duration of the request in milliseconds
-    public var duration: String
-    public var nextCursor: String?
+    public let duration: String
+    public let nextCursor: String?
 
     public init(blocklists: [BlockListResponse], duration: String, nextCursor: String? = nil) {
         self.blocklists = blocklists
@@ -18,10 +18,18 @@ public final class ListBlockListResponse: @unchecked Sendable, Codable, JSONEnco
         self.nextCursor = nextCursor
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blocklists
-        case duration
-        case nextCursor = "next_cursor"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.blocklists = try container.decode([BlockListResponse].self, forKey: .blocklists)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.nextCursor = try container.decodeIfPresent(String.self, forKey: .nextCursor)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(blocklists, forKey: .blocklists)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(nextCursor, forKey: .nextCursor)
     }
 }
 

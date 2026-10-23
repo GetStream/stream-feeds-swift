@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryBookmarkFoldersRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class QueryBookmarkFoldersRequest: Sendable, Codable, JSONEncodable {
     /// Filters to apply to the query
-    public var filter: [String: RawJSON]?
-    public var limit: Int?
-    public var next: String?
-    public var prev: String?
+    public let filter: [String: RawJSON]?
+    public let limit: Int?
+    public let next: String?
+    public let prev: String?
     /// Sorting parameters for the query
-    public var sort: [SortParamRequest]?
+    public let sort: [SortParamRequest]?
 
     public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
         self.filter = filter
@@ -22,12 +22,22 @@ public final class QueryBookmarkFoldersRequest: @unchecked Sendable, Codable, JS
         self.sort = sort
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case filter
-        case limit
-        case next
-        case prev
-        case sort
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.filter = try container.decodeIfPresent([String: RawJSON].self, forKey: .filter)
+        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.sort = try container.decodeIfPresent([SortParamRequest].self, forKey: .sort)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(filter, forKey: .filter)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encodeIfPresent(sort, forKey: .sort)
     }
 }
 

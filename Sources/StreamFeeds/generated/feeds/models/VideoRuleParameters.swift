@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class VideoRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var harmLabels: [String]?
-    public var threshold: Int?
-    public var timeWindow: String?
+public final class VideoRuleParameters: Sendable, Codable, JSONEncodable {
+    public let harmLabels: [String]?
+    public let threshold: Int?
+    public let timeWindow: String?
 
     public init(harmLabels: [String]? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.harmLabels = harmLabels
@@ -16,10 +16,18 @@ public final class VideoRuleParameters: @unchecked Sendable, Codable, JSONEncoda
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case harmLabels = "harm_labels"
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.harmLabels = try container.decodeIfPresent([String].self, forKey: .harmLabels)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(harmLabels, forKey: .harmLabels)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
     }
 }
 

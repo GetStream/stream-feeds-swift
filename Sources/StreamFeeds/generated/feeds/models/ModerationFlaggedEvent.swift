@@ -6,31 +6,43 @@ import Foundation
 import StreamCore
 
 /// This event is sent when content is flagged for moderation
-public final class ModerationFlaggedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class ModerationFlaggedEvent: Sendable, Event, Codable, JSONEncodable {
     /// The type of content that was flagged
-    public var contentType: String
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
+    public let contentType: String
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
     /// The ID of the flagged content
-    public var objectId: String
-    public var receivedAt: Date?
-    public var type: String = "moderation.flagged"
+    public let objectId: String
+    public let receivedAt: Date?
+    public let type: String
 
-    public init(contentType: String, createdAt: Date, custom: [String: RawJSON], objectId: String, receivedAt: Date? = nil) {
+    public init(contentType: String, createdAt: Date, custom: [String: RawJSON], objectId: String, receivedAt: Date? = nil, type: String = "moderation.flagged") {
         self.contentType = contentType
         self.createdAt = createdAt
         self.custom = custom
         self.objectId = objectId
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case contentType = "content_type"
-        case createdAt = "created_at"
-        case custom
-        case objectId = "object_id"
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.contentType = try container.decode(String.self, forKey: .contentType)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.objectId = try container.decode(String.self, forKey: .objectId)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(contentType, forKey: .contentType)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encode(objectId, forKey: .objectId)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
     }
 }
 

@@ -6,24 +6,24 @@ import Foundation
 import StreamCore
 
 /// Block list contains restricted words
-public final class BlockListResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class BlockListResponse: Sendable, Codable, JSONEncodable {
     /// Date/time of creation
-    public var createdAt: Date?
-    public var id: String?
-    public var isConfusableFoldingEnabled: Bool
-    public var isLeetCheckEnabled: Bool
-    public var isPluralCheckEnabled: Bool
-    public var isSubstringMatchingEnabled: Bool
+    public let createdAt: Date?
+    public let id: String?
+    public let isConfusableFoldingEnabled: Bool
+    public let isLeetCheckEnabled: Bool
+    public let isPluralCheckEnabled: Bool
+    public let isSubstringMatchingEnabled: Bool
     /// Block list name
-    public var name: String
-    public var ownerUserId: String?
-    public var team: String?
+    public let name: String
+    public let ownerUserId: String?
+    public let team: String?
     /// Block list type. One of: regex, domain, domain_allowlist, email, email_allowlist, word, word_allowlist
-    public var type: String
+    public let type: String
     /// Date/time of the last update
-    public var updatedAt: Date?
+    public let updatedAt: Date?
     /// List of words to block
-    public var words: [String]
+    public let words: [String]
 
     public init(createdAt: Date? = nil, id: String? = nil, isConfusableFoldingEnabled: Bool, isLeetCheckEnabled: Bool, isPluralCheckEnabled: Bool, isSubstringMatchingEnabled: Bool, name: String, ownerUserId: String? = nil, team: String? = nil, type: String, updatedAt: Date? = nil, words: [String]) {
         self.createdAt = createdAt
@@ -40,19 +40,36 @@ public final class BlockListResponse: @unchecked Sendable, Codable, JSONEncodabl
         self.words = words
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case id
-        case isConfusableFoldingEnabled = "is_confusable_folding_enabled"
-        case isLeetCheckEnabled = "is_leet_check_enabled"
-        case isPluralCheckEnabled = "is_plural_check_enabled"
-        case isSubstringMatchingEnabled = "is_substring_matching_enabled"
-        case name
-        case ownerUserId = "owner_user_id"
-        case team
-        case type
-        case updatedAt = "updated_at"
-        case words
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        self.id = try container.decodeIfPresent(String.self, forKey: .id)
+        self.isConfusableFoldingEnabled = try container.decode(Bool.self, forKey: .isConfusableFoldingEnabled)
+        self.isLeetCheckEnabled = try container.decode(Bool.self, forKey: .isLeetCheckEnabled)
+        self.isPluralCheckEnabled = try container.decode(Bool.self, forKey: .isPluralCheckEnabled)
+        self.isSubstringMatchingEnabled = try container.decode(Bool.self, forKey: .isSubstringMatchingEnabled)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.ownerUserId = try container.decodeIfPresent(String.self, forKey: .ownerUserId)
+        self.team = try container.decodeIfPresent(String.self, forKey: .team)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        self.words = try container.decode([String].self, forKey: .words)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encode(isConfusableFoldingEnabled, forKey: .isConfusableFoldingEnabled)
+        try container.encode(isLeetCheckEnabled, forKey: .isLeetCheckEnabled)
+        try container.encode(isPluralCheckEnabled, forKey: .isPluralCheckEnabled)
+        try container.encode(isSubstringMatchingEnabled, forKey: .isSubstringMatchingEnabled)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(ownerUserId, forKey: .ownerUserId)
+        try container.encodeIfPresent(team, forKey: .team)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
+        try container.encode(words, forKey: .words)
     }
 }
 

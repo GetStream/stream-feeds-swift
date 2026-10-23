@@ -89,8 +89,8 @@ public struct FeedsFilterField: FilterFieldRepresentable, Sendable {
         matcher = AnyFilterMatcher(localValue: localValue)
     }
     
-    init<Value>(remoteCodingKey: FeedResponse.CodingKeys, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
-        self.init(remoteCodingKey.rawValue, localValue: localValue)
+    init<Value>(remoteCodingKey: StringCodingKey, localValue: @escaping @Sendable (Model) -> Value?) where Value: FilterValue {
+        self.init(remoteCodingKey.stringValue, localValue: localValue)
     }
 }
 

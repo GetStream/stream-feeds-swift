@@ -5,18 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodable {
-    public var audios: [String]?
-    public var countryCode: String?
-    public var custom: [String: RawJSON]?
-    public var imageIds: [String: String]?
-    public var imageOrderedKeys: [String]?
-    public var images: [String]?
-    public var otherMedia: [String]?
-    public var textIds: [String: String]?
-    public var textOrderedKeys: [String]?
-    public var texts: [String]?
-    public var videos: [String]?
+public final class ModerationPayload: Sendable, Codable, JSONEncodable {
+    public let audios: [String]?
+    public let countryCode: String?
+    public let custom: [String: RawJSON]?
+    public let imageIds: [String: String]?
+    public let imageOrderedKeys: [String]?
+    public let images: [String]?
+    public let otherMedia: [String]?
+    public let textIds: [String: String]?
+    public let textOrderedKeys: [String]?
+    public let texts: [String]?
+    public let videos: [String]?
 
     public init(audios: [String]? = nil, countryCode: String? = nil, custom: [String: RawJSON]? = nil, imageIds: [String: String]? = nil, imageOrderedKeys: [String]? = nil, images: [String]? = nil, otherMedia: [String]? = nil, textIds: [String: String]? = nil, textOrderedKeys: [String]? = nil, texts: [String]? = nil, videos: [String]? = nil) {
         self.audios = audios
@@ -32,18 +32,34 @@ public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodabl
         self.videos = videos
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case audios
-        case countryCode = "country_code"
-        case custom
-        case imageIds = "image_ids"
-        case imageOrderedKeys = "image_ordered_keys"
-        case images
-        case otherMedia = "other_media"
-        case textIds = "text_ids"
-        case textOrderedKeys = "text_ordered_keys"
-        case texts
-        case videos
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.audios = try container.decodeIfPresent([String].self, forKey: .audios)
+        self.countryCode = try container.decodeIfPresent(String.self, forKey: .countryCode)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.imageIds = try container.decodeIfPresent([String: String].self, forKey: .imageIds)
+        self.imageOrderedKeys = try container.decodeIfPresent([String].self, forKey: .imageOrderedKeys)
+        self.images = try container.decodeIfPresent([String].self, forKey: .images)
+        self.otherMedia = try container.decodeIfPresent([String].self, forKey: .otherMedia)
+        self.textIds = try container.decodeIfPresent([String: String].self, forKey: .textIds)
+        self.textOrderedKeys = try container.decodeIfPresent([String].self, forKey: .textOrderedKeys)
+        self.texts = try container.decodeIfPresent([String].self, forKey: .texts)
+        self.videos = try container.decodeIfPresent([String].self, forKey: .videos)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(audios, forKey: .audios)
+        try container.encodeIfPresent(countryCode, forKey: .countryCode)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(imageIds, forKey: .imageIds)
+        try container.encodeIfPresent(imageOrderedKeys, forKey: .imageOrderedKeys)
+        try container.encodeIfPresent(images, forKey: .images)
+        try container.encodeIfPresent(otherMedia, forKey: .otherMedia)
+        try container.encodeIfPresent(textIds, forKey: .textIds)
+        try container.encodeIfPresent(textOrderedKeys, forKey: .textOrderedKeys)
+        try container.encodeIfPresent(texts, forKey: .texts)
+        try container.encodeIfPresent(videos, forKey: .videos)
     }
 }
 

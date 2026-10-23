@@ -24,7 +24,7 @@ extension FeedResponse {
         memberCount: Int = 0,
         ownCapabilities: [FeedOwnCapability]? = [.readFeed, .readActivities],
         pinCount: Int = 0,
-        visibility: FeedResponse.FeedResponseVisibility? = nil
+        visibility: FeedResponseVisibility? = nil
     ) -> FeedResponse {
         FeedResponse(
             activityCount: 0,

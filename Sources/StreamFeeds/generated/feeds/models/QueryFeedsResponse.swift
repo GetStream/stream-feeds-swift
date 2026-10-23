@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryFeedsResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
+public final class QueryFeedsResponse: Sendable, Codable, JSONEncodable {
+    public let duration: String
     /// List of feeds matching the query
-    public var feeds: [FeedResponse]
+    public let feeds: [FeedResponse]
     /// Cursor for next page
-    public var next: String?
+    public let next: String?
     /// Cursor for previous page
-    public var prev: String?
+    public let prev: String?
 
     public init(duration: String, feeds: [FeedResponse], next: String? = nil, prev: String? = nil) {
         self.duration = duration
@@ -21,11 +21,20 @@ public final class QueryFeedsResponse: @unchecked Sendable, Codable, JSONEncodab
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case feeds
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.feeds = try container.decode([FeedResponse].self, forKey: .feeds)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(feeds, forKey: .feeds)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

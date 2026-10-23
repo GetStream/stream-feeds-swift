@@ -5,20 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class UpsertActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpsertActivitiesRequest: Sendable, Codable, JSONEncodable {
     /// List of activities to create or update
-    public var activities: [ActivityRequest]
+    public let activities: [ActivityRequest]
     /// If true, enriches the activities' current_feed with own_* fields (own_follows, own_followings, own_capabilities, own_membership). Defaults to false for performance.
-    public var enrichOwnFields: Bool?
+    public let enrichOwnFields: Bool?
 
     public init(activities: [ActivityRequest], enrichOwnFields: Bool? = nil) {
         self.activities = activities
         self.enrichOwnFields = enrichOwnFields
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activities
-        case enrichOwnFields = "enrich_own_fields"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activities = try container.decode([ActivityRequest].self, forKey: .activities)
+        self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activities, forKey: .activities)
+        try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
     }
 }
 

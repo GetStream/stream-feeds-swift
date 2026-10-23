@@ -5,37 +5,32 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedCollectionResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum EnrichedCollectionResponseStatus: String, Sendable, Codable, CaseIterable {
-        case notfound
-        case ok
-        case unknown = "_unknown"
+public final class EnrichedCollectionResponseStatus: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let notfound = EnrichedCollectionResponseStatus(rawValue: "notfound")
+    public static let ok = EnrichedCollectionResponseStatus(rawValue: "ok")
+}
+
+public final class EnrichedCollectionResponse: Sendable, Codable, JSONEncodable {
     /// When the collection was created
-    public var createdAt: Date?
+    public let createdAt: Date?
     /// Custom data for the collection
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Unique identifier for the collection within its name
-    public var id: String
+    public let id: String
     /// Name/type of the collection
-    public var name: String
+    public let name: String
     /// Enrichment status of the collection. One of: ok, notfound
-    public var status: EnrichedCollectionResponseStatus
+    public let status: EnrichedCollectionResponseStatus
     /// When the collection was last updated
-    public var updatedAt: Date?
+    public let updatedAt: Date?
     /// ID of the user who owns this collection
-    public var userId: String?
+    public let userId: String?
 
     public init(createdAt: Date? = nil, custom: [String: RawJSON]? = nil, id: String, name: String, status: EnrichedCollectionResponseStatus, updatedAt: Date? = nil, userId: String? = nil) {
         self.createdAt = createdAt
@@ -47,14 +42,26 @@ public final class EnrichedCollectionResponse: @unchecked Sendable, Codable, JSO
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case id
-        case name
-        case status
-        case updatedAt = "updated_at"
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.status = try container.decode(EnrichedCollectionResponseStatus.self, forKey: .status)
+        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        self.userId = try container.decodeIfPresent(String.self, forKey: .userId)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(status, forKey: .status)
+        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(userId, forKey: .userId)
     }
 }
 

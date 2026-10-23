@@ -7,8 +7,13 @@ import StreamCore
 
 /// A request for adding comment when interacting with ``Activity``.
 public struct ActivityAddCommentRequest: Sendable {
-    private let request: AddCommentRequest
-    
+    private let attachments: [Attachment]?
+    private let comment: String
+    private let createNotificationActivity: Bool?
+    private let custom: [String: RawJSON]?
+    private let mentionedUserIds: [String]?
+    private let parentId: String?
+
     public init(
         attachments: [Attachment]? = nil,
         comment: String,
@@ -17,20 +22,24 @@ public struct ActivityAddCommentRequest: Sendable {
         mentionedUserIds: [String]? = nil,
         parentId: String? = nil
     ) {
-        request = AddCommentRequest(
+        self.attachments = attachments
+        self.comment = comment
+        self.createNotificationActivity = createNotificationActivity
+        self.custom = custom
+        self.mentionedUserIds = mentionedUserIds
+        self.parentId = parentId
+    }
+
+    func withActivityId(_ id: String) -> AddCommentRequest {
+        AddCommentRequest(
             attachments: attachments,
             comment: comment,
             createNotificationActivity: createNotificationActivity,
             custom: custom,
             mentionedUserIds: mentionedUserIds,
-            objectId: "",
+            objectId: id,
             objectType: "activity",
             parentId: parentId
         )
-    }
-    
-    func withActivityId(_ id: String) -> AddCommentRequest {
-        request.objectId = id
-        return request
     }
 }

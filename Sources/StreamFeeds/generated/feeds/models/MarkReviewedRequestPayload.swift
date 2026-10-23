@@ -6,13 +6,13 @@ import Foundation
 import StreamCore
 
 /// Configuration for mark reviewed action
-public final class MarkReviewedRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class MarkReviewedRequestPayload: Sendable, Codable, JSONEncodable {
     /// Maximum content items to mark as reviewed
-    public var contentToMarkAsReviewedLimit: Int?
+    public let contentToMarkAsReviewedLimit: Int?
     /// Reason for the appeal decision
-    public var decisionReason: String?
+    public let decisionReason: String?
     /// Skip marking content as reviewed
-    public var disableMarkingContentAsReviewed: Bool?
+    public let disableMarkingContentAsReviewed: Bool?
 
     public init(contentToMarkAsReviewedLimit: Int? = nil, decisionReason: String? = nil, disableMarkingContentAsReviewed: Bool? = nil) {
         self.contentToMarkAsReviewedLimit = contentToMarkAsReviewedLimit
@@ -20,10 +20,18 @@ public final class MarkReviewedRequestPayload: @unchecked Sendable, Codable, JSO
         self.disableMarkingContentAsReviewed = disableMarkingContentAsReviewed
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case contentToMarkAsReviewedLimit = "content_to_mark_as_reviewed_limit"
-        case decisionReason = "decision_reason"
-        case disableMarkingContentAsReviewed = "disable_marking_content_as_reviewed"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.contentToMarkAsReviewedLimit = try container.decodeIfPresent(Int.self, forKey: .contentToMarkAsReviewedLimit)
+        self.decisionReason = try container.decodeIfPresent(String.self, forKey: .decisionReason)
+        self.disableMarkingContentAsReviewed = try container.decodeIfPresent(Bool.self, forKey: .disableMarkingContentAsReviewed)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(contentToMarkAsReviewedLimit, forKey: .contentToMarkAsReviewedLimit)
+        try container.encodeIfPresent(decisionReason, forKey: .decisionReason)
+        try container.encodeIfPresent(disableMarkingContentAsReviewed, forKey: .disableMarkingContentAsReviewed)
     }
 }
 

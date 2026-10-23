@@ -6,27 +6,27 @@ import Foundation
 import StreamCore
 
 /// Content payload for moderation
-public final class ModerationPayloadResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class ModerationPayloadResponse: Sendable, Codable, JSONEncodable {
     /// Audio URLs to moderate
-    public var audios: [String]?
+    public let audios: [String]?
     /// Custom data for moderation
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Caller-supplied content IDs per image key (from content_ids on /analyze)
-    public var imageIds: [String: String]?
+    public let imageIds: [String: String]?
     /// Caller-supplied keys for images, index-aligned with images[]
-    public var imageOrderedKeys: [String]?
+    public let imageOrderedKeys: [String]?
     /// Image URLs to moderate
-    public var images: [String]?
+    public let images: [String]?
     /// Media URLs from attachments outside the typed image/video/audio lists (custom attachment types such as GIF pickers)
-    public var otherMedia: [String]?
+    public let otherMedia: [String]?
     /// Caller-supplied content IDs per text key (from content_ids on /analyze)
-    public var textIds: [String: String]?
+    public let textIds: [String: String]?
     /// Caller-supplied keys for texts (e.g. "title", "description"), index-aligned with texts[]
-    public var textOrderedKeys: [String]?
+    public let textOrderedKeys: [String]?
     /// Text content to moderate
-    public var texts: [String]?
+    public let texts: [String]?
     /// Video URLs to moderate
-    public var videos: [String]?
+    public let videos: [String]?
 
     public init(audios: [String]? = nil, custom: [String: RawJSON]? = nil, imageIds: [String: String]? = nil, imageOrderedKeys: [String]? = nil, images: [String]? = nil, otherMedia: [String]? = nil, textIds: [String: String]? = nil, textOrderedKeys: [String]? = nil, texts: [String]? = nil, videos: [String]? = nil) {
         self.audios = audios
@@ -41,17 +41,32 @@ public final class ModerationPayloadResponse: @unchecked Sendable, Codable, JSON
         self.videos = videos
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case audios
-        case custom
-        case imageIds = "image_ids"
-        case imageOrderedKeys = "image_ordered_keys"
-        case images
-        case otherMedia = "other_media"
-        case textIds = "text_ids"
-        case textOrderedKeys = "text_ordered_keys"
-        case texts
-        case videos
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.audios = try container.decodeIfPresent([String].self, forKey: .audios)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.imageIds = try container.decodeIfPresent([String: String].self, forKey: .imageIds)
+        self.imageOrderedKeys = try container.decodeIfPresent([String].self, forKey: .imageOrderedKeys)
+        self.images = try container.decodeIfPresent([String].self, forKey: .images)
+        self.otherMedia = try container.decodeIfPresent([String].self, forKey: .otherMedia)
+        self.textIds = try container.decodeIfPresent([String: String].self, forKey: .textIds)
+        self.textOrderedKeys = try container.decodeIfPresent([String].self, forKey: .textOrderedKeys)
+        self.texts = try container.decodeIfPresent([String].self, forKey: .texts)
+        self.videos = try container.decodeIfPresent([String].self, forKey: .videos)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(audios, forKey: .audios)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(imageIds, forKey: .imageIds)
+        try container.encodeIfPresent(imageOrderedKeys, forKey: .imageOrderedKeys)
+        try container.encodeIfPresent(images, forKey: .images)
+        try container.encodeIfPresent(otherMedia, forKey: .otherMedia)
+        try container.encodeIfPresent(textIds, forKey: .textIds)
+        try container.encodeIfPresent(textOrderedKeys, forKey: .textOrderedKeys)
+        try container.encodeIfPresent(texts, forKey: .texts)
+        try container.encodeIfPresent(videos, forKey: .videos)
     }
 }
 

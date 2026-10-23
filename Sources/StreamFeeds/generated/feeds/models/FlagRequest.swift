@@ -5,16 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class FlagRequest: Sendable, Codable, JSONEncodable {
     /// Additional metadata about the flag
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Unique identifier of the entity being flagged
-    public var entityId: String
+    public let entityId: String
     /// Type of entity being flagged (e.g., message, user)
-    public var entityType: String
-    public var moderationPayload: ModerationPayload?
+    public let entityType: String
+    public let moderationPayload: ModerationPayload?
     /// Optional explanation for why the content is being flagged
-    public var reason: String?
+    public let reason: String?
 
     public init(custom: [String: RawJSON]? = nil, entityId: String, entityType: String, moderationPayload: ModerationPayload? = nil, reason: String? = nil) {
         self.custom = custom
@@ -24,12 +24,22 @@ public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable {
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case entityId = "entity_id"
-        case entityType = "entity_type"
-        case moderationPayload = "moderation_payload"
-        case reason
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.entityId = try container.decode(String.self, forKey: .entityId)
+        self.entityType = try container.decode(String.self, forKey: .entityType)
+        self.moderationPayload = try container.decodeIfPresent(ModerationPayload.self, forKey: .moderationPayload)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(entityId, forKey: .entityId)
+        try container.encode(entityType, forKey: .entityType)
+        try container.encodeIfPresent(moderationPayload, forKey: .moderationPayload)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
 }
 

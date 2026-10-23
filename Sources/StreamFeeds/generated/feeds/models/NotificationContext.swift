@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class NotificationContext: @unchecked Sendable, Codable, JSONEncodable {
-    public var target: NotificationTarget?
-    public var trigger: NotificationTrigger?
+public final class NotificationContext: Sendable, Codable, JSONEncodable {
+    public let target: NotificationTarget?
+    public let trigger: NotificationTrigger?
 
     public init(target: NotificationTarget? = nil, trigger: NotificationTrigger? = nil) {
         self.target = target
         self.trigger = trigger
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case target
-        case trigger
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.target = try container.decodeIfPresent(NotificationTarget.self, forKey: .target)
+        self.trigger = try container.decodeIfPresent(NotificationTrigger.self, forKey: .trigger)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(target, forKey: .target)
+        try container.encodeIfPresent(trigger, forKey: .trigger)
     }
 }
 

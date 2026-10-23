@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class FloodIdenticalRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var allowlist: [String]?
-    public var minTextLength: Int?
-    public var threshold: Int?
-    public var timeWindow: String?
-    public var trackAcrossUsers: Bool?
+public final class FloodIdenticalRuleParameters: Sendable, Codable, JSONEncodable {
+    public let allowlist: [String]?
+    public let minTextLength: Int?
+    public let threshold: Int?
+    public let timeWindow: String?
+    public let trackAcrossUsers: Bool?
 
     public init(allowlist: [String]? = nil, minTextLength: Int? = nil, threshold: Int? = nil, timeWindow: String? = nil, trackAcrossUsers: Bool? = nil) {
         self.allowlist = allowlist
@@ -20,12 +20,22 @@ public final class FloodIdenticalRuleParameters: @unchecked Sendable, Codable, J
         self.trackAcrossUsers = trackAcrossUsers
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case allowlist
-        case minTextLength = "min_text_length"
-        case threshold
-        case timeWindow = "time_window"
-        case trackAcrossUsers = "track_across_users"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.allowlist = try container.decodeIfPresent([String].self, forKey: .allowlist)
+        self.minTextLength = try container.decodeIfPresent(Int.self, forKey: .minTextLength)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+        self.trackAcrossUsers = try container.decodeIfPresent(Bool.self, forKey: .trackAcrossUsers)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(allowlist, forKey: .allowlist)
+        try container.encodeIfPresent(minTextLength, forKey: .minTextLength)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
+        try container.encodeIfPresent(trackAcrossUsers, forKey: .trackAcrossUsers)
     }
 }
 

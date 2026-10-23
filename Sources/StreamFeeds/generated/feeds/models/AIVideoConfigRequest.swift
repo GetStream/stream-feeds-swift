@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class AIVideoConfigRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var async: Bool?
-    public var enabled: Bool?
-    public var rules: [AWSRekognitionRule]?
+public final class AIVideoConfigRequest: Sendable, Codable, JSONEncodable {
+    public let async: Bool?
+    public let enabled: Bool?
+    public let rules: [AWSRekognitionRule]?
 
     public init(async: Bool? = nil, enabled: Bool? = nil, rules: [AWSRekognitionRule]? = nil) {
         self.async = async
@@ -16,10 +16,18 @@ public final class AIVideoConfigRequest: @unchecked Sendable, Codable, JSONEncod
         self.rules = rules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case async
-        case enabled
-        case rules
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled)
+        self.rules = try container.decodeIfPresent([AWSRekognitionRule].self, forKey: .rules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encodeIfPresent(enabled, forKey: .enabled)
+        try container.encodeIfPresent(rules, forKey: .rules)
     }
 }
 

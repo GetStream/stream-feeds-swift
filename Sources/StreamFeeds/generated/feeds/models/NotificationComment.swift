@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class NotificationComment: @unchecked Sendable, Codable, JSONEncodable {
+public final class NotificationComment: Sendable, Codable, JSONEncodable {
     /// Attachments on the comment
-    public var attachments: [Attachment]?
+    public let attachments: [Attachment]?
     /// The text of the comment
-    public var comment: String
+    public let comment: String
     /// The ID of the comment
-    public var id: String
+    public let id: String
     /// The ID of the parent comment when this comment is a reply; omitted for top-level comments
-    public var parentId: String?
+    public let parentId: String?
     /// The ID of the user who wrote the comment
-    public var userId: String
+    public let userId: String
 
     public init(attachments: [Attachment]? = nil, comment: String, id: String, parentId: String? = nil, userId: String) {
         self.attachments = attachments
@@ -25,12 +25,22 @@ public final class NotificationComment: @unchecked Sendable, Codable, JSONEncoda
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case comment
-        case id
-        case parentId = "parent_id"
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
+        self.comment = try container.decode(String.self, forKey: .comment)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
+        self.userId = try container.decode(String.self, forKey: .userId)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encode(comment, forKey: .comment)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(parentId, forKey: .parentId)
+        try container.encode(userId, forKey: .userId)
     }
 }
 

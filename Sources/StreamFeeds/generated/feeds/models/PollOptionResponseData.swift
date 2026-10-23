@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class PollOptionResponseData: @unchecked Sendable, Codable, JSONEncodable {
-    public var custom: [String: RawJSON]
-    public var id: String
-    public var text: String
-    public var textI18n: [String: String]?
+public final class PollOptionResponseData: Sendable, Codable, JSONEncodable {
+    public let custom: [String: RawJSON]
+    public let id: String
+    public let text: String
+    public let textI18n: [String: String]?
 
     public init(custom: [String: RawJSON], id: String, text: String, textI18n: [String: String]? = nil) {
         self.custom = custom
@@ -18,11 +18,20 @@ public final class PollOptionResponseData: @unchecked Sendable, Codable, JSONEnc
         self.textI18n = textI18n
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case id
-        case text
-        case textI18n = "text_i18n"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.textI18n = try container.decodeIfPresent([String: String].self, forKey: .textI18n)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(custom, forKey: .custom)
+        try container.encode(id, forKey: .id)
+        try container.encode(text, forKey: .text)
+        try container.encodeIfPresent(textI18n, forKey: .textI18n)
     }
 }
 

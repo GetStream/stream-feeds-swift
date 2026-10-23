@@ -5,38 +5,40 @@
 import Foundation
 import StreamCore
 
-public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum OCRRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class OCRRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: OCRRuleAction
-    public var label: String
+    public static let bounce = OCRRuleAction(rawValue: "bounce")
+    public static let bounceFlag = OCRRuleAction(rawValue: "bounce_flag")
+    public static let bounceRemove = OCRRuleAction(rawValue: "bounce_remove")
+    public static let flag = OCRRuleAction(rawValue: "flag")
+    public static let remove = OCRRuleAction(rawValue: "remove")
+    public static let shadow = OCRRuleAction(rawValue: "shadow")
+}
+
+public final class OCRRule: Sendable, Codable, JSONEncodable {
+    public let action: OCRRuleAction
+    public let label: String
 
     public init(action: OCRRuleAction, label: String) {
         self.action = action
         self.label = label
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case label
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(OCRRuleAction.self, forKey: .action)
+        self.label = try container.decode(String.self, forKey: .label)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(label, forKey: .label)
     }
 }
 

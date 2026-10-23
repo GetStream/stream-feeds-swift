@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class PagerResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var next: String?
-    public var prev: String?
+public final class PagerResponse: Sendable, Codable, JSONEncodable {
+    public let next: String?
+    public let prev: String?
 
     public init(next: String? = nil, prev: String? = nil) {
         self.next = next
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

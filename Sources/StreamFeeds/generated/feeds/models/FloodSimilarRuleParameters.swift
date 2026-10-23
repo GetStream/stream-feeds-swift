@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class FloodSimilarRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var allowlist: [String]?
-    public var minTextLength: Int?
-    public var similarityDistance: Int?
-    public var threshold: Int?
-    public var timeWindow: String?
+public final class FloodSimilarRuleParameters: Sendable, Codable, JSONEncodable {
+    public let allowlist: [String]?
+    public let minTextLength: Int?
+    public let similarityDistance: Int?
+    public let threshold: Int?
+    public let timeWindow: String?
 
     public init(allowlist: [String]? = nil, minTextLength: Int? = nil, similarityDistance: Int? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.allowlist = allowlist
@@ -20,12 +20,22 @@ public final class FloodSimilarRuleParameters: @unchecked Sendable, Codable, JSO
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case allowlist
-        case minTextLength = "min_text_length"
-        case similarityDistance = "similarity_distance"
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.allowlist = try container.decodeIfPresent([String].self, forKey: .allowlist)
+        self.minTextLength = try container.decodeIfPresent(Int.self, forKey: .minTextLength)
+        self.similarityDistance = try container.decodeIfPresent(Int.self, forKey: .similarityDistance)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(allowlist, forKey: .allowlist)
+        try container.encodeIfPresent(minTextLength, forKey: .minTextLength)
+        try container.encodeIfPresent(similarityDistance, forKey: .similarityDistance)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
     }
 }
 

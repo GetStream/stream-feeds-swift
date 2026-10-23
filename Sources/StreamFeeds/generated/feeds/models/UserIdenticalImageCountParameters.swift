@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class UserIdenticalImageCountParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var match: String?
-    public var similarityDistance: Int?
-    public var threshold: Int?
-    public var timeWindow: String?
+public final class UserIdenticalImageCountParameters: Sendable, Codable, JSONEncodable {
+    public let match: String?
+    public let similarityDistance: Int?
+    public let threshold: Int?
+    public let timeWindow: String?
 
     public init(match: String? = nil, similarityDistance: Int? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.match = match
@@ -18,11 +18,20 @@ public final class UserIdenticalImageCountParameters: @unchecked Sendable, Codab
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case match
-        case similarityDistance = "similarity_distance"
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.match = try container.decodeIfPresent(String.self, forKey: .match)
+        self.similarityDistance = try container.decodeIfPresent(Int.self, forKey: .similarityDistance)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(match, forKey: .match)
+        try container.encodeIfPresent(similarityDistance, forKey: .similarityDistance)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
     }
 }
 

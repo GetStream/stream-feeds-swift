@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class FloodConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var allowlist: [String]?
-    public var identical: FloodIdenticalConfig?
-    public var similar: FloodSimilarConfig?
+public final class FloodConfig: Sendable, Codable, JSONEncodable {
+    public let allowlist: [String]?
+    public let identical: FloodIdenticalConfig?
+    public let similar: FloodSimilarConfig?
 
     public init(allowlist: [String]? = nil, identical: FloodIdenticalConfig? = nil, similar: FloodSimilarConfig? = nil) {
         self.allowlist = allowlist
@@ -16,10 +16,18 @@ public final class FloodConfig: @unchecked Sendable, Codable, JSONEncodable {
         self.similar = similar
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case allowlist
-        case identical
-        case similar
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.allowlist = try container.decodeIfPresent([String].self, forKey: .allowlist)
+        self.identical = try container.decodeIfPresent(FloodIdenticalConfig.self, forKey: .identical)
+        self.similar = try container.decodeIfPresent(FloodSimilarConfig.self, forKey: .similar)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(allowlist, forKey: .allowlist)
+        try container.encodeIfPresent(identical, forKey: .identical)
+        try container.encodeIfPresent(similar, forKey: .similar)
     }
 }
 

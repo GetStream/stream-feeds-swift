@@ -5,16 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class IntentConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class IntentConfigResponse: Sendable, Codable, JSONEncodable {
     /// Topics conversation text is classified against
-    public var topics: [IntentTopicResponse]
+    public let topics: [IntentTopicResponse]
 
     public init(topics: [IntentTopicResponse]) {
         self.topics = topics
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case topics
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.topics = try container.decode([IntentTopicResponse].self, forKey: .topics)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(topics, forKey: .topics)
     }
 }
 

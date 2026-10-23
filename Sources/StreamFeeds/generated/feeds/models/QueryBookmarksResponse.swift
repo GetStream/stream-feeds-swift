@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryBookmarksResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class QueryBookmarksResponse: Sendable, Codable, JSONEncodable {
     /// List of bookmarks matching the query
-    public var bookmarks: [BookmarkResponse]
-    public var duration: String
+    public let bookmarks: [BookmarkResponse]
+    public let duration: String
     /// Cursor for next page
-    public var next: String?
+    public let next: String?
     /// Cursor for previous page
-    public var prev: String?
+    public let prev: String?
 
     public init(bookmarks: [BookmarkResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.bookmarks = bookmarks
@@ -21,11 +21,20 @@ public final class QueryBookmarksResponse: @unchecked Sendable, Codable, JSONEnc
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case bookmarks
-        case duration
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.bookmarks = try container.decode([BookmarkResponse].self, forKey: .bookmarks)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(bookmarks, forKey: .bookmarks)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

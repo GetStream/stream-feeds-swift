@@ -6,31 +6,43 @@ import Foundation
 import StreamCore
 
 /// Emitted when a bookmark folder is updated.
-public final class BookmarkFolderUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var bookmarkFolder: BookmarkFolderResponse
+public final class BookmarkFolderUpdatedEvent: Sendable, Event, Codable, JSONEncodable {
+    public let bookmarkFolder: BookmarkFolderResponse
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let receivedAt: Date?
     /// The type of event: "feeds.bookmark_folder.updated" in this case
-    public var type: String = "feeds.bookmark_folder.updated"
-    public var user: UserResponseCommonFields?
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(bookmarkFolder: BookmarkFolderResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(bookmarkFolder: BookmarkFolderResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, type: String = "feeds.bookmark_folder.updated", user: UserResponseCommonFields? = nil) {
         self.bookmarkFolder = bookmarkFolder
         self.createdAt = createdAt
         self.custom = custom
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case bookmarkFolder = "bookmark_folder"
-        case createdAt = "created_at"
-        case custom
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.bookmarkFolder = try container.decode(BookmarkFolderResponse.self, forKey: .bookmarkFolder)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(bookmarkFolder, forKey: .bookmarkFolder)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

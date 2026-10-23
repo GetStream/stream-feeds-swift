@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBlockListRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var isConfusableFoldingEnabled: Bool?
-    public var isLeetCheckEnabled: Bool?
-    public var isPluralCheckEnabled: Bool?
-    public var isSubstringMatchingEnabled: Bool?
-    public var team: String?
+public final class UpdateBlockListRequest: Sendable, Codable, JSONEncodable {
+    public let isConfusableFoldingEnabled: Bool?
+    public let isLeetCheckEnabled: Bool?
+    public let isPluralCheckEnabled: Bool?
+    public let isSubstringMatchingEnabled: Bool?
+    public let team: String?
     /// List of words to block
-    public var words: [String]?
+    public let words: [String]?
 
     public init(isConfusableFoldingEnabled: Bool? = nil, isLeetCheckEnabled: Bool? = nil, isPluralCheckEnabled: Bool? = nil, isSubstringMatchingEnabled: Bool? = nil, team: String? = nil, words: [String]? = nil) {
         self.isConfusableFoldingEnabled = isConfusableFoldingEnabled
@@ -23,13 +23,24 @@ public final class UpdateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
         self.words = words
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case isConfusableFoldingEnabled = "is_confusable_folding_enabled"
-        case isLeetCheckEnabled = "is_leet_check_enabled"
-        case isPluralCheckEnabled = "is_plural_check_enabled"
-        case isSubstringMatchingEnabled = "is_substring_matching_enabled"
-        case team
-        case words
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.isConfusableFoldingEnabled = try container.decodeIfPresent(Bool.self, forKey: .isConfusableFoldingEnabled)
+        self.isLeetCheckEnabled = try container.decodeIfPresent(Bool.self, forKey: .isLeetCheckEnabled)
+        self.isPluralCheckEnabled = try container.decodeIfPresent(Bool.self, forKey: .isPluralCheckEnabled)
+        self.isSubstringMatchingEnabled = try container.decodeIfPresent(Bool.self, forKey: .isSubstringMatchingEnabled)
+        self.team = try container.decodeIfPresent(String.self, forKey: .team)
+        self.words = try container.decodeIfPresent([String].self, forKey: .words)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(isConfusableFoldingEnabled, forKey: .isConfusableFoldingEnabled)
+        try container.encodeIfPresent(isLeetCheckEnabled, forKey: .isLeetCheckEnabled)
+        try container.encodeIfPresent(isPluralCheckEnabled, forKey: .isPluralCheckEnabled)
+        try container.encodeIfPresent(isSubstringMatchingEnabled, forKey: .isSubstringMatchingEnabled)
+        try container.encodeIfPresent(team, forKey: .team)
+        try container.encodeIfPresent(words, forKey: .words)
     }
 }
 

@@ -12,7 +12,7 @@ extension AggregatedActivityResponse {
         activityCount: Int = 1,
         createdAt: Date = .fixed(),
         group: String = "like",
-        score: Float = 1.0,
+        score: Double = 1.0,
         updatedAt: Date = .fixed(),
         userCount: Int = 1,
         userCountTruncated: Bool = false

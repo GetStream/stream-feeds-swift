@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class PollOptionInput: @unchecked Sendable, Codable, JSONEncodable {
-    public var custom: [String: RawJSON]?
-    public var text: String?
+public final class PollOptionInput: Sendable, Codable, JSONEncodable {
+    public let custom: [String: RawJSON]?
+    public let text: String?
 
     public init(custom: [String: RawJSON]? = nil, text: String? = nil) {
         self.custom = custom
         self.text = text
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case text
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(text, forKey: .text)
     }
 }
 

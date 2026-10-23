@@ -5,29 +5,29 @@
 import Foundation
 import StreamCore
 
-public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiAudioConfig: AIAudioConfigRequest?
-    public var aiImageConfig: AIImageConfig?
-    public var aiTextConfig: AITextConfig?
-    public var aiVideoConfig: AIVideoConfigRequest?
+public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
+    public let aiAudioConfig: AIAudioConfigRequest?
+    public let aiImageConfig: AIImageConfig?
+    public let aiTextConfig: AITextConfig?
+    public let aiVideoConfig: AIVideoConfigRequest?
     /// Whether moderation should be performed asynchronously
-    public var async: Bool?
-    public var automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
-    public var automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
-    public var automodToxicityConfig: AutomodToxicityConfig?
-    public var awsRekognitionConfig: AIImageConfig?
-    public var blockListConfig: BlockListConfig?
-    public var bodyguardConfig: AITextConfig?
-    public var floodConfig: FloodConfig?
-    public var googleVisionConfig: GoogleVisionConfig?
-    public var intentConfig: IntentConfigRequest?
+    public let async: Bool?
+    public let automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
+    public let automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
+    public let automodToxicityConfig: AutomodToxicityConfig?
+    public let awsRekognitionConfig: AIImageConfig?
+    public let blockListConfig: BlockListConfig?
+    public let bodyguardConfig: AITextConfig?
+    public let floodConfig: FloodConfig?
+    public let googleVisionConfig: GoogleVisionConfig?
+    public let intentConfig: IntentConfigRequest?
     /// Unique identifier for the moderation configuration
-    public var key: String
-    public var llmConfig: LLMConfig?
-    public var ruleBuilderConfig: RuleBuilderConfig?
+    public let key: String
+    public let llmConfig: LLMConfig?
+    public let ruleBuilderConfig: RuleBuilderConfig?
     /// Team associated with the configuration
-    public var team: String?
-    public var velocityFilterConfig: VelocityFilterConfig?
+    public let team: String?
+    public let velocityFilterConfig: VelocityFilterConfig?
 
     public init(aiAudioConfig: AIAudioConfigRequest? = nil, aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigRequest? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, floodConfig: FloodConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, intentConfig: IntentConfigRequest? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiAudioConfig = aiAudioConfig
@@ -51,26 +51,50 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
         self.velocityFilterConfig = velocityFilterConfig
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiAudioConfig = "ai_audio_config"
-        case aiImageConfig = "ai_image_config"
-        case aiTextConfig = "ai_text_config"
-        case aiVideoConfig = "ai_video_config"
-        case async
-        case automodPlatformCircumventionConfig = "automod_platform_circumvention_config"
-        case automodSemanticFiltersConfig = "automod_semantic_filters_config"
-        case automodToxicityConfig = "automod_toxicity_config"
-        case awsRekognitionConfig = "aws_rekognition_config"
-        case blockListConfig = "block_list_config"
-        case bodyguardConfig = "bodyguard_config"
-        case floodConfig = "flood_config"
-        case googleVisionConfig = "google_vision_config"
-        case intentConfig = "intent_config"
-        case key
-        case llmConfig = "llm_config"
-        case ruleBuilderConfig = "rule_builder_config"
-        case team
-        case velocityFilterConfig = "velocity_filter_config"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiAudioConfig = try container.decodeIfPresent(AIAudioConfigRequest.self, forKey: .aiAudioConfig)
+        self.aiImageConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .aiImageConfig)
+        self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
+        self.aiVideoConfig = try container.decodeIfPresent(AIVideoConfigRequest.self, forKey: .aiVideoConfig)
+        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
+        self.automodPlatformCircumventionConfig = try container.decodeIfPresent(AutomodPlatformCircumventionConfig.self, forKey: .automodPlatformCircumventionConfig)
+        self.automodSemanticFiltersConfig = try container.decodeIfPresent(AutomodSemanticFiltersConfig.self, forKey: .automodSemanticFiltersConfig)
+        self.automodToxicityConfig = try container.decodeIfPresent(AutomodToxicityConfig.self, forKey: .automodToxicityConfig)
+        self.awsRekognitionConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .awsRekognitionConfig)
+        self.blockListConfig = try container.decodeIfPresent(BlockListConfig.self, forKey: .blockListConfig)
+        self.bodyguardConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .bodyguardConfig)
+        self.floodConfig = try container.decodeIfPresent(FloodConfig.self, forKey: .floodConfig)
+        self.googleVisionConfig = try container.decodeIfPresent(GoogleVisionConfig.self, forKey: .googleVisionConfig)
+        self.intentConfig = try container.decodeIfPresent(IntentConfigRequest.self, forKey: .intentConfig)
+        self.key = try container.decode(String.self, forKey: .key)
+        self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
+        self.ruleBuilderConfig = try container.decodeIfPresent(RuleBuilderConfig.self, forKey: .ruleBuilderConfig)
+        self.team = try container.decodeIfPresent(String.self, forKey: .team)
+        self.velocityFilterConfig = try container.decodeIfPresent(VelocityFilterConfig.self, forKey: .velocityFilterConfig)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(aiAudioConfig, forKey: .aiAudioConfig)
+        try container.encodeIfPresent(aiImageConfig, forKey: .aiImageConfig)
+        try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
+        try container.encodeIfPresent(aiVideoConfig, forKey: .aiVideoConfig)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encodeIfPresent(automodPlatformCircumventionConfig, forKey: .automodPlatformCircumventionConfig)
+        try container.encodeIfPresent(automodSemanticFiltersConfig, forKey: .automodSemanticFiltersConfig)
+        try container.encodeIfPresent(automodToxicityConfig, forKey: .automodToxicityConfig)
+        try container.encodeIfPresent(awsRekognitionConfig, forKey: .awsRekognitionConfig)
+        try container.encodeIfPresent(blockListConfig, forKey: .blockListConfig)
+        try container.encodeIfPresent(bodyguardConfig, forKey: .bodyguardConfig)
+        try container.encodeIfPresent(floodConfig, forKey: .floodConfig)
+        try container.encodeIfPresent(googleVisionConfig, forKey: .googleVisionConfig)
+        try container.encodeIfPresent(intentConfig, forKey: .intentConfig)
+        try container.encode(key, forKey: .key)
+        try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
+        try container.encodeIfPresent(ruleBuilderConfig, forKey: .ruleBuilderConfig)
+        try container.encodeIfPresent(team, forKey: .team)
+        try container.encodeIfPresent(velocityFilterConfig, forKey: .velocityFilterConfig)
     }
 }
 

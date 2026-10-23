@@ -5,25 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
+public final class APIError: Sendable, Codable, JSONEncodable {
     /// API error code
-    public var code: Int
+    public let code: Int
     /// Milliseconds until the user's slow mode cool down period ends. Only set on code 60 (cool down) errors
-    public var cooldownRemainingMs: Int?
+    public let cooldownRemainingMs: Int?
     /// Additional error-specific information
-    public var details: [Int]
+    public let details: [Int]
     /// Request duration
-    public var duration: String
+    public let duration: String
     /// Additional error info
-    public var exceptionFields: [String: String]?
+    public let exceptionFields: [String: String]?
     /// Message describing an error
-    public var message: String
+    public let message: String
     /// URL with additional information
-    public var moreInfo: String
+    public let moreInfo: String
     /// Response HTTP status code
-    public var statusCode: Int
+    public let statusCode: Int
     /// Flag that indicates if the error is unrecoverable, requests that return unrecoverable errors should not be retried, this error only applies to the request that caused it
-    public var unrecoverable: Bool?
+    public let unrecoverable: Bool?
 
     public init(code: Int, cooldownRemainingMs: Int? = nil, details: [Int], duration: String, exceptionFields: [String: String]? = nil, message: String, moreInfo: String, statusCode: Int, unrecoverable: Bool? = nil) {
         self.code = code
@@ -37,16 +37,30 @@ public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
         self.unrecoverable = unrecoverable
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case code
-        case cooldownRemainingMs = "cooldown_remaining_ms"
-        case details
-        case duration
-        case exceptionFields = "exception_fields"
-        case message
-        case moreInfo = "more_info"
-        case statusCode = "StatusCode"
-        case unrecoverable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.code = try container.decode(Int.self, forKey: .code)
+        self.cooldownRemainingMs = try container.decodeIfPresent(Int.self, forKey: .cooldownRemainingMs)
+        self.details = try container.decode([Int].self, forKey: .details)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.exceptionFields = try container.decodeIfPresent([String: String].self, forKey: .exceptionFields)
+        self.message = try container.decode(String.self, forKey: .message)
+        self.moreInfo = try container.decode(String.self, forKey: .moreInfo)
+        self.statusCode = try container.decode(Int.self, forKey: .statusCode)
+        self.unrecoverable = try container.decodeIfPresent(Bool.self, forKey: .unrecoverable)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(code, forKey: .code)
+        try container.encodeIfPresent(cooldownRemainingMs, forKey: .cooldownRemainingMs)
+        try container.encode(details, forKey: .details)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(exceptionFields, forKey: .exceptionFields)
+        try container.encode(message, forKey: .message)
+        try container.encode(moreInfo, forKey: .moreInfo)
+        try container.encode(statusCode, forKey: .statusCode)
+        try container.encodeIfPresent(unrecoverable, forKey: .unrecoverable)
     }
 }
 

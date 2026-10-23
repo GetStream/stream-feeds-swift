@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class NotificationTrigger: @unchecked Sendable, Codable, JSONEncodable {
-    public var comment: NotificationComment?
+public final class NotificationTrigger: Sendable, Codable, JSONEncodable {
+    public let comment: NotificationComment?
     /// Custom data from the trigger object (comment, reaction, etc.)
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Human-readable text describing the notification
-    public var text: String
+    public let text: String
     /// The type of notification (mention, reaction, comment, follow, etc.)
-    public var type: String
+    public let type: String
 
     public init(comment: NotificationComment? = nil, custom: [String: RawJSON]? = nil, text: String, type: String) {
         self.comment = comment
@@ -21,11 +21,20 @@ public final class NotificationTrigger: @unchecked Sendable, Codable, JSONEncoda
         self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case custom
-        case text
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comment = try container.decodeIfPresent(NotificationComment.self, forKey: .comment)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.type = try container.decode(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(comment, forKey: .comment)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(text, forKey: .text)
+        try container.encode(type, forKey: .type)
     }
 }
 

@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class UserReactionCountRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var count: String?
-    public var threshold: Int?
-    public var timeWindow: String?
+public final class UserReactionCountRuleParameters: Sendable, Codable, JSONEncodable {
+    public let count: String?
+    public let threshold: Int?
+    public let timeWindow: String?
 
     public init(count: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.count = count
@@ -16,10 +16,18 @@ public final class UserReactionCountRuleParameters: @unchecked Sendable, Codable
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case count
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.count = try container.decodeIfPresent(String.self, forKey: .count)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(count, forKey: .count)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
     }
 }
 

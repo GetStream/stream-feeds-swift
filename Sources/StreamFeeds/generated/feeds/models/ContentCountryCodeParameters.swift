@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class ContentCountryCodeParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var `operator`: String?
-    public var countryCodes: [String]?
+public final class ContentCountryCodeParameters: Sendable, Codable, JSONEncodable {
+    public let `operator`: String?
+    public let countryCodes: [String]?
 
     public init(operator: String? = nil, countryCodes: [String]? = nil) {
         self.operator = `operator`
         self.countryCodes = countryCodes
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case `operator`
-        case countryCodes = "country_codes"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.operator = try container.decodeIfPresent(String.self, forKey: .operator)
+        self.countryCodes = try container.decodeIfPresent([String].self, forKey: .countryCodes)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(`operator`, forKey: .operator)
+        try container.encodeIfPresent(countryCodes, forKey: .countryCodes)
     }
 }
 

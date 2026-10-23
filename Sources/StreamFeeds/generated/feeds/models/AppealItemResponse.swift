@@ -5,51 +5,51 @@
 import Foundation
 import StreamCore
 
-public final class AppealItemResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class AppealItemResponse: Sendable, Codable, JSONEncodable {
     /// Full chronological history of all moderation actions on the review queue item
-    public var actions: [ActionLogResponse]?
+    public let actions: [ActionLogResponse]?
     /// Text severity level assigned by the AI provider
-    public var aiTextSeverity: String?
+    public let aiTextSeverity: String?
     /// Reason Text of the Appeal Item
-    public var appealReason: String
+    public let appealReason: String
     /// Detected language of the appeal_reason text itself
-    public var appealReasonLanguage: String?
+    public let appealReasonLanguage: String?
     /// Attachments(e.g. Images) of the Appeal Item
-    public var attachments: [String]?
+    public let attachments: [String]?
     /// Moderation policy key that was applied
-    public var configKey: String?
+    public let configKey: String?
     /// When the flag was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Decision Reason of the Appeal Item
-    public var decisionReason: String?
-    public var entityContent: ModerationPayload?
+    public let decisionReason: String?
+    public let entityContent: ModerationPayload?
     /// ID of the entity
-    public var entityId: String
+    public let entityId: String
     /// Type of entity
-    public var entityType: String
+    public let entityType: String
     /// Classification labels from automated and manual review
-    public var flagLabels: [String]?
+    public let flagLabels: [String]?
     /// Types of flags applied to the entity (e.g. user_report, bodyguard)
-    public var flagTypes: [String]?
+    public let flagTypes: [String]?
     /// Per-provider flag records explaining why the action was taken
-    public var flags: [ModerationFlagResponse]?
-    public var id: String
+    public let flags: [ModerationFlagResponse]?
+    public let id: String
     /// Detected languages in the content
-    public var languages: [String]?
-    public var moderationAction: ActionLogResponse?
-    public var originalModerationAction: ActionLogResponse?
+    public let languages: [String]?
+    public let moderationAction: ActionLogResponse?
+    public let originalModerationAction: ActionLogResponse?
     /// Action recommended by the automated moderation system (e.g. flag, remove, shadow)
-    public var recommendedAction: String?
+    public let recommendedAction: String?
     /// ID of the review queue item linked to this appeal, if the appeal was submitted with one
-    public var reviewQueueItemId: String?
+    public let reviewQueueItemId: String?
     /// Overall content severity score (1–100)
-    public var severity: Int?
+    public let severity: Int?
     /// Status of the Appeal Item
-    public var status: String
+    public let status: String
     /// When the flag was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse?
+    public let user: UserResponse?
 
     public init(actions: [ActionLogResponse]? = nil, aiTextSeverity: String? = nil, appealReason: String, appealReasonLanguage: String? = nil, attachments: [String]? = nil, configKey: String? = nil, createdAt: Date, decisionReason: String? = nil, entityContent: ModerationPayload? = nil, entityId: String, entityType: String, flagLabels: [String]? = nil, flagTypes: [String]? = nil, flags: [ModerationFlagResponse]? = nil, id: String, languages: [String]? = nil, moderationAction: ActionLogResponse? = nil, originalModerationAction: ActionLogResponse? = nil, recommendedAction: String? = nil, reviewQueueItemId: String? = nil, severity: Int? = nil, status: String, updatedAt: Date, user: UserResponse? = nil) {
         self.actions = actions
@@ -78,31 +78,60 @@ public final class AppealItemResponse: @unchecked Sendable, Codable, JSONEncodab
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actions
-        case aiTextSeverity = "ai_text_severity"
-        case appealReason = "appeal_reason"
-        case appealReasonLanguage = "appeal_reason_language"
-        case attachments
-        case configKey = "config_key"
-        case createdAt = "created_at"
-        case decisionReason = "decision_reason"
-        case entityContent = "entity_content"
-        case entityId = "entity_id"
-        case entityType = "entity_type"
-        case flagLabels = "flag_labels"
-        case flagTypes = "flag_types"
-        case flags
-        case id
-        case languages
-        case moderationAction = "moderation_action"
-        case originalModerationAction = "original_moderation_action"
-        case recommendedAction = "recommended_action"
-        case reviewQueueItemId = "review_queue_item_id"
-        case severity
-        case status
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actions = try container.decodeIfPresent([ActionLogResponse].self, forKey: .actions)
+        self.aiTextSeverity = try container.decodeIfPresent(String.self, forKey: .aiTextSeverity)
+        self.appealReason = try container.decode(String.self, forKey: .appealReason)
+        self.appealReasonLanguage = try container.decodeIfPresent(String.self, forKey: .appealReasonLanguage)
+        self.attachments = try container.decodeIfPresent([String].self, forKey: .attachments)
+        self.configKey = try container.decodeIfPresent(String.self, forKey: .configKey)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.decisionReason = try container.decodeIfPresent(String.self, forKey: .decisionReason)
+        self.entityContent = try container.decodeIfPresent(ModerationPayload.self, forKey: .entityContent)
+        self.entityId = try container.decode(String.self, forKey: .entityId)
+        self.entityType = try container.decode(String.self, forKey: .entityType)
+        self.flagLabels = try container.decodeIfPresent([String].self, forKey: .flagLabels)
+        self.flagTypes = try container.decodeIfPresent([String].self, forKey: .flagTypes)
+        self.flags = try container.decodeIfPresent([ModerationFlagResponse].self, forKey: .flags)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.languages = try container.decodeIfPresent([String].self, forKey: .languages)
+        self.moderationAction = try container.decodeIfPresent(ActionLogResponse.self, forKey: .moderationAction)
+        self.originalModerationAction = try container.decodeIfPresent(ActionLogResponse.self, forKey: .originalModerationAction)
+        self.recommendedAction = try container.decodeIfPresent(String.self, forKey: .recommendedAction)
+        self.reviewQueueItemId = try container.decodeIfPresent(String.self, forKey: .reviewQueueItemId)
+        self.severity = try container.decodeIfPresent(Int.self, forKey: .severity)
+        self.status = try container.decode(String.self, forKey: .status)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(actions, forKey: .actions)
+        try container.encodeIfPresent(aiTextSeverity, forKey: .aiTextSeverity)
+        try container.encode(appealReason, forKey: .appealReason)
+        try container.encodeIfPresent(appealReasonLanguage, forKey: .appealReasonLanguage)
+        try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encodeIfPresent(configKey, forKey: .configKey)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(decisionReason, forKey: .decisionReason)
+        try container.encodeIfPresent(entityContent, forKey: .entityContent)
+        try container.encode(entityId, forKey: .entityId)
+        try container.encode(entityType, forKey: .entityType)
+        try container.encodeIfPresent(flagLabels, forKey: .flagLabels)
+        try container.encodeIfPresent(flagTypes, forKey: .flagTypes)
+        try container.encodeIfPresent(flags, forKey: .flags)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(languages, forKey: .languages)
+        try container.encodeIfPresent(moderationAction, forKey: .moderationAction)
+        try container.encodeIfPresent(originalModerationAction, forKey: .originalModerationAction)
+        try container.encodeIfPresent(recommendedAction, forKey: .recommendedAction)
+        try container.encodeIfPresent(reviewQueueItemId, forKey: .reviewQueueItemId)
+        try container.encodeIfPresent(severity, forKey: .severity)
+        try container.encode(status, forKey: .status)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

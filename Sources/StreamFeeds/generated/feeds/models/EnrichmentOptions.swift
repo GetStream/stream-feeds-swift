@@ -6,47 +6,47 @@ import Foundation
 import StreamCore
 
 /// Options to skip specific enrichments to improve performance. Default is false (enrichments are included). Setting a field to true skips that enrichment.
-public final class EnrichmentOptions: @unchecked Sendable, Codable, JSONEncodable {
+public final class EnrichmentOptions: Sendable, Codable, JSONEncodable {
     /// Default: false. When true, includes fetching and enriching own_followings (follows where activity author's feeds follow current user's feeds).
-    public var enrichOwnFollowings: Bool?
+    public let enrichOwnFollowings: Bool?
     /// Controls the top-level flat 'activities' array for aggregated feeds. For new apps, defaults to false (excluded); set to true to include. For older apps, defaults to true (included) for backward compatibility; set to false to exclude.
-    public var includeFlatActivities: Bool?
+    public let includeFlatActivities: Bool?
     /// Default: false. When true, includes score_vars in activity responses containing variable values used at ranking time.
-    public var includeScoreVars: Bool?
+    public let includeScoreVars: Bool?
     /// Default: false. When true, skips all activity enrichments.
-    public var skipActivity: Bool?
+    public let skipActivity: Bool?
     /// Default: false. When true, skips enriching collections on activities.
-    public var skipActivityCollections: Bool?
+    public let skipActivityCollections: Bool?
     /// Default: false. When true, skips enriching comments on activities.
-    public var skipActivityComments: Bool?
+    public let skipActivityComments: Bool?
     /// Default: false. When true, skips enriching current_feed on activities. Note: CurrentFeed is still computed for permission checks, but enrichment is skipped.
-    public var skipActivityCurrentFeed: Bool?
+    public let skipActivityCurrentFeed: Bool?
     /// Default: false. When true, skips enriching mentioned users on activities.
-    public var skipActivityMentionedUsers: Bool?
+    public let skipActivityMentionedUsers: Bool?
     /// Default: false. When true, skips enriching own bookmarks on activities.
-    public var skipActivityOwnBookmarks: Bool?
+    public let skipActivityOwnBookmarks: Bool?
     /// Default: false. When true, skips enriching parent activities.
-    public var skipActivityParents: Bool?
+    public let skipActivityParents: Bool?
     /// Default: false. When true, skips enriching poll data on activities.
-    public var skipActivityPoll: Bool?
+    public let skipActivityPoll: Bool?
     /// Default: false. When true, skips fetching and enriching latest and own reactions on activities. Note: If reactions are already denormalized in the database, they will still be included.
-    public var skipActivityReactions: Bool?
+    public let skipActivityReactions: Bool?
     /// Default: false. When true, skips refreshing image URLs on activities.
-    public var skipActivityRefreshImageUrls: Bool?
+    public let skipActivityRefreshImageUrls: Bool?
     /// Default: false. When true, skips all enrichments.
-    public var skipAll: Bool?
+    public let skipAll: Bool?
     /// Default: false. When true, skips enriching user data on feed members.
-    public var skipFeedMemberUser: Bool?
+    public let skipFeedMemberUser: Bool?
     /// Default: false. When true, skips fetching and enriching followers. Note: If followers_pagination is explicitly provided, followers will be fetched regardless of this setting.
-    public var skipFollowers: Bool?
+    public let skipFollowers: Bool?
     /// Default: false. When true, skips fetching and enriching following. Note: If following_pagination is explicitly provided, following will be fetched regardless of this setting.
-    public var skipFollowing: Bool?
+    public let skipFollowing: Bool?
     /// Default: false. When true, skips computing and including capabilities for feeds.
-    public var skipOwnCapabilities: Bool?
+    public let skipOwnCapabilities: Bool?
     /// Default: false. When true, skips fetching and enriching own_follows (follows where user's feeds follow target feeds).
-    public var skipOwnFollows: Bool?
+    public let skipOwnFollows: Bool?
     /// Default: false. When true, skips enriching pinned activities.
-    public var skipPins: Bool?
+    public let skipPins: Bool?
 
     public init(enrichOwnFollowings: Bool? = nil, includeFlatActivities: Bool? = nil, includeScoreVars: Bool? = nil, skipActivity: Bool? = nil, skipActivityCollections: Bool? = nil, skipActivityComments: Bool? = nil, skipActivityCurrentFeed: Bool? = nil, skipActivityMentionedUsers: Bool? = nil, skipActivityOwnBookmarks: Bool? = nil, skipActivityParents: Bool? = nil, skipActivityPoll: Bool? = nil, skipActivityReactions: Bool? = nil, skipActivityRefreshImageUrls: Bool? = nil, skipAll: Bool? = nil, skipFeedMemberUser: Bool? = nil, skipFollowers: Bool? = nil, skipFollowing: Bool? = nil, skipOwnCapabilities: Bool? = nil, skipOwnFollows: Bool? = nil, skipPins: Bool? = nil) {
         self.enrichOwnFollowings = enrichOwnFollowings
@@ -71,27 +71,52 @@ public final class EnrichmentOptions: @unchecked Sendable, Codable, JSONEncodabl
         self.skipPins = skipPins
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enrichOwnFollowings = "enrich_own_followings"
-        case includeFlatActivities = "include_flat_activities"
-        case includeScoreVars = "include_score_vars"
-        case skipActivity = "skip_activity"
-        case skipActivityCollections = "skip_activity_collections"
-        case skipActivityComments = "skip_activity_comments"
-        case skipActivityCurrentFeed = "skip_activity_current_feed"
-        case skipActivityMentionedUsers = "skip_activity_mentioned_users"
-        case skipActivityOwnBookmarks = "skip_activity_own_bookmarks"
-        case skipActivityParents = "skip_activity_parents"
-        case skipActivityPoll = "skip_activity_poll"
-        case skipActivityReactions = "skip_activity_reactions"
-        case skipActivityRefreshImageUrls = "skip_activity_refresh_image_urls"
-        case skipAll = "skip_all"
-        case skipFeedMemberUser = "skip_feed_member_user"
-        case skipFollowers = "skip_followers"
-        case skipFollowing = "skip_following"
-        case skipOwnCapabilities = "skip_own_capabilities"
-        case skipOwnFollows = "skip_own_follows"
-        case skipPins = "skip_pins"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.enrichOwnFollowings = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFollowings)
+        self.includeFlatActivities = try container.decodeIfPresent(Bool.self, forKey: .includeFlatActivities)
+        self.includeScoreVars = try container.decodeIfPresent(Bool.self, forKey: .includeScoreVars)
+        self.skipActivity = try container.decodeIfPresent(Bool.self, forKey: .skipActivity)
+        self.skipActivityCollections = try container.decodeIfPresent(Bool.self, forKey: .skipActivityCollections)
+        self.skipActivityComments = try container.decodeIfPresent(Bool.self, forKey: .skipActivityComments)
+        self.skipActivityCurrentFeed = try container.decodeIfPresent(Bool.self, forKey: .skipActivityCurrentFeed)
+        self.skipActivityMentionedUsers = try container.decodeIfPresent(Bool.self, forKey: .skipActivityMentionedUsers)
+        self.skipActivityOwnBookmarks = try container.decodeIfPresent(Bool.self, forKey: .skipActivityOwnBookmarks)
+        self.skipActivityParents = try container.decodeIfPresent(Bool.self, forKey: .skipActivityParents)
+        self.skipActivityPoll = try container.decodeIfPresent(Bool.self, forKey: .skipActivityPoll)
+        self.skipActivityReactions = try container.decodeIfPresent(Bool.self, forKey: .skipActivityReactions)
+        self.skipActivityRefreshImageUrls = try container.decodeIfPresent(Bool.self, forKey: .skipActivityRefreshImageUrls)
+        self.skipAll = try container.decodeIfPresent(Bool.self, forKey: .skipAll)
+        self.skipFeedMemberUser = try container.decodeIfPresent(Bool.self, forKey: .skipFeedMemberUser)
+        self.skipFollowers = try container.decodeIfPresent(Bool.self, forKey: .skipFollowers)
+        self.skipFollowing = try container.decodeIfPresent(Bool.self, forKey: .skipFollowing)
+        self.skipOwnCapabilities = try container.decodeIfPresent(Bool.self, forKey: .skipOwnCapabilities)
+        self.skipOwnFollows = try container.decodeIfPresent(Bool.self, forKey: .skipOwnFollows)
+        self.skipPins = try container.decodeIfPresent(Bool.self, forKey: .skipPins)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(enrichOwnFollowings, forKey: .enrichOwnFollowings)
+        try container.encodeIfPresent(includeFlatActivities, forKey: .includeFlatActivities)
+        try container.encodeIfPresent(includeScoreVars, forKey: .includeScoreVars)
+        try container.encodeIfPresent(skipActivity, forKey: .skipActivity)
+        try container.encodeIfPresent(skipActivityCollections, forKey: .skipActivityCollections)
+        try container.encodeIfPresent(skipActivityComments, forKey: .skipActivityComments)
+        try container.encodeIfPresent(skipActivityCurrentFeed, forKey: .skipActivityCurrentFeed)
+        try container.encodeIfPresent(skipActivityMentionedUsers, forKey: .skipActivityMentionedUsers)
+        try container.encodeIfPresent(skipActivityOwnBookmarks, forKey: .skipActivityOwnBookmarks)
+        try container.encodeIfPresent(skipActivityParents, forKey: .skipActivityParents)
+        try container.encodeIfPresent(skipActivityPoll, forKey: .skipActivityPoll)
+        try container.encodeIfPresent(skipActivityReactions, forKey: .skipActivityReactions)
+        try container.encodeIfPresent(skipActivityRefreshImageUrls, forKey: .skipActivityRefreshImageUrls)
+        try container.encodeIfPresent(skipAll, forKey: .skipAll)
+        try container.encodeIfPresent(skipFeedMemberUser, forKey: .skipFeedMemberUser)
+        try container.encodeIfPresent(skipFollowers, forKey: .skipFollowers)
+        try container.encodeIfPresent(skipFollowing, forKey: .skipFollowing)
+        try container.encodeIfPresent(skipOwnCapabilities, forKey: .skipOwnCapabilities)
+        try container.encodeIfPresent(skipOwnFollows, forKey: .skipOwnFollows)
+        try container.encodeIfPresent(skipPins, forKey: .skipPins)
     }
 }
 

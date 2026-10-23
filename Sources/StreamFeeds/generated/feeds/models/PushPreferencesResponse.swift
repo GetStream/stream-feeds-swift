@@ -6,13 +6,13 @@ import Foundation
 import StreamCore
 
 /// The push preference details.
-public final class PushPreferencesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class PushPreferencesResponse: Sendable, Codable, JSONEncodable {
     /// If provided the notifications will be disabled until the set date.
-    public var disabledUntil: Date?
-    public var feedsLevel: String?
-    public var feedsPreferences: FeedsPreferencesResponse?
+    public let disabledUntil: Date?
+    public let feedsLevel: String?
+    public let feedsPreferences: FeedsPreferencesResponse?
     /// A recurring quiet-hours schedule: while any quiet window is active, push notifications for the user are suppressed. Suppressed notifications are dropped, not delayed.
-    public var schedule: PushScheduleResponse?
+    public let schedule: PushScheduleResponse?
 
     public init(disabledUntil: Date? = nil, feedsLevel: String? = nil, feedsPreferences: FeedsPreferencesResponse? = nil, schedule: PushScheduleResponse? = nil) {
         self.disabledUntil = disabledUntil
@@ -21,11 +21,20 @@ public final class PushPreferencesResponse: @unchecked Sendable, Codable, JSONEn
         self.schedule = schedule
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case disabledUntil = "disabled_until"
-        case feedsLevel = "feeds_level"
-        case feedsPreferences = "feeds_preferences"
-        case schedule
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.disabledUntil = try container.decodeIfPresent(Date.self, forKey: .disabledUntil)
+        self.feedsLevel = try container.decodeIfPresent(String.self, forKey: .feedsLevel)
+        self.feedsPreferences = try container.decodeIfPresent(FeedsPreferencesResponse.self, forKey: .feedsPreferences)
+        self.schedule = try container.decodeIfPresent(PushScheduleResponse.self, forKey: .schedule)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(disabledUntil, forKey: .disabledUntil)
+        try container.encodeIfPresent(feedsLevel, forKey: .feedsLevel)
+        try container.encodeIfPresent(feedsPreferences, forKey: .feedsPreferences)
+        try container.encodeIfPresent(schedule, forKey: .schedule)
     }
 }
 

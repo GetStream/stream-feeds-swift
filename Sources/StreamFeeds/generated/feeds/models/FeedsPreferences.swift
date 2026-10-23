@@ -5,135 +5,100 @@
 import Foundation
 import StreamCore
 
-public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedsPreferencesComment: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
+public final class FeedsPreferencesComment: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum FeedsPreferencesCommentMention: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum FeedsPreferencesCommentReaction: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum FeedsPreferencesCommentReply: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum FeedsPreferencesFollow: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum FeedsPreferencesMention: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum FeedsPreferencesReaction: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let all = FeedsPreferencesComment(rawValue: "all")
+    public static let none = FeedsPreferencesComment(rawValue: "none")
+}
+
+public final class FeedsPreferencesCommentMention: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let all = FeedsPreferencesCommentMention(rawValue: "all")
+    public static let none = FeedsPreferencesCommentMention(rawValue: "none")
+}
+
+public final class FeedsPreferencesCommentReaction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let all = FeedsPreferencesCommentReaction(rawValue: "all")
+    public static let none = FeedsPreferencesCommentReaction(rawValue: "none")
+}
+
+public final class FeedsPreferencesCommentReply: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let all = FeedsPreferencesCommentReply(rawValue: "all")
+    public static let none = FeedsPreferencesCommentReply(rawValue: "none")
+}
+
+public final class FeedsPreferencesFollow: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let all = FeedsPreferencesFollow(rawValue: "all")
+    public static let none = FeedsPreferencesFollow(rawValue: "none")
+}
+
+public final class FeedsPreferencesMention: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let all = FeedsPreferencesMention(rawValue: "all")
+    public static let none = FeedsPreferencesMention(rawValue: "none")
+}
+
+public final class FeedsPreferencesReaction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let all = FeedsPreferencesReaction(rawValue: "all")
+    public static let none = FeedsPreferencesReaction(rawValue: "none")
+}
+
+public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
     /// Push notification preference for comments on user's activities. One of: all, none
-    public var comment: FeedsPreferencesComment?
+    public let comment: FeedsPreferencesComment?
     /// Push notification preference for mentions in comments. One of: all, none
-    public var commentMention: FeedsPreferencesCommentMention?
+    public let commentMention: FeedsPreferencesCommentMention?
     /// Push notification preference for reactions on comments. One of: all, none
-    public var commentReaction: FeedsPreferencesCommentReaction?
+    public let commentReaction: FeedsPreferencesCommentReaction?
     /// Push notification preference for replies to comments. One of: all, none
-    public var commentReply: FeedsPreferencesCommentReply?
+    public let commentReply: FeedsPreferencesCommentReply?
     /// Push notification preferences for custom activity types. Map of activity type to preference (all or none)
-    public var customActivityTypes: [String: String]?
+    public let customActivityTypes: [String: String]?
     /// Push notification preference for new followers. One of: all, none
-    public var follow: FeedsPreferencesFollow?
+    public let follow: FeedsPreferencesFollow?
     /// Push notification preference for mentions in activities. One of: all, none
-    public var mention: FeedsPreferencesMention?
+    public let mention: FeedsPreferencesMention?
     /// Push notification preference for reactions on user's activities or comments. One of: all, none
-    public var reaction: FeedsPreferencesReaction?
+    public let reaction: FeedsPreferencesReaction?
 
     public init(comment: FeedsPreferencesComment? = nil, commentMention: FeedsPreferencesCommentMention? = nil, commentReaction: FeedsPreferencesCommentReaction? = nil, commentReply: FeedsPreferencesCommentReply? = nil, customActivityTypes: [String: String]? = nil, follow: FeedsPreferencesFollow? = nil, mention: FeedsPreferencesMention? = nil, reaction: FeedsPreferencesReaction? = nil) {
         self.comment = comment
@@ -146,15 +111,28 @@ public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable
         self.reaction = reaction
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case commentMention = "comment_mention"
-        case commentReaction = "comment_reaction"
-        case commentReply = "comment_reply"
-        case customActivityTypes = "custom_activity_types"
-        case follow
-        case mention
-        case reaction
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comment = try container.decodeIfPresent(FeedsPreferencesComment.self, forKey: .comment)
+        self.commentMention = try container.decodeIfPresent(FeedsPreferencesCommentMention.self, forKey: .commentMention)
+        self.commentReaction = try container.decodeIfPresent(FeedsPreferencesCommentReaction.self, forKey: .commentReaction)
+        self.commentReply = try container.decodeIfPresent(FeedsPreferencesCommentReply.self, forKey: .commentReply)
+        self.customActivityTypes = try container.decodeIfPresent([String: String].self, forKey: .customActivityTypes)
+        self.follow = try container.decodeIfPresent(FeedsPreferencesFollow.self, forKey: .follow)
+        self.mention = try container.decodeIfPresent(FeedsPreferencesMention.self, forKey: .mention)
+        self.reaction = try container.decodeIfPresent(FeedsPreferencesReaction.self, forKey: .reaction)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(comment, forKey: .comment)
+        try container.encodeIfPresent(commentMention, forKey: .commentMention)
+        try container.encodeIfPresent(commentReaction, forKey: .commentReaction)
+        try container.encodeIfPresent(commentReply, forKey: .commentReply)
+        try container.encodeIfPresent(customActivityTypes, forKey: .customActivityTypes)
+        try container.encodeIfPresent(follow, forKey: .follow)
+        try container.encodeIfPresent(mention, forKey: .mention)
+        try container.encodeIfPresent(reaction, forKey: .reaction)
     }
 }
 

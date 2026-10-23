@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class CreateGuestResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class CreateGuestResponse: Sendable, Codable, JSONEncodable {
     /// the access token to authenticate the user
-    public var accessToken: String
+    public let accessToken: String
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(accessToken: String, duration: String, user: UserResponse) {
         self.accessToken = accessToken
@@ -19,10 +19,18 @@ public final class CreateGuestResponse: @unchecked Sendable, Codable, JSONEncoda
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case accessToken = "access_token"
-        case duration
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.accessToken = try container.decode(String.self, forKey: .accessToken)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(accessToken, forKey: .accessToken)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(user, forKey: .user)
     }
 }
 

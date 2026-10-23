@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class Role: @unchecked Sendable, Codable, JSONEncodable {
+public final class Role: Sendable, Codable, JSONEncodable {
     /// Date/time of creation
-    public var createdAt: Date
+    public let createdAt: Date
     /// Whether this is a custom role or built-in
-    public var custom: Bool
+    public let custom: Bool
     /// Unique role name
-    public var name: String
+    public let name: String
     /// List of scopes where this role is currently present. `.app` means that role is present in app-level grants
-    public var scopes: [String]
+    public let scopes: [String]
     /// Date/time of the last update
-    public var updatedAt: Date
+    public let updatedAt: Date
 
     public init(createdAt: Date, custom: Bool, name: String, scopes: [String], updatedAt: Date) {
         self.createdAt = createdAt
@@ -25,12 +25,22 @@ public final class Role: @unchecked Sendable, Codable, JSONEncodable {
         self.updatedAt = updatedAt
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case name
-        case scopes
-        case updatedAt = "updated_at"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode(Bool.self, forKey: .custom)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.scopes = try container.decode([String].self, forKey: .scopes)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encode(name, forKey: .name)
+        try container.encode(scopes, forKey: .scopes)
+        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

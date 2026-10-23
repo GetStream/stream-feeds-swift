@@ -5,30 +5,30 @@
 import Foundation
 import StreamCore
 
-public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var avgResponseTime: Int?
-    public var banExpires: Date?
-    public var banned: Bool
-    public var blockedUserIds: [String]
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var deactivatedAt: Date?
-    public var deletedAt: Date?
-    public var devices: [DeviceResponse]
-    public var id: String
-    public var image: String?
-    public var invisible: Bool
-    public var language: String
-    public var lastActive: Date?
-    public var mutes: [UserMuteResponse]
-    public var name: String?
-    public var online: Bool
+public final class FullUserResponse: Sendable, Codable, JSONEncodable {
+    public let avgResponseTime: Int?
+    public let banExpires: Date?
+    public let banned: Bool
+    public let blockedUserIds: [String]
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let deactivatedAt: Date?
+    public let deletedAt: Date?
+    public let devices: [DeviceResponse]
+    public let id: String
+    public let image: String?
+    public let invisible: Bool
+    public let language: String
+    public let lastActive: Date?
+    public let mutes: [UserMuteResponse]
+    public let name: String?
+    public let online: Bool
     /// The privacy settings of the user.
-    public var privacySettings: PrivacySettingsResponse?
-    public var role: String
-    public var teams: [String]
-    public var teamsRole: [String: String]?
-    public var updatedAt: Date
+    public let privacySettings: PrivacySettingsResponse?
+    public let role: String
+    public let teams: [String]
+    public let teamsRole: [String: String]?
+    public let updatedAt: Date
 
     public init(avgResponseTime: Int? = nil, banExpires: Date? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, devices: [DeviceResponse], id: String, image: String? = nil, invisible: Bool, language: String, lastActive: Date? = nil, mutes: [UserMuteResponse], name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
@@ -55,33 +55,8 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
         self.updatedAt = updatedAt
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case avgResponseTime = "avg_response_time"
-        case banExpires = "ban_expires"
-        case banned
-        case blockedUserIds = "blocked_user_ids"
-        case createdAt = "created_at"
-        case custom
-        case deactivatedAt = "deactivated_at"
-        case deletedAt = "deleted_at"
-        case devices
-        case id
-        case image
-        case invisible
-        case language
-        case lastActive = "last_active"
-        case mutes
-        case name
-        case online
-        case privacySettings = "privacy_settings"
-        case role
-        case teams
-        case teamsRole = "teams_role"
-        case updatedAt = "updated_at"
-    }
-
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.avgResponseTime = try container.decodeIfPresent(Int.self, forKey: .avgResponseTime)
         self.banExpires = try container.decodeIfPresent(Date.self, forKey: .banExpires)
         self.banned = try container.decode(Bool.self, forKey: .banned)
@@ -107,7 +82,7 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(avgResponseTime, forKey: .avgResponseTime)
         try container.encodeIfPresent(banExpires, forKey: .banExpires)
         try container.encode(banned, forKey: .banned)

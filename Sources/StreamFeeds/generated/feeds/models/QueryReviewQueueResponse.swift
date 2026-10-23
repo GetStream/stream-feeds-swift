@@ -5,18 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class QueryReviewQueueResponse: Sendable, Codable, JSONEncodable {
     /// Configuration for moderation actions
-    public var actionConfig: [String: [ModerationActionConfigResponse]]
-    public var defaultActionConfig: [String: [ModerationActionConfigResponse]]?
-    public var duration: String
-    public var filterConfig: FilterConfigResponse?
+    public let actionConfig: [String: [ModerationActionConfigResponse]]
+    public let defaultActionConfig: [String: [ModerationActionConfigResponse]]?
+    public let duration: String
+    public let filterConfig: FilterConfigResponse?
     /// List of review queue items
-    public var items: [ReviewQueueItemResponse]
-    public var next: String?
-    public var prev: String?
+    public let items: [ReviewQueueItemResponse]
+    public let next: String?
+    public let prev: String?
     /// Statistics about the review queue
-    public var stats: [String: RawJSON]
+    public let stats: [String: RawJSON]
 
     public init(actionConfig: [String: [ModerationActionConfigResponse]], defaultActionConfig: [String: [ModerationActionConfigResponse]]? = nil, duration: String, filterConfig: FilterConfigResponse? = nil, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
         self.actionConfig = actionConfig
@@ -29,15 +29,28 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
         self.stats = stats
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actionConfig = "action_config"
-        case defaultActionConfig = "default_action_config"
-        case duration
-        case filterConfig = "filter_config"
-        case items
-        case next
-        case prev
-        case stats
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actionConfig = try container.decode([String: [ModerationActionConfigResponse]].self, forKey: .actionConfig)
+        self.defaultActionConfig = try container.decodeIfPresent([String: [ModerationActionConfigResponse]].self, forKey: .defaultActionConfig)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.filterConfig = try container.decodeIfPresent(FilterConfigResponse.self, forKey: .filterConfig)
+        self.items = try container.decode([ReviewQueueItemResponse].self, forKey: .items)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.stats = try container.decode([String: RawJSON].self, forKey: .stats)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(actionConfig, forKey: .actionConfig)
+        try container.encodeIfPresent(defaultActionConfig, forKey: .defaultActionConfig)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(filterConfig, forKey: .filterConfig)
+        try container.encode(items, forKey: .items)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encode(stats, forKey: .stats)
     }
 }
 

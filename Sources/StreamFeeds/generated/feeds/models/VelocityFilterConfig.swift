@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class VelocityFilterConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var advancedFilters: Bool
-    public var async: Bool?
-    public var enabled: Bool
-    public var rules: [VelocityFilterConfigRule]
+public final class VelocityFilterConfig: Sendable, Codable, JSONEncodable {
+    public let advancedFilters: Bool
+    public let async: Bool?
+    public let enabled: Bool
+    public let rules: [VelocityFilterConfigRule]
 
     public init(advancedFilters: Bool, async: Bool? = nil, enabled: Bool, rules: [VelocityFilterConfigRule]) {
         self.advancedFilters = advancedFilters
@@ -18,11 +18,20 @@ public final class VelocityFilterConfig: @unchecked Sendable, Codable, JSONEncod
         self.rules = rules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case advancedFilters = "advanced_filters"
-        case async
-        case enabled
-        case rules
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.advancedFilters = try container.decode(Bool.self, forKey: .advancedFilters)
+        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.rules = try container.decode([VelocityFilterConfigRule].self, forKey: .rules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(advancedFilters, forKey: .advancedFilters)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(rules, forKey: .rules)
     }
 }
 

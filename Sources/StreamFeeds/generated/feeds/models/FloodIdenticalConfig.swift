@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class FloodIdenticalConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var action: String
-    public var enabled: Bool
-    public var threshold: Int
-    public var timeWindow: String
+public final class FloodIdenticalConfig: Sendable, Codable, JSONEncodable {
+    public let action: String
+    public let enabled: Bool
+    public let threshold: Int
+    public let timeWindow: String
 
     public init(action: String, enabled: Bool, threshold: Int, timeWindow: String) {
         self.action = action
@@ -18,11 +18,20 @@ public final class FloodIdenticalConfig: @unchecked Sendable, Codable, JSONEncod
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case enabled
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(String.self, forKey: .action)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.threshold = try container.decode(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decode(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(threshold, forKey: .threshold)
+        try container.encode(timeWindow, forKey: .timeWindow)
     }
 }
 

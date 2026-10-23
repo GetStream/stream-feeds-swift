@@ -51,9 +51,8 @@ extension Attachment: Identifiable {
             text: text,
             thumbUrl: thumbUrl,
             title: title,
-            titleLink: titleLink
+            titleLink: titleLink,
+            type: type
         )
-        // Note: Do not remove this extension before API generation adds type to the init because this is used in snippets.
-        self.type = type
     }
 }

@@ -6,15 +6,15 @@ import Foundation
 import StreamCore
 
 /// A type representing the app settings.
-public final class AppResponseFields: @unchecked Sendable, Codable, JSONEncodable {
+public final class AppResponseFields: Sendable, Codable, JSONEncodable {
     /// A boolean value determining if async url enrichment is enabled.
-    public var asyncUrlEnrichEnabled: Bool
+    public let asyncUrlEnrichEnabled: Bool
     /// A boolean value determining if auto translation is enabled.
-    public var autoTranslationEnabled: Bool
-    public var fileUploadConfig: FileUploadConfig
-    public var imageUploadConfig: FileUploadConfig
+    public let autoTranslationEnabled: Bool
+    public let fileUploadConfig: FileUploadConfig
+    public let imageUploadConfig: FileUploadConfig
     /// The name of the app.
-    public var name: String
+    public let name: String
 
     public init(asyncUrlEnrichEnabled: Bool, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig, imageUploadConfig: FileUploadConfig, name: String) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
@@ -24,12 +24,22 @@ public final class AppResponseFields: @unchecked Sendable, Codable, JSONEncodabl
         self.name = name
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case asyncUrlEnrichEnabled = "async_url_enrich_enabled"
-        case autoTranslationEnabled = "auto_translation_enabled"
-        case fileUploadConfig = "file_upload_config"
-        case imageUploadConfig = "image_upload_config"
-        case name
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.asyncUrlEnrichEnabled = try container.decode(Bool.self, forKey: .asyncUrlEnrichEnabled)
+        self.autoTranslationEnabled = try container.decode(Bool.self, forKey: .autoTranslationEnabled)
+        self.fileUploadConfig = try container.decode(FileUploadConfig.self, forKey: .fileUploadConfig)
+        self.imageUploadConfig = try container.decode(FileUploadConfig.self, forKey: .imageUploadConfig)
+        self.name = try container.decode(String.self, forKey: .name)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(asyncUrlEnrichEnabled, forKey: .asyncUrlEnrichEnabled)
+        try container.encode(autoTranslationEnabled, forKey: .autoTranslationEnabled)
+        try container.encode(fileUploadConfig, forKey: .fileUploadConfig)
+        try container.encode(imageUploadConfig, forKey: .imageUploadConfig)
+        try container.encode(name, forKey: .name)
     }
 }
 

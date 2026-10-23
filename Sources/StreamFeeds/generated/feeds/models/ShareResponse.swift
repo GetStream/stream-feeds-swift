@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class ShareResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class ShareResponse: Sendable, Codable, JSONEncodable {
     /// ID of the sharing (child) activity
-    public var activityId: String
+    public let activityId: String
     /// When the share occurred
-    public var createdAt: Date
+    public let createdAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(activityId: String, createdAt: Date, user: UserResponse) {
         self.activityId = activityId
@@ -19,10 +19,18 @@ public final class ShareResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityId = "activity_id"
-        case createdAt = "created_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activityId = try container.decode(String.self, forKey: .activityId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activityId, forKey: .activityId)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(user, forKey: .user)
     }
 }
 

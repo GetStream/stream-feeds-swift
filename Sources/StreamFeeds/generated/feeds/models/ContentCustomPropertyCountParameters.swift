@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class ContentCustomPropertyCountParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var `operator`: String?
-    public var propertyKey: String?
-    public var threshold: Int?
-    public var timeWindow: String?
+public final class ContentCustomPropertyCountParameters: Sendable, Codable, JSONEncodable {
+    public let `operator`: String?
+    public let propertyKey: String?
+    public let threshold: Int?
+    public let timeWindow: String?
 
     public init(operator: String? = nil, propertyKey: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.operator = `operator`
@@ -18,11 +18,20 @@ public final class ContentCustomPropertyCountParameters: @unchecked Sendable, Co
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case `operator`
-        case propertyKey = "property_key"
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.operator = try container.decodeIfPresent(String.self, forKey: .operator)
+        self.propertyKey = try container.decodeIfPresent(String.self, forKey: .propertyKey)
+        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(`operator`, forKey: .operator)
+        try container.encodeIfPresent(propertyKey, forKey: .propertyKey)
+        try container.encodeIfPresent(threshold, forKey: .threshold)
+        try container.encodeIfPresent(timeWindow, forKey: .timeWindow)
     }
 }
 

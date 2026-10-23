@@ -5,22 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class AddReactionRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class AddReactionRequest: Sendable, Codable, JSONEncodable {
     /// Whether to copy custom data to the notification activity (only applies when create_notification_activity is true) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
     @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
-    public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
-    private var _copyCustomToNotification: Bool?
+    public var copyCustomToNotification: Bool? { _copyCustomToNotification }
+    private let _copyCustomToNotification: Bool?
     /// Whether to create a notification activity for this reaction
-    public var createNotificationActivity: Bool?
+    public let createNotificationActivity: Bool?
     /// Custom data for the reaction
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Whether to enforce unique reactions per user (remove other reaction types from the user when adding this one)
-    public var enforceUnique: Bool?
-    public var skipPush: Bool?
+    public let enforceUnique: Bool?
+    public let skipPush: Bool?
     /// Optional list of feeds to create a reference (share) activity of the original activity in. The reference activity's type mirrors the reaction type.
-    public var targetFeeds: [String]?
+    public let targetFeeds: [String]?
     /// Type of reaction
-    public var type: String
+    public let type: String
 
     public init(copyCustomToNotification: Bool? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, enforceUnique: Bool? = nil, skipPush: Bool? = nil, targetFeeds: [String]? = nil, type: String) {
         self._copyCustomToNotification = copyCustomToNotification
@@ -32,18 +32,8 @@ public final class AddReactionRequest: @unchecked Sendable, Codable, JSONEncodab
         self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case copyCustomToNotification = "copy_custom_to_notification"
-        case createNotificationActivity = "create_notification_activity"
-        case custom
-        case enforceUnique = "enforce_unique"
-        case skipPush = "skip_push"
-        case targetFeeds = "target_feeds"
-        case type
-    }
-
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
         self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
         self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
@@ -54,7 +44,7 @@ public final class AddReactionRequest: @unchecked Sendable, Codable, JSONEncodab
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
         try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)

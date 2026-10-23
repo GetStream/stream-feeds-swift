@@ -6,40 +6,54 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets deleted. The event contains information about the user that was deleted and the deletion options that were used.
-public final class UserDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class UserDeletedEvent: Sendable, Event, Codable, JSONEncodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
     /// The type of deletion that was used for the user's conversations. One of: hard, soft, pruning, (empty string)
-    public var deleteConversation: String
+    public let deleteConversation: String
     /// The type of deletion that was used for the user. One of: hard, soft, pruning, (empty string)
-    public var deleteUser: String
+    public let deleteUser: String
     /// Whether the user was hard deleted
-    public var hardDelete: Bool
-    public var receivedAt: Date?
+    public let hardDelete: Bool
+    public let receivedAt: Date?
     /// The type of event: "user.deleted" in this case
-    public var type: String = "user.deleted"
-    public var user: UserResponseCommonFields
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], deleteConversation: String, deleteUser: String, hardDelete: Bool, receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, custom: [String: RawJSON], deleteConversation: String, deleteUser: String, hardDelete: Bool, receivedAt: Date? = nil, type: String = "user.deleted", user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.deleteConversation = deleteConversation
         self.deleteUser = deleteUser
         self.hardDelete = hardDelete
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case deleteConversation = "delete_conversation"
-        case deleteUser = "delete_user"
-        case hardDelete = "hard_delete"
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.deleteConversation = try container.decode(String.self, forKey: .deleteConversation)
+        self.deleteUser = try container.decode(String.self, forKey: .deleteUser)
+        self.hardDelete = try container.decode(Bool.self, forKey: .hardDelete)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encode(deleteConversation, forKey: .deleteConversation)
+        try container.encode(deleteUser, forKey: .deleteUser)
+        try container.encode(hardDelete, forKey: .hardDelete)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
+        try container.encode(user, forKey: .user)
     }
 }
 

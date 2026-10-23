@@ -5,20 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class IntentTopicRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class IntentTopicRequest: Sendable, Codable, JSONEncodable {
     /// Optional description used in the classification prompt; the label alone is used when empty
-    public var description: String?
+    public let description: String?
     /// Unique topic label (e.g. purchase_intent)
-    public var label: String
+    public let label: String
 
     public init(description: String? = nil, label: String) {
         self.description = description
         self.label = label
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case description
-        case label
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.description = try container.decodeIfPresent(String.self, forKey: .description)
+        self.label = try container.decode(String.self, forKey: .label)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(description, forKey: .description)
+        try container.encode(label, forKey: .label)
     }
 }
 

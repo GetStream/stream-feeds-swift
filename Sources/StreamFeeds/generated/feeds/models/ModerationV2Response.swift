@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class ModerationV2Response: @unchecked Sendable, Codable, JSONEncodable {
-    public var action: String
-    public var blocklistMatched: String?
-    public var blocklistsMatched: [String]?
-    public var imageHarms: [String]?
-    public var originalText: String
-    public var platformCircumvented: Bool?
-    public var semanticFilterMatched: String?
-    public var textHarms: [String]?
+public final class ModerationV2Response: Sendable, Codable, JSONEncodable {
+    public let action: String
+    public let blocklistMatched: String?
+    public let blocklistsMatched: [String]?
+    public let imageHarms: [String]?
+    public let originalText: String
+    public let platformCircumvented: Bool?
+    public let semanticFilterMatched: String?
+    public let textHarms: [String]?
 
     public init(action: String, blocklistMatched: String? = nil, blocklistsMatched: [String]? = nil, imageHarms: [String]? = nil, originalText: String, platformCircumvented: Bool? = nil, semanticFilterMatched: String? = nil, textHarms: [String]? = nil) {
         self.action = action
@@ -26,15 +26,28 @@ public final class ModerationV2Response: @unchecked Sendable, Codable, JSONEncod
         self.textHarms = textHarms
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case blocklistMatched = "blocklist_matched"
-        case blocklistsMatched = "blocklists_matched"
-        case imageHarms = "image_harms"
-        case originalText = "original_text"
-        case platformCircumvented = "platform_circumvented"
-        case semanticFilterMatched = "semantic_filter_matched"
-        case textHarms = "text_harms"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(String.self, forKey: .action)
+        self.blocklistMatched = try container.decodeIfPresent(String.self, forKey: .blocklistMatched)
+        self.blocklistsMatched = try container.decodeIfPresent([String].self, forKey: .blocklistsMatched)
+        self.imageHarms = try container.decodeIfPresent([String].self, forKey: .imageHarms)
+        self.originalText = try container.decode(String.self, forKey: .originalText)
+        self.platformCircumvented = try container.decodeIfPresent(Bool.self, forKey: .platformCircumvented)
+        self.semanticFilterMatched = try container.decodeIfPresent(String.self, forKey: .semanticFilterMatched)
+        self.textHarms = try container.decodeIfPresent([String].self, forKey: .textHarms)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encodeIfPresent(blocklistMatched, forKey: .blocklistMatched)
+        try container.encodeIfPresent(blocklistsMatched, forKey: .blocklistsMatched)
+        try container.encodeIfPresent(imageHarms, forKey: .imageHarms)
+        try container.encode(originalText, forKey: .originalText)
+        try container.encodeIfPresent(platformCircumvented, forKey: .platformCircumvented)
+        try container.encodeIfPresent(semanticFilterMatched, forKey: .semanticFilterMatched)
+        try container.encodeIfPresent(textHarms, forKey: .textHarms)
     }
 }
 

@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class PollVotesResponse: Sendable, Codable, JSONEncodable {
     /// Duration of the request in milliseconds
-    public var duration: String
-    public var next: String?
-    public var prev: String?
+    public let duration: String
+    public let next: String?
+    public let prev: String?
     /// Poll votes
-    public var votes: [PollVoteResponseData]
+    public let votes: [PollVoteResponseData]
 
     public init(duration: String, next: String? = nil, prev: String? = nil, votes: [PollVoteResponseData]) {
         self.duration = duration
@@ -20,11 +20,20 @@ public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodabl
         self.votes = votes
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case next
-        case prev
-        case votes
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.votes = try container.decode([PollVoteResponseData].self, forKey: .votes)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encode(votes, forKey: .votes)
     }
 }
 

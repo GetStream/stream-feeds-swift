@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class LLMConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var appContext: String?
-    public var async: Bool?
-    public var contextCustomKeys: [String]?
-    public var customKeysContextDescription: String?
-    public var enabled: Bool
-    public var rules: [LLMRule]
-    public var severityDescriptions: [String: String]?
+public final class LLMConfig: Sendable, Codable, JSONEncodable {
+    public let appContext: String?
+    public let async: Bool?
+    public let contextCustomKeys: [String]?
+    public let customKeysContextDescription: String?
+    public let enabled: Bool
+    public let rules: [LLMRule]
+    public let severityDescriptions: [String: String]?
 
     public init(appContext: String? = nil, async: Bool? = nil, contextCustomKeys: [String]? = nil, customKeysContextDescription: String? = nil, enabled: Bool, rules: [LLMRule], severityDescriptions: [String: String]? = nil) {
         self.appContext = appContext
@@ -24,14 +24,26 @@ public final class LLMConfig: @unchecked Sendable, Codable, JSONEncodable {
         self.severityDescriptions = severityDescriptions
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case appContext = "app_context"
-        case async
-        case contextCustomKeys = "context_custom_keys"
-        case customKeysContextDescription = "custom_keys_context_description"
-        case enabled
-        case rules
-        case severityDescriptions = "severity_descriptions"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.appContext = try container.decodeIfPresent(String.self, forKey: .appContext)
+        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
+        self.contextCustomKeys = try container.decodeIfPresent([String].self, forKey: .contextCustomKeys)
+        self.customKeysContextDescription = try container.decodeIfPresent(String.self, forKey: .customKeysContextDescription)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.rules = try container.decode([LLMRule].self, forKey: .rules)
+        self.severityDescriptions = try container.decodeIfPresent([String: String].self, forKey: .severityDescriptions)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(appContext, forKey: .appContext)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encodeIfPresent(contextCustomKeys, forKey: .contextCustomKeys)
+        try container.encodeIfPresent(customKeysContextDescription, forKey: .customKeysContextDescription)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(rules, forKey: .rules)
+        try container.encodeIfPresent(severityDescriptions, forKey: .severityDescriptions)
     }
 }
 

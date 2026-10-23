@@ -6,16 +6,16 @@ import Foundation
 import StreamCore
 
 /// Websocket auth message
-public final class WSAuthMessage: @unchecked Sendable, Codable, JSONEncodable {
+public final class WSAuthMessage: Sendable, Codable, JSONEncodable {
     /// Realtime event protocol version. 3 omits channel.members from channel.updated, member.*, notification.message_new and notification.added_to_channel of channels with more than 100 members and sets members_included:false. Values above the newest supported version negotiate down to it.
-    public var eventProtocol: Int?
+    public let eventProtocol: Int?
     /// Channel-member custom keys to project onto message.member for messages this connection receives (opt-in; capped, off by default).
-    public var memberCustomInclude: [String]?
+    public let memberCustomInclude: [String]?
     /// List of products to subscribe to. One of: chat, video, feeds
-    public var products: [String]?
+    public let products: [String]?
     /// JWT token for authentication
-    public var token: String
-    public var userDetails: ConnectUserDetailsRequest
+    public let token: String
+    public let userDetails: ConnectUserDetailsRequest
 
     public init(eventProtocol: Int? = nil, memberCustomInclude: [String]? = nil, products: [String]? = nil, token: String, userDetails: ConnectUserDetailsRequest) {
         self.eventProtocol = eventProtocol
@@ -25,12 +25,22 @@ public final class WSAuthMessage: @unchecked Sendable, Codable, JSONEncodable {
         self.userDetails = userDetails
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case eventProtocol = "event_protocol"
-        case memberCustomInclude = "member_custom_include"
-        case products
-        case token
-        case userDetails = "user_details"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.eventProtocol = try container.decodeIfPresent(Int.self, forKey: .eventProtocol)
+        self.memberCustomInclude = try container.decodeIfPresent([String].self, forKey: .memberCustomInclude)
+        self.products = try container.decodeIfPresent([String].self, forKey: .products)
+        self.token = try container.decode(String.self, forKey: .token)
+        self.userDetails = try container.decode(ConnectUserDetailsRequest.self, forKey: .userDetails)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(eventProtocol, forKey: .eventProtocol)
+        try container.encodeIfPresent(memberCustomInclude, forKey: .memberCustomInclude)
+        try container.encodeIfPresent(products, forKey: .products)
+        try container.encode(token, forKey: .token)
+        try container.encode(userDetails, forKey: .userDetails)
     }
 }
 

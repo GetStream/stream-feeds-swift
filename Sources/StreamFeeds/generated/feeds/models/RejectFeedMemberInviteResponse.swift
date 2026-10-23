@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class RejectFeedMemberInviteResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
-    public var member: FeedMemberResponse
+public final class RejectFeedMemberInviteResponse: Sendable, Codable, JSONEncodable {
+    public let duration: String
+    public let member: FeedMemberResponse
 
     public init(duration: String, member: FeedMemberResponse) {
         self.duration = duration
         self.member = member
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case member
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.member = try container.decode(FeedMemberResponse.self, forKey: .member)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(member, forKey: .member)
     }
 }
 

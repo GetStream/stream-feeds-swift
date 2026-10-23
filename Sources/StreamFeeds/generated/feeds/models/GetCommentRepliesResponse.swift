@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class GetCommentRepliesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class GetCommentRepliesResponse: Sendable, Codable, JSONEncodable {
     /// Threaded listing of replies to the comment
-    public var comments: [ThreadedCommentResponse]
-    public var duration: String
-    public var next: String?
-    public var prev: String?
+    public let comments: [ThreadedCommentResponse]
+    public let duration: String
+    public let next: String?
+    public let prev: String?
     /// Sort order used for the replies (first, last, top, best, controversial)
-    public var sort: String
+    public let sort: String
 
     public init(comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil, sort: String) {
         self.comments = comments
@@ -22,12 +22,22 @@ public final class GetCommentRepliesResponse: @unchecked Sendable, Codable, JSON
         self.sort = sort
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comments
-        case duration
-        case next
-        case prev
-        case sort
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comments = try container.decode([ThreadedCommentResponse].self, forKey: .comments)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.sort = try container.decode(String.self, forKey: .sort)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(comments, forKey: .comments)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encode(sort, forKey: .sort)
     }
 }
 

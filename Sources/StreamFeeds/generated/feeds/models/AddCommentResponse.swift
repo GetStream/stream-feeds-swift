@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class AddCommentResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var comment: CommentResponse
-    public var duration: String
+public final class AddCommentResponse: Sendable, Codable, JSONEncodable {
+    public let comment: CommentResponse
+    public let duration: String
     /// Number of mention notification activities created for mentioned users
-    public var mentionNotificationsCreated: Int?
+    public let mentionNotificationsCreated: Int?
     /// Whether a notification activity was successfully created
-    public var notificationCreated: Bool?
+    public let notificationCreated: Bool?
 
     public init(comment: CommentResponse, duration: String, mentionNotificationsCreated: Int? = nil, notificationCreated: Bool? = nil) {
         self.comment = comment
@@ -20,11 +20,20 @@ public final class AddCommentResponse: @unchecked Sendable, Codable, JSONEncodab
         self.notificationCreated = notificationCreated
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case duration
-        case mentionNotificationsCreated = "mention_notifications_created"
-        case notificationCreated = "notification_created"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comment = try container.decode(CommentResponse.self, forKey: .comment)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.mentionNotificationsCreated = try container.decodeIfPresent(Int.self, forKey: .mentionNotificationsCreated)
+        self.notificationCreated = try container.decodeIfPresent(Bool.self, forKey: .notificationCreated)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(comment, forKey: .comment)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(mentionNotificationsCreated, forKey: .mentionNotificationsCreated)
+        try container.encodeIfPresent(notificationCreated, forKey: .notificationCreated)
     }
 }
 

@@ -6,21 +6,21 @@ import Foundation
 import StreamCore
 
 /// Emitted when a reaction is added to a comment.
-public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var activity: ActivityResponse
-    public var comment: CommentResponse
+public final class CommentReactionAddedEvent: Sendable, Event, Codable, JSONEncodable {
+    public let activity: ActivityResponse
+    public let comment: CommentResponse
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feedVisibility: String?
-    public var fid: String
-    public var reaction: FeedsReactionResponse
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let feedVisibility: String?
+    public let fid: String
+    public let reaction: FeedsReactionResponse
+    public let receivedAt: Date?
     /// The type of event: "feeds.comment.reaction.added" in this case
-    public var type: String = "feeds.comment.reaction.added"
-    public var user: UserResponseCommonFields?
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, type: String = "feeds.comment.reaction.added", user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.comment = comment
         self.createdAt = createdAt
@@ -29,20 +29,36 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
         self.fid = fid
         self.reaction = reaction
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case comment
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case reaction
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.comment = try container.decode(CommentResponse.self, forKey: .comment)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(String.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activity, forKey: .activity)
+        try container.encode(comment, forKey: .comment)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
+        try container.encode(fid, forKey: .fid)
+        try container.encode(reaction, forKey: .reaction)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

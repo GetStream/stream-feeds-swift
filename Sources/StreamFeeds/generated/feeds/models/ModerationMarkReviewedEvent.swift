@@ -6,26 +6,37 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a moderation item is marked as reviewed
-public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var item: ReviewQueueItemResponse
-    public var receivedAt: Date?
-    public var type: String = "moderation.mark_reviewed"
+public final class ModerationMarkReviewedEvent: Sendable, Event, Codable, JSONEncodable {
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let item: ReviewQueueItemResponse
+    public let receivedAt: Date?
+    public let type: String
 
-    public init(createdAt: Date, custom: [String: RawJSON], item: ReviewQueueItemResponse, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], item: ReviewQueueItemResponse, receivedAt: Date? = nil, type: String = "moderation.mark_reviewed") {
         self.createdAt = createdAt
         self.custom = custom
         self.item = item
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case item
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.item = try container.decode(ReviewQueueItemResponse.self, forKey: .item)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encode(item, forKey: .item)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
     }
 }
 

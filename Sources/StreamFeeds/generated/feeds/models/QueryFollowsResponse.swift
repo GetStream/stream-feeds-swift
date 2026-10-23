@@ -5,16 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
+public final class QueryFollowsResponse: Sendable, Codable, JSONEncodable {
+    public let duration: String
     /// List of follow relationships matching the query
-    public var follows: [FollowResponse]
+    public let follows: [FollowResponse]
     /// Accepted following counts keyed by followed feed group. Present only when include_group_counts is set with a source_feed equality.
-    public var groupCounts: [String: Int]?
+    public let groupCounts: [String: Int]?
     /// Cursor for next page
-    public var next: String?
+    public let next: String?
     /// Cursor for previous page
-    public var prev: String?
+    public let prev: String?
 
     public init(duration: String, follows: [FollowResponse], groupCounts: [String: Int]? = nil, next: String? = nil, prev: String? = nil) {
         self.duration = duration
@@ -24,12 +24,22 @@ public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncod
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case follows
-        case groupCounts = "group_counts"
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.follows = try container.decode([FollowResponse].self, forKey: .follows)
+        self.groupCounts = try container.decodeIfPresent([String: Int].self, forKey: .groupCounts)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(follows, forKey: .follows)
+        try container.encodeIfPresent(groupCounts, forKey: .groupCounts)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

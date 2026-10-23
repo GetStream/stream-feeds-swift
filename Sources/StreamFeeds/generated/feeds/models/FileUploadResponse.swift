@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class FileUploadResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class FileUploadResponse: Sendable, Codable, JSONEncodable {
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
     /// URL to the uploaded asset. Should be used to put to `asset_url` attachment field
-    public var file: String?
+    public let file: String?
     /// URL of the file thumbnail for supported file formats. Should be put to `thumb_url` attachment field
-    public var thumbUrl: String?
+    public let thumbUrl: String?
 
     public init(duration: String, file: String? = nil, thumbUrl: String? = nil) {
         self.duration = duration
@@ -19,10 +19,18 @@ public final class FileUploadResponse: @unchecked Sendable, Codable, JSONEncodab
         self.thumbUrl = thumbUrl
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case file
-        case thumbUrl = "thumb_url"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.file = try container.decodeIfPresent(String.self, forKey: .file)
+        self.thumbUrl = try container.decodeIfPresent(String.self, forKey: .thumbUrl)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(file, forKey: .file)
+        try container.encodeIfPresent(thumbUrl, forKey: .thumbUrl)
     }
 }
 

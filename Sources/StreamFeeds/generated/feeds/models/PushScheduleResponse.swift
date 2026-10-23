@@ -6,20 +6,27 @@ import Foundation
 import StreamCore
 
 /// A recurring quiet-hours schedule: while any quiet window is active, push notifications for the user are suppressed. Suppressed notifications are dropped, not delayed.
-public final class PushScheduleResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class PushScheduleResponse: Sendable, Codable, JSONEncodable {
     /// The quiet windows. Push is suppressed while any rule is active.
-    public var quietHours: [QuietHoursRuleResponse]
+    public let quietHours: [QuietHoursRuleResponse]
     /// IANA time zone name the quiet windows are evaluated in, for example Europe/Amsterdam.
-    public var timezone: String
+    public let timezone: String
 
     public init(quietHours: [QuietHoursRuleResponse], timezone: String) {
         self.quietHours = quietHours
         self.timezone = timezone
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case quietHours = "quiet_hours"
-        case timezone
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.quietHours = try container.decode([QuietHoursRuleResponse].self, forKey: .quietHours)
+        self.timezone = try container.decode(String.self, forKey: .timezone)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(quietHours, forKey: .quietHours)
+        try container.encode(timezone, forKey: .timezone)
     }
 }
 

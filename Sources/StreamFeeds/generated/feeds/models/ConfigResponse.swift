@@ -5,33 +5,33 @@
 import Foundation
 import StreamCore
 
-public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiAudioConfig: AIAudioConfigResponse?
-    public var aiImageConfig: AIImageConfig?
+public final class ConfigResponse: Sendable, Codable, JSONEncodable {
+    public let aiAudioConfig: AIAudioConfigResponse?
+    public let aiImageConfig: AIImageConfig?
     /// Configurable image moderation label definitions for dashboard rendering
-    public var aiImageLabelDefinitions: [AIImageLabelDefinition]?
+    public let aiImageLabelDefinitions: [AIImageLabelDefinition]?
     /// Available L2 subclassifications per L1 image moderation label, based on the active provider
-    public var aiImageSubclassifications: [String: [String]]?
-    public var aiTextConfig: AITextConfig?
-    public var aiVideoConfig: AIVideoConfigResponse?
+    public let aiImageSubclassifications: [String: [String]]?
+    public let aiTextConfig: AITextConfig?
+    public let aiVideoConfig: AIVideoConfigResponse?
     /// Whether moderation should be performed asynchronously
-    public var async: Bool
-    public var automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
-    public var automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
-    public var automodToxicityConfig: AutomodToxicityConfig?
-    public var blockListConfig: BlockListConfig?
+    public let async: Bool
+    public let automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
+    public let automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
+    public let automodToxicityConfig: AutomodToxicityConfig?
+    public let blockListConfig: BlockListConfig?
     /// When the configuration was created
-    public var createdAt: Date
-    public var floodConfig: FloodConfig?
-    public var intentConfig: IntentConfigResponse?
+    public let createdAt: Date
+    public let floodConfig: FloodConfig?
+    public let intentConfig: IntentConfigResponse?
     /// Unique identifier for the moderation configuration
-    public var key: String
-    public var llmConfig: LLMConfig?
+    public let key: String
+    public let llmConfig: LLMConfig?
     /// Team associated with the configuration
-    public var team: String
+    public let team: String
     /// When the configuration was last updated
-    public var updatedAt: Date
-    public var velocityFilterConfig: VelocityFilterConfig?
+    public let updatedAt: Date
+    public let velocityFilterConfig: VelocityFilterConfig?
 
     public init(aiAudioConfig: AIAudioConfigResponse? = nil, aiImageConfig: AIImageConfig? = nil, aiImageLabelDefinitions: [AIImageLabelDefinition]? = nil, aiImageSubclassifications: [String: [String]]? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigResponse? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, floodConfig: FloodConfig? = nil, intentConfig: IntentConfigResponse? = nil, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiAudioConfig = aiAudioConfig
@@ -55,26 +55,50 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.velocityFilterConfig = velocityFilterConfig
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiAudioConfig = "ai_audio_config"
-        case aiImageConfig = "ai_image_config"
-        case aiImageLabelDefinitions = "ai_image_label_definitions"
-        case aiImageSubclassifications = "ai_image_subclassifications"
-        case aiTextConfig = "ai_text_config"
-        case aiVideoConfig = "ai_video_config"
-        case async
-        case automodPlatformCircumventionConfig = "automod_platform_circumvention_config"
-        case automodSemanticFiltersConfig = "automod_semantic_filters_config"
-        case automodToxicityConfig = "automod_toxicity_config"
-        case blockListConfig = "block_list_config"
-        case createdAt = "created_at"
-        case floodConfig = "flood_config"
-        case intentConfig = "intent_config"
-        case key
-        case llmConfig = "llm_config"
-        case team
-        case updatedAt = "updated_at"
-        case velocityFilterConfig = "velocity_filter_config"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiAudioConfig = try container.decodeIfPresent(AIAudioConfigResponse.self, forKey: .aiAudioConfig)
+        self.aiImageConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .aiImageConfig)
+        self.aiImageLabelDefinitions = try container.decodeIfPresent([AIImageLabelDefinition].self, forKey: .aiImageLabelDefinitions)
+        self.aiImageSubclassifications = try container.decodeIfPresent([String: [String]].self, forKey: .aiImageSubclassifications)
+        self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
+        self.aiVideoConfig = try container.decodeIfPresent(AIVideoConfigResponse.self, forKey: .aiVideoConfig)
+        self.async = try container.decode(Bool.self, forKey: .async)
+        self.automodPlatformCircumventionConfig = try container.decodeIfPresent(AutomodPlatformCircumventionConfig.self, forKey: .automodPlatformCircumventionConfig)
+        self.automodSemanticFiltersConfig = try container.decodeIfPresent(AutomodSemanticFiltersConfig.self, forKey: .automodSemanticFiltersConfig)
+        self.automodToxicityConfig = try container.decodeIfPresent(AutomodToxicityConfig.self, forKey: .automodToxicityConfig)
+        self.blockListConfig = try container.decodeIfPresent(BlockListConfig.self, forKey: .blockListConfig)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.floodConfig = try container.decodeIfPresent(FloodConfig.self, forKey: .floodConfig)
+        self.intentConfig = try container.decodeIfPresent(IntentConfigResponse.self, forKey: .intentConfig)
+        self.key = try container.decode(String.self, forKey: .key)
+        self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
+        self.team = try container.decode(String.self, forKey: .team)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.velocityFilterConfig = try container.decodeIfPresent(VelocityFilterConfig.self, forKey: .velocityFilterConfig)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(aiAudioConfig, forKey: .aiAudioConfig)
+        try container.encodeIfPresent(aiImageConfig, forKey: .aiImageConfig)
+        try container.encodeIfPresent(aiImageLabelDefinitions, forKey: .aiImageLabelDefinitions)
+        try container.encodeIfPresent(aiImageSubclassifications, forKey: .aiImageSubclassifications)
+        try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
+        try container.encodeIfPresent(aiVideoConfig, forKey: .aiVideoConfig)
+        try container.encode(async, forKey: .async)
+        try container.encodeIfPresent(automodPlatformCircumventionConfig, forKey: .automodPlatformCircumventionConfig)
+        try container.encodeIfPresent(automodSemanticFiltersConfig, forKey: .automodSemanticFiltersConfig)
+        try container.encodeIfPresent(automodToxicityConfig, forKey: .automodToxicityConfig)
+        try container.encodeIfPresent(blockListConfig, forKey: .blockListConfig)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(floodConfig, forKey: .floodConfig)
+        try container.encodeIfPresent(intentConfig, forKey: .intentConfig)
+        try container.encode(key, forKey: .key)
+        try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
+        try container.encode(team, forKey: .team)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(velocityFilterConfig, forKey: .velocityFilterConfig)
     }
 }
 

@@ -5,16 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class CreateGuestRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class CreateGuestRequest: Sendable, Codable, JSONEncodable {
     /// User request object
-    public var user: UserRequest
+    public let user: UserRequest
 
     public init(user: UserRequest) {
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.user = try container.decode(UserRequest.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(user, forKey: .user)
     }
 }
 

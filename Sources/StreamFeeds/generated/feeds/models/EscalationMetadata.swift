@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class EscalationMetadata: @unchecked Sendable, Codable, JSONEncodable {
-    public var notes: String?
-    public var priority: String?
-    public var reason: String?
+public final class EscalationMetadata: Sendable, Codable, JSONEncodable {
+    public let notes: String?
+    public let priority: String?
+    public let reason: String?
 
     public init(notes: String? = nil, priority: String? = nil, reason: String? = nil) {
         self.notes = notes
@@ -16,10 +16,18 @@ public final class EscalationMetadata: @unchecked Sendable, Codable, JSONEncodab
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case notes
-        case priority
-        case reason
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.notes = try container.decodeIfPresent(String.self, forKey: .notes)
+        self.priority = try container.decodeIfPresent(String.self, forKey: .priority)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(notes, forKey: .notes)
+        try container.encodeIfPresent(priority, forKey: .priority)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
 }
 

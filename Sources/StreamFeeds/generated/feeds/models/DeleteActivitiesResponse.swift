@@ -5,19 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeleteActivitiesResponse: Sendable, Codable, JSONEncodable {
     /// List of activity IDs that were successfully deleted
-    public var deletedIds: [String]
-    public var duration: String
+    public let deletedIds: [String]
+    public let duration: String
 
     public init(deletedIds: [String], duration: String) {
         self.deletedIds = deletedIds
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case deletedIds = "deleted_ids"
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.deletedIds = try container.decode([String].self, forKey: .deletedIds)
+        self.duration = try container.decode(String.self, forKey: .duration)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(deletedIds, forKey: .deletedIds)
+        try container.encode(duration, forKey: .duration)
     }
 }
 

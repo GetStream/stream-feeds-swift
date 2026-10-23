@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class AIImageLabelDefinition: @unchecked Sendable, Codable, JSONEncodable {
-    public var description: String
-    public var group: String
-    public var key: String
-    public var label: String
+public final class AIImageLabelDefinition: Sendable, Codable, JSONEncodable {
+    public let description: String
+    public let group: String
+    public let key: String
+    public let label: String
 
     public init(description: String, group: String, key: String, label: String) {
         self.description = description
@@ -18,11 +18,20 @@ public final class AIImageLabelDefinition: @unchecked Sendable, Codable, JSONEnc
         self.label = label
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case description
-        case group
-        case key
-        case label
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.group = try container.decode(String.self, forKey: .group)
+        self.key = try container.decode(String.self, forKey: .key)
+        self.label = try container.decode(String.self, forKey: .label)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(description, forKey: .description)
+        try container.encode(group, forKey: .group)
+        try container.encode(key, forKey: .key)
+        try container.encode(label, forKey: .label)
     }
 }
 

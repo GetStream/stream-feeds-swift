@@ -6,35 +6,48 @@ import Foundation
 import StreamCore
 
 /// Emitted when a feed group is restored.
-public final class FeedGroupRestoredEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class FeedGroupRestoredEvent: Sendable, Event, Codable, JSONEncodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feedVisibility: String?
-    public var fid: String
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let feedVisibility: String?
+    public let fid: String
     /// The ID of the feed group that was restored
-    public var groupId: String
-    public var receivedAt: Date?
+    public let groupId: String
+    public let receivedAt: Date?
     /// The type of event: "feeds.feed_group.restored" in this case
-    public var type: String = "feeds.feed_group.restored"
+    public let type: String
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, groupId: String, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, groupId: String, receivedAt: Date? = nil, type: String = "feeds.feed_group.restored") {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
         self.fid = fid
         self.groupId = groupId
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case groupId = "group_id"
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(String.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.groupId = try container.decode(String.self, forKey: .groupId)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
+        try container.encode(fid, forKey: .fid)
+        try container.encode(groupId, forKey: .groupId)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
     }
 }
 

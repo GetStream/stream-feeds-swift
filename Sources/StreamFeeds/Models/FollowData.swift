@@ -38,7 +38,7 @@ public struct FollowData: Equatable, Sendable {
     }
 }
 
-public typealias FollowStatus = FollowResponse.FollowResponseStatus
+public typealias FollowStatus = FollowResponseStatus
 
 extension FollowData: Identifiable {
     public var id: String {

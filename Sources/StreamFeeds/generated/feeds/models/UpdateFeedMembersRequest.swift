@@ -5,31 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum UpdateFeedMembersRequestOperation: String, Sendable, Codable, CaseIterable {
-        case remove
-        case set
-        case upsert
-        case unknown = "_unknown"
+public final class UpdateFeedMembersRequestOperation: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var limit: Int?
+    public static let remove = UpdateFeedMembersRequestOperation(rawValue: "remove")
+    public static let set = UpdateFeedMembersRequestOperation(rawValue: "set")
+    public static let upsert = UpdateFeedMembersRequestOperation(rawValue: "upsert")
+}
+
+public final class UpdateFeedMembersRequest: Sendable, Codable, JSONEncodable {
+    public let limit: Int?
     /// List of members to upsert, remove, or set
-    public var members: [FeedMemberRequest]?
-    public var next: String?
+    public let members: [FeedMemberRequest]?
+    public let next: String?
     /// Type of update operation to perform. One of: upsert, remove, set
-    public var operation: UpdateFeedMembersRequestOperation
-    public var prev: String?
+    public let operation: UpdateFeedMembersRequestOperation
+    public let prev: String?
 
     public init(limit: Int? = nil, members: [FeedMemberRequest]? = nil, next: String? = nil, operation: UpdateFeedMembersRequestOperation, prev: String? = nil) {
         self.limit = limit
@@ -39,12 +34,22 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case limit
-        case members
-        case next
-        case operation
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
+        self.members = try container.decodeIfPresent([FeedMemberRequest].self, forKey: .members)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.operation = try container.decode(UpdateFeedMembersRequestOperation.self, forKey: .operation)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(members, forKey: .members)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encode(operation, forKey: .operation)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

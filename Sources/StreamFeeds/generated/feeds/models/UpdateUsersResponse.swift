@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class UpdateUsersResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpdateUsersResponse: Sendable, Codable, JSONEncodable {
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
     /// Deprecated: Always empty. Removing a user from a team no longer deletes their memberships in that team's channels, so there is no task to poll.
     @available(*, deprecated, message: "Always empty. Removing a user from a team no longer deletes their memberships in that team's channels, so there is no task to poll.")
-    public var membershipDeletionTaskId: String { get { _membershipDeletionTaskId } set { _membershipDeletionTaskId = newValue } }
-    private var _membershipDeletionTaskId: String
+    public var membershipDeletionTaskId: String { _membershipDeletionTaskId }
+    private let _membershipDeletionTaskId: String
     /// Object containing users
-    public var users: [String: FullUserResponse]
+    public let users: [String: FullUserResponse]
 
     public init(duration: String, membershipDeletionTaskId: String, users: [String: FullUserResponse]) {
         self.duration = duration
@@ -21,21 +21,15 @@ public final class UpdateUsersResponse: @unchecked Sendable, Codable, JSONEncoda
         self.users = users
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case membershipDeletionTaskId = "membership_deletion_task_id"
-        case users
-    }
-
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self._membershipDeletionTaskId = try container.decode(String.self, forKey: .membershipDeletionTaskId)
         self.users = try container.decode([String: FullUserResponse].self, forKey: .users)
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encode(duration, forKey: .duration)
         try container.encode(_membershipDeletionTaskId, forKey: .membershipDeletionTaskId)
         try container.encode(users, forKey: .users)

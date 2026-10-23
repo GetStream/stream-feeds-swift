@@ -6,20 +6,27 @@ import Foundation
 import StreamCore
 
 /// Request to get own_follows, own_followings, own_capabilities, and/or own_membership for multiple feeds. If fields is not specified, all fields are returned.
-public final class OwnBatchRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class OwnBatchRequest: Sendable, Codable, JSONEncodable {
     /// List of feed IDs to get own fields for
-    public var feeds: [String]
+    public let feeds: [String]
     /// Optional list of specific fields to return. If not specified, all fields (own_follows, own_followings, own_capabilities, own_membership) are returned
-    public var fields: [String]?
+    public let fields: [String]?
 
     public init(feeds: [String], fields: [String]? = nil) {
         self.feeds = feeds
         self.fields = fields
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case feeds
-        case fields
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.feeds = try container.decode([String].self, forKey: .feeds)
+        self.fields = try container.decodeIfPresent([String].self, forKey: .fields)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(feeds, forKey: .feeds)
+        try container.encodeIfPresent(fields, forKey: .fields)
     }
 }
 

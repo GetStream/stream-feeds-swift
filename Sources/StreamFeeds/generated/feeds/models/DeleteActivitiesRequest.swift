@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeleteActivitiesRequest: Sendable, Codable, JSONEncodable {
     /// Whether to also delete any notification activities created from mentions in these activities
-    public var deleteNotificationActivity: Bool?
+    public let deleteNotificationActivity: Bool?
     /// Whether to permanently delete the activities
-    public var hardDelete: Bool?
+    public let hardDelete: Bool?
     /// List of activity IDs to delete
-    public var ids: [String]
+    public let ids: [String]
 
     public init(deleteNotificationActivity: Bool? = nil, hardDelete: Bool? = nil, ids: [String]) {
         self.deleteNotificationActivity = deleteNotificationActivity
@@ -19,10 +19,18 @@ public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEn
         self.ids = ids
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case deleteNotificationActivity = "delete_notification_activity"
-        case hardDelete = "hard_delete"
-        case ids
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.deleteNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .deleteNotificationActivity)
+        self.hardDelete = try container.decodeIfPresent(Bool.self, forKey: .hardDelete)
+        self.ids = try container.decode([String].self, forKey: .ids)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(deleteNotificationActivity, forKey: .deleteNotificationActivity)
+        try container.encodeIfPresent(hardDelete, forKey: .hardDelete)
+        try container.encode(ids, forKey: .ids)
     }
 }
 

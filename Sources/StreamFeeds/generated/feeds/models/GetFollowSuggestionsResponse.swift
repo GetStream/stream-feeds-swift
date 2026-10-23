@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var algorithmUsed: String?
-    public var duration: String
+public final class GetFollowSuggestionsResponse: Sendable, Codable, JSONEncodable {
+    public let algorithmUsed: String?
+    public let duration: String
     /// List of suggested feeds to follow
-    public var suggestions: [FeedSuggestionResponse]
+    public let suggestions: [FeedSuggestionResponse]
 
     public init(algorithmUsed: String? = nil, duration: String, suggestions: [FeedSuggestionResponse]) {
         self.algorithmUsed = algorithmUsed
@@ -17,10 +17,18 @@ public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, J
         self.suggestions = suggestions
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case algorithmUsed = "algorithm_used"
-        case duration
-        case suggestions
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.algorithmUsed = try container.decodeIfPresent(String.self, forKey: .algorithmUsed)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.suggestions = try container.decode([FeedSuggestionResponse].self, forKey: .suggestions)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(algorithmUsed, forKey: .algorithmUsed)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(suggestions, forKey: .suggestions)
     }
 }
 

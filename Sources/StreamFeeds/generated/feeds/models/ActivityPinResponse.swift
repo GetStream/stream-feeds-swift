@@ -5,16 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activity: ActivityResponse
+public final class ActivityPinResponse: Sendable, Codable, JSONEncodable {
+    public let activity: ActivityResponse
     /// When the pin was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// ID of the feed where activity is pinned
-    public var feed: String
+    public let feed: String
     /// When the pin was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(activity: ActivityResponse, createdAt: Date, feed: String, updatedAt: Date, user: UserResponse) {
         self.activity = activity
@@ -24,12 +24,22 @@ public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncoda
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case createdAt = "created_at"
-        case feed
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.feed = try container.decode(String.self, forKey: .feed)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activity, forKey: .activity)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(feed, forKey: .feed)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encode(user, forKey: .user)
     }
 }
 

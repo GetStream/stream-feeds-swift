@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class AIAudioConfigRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiTextConfig: AITextConfig?
-    public var llmConfig: LLMConfig?
+public final class AIAudioConfigRequest: Sendable, Codable, JSONEncodable {
+    public let aiTextConfig: AITextConfig?
+    public let llmConfig: LLMConfig?
     /// Deprecated pre-split rule list. Still the live config while no engine config exists; once one does it is kept as a fallback for whichever engine has none of its own
-    public var rules: [BodyguardRule]?
+    public let rules: [BodyguardRule]?
 
     public init(aiTextConfig: AITextConfig? = nil, llmConfig: LLMConfig? = nil, rules: [BodyguardRule]? = nil) {
         self.aiTextConfig = aiTextConfig
@@ -17,10 +17,18 @@ public final class AIAudioConfigRequest: @unchecked Sendable, Codable, JSONEncod
         self.rules = rules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiTextConfig = "ai_text_config"
-        case llmConfig = "llm_config"
-        case rules
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
+        self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
+        self.rules = try container.decodeIfPresent([BodyguardRule].self, forKey: .rules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
+        try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
+        try container.encodeIfPresent(rules, forKey: .rules)
     }
 }
 

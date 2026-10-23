@@ -5,82 +5,72 @@
 import Foundation
 import StreamCore
 
-public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum UpdateActivityRequestRestrictReplies: String, Sendable, Codable, CaseIterable {
-        case everyone
-        case nobody
-        case peopleIFollow = "people_i_follow"
-        case unknown = "_unknown"
+public final class UpdateActivityRequestRestrictReplies: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum UpdateActivityRequestVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case tag
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let everyone = UpdateActivityRequestRestrictReplies(rawValue: "everyone")
+    public static let nobody = UpdateActivityRequestRestrictReplies(rawValue: "nobody")
+    public static let peopleIFollow = UpdateActivityRequestRestrictReplies(rawValue: "people_i_follow")
+}
+
+public final class UpdateActivityRequestVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let `private` = UpdateActivityRequestVisibility(rawValue: "private")
+    public static let `public` = UpdateActivityRequestVisibility(rawValue: "public")
+    public static let tag = UpdateActivityRequestVisibility(rawValue: "tag")
+}
+
+public final class UpdateActivityRequest: Sendable, Codable, JSONEncodable {
     /// List of attachments for the activity
-    public var attachments: [Attachment]?
+    public let attachments: [Attachment]?
     /// Collections that this activity references
-    public var collectionRefs: [String]?
+    public let collectionRefs: [String]?
     /// Whether to copy custom data to the notification activity (only applies when handle_mention_notifications creates notifications) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
     @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
-    public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
-    private var _copyCustomToNotification: Bool?
+    public var copyCustomToNotification: Bool? { _copyCustomToNotification }
+    private let _copyCustomToNotification: Bool?
     /// Custom data for the activity
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// If true, enriches the activity's current_feed with own_* fields (own_follows, own_followings, own_capabilities, own_membership). Defaults to false for performance.
-    public var enrichOwnFields: Bool?
+    public let enrichOwnFields: Bool?
     /// Time when the activity will expire
-    public var expiresAt: Date?
+    public let expiresAt: Date?
     /// List of feeds the activity is present in
-    public var feeds: [String]?
+    public let feeds: [String]?
     /// Tags used for filtering the activity
-    public var filterTags: [String]?
+    public let filterTags: [String]?
     /// If true, creates notification activities for newly mentioned users and deletes notifications for users no longer mentioned
-    public var handleMentionNotifications: Bool?
+    public let handleMentionNotifications: Bool?
     /// Tags indicating interest categories
-    public var interestTags: [String]?
-    public var location: Location?
+    public let interestTags: [String]?
+    public let location: Location?
     /// List of user IDs mentioned in the activity
-    public var mentionedUserIds: [String]?
+    public let mentionedUserIds: [String]?
     /// Poll ID
-    public var pollId: String?
+    public let pollId: String?
     /// Controls who can add comments/replies to this activity. One of: everyone, people_i_follow, nobody
-    public var restrictReplies: UpdateActivityRequestRestrictReplies?
+    public let restrictReplies: UpdateActivityRequestRestrictReplies?
     /// If true, runs activity processors on the updated activity. Processors will only run if the activity text and/or attachments are changed. Defaults to false.
-    public var runActivityProcessors: Bool?
+    public let runActivityProcessors: Bool?
     /// Additional data for search indexing
-    public var searchData: [String: RawJSON]?
+    public let searchData: [String: RawJSON]?
     /// Whether to skip URL enrichment for the activity
-    public var skipEnrichUrl: Bool?
+    public let skipEnrichUrl: Bool?
     /// The text content of the activity
-    public var text: String?
+    public let text: String?
     /// Visibility setting for the activity
-    public var visibility: UpdateActivityRequestVisibility?
+    public let visibility: UpdateActivityRequestVisibility?
     /// If visibility is 'tag', this is the tag name and is required
-    public var visibilityTag: String?
+    public let visibilityTag: String?
 
     public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, copyCustomToNotification: Bool? = nil, custom: [String: RawJSON]? = nil, enrichOwnFields: Bool? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, handleMentionNotifications: Bool? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, pollId: String? = nil, restrictReplies: UpdateActivityRequestRestrictReplies? = nil, runActivityProcessors: Bool? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, text: String? = nil, visibility: UpdateActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
@@ -105,31 +95,8 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         self.visibilityTag = visibilityTag
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case collectionRefs = "collection_refs"
-        case copyCustomToNotification = "copy_custom_to_notification"
-        case custom
-        case enrichOwnFields = "enrich_own_fields"
-        case expiresAt = "expires_at"
-        case feeds
-        case filterTags = "filter_tags"
-        case handleMentionNotifications = "handle_mention_notifications"
-        case interestTags = "interest_tags"
-        case location
-        case mentionedUserIds = "mentioned_user_ids"
-        case pollId = "poll_id"
-        case restrictReplies = "restrict_replies"
-        case runActivityProcessors = "run_activity_processors"
-        case searchData = "search_data"
-        case skipEnrichUrl = "skip_enrich_url"
-        case text
-        case visibility
-        case visibilityTag = "visibility_tag"
-    }
-
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
         self.collectionRefs = try container.decodeIfPresent([String].self, forKey: .collectionRefs)
         self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
@@ -153,7 +120,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     }
 
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(attachments, forKey: .attachments)
         try container.encodeIfPresent(collectionRefs, forKey: .collectionRefs)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)

@@ -5,36 +5,31 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum QueryCommentsRequestSort: String, Sendable, Codable, CaseIterable {
-        case best
-        case controversial
-        case first
-        case last
-        case top
-        case unknown = "_unknown"
+public final class QueryCommentsRequestSort: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let best = QueryCommentsRequestSort(rawValue: "best")
+    public static let controversial = QueryCommentsRequestSort(rawValue: "controversial")
+    public static let first = QueryCommentsRequestSort(rawValue: "first")
+    public static let last = QueryCommentsRequestSort(rawValue: "last")
+    public static let top = QueryCommentsRequestSort(rawValue: "top")
+}
+
+public final class QueryCommentsRequest: Sendable, Codable, JSONEncodable {
     /// Filter to apply to the query
-    public var filter: [String: RawJSON]
+    public let filter: [String: RawJSON]
     /// Returns the comment with the specified ID along with surrounding comments for context
-    public var idAround: String?
+    public let idAround: String?
     /// Maximum number of comments to return
-    public var limit: Int?
-    public var next: String?
-    public var prev: String?
+    public let limit: Int?
+    public let next: String?
+    public let prev: String?
     /// Array of sort parameters
-    public var sort: QueryCommentsRequestSort?
+    public let sort: QueryCommentsRequestSort?
 
     public init(filter: [String: RawJSON], idAround: String? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: QueryCommentsRequestSort? = nil) {
         self.filter = filter
@@ -45,13 +40,24 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
         self.sort = sort
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case filter
-        case idAround = "id_around"
-        case limit
-        case next
-        case prev
-        case sort
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.filter = try container.decode([String: RawJSON].self, forKey: .filter)
+        self.idAround = try container.decodeIfPresent(String.self, forKey: .idAround)
+        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.sort = try container.decodeIfPresent(QueryCommentsRequestSort.self, forKey: .sort)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(filter, forKey: .filter)
+        try container.encodeIfPresent(idAround, forKey: .idAround)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encodeIfPresent(sort, forKey: .sort)
     }
 }
 

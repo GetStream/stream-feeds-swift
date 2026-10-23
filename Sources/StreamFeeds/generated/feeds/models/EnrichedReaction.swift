@@ -5,20 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable {
-    public var activityId: String
-    public var childrenCounts: [String: Int]?
-    public var createdAt: String?
-    public var data: [String: RawJSON]?
-    public var id: String?
-    public var kind: String
-    public var latestChildren: [String: [EnrichedReaction]]?
-    public var ownChildren: [String: [EnrichedReaction]]?
-    public var parent: String?
-    public var targetFeeds: [String]?
-    public var updatedAt: String?
-    public var user: StreamData?
-    public var userId: String
+public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
+    public let activityId: String
+    public let childrenCounts: [String: Int]?
+    public let createdAt: String?
+    public let data: [String: RawJSON]?
+    public let id: String?
+    public let kind: String
+    public let latestChildren: [String: [EnrichedReaction]]?
+    public let ownChildren: [String: [EnrichedReaction]]?
+    public let parent: String?
+    public let targetFeeds: [String]?
+    public let updatedAt: String?
+    public let user: StreamData?
+    public let userId: String
 
     public init(activityId: String, childrenCounts: [String: Int]? = nil, createdAt: String? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, updatedAt: String? = nil, user: StreamData? = nil, userId: String) {
         self.activityId = activityId
@@ -36,20 +36,38 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityId = "activity_id"
-        case childrenCounts = "children_counts"
-        case createdAt = "created_at"
-        case data
-        case id
-        case kind
-        case latestChildren = "latest_children"
-        case ownChildren = "own_children"
-        case parent
-        case targetFeeds = "target_feeds"
-        case updatedAt = "updated_at"
-        case user
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activityId = try container.decode(String.self, forKey: .activityId)
+        self.childrenCounts = try container.decodeIfPresent([String: Int].self, forKey: .childrenCounts)
+        self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        self.data = try container.decodeIfPresent([String: RawJSON].self, forKey: .data)
+        self.id = try container.decodeIfPresent(String.self, forKey: .id)
+        self.kind = try container.decode(String.self, forKey: .kind)
+        self.latestChildren = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .latestChildren)
+        self.ownChildren = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .ownChildren)
+        self.parent = try container.decodeIfPresent(String.self, forKey: .parent)
+        self.targetFeeds = try container.decodeIfPresent([String].self, forKey: .targetFeeds)
+        self.updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
+        self.user = try container.decodeIfPresent(StreamData.self, forKey: .user)
+        self.userId = try container.decode(String.self, forKey: .userId)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activityId, forKey: .activityId)
+        try container.encodeIfPresent(childrenCounts, forKey: .childrenCounts)
+        try container.encodeIfPresent(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(data, forKey: .data)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encode(kind, forKey: .kind)
+        try container.encodeIfPresent(latestChildren, forKey: .latestChildren)
+        try container.encodeIfPresent(ownChildren, forKey: .ownChildren)
+        try container.encodeIfPresent(parent, forKey: .parent)
+        try container.encodeIfPresent(targetFeeds, forKey: .targetFeeds)
+        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(user, forKey: .user)
+        try container.encode(userId, forKey: .userId)
     }
 }
 

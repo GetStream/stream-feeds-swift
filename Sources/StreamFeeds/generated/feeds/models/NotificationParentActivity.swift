@@ -5,26 +5,37 @@
 import Foundation
 import StreamCore
 
-public final class NotificationParentActivity: @unchecked Sendable, Codable, JSONEncodable {
-    public var attachments: [Attachment]?
-    public var id: String
-    public var text: String?
-    public var type: String?
-    public var userId: String?
+public final class NotificationParentActivity: Sendable, Codable, JSONEncodable {
+    public let attachments: [Attachment]?
+    public let id: String
+    public let text: String?
+    public let type: String?
+    public let userId: String?
 
-    public init(attachments: [Attachment]? = nil, id: String, text: String? = nil, userId: String? = nil) {
+    public init(attachments: [Attachment]? = nil, id: String, text: String? = nil, type: String? = nil, userId: String? = nil) {
         self.attachments = attachments
         self.id = id
         self.text = text
+        self.type = type
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case id
-        case text
-        case type
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.type = try container.decodeIfPresent(String.self, forKey: .type)
+        self.userId = try container.decodeIfPresent(String.self, forKey: .userId)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(type, forKey: .type)
+        try container.encodeIfPresent(userId, forKey: .userId)
     }
 }
 

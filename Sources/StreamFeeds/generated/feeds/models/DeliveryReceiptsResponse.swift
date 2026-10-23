@@ -6,15 +6,21 @@ import Foundation
 import StreamCore
 
 /// The settings for the delivery receipt events.
-public final class DeliveryReceiptsResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var enabled: Bool
+public final class DeliveryReceiptsResponse: Sendable, Codable, JSONEncodable {
+    public let enabled: Bool
 
     public init(enabled: Bool) {
         self.enabled = enabled
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enabled
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(enabled, forKey: .enabled)
     }
 }
 

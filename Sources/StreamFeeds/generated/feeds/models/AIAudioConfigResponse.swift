@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class AIAudioConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiTextConfig: AITextConfig?
+public final class AIAudioConfigResponse: Sendable, Codable, JSONEncodable {
+    public let aiTextConfig: AITextConfig?
     /// Whether the engine selected by the application's LLM configurability flag has a rule that does something. Derived, not stored
-    public var enabled: Bool
-    public var llmConfig: LLMConfig?
+    public let enabled: Bool
+    public let llmConfig: LLMConfig?
     /// The active engine's rules, flattened into the pre-split shape for clients that predate the per-engine configs. This is the whole config for a policy that has no per-engine config stored
-    public var rules: [BodyguardRule]
+    public let rules: [BodyguardRule]
 
     public init(aiTextConfig: AITextConfig? = nil, enabled: Bool, llmConfig: LLMConfig? = nil, rules: [BodyguardRule]) {
         self.aiTextConfig = aiTextConfig
@@ -20,11 +20,20 @@ public final class AIAudioConfigResponse: @unchecked Sendable, Codable, JSONEnco
         self.rules = rules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiTextConfig = "ai_text_config"
-        case enabled
-        case llmConfig = "llm_config"
-        case rules
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
+        self.rules = try container.decode([BodyguardRule].self, forKey: .rules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
+        try container.encode(rules, forKey: .rules)
     }
 }
 

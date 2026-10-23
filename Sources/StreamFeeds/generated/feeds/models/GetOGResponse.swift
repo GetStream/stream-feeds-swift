@@ -5,42 +5,42 @@
 import Foundation
 import StreamCore
 
-public final class GetOGResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var actions: [Action]?
+public final class GetOGResponse: Sendable, Codable, JSONEncodable {
+    public let actions: [Action]?
     /// URL of detected video or audio
-    public var assetUrl: String?
-    public var authorIcon: String?
+    public let assetUrl: String?
+    public let authorIcon: String?
     /// og:site
-    public var authorLink: String?
+    public let authorLink: String?
     /// og:site_name
-    public var authorName: String?
-    public var color: String?
-    public var custom: [String: RawJSON]
-    public var duration: String
-    public var fallback: String?
-    public var fields: [Field]?
-    public var footer: String?
-    public var footerIcon: String?
-    public var giphy: Images?
+    public let authorName: String?
+    public let color: String?
+    public let custom: [String: RawJSON]
+    public let duration: String
+    public let fallback: String?
+    public let fields: [Field]?
+    public let footer: String?
+    public let footerIcon: String?
+    public let giphy: Images?
     /// URL of detected image
-    public var imageUrl: String?
+    public let imageUrl: String?
     /// extracted url from the text
-    public var ogScrapeUrl: String?
-    public var originalHeight: Int?
-    public var originalWidth: Int?
-    public var pretext: String?
+    public let ogScrapeUrl: String?
+    public let originalHeight: Int?
+    public let originalWidth: Int?
+    public let pretext: String?
     /// og:description
-    public var text: String?
+    public let text: String?
     /// URL of detected thumb image
-    public var thumbUrl: String?
+    public let thumbUrl: String?
     /// og:title
-    public var title: String?
+    public let title: String?
     /// og:url
-    public var titleLink: String?
+    public let titleLink: String?
     /// Attachment type, could be empty, image, audio or video
-    public var type: String?
+    public let type: String?
 
-    public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], duration: String, fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil) {
+    public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], duration: String, fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil, type: String? = nil) {
         self.actions = actions
         self.assetUrl = assetUrl
         self.authorIcon = authorIcon
@@ -63,32 +63,61 @@ public final class GetOGResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.thumbUrl = thumbUrl
         self.title = title
         self.titleLink = titleLink
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actions
-        case assetUrl = "asset_url"
-        case authorIcon = "author_icon"
-        case authorLink = "author_link"
-        case authorName = "author_name"
-        case color
-        case custom
-        case duration
-        case fallback
-        case fields
-        case footer
-        case footerIcon = "footer_icon"
-        case giphy
-        case imageUrl = "image_url"
-        case ogScrapeUrl = "og_scrape_url"
-        case originalHeight = "original_height"
-        case originalWidth = "original_width"
-        case pretext
-        case text
-        case thumbUrl = "thumb_url"
-        case title
-        case titleLink = "title_link"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actions = try container.decodeIfPresent([Action].self, forKey: .actions)
+        self.assetUrl = try container.decodeIfPresent(String.self, forKey: .assetUrl)
+        self.authorIcon = try container.decodeIfPresent(String.self, forKey: .authorIcon)
+        self.authorLink = try container.decodeIfPresent(String.self, forKey: .authorLink)
+        self.authorName = try container.decodeIfPresent(String.self, forKey: .authorName)
+        self.color = try container.decodeIfPresent(String.self, forKey: .color)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.fallback = try container.decodeIfPresent(String.self, forKey: .fallback)
+        self.fields = try container.decodeIfPresent([Field].self, forKey: .fields)
+        self.footer = try container.decodeIfPresent(String.self, forKey: .footer)
+        self.footerIcon = try container.decodeIfPresent(String.self, forKey: .footerIcon)
+        self.giphy = try container.decodeIfPresent(Images.self, forKey: .giphy)
+        self.imageUrl = try container.decodeIfPresent(String.self, forKey: .imageUrl)
+        self.ogScrapeUrl = try container.decodeIfPresent(String.self, forKey: .ogScrapeUrl)
+        self.originalHeight = try container.decodeIfPresent(Int.self, forKey: .originalHeight)
+        self.originalWidth = try container.decodeIfPresent(Int.self, forKey: .originalWidth)
+        self.pretext = try container.decodeIfPresent(String.self, forKey: .pretext)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.thumbUrl = try container.decodeIfPresent(String.self, forKey: .thumbUrl)
+        self.title = try container.decodeIfPresent(String.self, forKey: .title)
+        self.titleLink = try container.decodeIfPresent(String.self, forKey: .titleLink)
+        self.type = try container.decodeIfPresent(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(actions, forKey: .actions)
+        try container.encodeIfPresent(assetUrl, forKey: .assetUrl)
+        try container.encodeIfPresent(authorIcon, forKey: .authorIcon)
+        try container.encodeIfPresent(authorLink, forKey: .authorLink)
+        try container.encodeIfPresent(authorName, forKey: .authorName)
+        try container.encodeIfPresent(color, forKey: .color)
+        try container.encode(custom, forKey: .custom)
+        try container.encode(duration, forKey: .duration)
+        try container.encodeIfPresent(fallback, forKey: .fallback)
+        try container.encodeIfPresent(fields, forKey: .fields)
+        try container.encodeIfPresent(footer, forKey: .footer)
+        try container.encodeIfPresent(footerIcon, forKey: .footerIcon)
+        try container.encodeIfPresent(giphy, forKey: .giphy)
+        try container.encodeIfPresent(imageUrl, forKey: .imageUrl)
+        try container.encodeIfPresent(ogScrapeUrl, forKey: .ogScrapeUrl)
+        try container.encodeIfPresent(originalHeight, forKey: .originalHeight)
+        try container.encodeIfPresent(originalWidth, forKey: .originalWidth)
+        try container.encodeIfPresent(pretext, forKey: .pretext)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(thumbUrl, forKey: .thumbUrl)
+        try container.encodeIfPresent(title, forKey: .title)
+        try container.encodeIfPresent(titleLink, forKey: .titleLink)
+        try container.encodeIfPresent(type, forKey: .type)
     }
 }
 

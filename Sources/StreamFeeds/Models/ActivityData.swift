@@ -34,7 +34,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let popularity: Int
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
-    public let score: Float
+    public let score: Double
     public let searchData: [String: RawJSON]
     public let shareCount: Int
     public let text: String?
@@ -47,7 +47,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     fileprivate let _parent: BoxedAny?
 }
 
-public typealias ActivityDataVisibility = ActivityResponse.ActivityResponseVisibility
+public typealias ActivityDataVisibility = ActivityResponseVisibility
 
 // MARK: - Mutating the Data
 

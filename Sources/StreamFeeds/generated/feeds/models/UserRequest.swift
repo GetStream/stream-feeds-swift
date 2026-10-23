@@ -6,19 +6,19 @@ import Foundation
 import StreamCore
 
 /// User request object
-public final class UserRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class UserRequest: Sendable, Codable, JSONEncodable {
     /// Custom user data
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// User ID
-    public var id: String
+    public let id: String
     /// User's profile image URL
-    public var image: String?
-    public var invisible: Bool?
-    public var language: String?
+    public let image: String?
+    public let invisible: Bool?
+    public let language: String?
     /// Optional name of user
-    public var name: String?
+    public let name: String?
     /// The privacy settings of the user.
-    public var privacySettings: PrivacySettingsResponse?
+    public let privacySettings: PrivacySettingsResponse?
 
     public init(custom: [String: RawJSON]? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String? = nil, name: String? = nil, privacySettings: PrivacySettingsResponse? = nil) {
         self.custom = custom
@@ -30,14 +30,26 @@ public final class UserRequest: @unchecked Sendable, Codable, JSONEncodable {
         self.privacySettings = privacySettings
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case id
-        case image
-        case invisible
-        case language
-        case name
-        case privacySettings = "privacy_settings"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.image = try container.decodeIfPresent(String.self, forKey: .image)
+        self.invisible = try container.decodeIfPresent(Bool.self, forKey: .invisible)
+        self.language = try container.decodeIfPresent(String.self, forKey: .language)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.privacySettings = try container.decodeIfPresent(PrivacySettingsResponse.self, forKey: .privacySettings)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(image, forKey: .image)
+        try container.encodeIfPresent(invisible, forKey: .invisible)
+        try container.encodeIfPresent(language, forKey: .language)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(privacySettings, forKey: .privacySettings)
     }
 }
 

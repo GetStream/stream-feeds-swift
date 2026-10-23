@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class CommentFeedbackEventPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class CommentFeedbackEventPayload: Sendable, Codable, JSONEncodable {
     /// The comment that received feedback
-    public var commentId: String
+    public let commentId: String
     /// When the feedback was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Whether the comment is hidden for the user
-    public var hide: Bool
+    public let hide: Bool
     /// When the feedback was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(commentId: String, createdAt: Date, hide: Bool, updatedAt: Date, user: UserResponse) {
         self.commentId = commentId
@@ -25,12 +25,22 @@ public final class CommentFeedbackEventPayload: @unchecked Sendable, Codable, JS
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case commentId = "comment_id"
-        case createdAt = "created_at"
-        case hide
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.commentId = try container.decode(String.self, forKey: .commentId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.hide = try container.decode(Bool.self, forKey: .hide)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(commentId, forKey: .commentId)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(hide, forKey: .hide)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encode(user, forKey: .user)
     }
 }
 

@@ -5,18 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncodable {
-    public var answerText: String?
-    public var answerTextI18n: [String: String]?
-    public var createdAt: Date
-    public var id: String
-    public var isAnswer: Bool?
-    public var optionId: String
-    public var pollId: String
-    public var updatedAt: Date
+public final class PollVoteResponseData: Sendable, Codable, JSONEncodable {
+    public let answerText: String?
+    public let answerTextI18n: [String: String]?
+    public let createdAt: Date
+    public let id: String
+    public let isAnswer: Bool?
+    public let optionId: String
+    public let pollId: String
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse?
-    public var userId: String?
+    public let user: UserResponse?
+    public let userId: String?
 
     public init(answerText: String? = nil, answerTextI18n: [String: String]? = nil, createdAt: Date, id: String, isAnswer: Bool? = nil, optionId: String, pollId: String, updatedAt: Date, user: UserResponse? = nil, userId: String? = nil) {
         self.answerText = answerText
@@ -31,17 +31,32 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case answerText = "answer_text"
-        case answerTextI18n = "answer_text_i18n"
-        case createdAt = "created_at"
-        case id
-        case isAnswer = "is_answer"
-        case optionId = "option_id"
-        case pollId = "poll_id"
-        case updatedAt = "updated_at"
-        case user
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.answerText = try container.decodeIfPresent(String.self, forKey: .answerText)
+        self.answerTextI18n = try container.decodeIfPresent([String: String].self, forKey: .answerTextI18n)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.isAnswer = try container.decodeIfPresent(Bool.self, forKey: .isAnswer)
+        self.optionId = try container.decode(String.self, forKey: .optionId)
+        self.pollId = try container.decode(String.self, forKey: .pollId)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
+        self.userId = try container.decodeIfPresent(String.self, forKey: .userId)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(answerText, forKey: .answerText)
+        try container.encodeIfPresent(answerTextI18n, forKey: .answerTextI18n)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(isAnswer, forKey: .isAnswer)
+        try container.encode(optionId, forKey: .optionId)
+        try container.encode(pollId, forKey: .pollId)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encodeIfPresent(user, forKey: .user)
+        try container.encodeIfPresent(userId, forKey: .userId)
     }
 }
 

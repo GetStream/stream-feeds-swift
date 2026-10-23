@@ -5,20 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class QueryUsersResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class QueryUsersResponse: Sendable, Codable, JSONEncodable {
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
     /// Array of users as result of filters applied.
-    public var users: [FullUserResponse]
+    public let users: [FullUserResponse]
 
     public init(duration: String, users: [FullUserResponse]) {
         self.duration = duration
         self.users = users
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case users
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.users = try container.decode([FullUserResponse].self, forKey: .users)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(users, forKey: .users)
     }
 }
 

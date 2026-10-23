@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class FloodSimilarConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var action: String
-    public var enabled: Bool
-    public var similarityDistance: Int
-    public var threshold: Int
-    public var timeWindow: String
+public final class FloodSimilarConfig: Sendable, Codable, JSONEncodable {
+    public let action: String
+    public let enabled: Bool
+    public let similarityDistance: Int
+    public let threshold: Int
+    public let timeWindow: String
 
     public init(action: String, enabled: Bool, similarityDistance: Int, threshold: Int, timeWindow: String) {
         self.action = action
@@ -20,12 +20,22 @@ public final class FloodSimilarConfig: @unchecked Sendable, Codable, JSONEncodab
         self.timeWindow = timeWindow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case enabled
-        case similarityDistance = "similarity_distance"
-        case threshold
-        case timeWindow = "time_window"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(String.self, forKey: .action)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.similarityDistance = try container.decode(Int.self, forKey: .similarityDistance)
+        self.threshold = try container.decode(Int.self, forKey: .threshold)
+        self.timeWindow = try container.decode(String.self, forKey: .timeWindow)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(similarityDistance, forKey: .similarityDistance)
+        try container.encode(threshold, forKey: .threshold)
+        try container.encode(timeWindow, forKey: .timeWindow)
     }
 }
 

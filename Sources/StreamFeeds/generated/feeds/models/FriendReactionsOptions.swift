@@ -5,40 +5,44 @@
 import Foundation
 import StreamCore
 
-/// Options to control fetching reactions from friends (users you follow or have mutual follows with).
-public final class FriendReactionsOptions: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FriendReactionsOptionsType: String, Sendable, Codable, CaseIterable {
-        case following
-        case mutual
-        case unknown = "_unknown"
+public final class FriendReactionsOptionsType: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    /// Default: false. When true, fetches friend reactions for activities.
-    public var enabled: Bool?
-    /// Default: 3, Max: 10. The maximum number of friend reactions to return per activity.
-    public var limit: Int?
-    /// Default: 'following'. The type of friend relationship to use. 'following' = users you follow, 'mutual' = users with mutual follows. One of: following, mutual
-    public var type: FriendReactionsOptionsType?
+    public static let following = FriendReactionsOptionsType(rawValue: "following")
+    public static let mutual = FriendReactionsOptionsType(rawValue: "mutual")
+}
 
-    public init(enabled: Bool? = nil, limit: Int? = nil) {
+/// Options to control fetching reactions from friends (users you follow or have mutual follows with).
+public final class FriendReactionsOptions: Sendable, Codable, JSONEncodable {
+    /// Default: false. When true, fetches friend reactions for activities.
+    public let enabled: Bool?
+    /// Default: 3, Max: 10. The maximum number of friend reactions to return per activity.
+    public let limit: Int?
+    /// Default: 'following'. The type of friend relationship to use. 'following' = users you follow, 'mutual' = users with mutual follows. One of: following, mutual
+    public let type: FriendReactionsOptionsType?
+
+    public init(enabled: Bool? = nil, limit: Int? = nil, type: FriendReactionsOptionsType? = nil) {
         self.enabled = enabled
         self.limit = limit
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enabled
-        case limit
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled)
+        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
+        self.type = try container.decodeIfPresent(FriendReactionsOptionsType.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(enabled, forKey: .enabled)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(type, forKey: .type)
     }
 }
 

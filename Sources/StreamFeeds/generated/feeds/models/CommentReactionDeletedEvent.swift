@@ -6,19 +6,19 @@ import Foundation
 import StreamCore
 
 /// Emitted when a reaction is deleted from a comment.
-public final class CommentReactionDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var comment: CommentResponse
+public final class CommentReactionDeletedEvent: Sendable, Event, Codable, JSONEncodable {
+    public let comment: CommentResponse
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feedVisibility: String?
-    public var fid: String
-    public var reaction: FeedsReactionResponse
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let feedVisibility: String?
+    public let fid: String
+    public let reaction: FeedsReactionResponse
+    public let receivedAt: Date?
     /// The type of reaction that was removed
-    public var type: String = "feeds.comment.reaction.deleted"
+    public let type: String
 
-    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil) {
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, type: String = "feeds.comment.reaction.deleted") {
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom
@@ -26,17 +26,31 @@ public final class CommentReactionDeletedEvent: @unchecked Sendable, Event, Coda
         self.fid = fid
         self.reaction = reaction
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case reaction
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comment = try container.decode(CommentResponse.self, forKey: .comment)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(String.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(comment, forKey: .comment)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(custom, forKey: .custom)
+        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
+        try container.encode(fid, forKey: .fid)
+        try container.encode(reaction, forKey: .reaction)
+        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
+        try container.encode(type, forKey: .type)
     }
 }
 

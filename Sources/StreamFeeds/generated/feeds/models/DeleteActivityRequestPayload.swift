@@ -6,15 +6,15 @@ import Foundation
 import StreamCore
 
 /// Configuration for activity deletion action
-public final class DeleteActivityRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeleteActivityRequestPayload: Sendable, Codable, JSONEncodable {
     /// ID of the activity to delete (alternative to item_id)
-    public var entityId: String?
+    public let entityId: String?
     /// Type of the entity (required for delete_activity to distinguish v2 vs v3)
-    public var entityType: String?
+    public let entityType: String?
     /// Whether to permanently delete the activity
-    public var hardDelete: Bool?
+    public let hardDelete: Bool?
     /// Reason for deletion
-    public var reason: String?
+    public let reason: String?
 
     public init(entityId: String? = nil, entityType: String? = nil, hardDelete: Bool? = nil, reason: String? = nil) {
         self.entityId = entityId
@@ -23,11 +23,20 @@ public final class DeleteActivityRequestPayload: @unchecked Sendable, Codable, J
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case entityId = "entity_id"
-        case entityType = "entity_type"
-        case hardDelete = "hard_delete"
-        case reason
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.entityId = try container.decodeIfPresent(String.self, forKey: .entityId)
+        self.entityType = try container.decodeIfPresent(String.self, forKey: .entityType)
+        self.hardDelete = try container.decodeIfPresent(Bool.self, forKey: .hardDelete)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(entityId, forKey: .entityId)
+        try container.encodeIfPresent(entityType, forKey: .entityType)
+        try container.encodeIfPresent(hardDelete, forKey: .hardDelete)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
 }
 

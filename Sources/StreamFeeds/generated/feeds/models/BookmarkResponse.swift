@@ -5,23 +5,23 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activity: ActivityResponse
-    public var activityId: String?
-    public var comment: CommentResponse?
+public final class BookmarkResponse: Sendable, Codable, JSONEncodable {
+    public let activity: ActivityResponse
+    public let activityId: String?
+    public let comment: CommentResponse?
     /// When the bookmark was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Custom data for the bookmark
-    public var custom: [String: RawJSON]?
-    public var folder: BookmarkFolderResponse?
+    public let custom: [String: RawJSON]?
+    public let folder: BookmarkFolderResponse?
     /// ID of the bookmarked object
-    public var objectId: String
+    public let objectId: String
     /// Type of the bookmarked object (activity or comment)
-    public var objectType: String
+    public let objectType: String
     /// When the bookmark was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(activity: ActivityResponse, activityId: String? = nil, comment: CommentResponse? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse? = nil, objectId: String, objectType: String, updatedAt: Date, user: UserResponse) {
         self.activity = activity
@@ -36,17 +36,32 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case activityId = "activity_id"
-        case comment
-        case createdAt = "created_at"
-        case custom
-        case folder
-        case objectId = "object_id"
-        case objectType = "object_type"
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.activityId = try container.decodeIfPresent(String.self, forKey: .activityId)
+        self.comment = try container.decodeIfPresent(CommentResponse.self, forKey: .comment)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.folder = try container.decodeIfPresent(BookmarkFolderResponse.self, forKey: .folder)
+        self.objectId = try container.decode(String.self, forKey: .objectId)
+        self.objectType = try container.decode(String.self, forKey: .objectType)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activity, forKey: .activity)
+        try container.encodeIfPresent(activityId, forKey: .activityId)
+        try container.encodeIfPresent(comment, forKey: .comment)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(folder, forKey: .folder)
+        try container.encode(objectId, forKey: .objectId)
+        try container.encode(objectType, forKey: .objectType)
+        try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encode(user, forKey: .user)
     }
 }
 

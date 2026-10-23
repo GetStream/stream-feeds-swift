@@ -5,25 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activities: [ActivityResponse]
-    public var aggregatedActivities: [AggregatedActivityResponse]
-    public var created: Bool
+public final class GetOrCreateFeedResponse: Sendable, Codable, JSONEncodable {
+    public let activities: [ActivityResponse]
+    public let aggregatedActivities: [AggregatedActivityResponse]
+    public let created: Bool
     /// Activity selectors dropped from this read because they exceeded their time budget (see the time_budget_ms selector setting). Their activities are missing from this page, and they stay out for the rest of this pagination session. Omitted when every selector completed
-    public var degradedSelectors: [String]?
+    public let degradedSelectors: [String]?
     /// Duration of the request in milliseconds
-    public var duration: String
-    public var feed: FeedResponse
-    public var followers: [FollowResponse]
-    public var followersPagination: PagerResponse?
-    public var following: [FollowResponse]
-    public var followingPagination: PagerResponse?
-    public var memberPagination: PagerResponse?
-    public var members: [FeedMemberResponse]
-    public var next: String?
-    public var notificationStatus: NotificationStatusResponse?
-    public var pinnedActivities: [ActivityPinResponse]
-    public var prev: String?
+    public let duration: String
+    public let feed: FeedResponse
+    public let followers: [FollowResponse]
+    public let followersPagination: PagerResponse?
+    public let following: [FollowResponse]
+    public let followingPagination: PagerResponse?
+    public let memberPagination: PagerResponse?
+    public let members: [FeedMemberResponse]
+    public let next: String?
+    public let notificationStatus: NotificationStatusResponse?
+    public let pinnedActivities: [ActivityPinResponse]
+    public let prev: String?
 
     public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, degradedSelectors: [String]? = nil, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
@@ -44,23 +44,44 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activities
-        case aggregatedActivities = "aggregated_activities"
-        case created
-        case degradedSelectors = "degraded_selectors"
-        case duration
-        case feed
-        case followers
-        case followersPagination = "followers_pagination"
-        case following
-        case followingPagination = "following_pagination"
-        case memberPagination = "member_pagination"
-        case members
-        case next
-        case notificationStatus = "notification_status"
-        case pinnedActivities = "pinned_activities"
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activities = try container.decode([ActivityResponse].self, forKey: .activities)
+        self.aggregatedActivities = try container.decode([AggregatedActivityResponse].self, forKey: .aggregatedActivities)
+        self.created = try container.decode(Bool.self, forKey: .created)
+        self.degradedSelectors = try container.decodeIfPresent([String].self, forKey: .degradedSelectors)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.feed = try container.decode(FeedResponse.self, forKey: .feed)
+        self.followers = try container.decode([FollowResponse].self, forKey: .followers)
+        self.followersPagination = try container.decodeIfPresent(PagerResponse.self, forKey: .followersPagination)
+        self.following = try container.decode([FollowResponse].self, forKey: .following)
+        self.followingPagination = try container.decodeIfPresent(PagerResponse.self, forKey: .followingPagination)
+        self.memberPagination = try container.decodeIfPresent(PagerResponse.self, forKey: .memberPagination)
+        self.members = try container.decode([FeedMemberResponse].self, forKey: .members)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.notificationStatus = try container.decodeIfPresent(NotificationStatusResponse.self, forKey: .notificationStatus)
+        self.pinnedActivities = try container.decode([ActivityPinResponse].self, forKey: .pinnedActivities)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activities, forKey: .activities)
+        try container.encode(aggregatedActivities, forKey: .aggregatedActivities)
+        try container.encode(created, forKey: .created)
+        try container.encodeIfPresent(degradedSelectors, forKey: .degradedSelectors)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(feed, forKey: .feed)
+        try container.encode(followers, forKey: .followers)
+        try container.encodeIfPresent(followersPagination, forKey: .followersPagination)
+        try container.encode(following, forKey: .following)
+        try container.encodeIfPresent(followingPagination, forKey: .followingPagination)
+        try container.encodeIfPresent(memberPagination, forKey: .memberPagination)
+        try container.encode(members, forKey: .members)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(notificationStatus, forKey: .notificationStatus)
+        try container.encode(pinnedActivities, forKey: .pinnedActivities)
+        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

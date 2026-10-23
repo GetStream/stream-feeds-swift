@@ -5,23 +5,23 @@
 import Foundation
 import StreamCore
 
-public final class FilterConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class FilterConfigResponse: Sendable, Codable, JSONEncodable {
     /// AI image moderation labels available as filter values. Reflects the app's effective image taxonomy: custom Bodyguard taxonomy when enabled, otherwise the standard L1 label set.
-    public var aiImageLabels: [String]?
+    public let aiImageLabels: [String]?
     /// Labels the image OCR pipeline can flag, available as filter values on the `label` field under the ai_image category. The app's LLM labels when LLM configurability is enabled, otherwise the AI text labels. OCR and image-classification labels share the `label` field, so a name present in both matches either.
-    public var aiImageOcrLabels: [String]?
+    public let aiImageOcrLabels: [String]?
     /// AI image moderation labels available as filter values, as a map of L1 label to its L2 sub-labels. Reflects the app's effective image taxonomy: custom Bodyguard taxonomy when enabled, otherwise the standard catalogue of the org's enabled image providers.
-    public var aiImageTaxonomy: [String: [String]]?
+    public let aiImageTaxonomy: [String: [String]]?
     /// AI text moderation labels available as filter values
-    public var aiTextLabels: [String]?
+    public let aiTextLabels: [String]?
     /// Moderation config keys present in the queue, available as filter values
-    public var configKeys: [String]?
+    public let configKeys: [String]?
     /// The moderation_payload.custom keys the app has configured as review-queue filter chips (via moderation_dashboard_preferences.filterable_custom_keys). Discovery hint for the dashboard only — the filter accepts any custom key regardless of this list.
-    public var filterableCustomKeys: [String]?
+    public let filterableCustomKeys: [String]?
     /// LLM moderation labels available as filter values
-    public var llmLabels: [String]
+    public let llmLabels: [String]
     /// Names of the app's moderation rules, available as filter values on the `label` field when filtering rule-flagged content. Includes disabled rules, since items flagged before a rule was turned off still carry its name; excludes deleted ones. Scoped to the caller's teams on a multi-tenant app. Capped at 30 names, ordered by name, so an app above that cap is listed partially.
-    public var ruleNames: [String]?
+    public let ruleNames: [String]?
 
     public init(aiImageLabels: [String]? = nil, aiImageOcrLabels: [String]? = nil, aiImageTaxonomy: [String: [String]]? = nil, aiTextLabels: [String]? = nil, configKeys: [String]? = nil, filterableCustomKeys: [String]? = nil, llmLabels: [String], ruleNames: [String]? = nil) {
         self.aiImageLabels = aiImageLabels
@@ -34,15 +34,28 @@ public final class FilterConfigResponse: @unchecked Sendable, Codable, JSONEncod
         self.ruleNames = ruleNames
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiImageLabels = "ai_image_labels"
-        case aiImageOcrLabels = "ai_image_ocr_labels"
-        case aiImageTaxonomy = "ai_image_taxonomy"
-        case aiTextLabels = "ai_text_labels"
-        case configKeys = "config_keys"
-        case filterableCustomKeys = "filterable_custom_keys"
-        case llmLabels = "llm_labels"
-        case ruleNames = "rule_names"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiImageLabels = try container.decodeIfPresent([String].self, forKey: .aiImageLabels)
+        self.aiImageOcrLabels = try container.decodeIfPresent([String].self, forKey: .aiImageOcrLabels)
+        self.aiImageTaxonomy = try container.decodeIfPresent([String: [String]].self, forKey: .aiImageTaxonomy)
+        self.aiTextLabels = try container.decodeIfPresent([String].self, forKey: .aiTextLabels)
+        self.configKeys = try container.decodeIfPresent([String].self, forKey: .configKeys)
+        self.filterableCustomKeys = try container.decodeIfPresent([String].self, forKey: .filterableCustomKeys)
+        self.llmLabels = try container.decode([String].self, forKey: .llmLabels)
+        self.ruleNames = try container.decodeIfPresent([String].self, forKey: .ruleNames)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(aiImageLabels, forKey: .aiImageLabels)
+        try container.encodeIfPresent(aiImageOcrLabels, forKey: .aiImageOcrLabels)
+        try container.encodeIfPresent(aiImageTaxonomy, forKey: .aiImageTaxonomy)
+        try container.encodeIfPresent(aiTextLabels, forKey: .aiTextLabels)
+        try container.encodeIfPresent(configKeys, forKey: .configKeys)
+        try container.encodeIfPresent(filterableCustomKeys, forKey: .filterableCustomKeys)
+        try container.encode(llmLabels, forKey: .llmLabels)
+        try container.encodeIfPresent(ruleNames, forKey: .ruleNames)
     }
 }
 

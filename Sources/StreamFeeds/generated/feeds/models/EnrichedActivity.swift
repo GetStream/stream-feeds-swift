@@ -5,22 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable {
-    public var actor: StreamData?
-    public var foreignId: String?
-    public var id: String?
-    public var latestReactions: [String: [EnrichedReaction]]?
-    public var object: StreamData?
-    public var origin: StreamData?
-    public var ownReactions: [String: [EnrichedReaction]]?
-    public var reactionCounts: [String: Int]?
-    public var score: Float?
-    public var target: StreamData?
-    public var time: String?
-    public var to: [String]?
-    public var verb: String?
+public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
+    public let actor: StreamData?
+    public let foreignId: String?
+    public let id: String?
+    public let latestReactions: [String: [EnrichedReaction]]?
+    public let object: StreamData?
+    public let origin: StreamData?
+    public let ownReactions: [String: [EnrichedReaction]]?
+    public let reactionCounts: [String: Int]?
+    public let score: Double?
+    public let target: StreamData?
+    public let time: String?
+    public let to: [String]?
+    public let verb: String?
 
-    public init(actor: StreamData? = nil, foreignId: String? = nil, id: String? = nil, latestReactions: [String: [EnrichedReaction]]? = nil, object: StreamData? = nil, origin: StreamData? = nil, ownReactions: [String: [EnrichedReaction]]? = nil, reactionCounts: [String: Int]? = nil, score: Float? = nil, target: StreamData? = nil, time: String? = nil, to: [String]? = nil, verb: String? = nil) {
+    public init(actor: StreamData? = nil, foreignId: String? = nil, id: String? = nil, latestReactions: [String: [EnrichedReaction]]? = nil, object: StreamData? = nil, origin: StreamData? = nil, ownReactions: [String: [EnrichedReaction]]? = nil, reactionCounts: [String: Int]? = nil, score: Double? = nil, target: StreamData? = nil, time: String? = nil, to: [String]? = nil, verb: String? = nil) {
         self.actor = actor
         self.foreignId = foreignId
         self.id = id
@@ -36,20 +36,38 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
         self.verb = verb
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actor
-        case foreignId = "foreign_id"
-        case id
-        case latestReactions = "latest_reactions"
-        case object
-        case origin
-        case ownReactions = "own_reactions"
-        case reactionCounts = "reaction_counts"
-        case score
-        case target
-        case time
-        case to
-        case verb
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actor = try container.decodeIfPresent(StreamData.self, forKey: .actor)
+        self.foreignId = try container.decodeIfPresent(String.self, forKey: .foreignId)
+        self.id = try container.decodeIfPresent(String.self, forKey: .id)
+        self.latestReactions = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .latestReactions)
+        self.object = try container.decodeIfPresent(StreamData.self, forKey: .object)
+        self.origin = try container.decodeIfPresent(StreamData.self, forKey: .origin)
+        self.ownReactions = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .ownReactions)
+        self.reactionCounts = try container.decodeIfPresent([String: Int].self, forKey: .reactionCounts)
+        self.score = try container.decodeIfPresent(Double.self, forKey: .score)
+        self.target = try container.decodeIfPresent(StreamData.self, forKey: .target)
+        self.time = try container.decodeIfPresent(String.self, forKey: .time)
+        self.to = try container.decodeIfPresent([String].self, forKey: .to)
+        self.verb = try container.decodeIfPresent(String.self, forKey: .verb)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(actor, forKey: .actor)
+        try container.encodeIfPresent(foreignId, forKey: .foreignId)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encodeIfPresent(latestReactions, forKey: .latestReactions)
+        try container.encodeIfPresent(object, forKey: .object)
+        try container.encodeIfPresent(origin, forKey: .origin)
+        try container.encodeIfPresent(ownReactions, forKey: .ownReactions)
+        try container.encodeIfPresent(reactionCounts, forKey: .reactionCounts)
+        try container.encodeIfPresent(score, forKey: .score)
+        try container.encodeIfPresent(target, forKey: .target)
+        try container.encodeIfPresent(time, forKey: .time)
+        try container.encodeIfPresent(to, forKey: .to)
+        try container.encodeIfPresent(verb, forKey: .verb)
     }
 }
 
