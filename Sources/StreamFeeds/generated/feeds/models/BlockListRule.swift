@@ -5,12 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum BlockListRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
         case bounceRemove = "bounce_remove"
         case flag
+        case mask
         case maskFlag = "mask_flag"
         case remove
         case shadow
@@ -42,7 +43,9 @@ public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable, H
         case name
         case team
     }
+}
 
+extension BlockListRule: Hashable {
     public static func == (lhs: BlockListRule, rhs: BlockListRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.name == rhs.name &&

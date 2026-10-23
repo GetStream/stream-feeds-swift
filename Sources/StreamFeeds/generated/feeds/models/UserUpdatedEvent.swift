@@ -5,14 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class UserUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// This event is sent when a user gets updated. The event contains information about the updated user.
+public final class UserUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var receivedAt: Date?
+    /// The type of event: "user.updated" in this case
     public var type: String = "user.updated"
     public var user: UserResponsePrivacyFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponsePrivacyFields) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        receivedAt: Date? = nil,
+        user: UserResponsePrivacyFields
+    ) {
         self.createdAt = createdAt
         self.custom = custom
         self.receivedAt = receivedAt
@@ -26,7 +34,9 @@ public final class UserUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case type
         case user
     }
+}
 
+extension UserUpdatedEvent: Hashable {
     public static func == (lhs: UserUpdatedEvent, rhs: UserUpdatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

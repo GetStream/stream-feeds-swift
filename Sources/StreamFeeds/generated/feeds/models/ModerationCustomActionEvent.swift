@@ -5,8 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class ModerationCustomActionEvent: @unchecked Sendable,  Event, Codable, JSONEncodable, Hashable {
+/// This event is sent when a custom moderation action is executed
+public final class ModerationCustomActionEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// The ID of the custom action that was executed
     public var actionId: String
+    /// Additional options passed to the custom action
     public var actionOptions: [String: RawJSON]?
     public var createdAt: Date
     public var custom: [String: RawJSON]
@@ -14,7 +17,14 @@ public final class ModerationCustomActionEvent: @unchecked Sendable,  Event, Cod
     public var reviewQueueItem: ReviewQueueItemResponse
     public var type: String = "moderation.custom_action"
 
-    public init(actionId: String, actionOptions: [String: RawJSON]? = nil, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, reviewQueueItem: ReviewQueueItemResponse) {
+    public init(
+        actionId: String,
+        actionOptions: [String: RawJSON]? = nil,
+        createdAt: Date,
+        custom: [String: RawJSON],
+        receivedAt: Date? = nil,
+        reviewQueueItem: ReviewQueueItemResponse
+    ) {
         self.actionId = actionId
         self.actionOptions = actionOptions
         self.createdAt = createdAt
@@ -32,15 +42,17 @@ public final class ModerationCustomActionEvent: @unchecked Sendable,  Event, Cod
         case reviewQueueItem = "review_queue_item"
         case type
     }
+}
 
+extension ModerationCustomActionEvent: Hashable {
     public static func == (lhs: ModerationCustomActionEvent, rhs: ModerationCustomActionEvent) -> Bool {
         lhs.actionId == rhs.actionId &&
-        lhs.actionOptions == rhs.actionOptions &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.custom == rhs.custom &&
-        lhs.receivedAt == rhs.receivedAt &&
-        lhs.reviewQueueItem == rhs.reviewQueueItem &&
-        lhs.type == rhs.type
+            lhs.actionOptions == rhs.actionOptions &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.reviewQueueItem == rhs.reviewQueueItem &&
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {

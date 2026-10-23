@@ -5,19 +5,33 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncodable {
     public var answerText: String?
+    public var answerTextI18n: [String: String]?
     public var createdAt: Date
     public var id: String
     public var isAnswer: Bool?
     public var optionId: String
     public var pollId: String
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse?
     public var userId: String?
 
-    public init(answerText: String? = nil, createdAt: Date, id: String, isAnswer: Bool? = nil, optionId: String, pollId: String, updatedAt: Date, user: UserResponse? = nil, userId: String? = nil) {
+    public init(
+        answerText: String? = nil,
+        answerTextI18n: [String: String]? = nil,
+        createdAt: Date,
+        id: String,
+        isAnswer: Bool? = nil,
+        optionId: String,
+        pollId: String,
+        updatedAt: Date,
+        user: UserResponse? = nil,
+        userId: String? = nil
+    ) {
         self.answerText = answerText
+        self.answerTextI18n = answerTextI18n
         self.createdAt = createdAt
         self.id = id
         self.isAnswer = isAnswer
@@ -30,6 +44,7 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case answerText = "answer_text"
+        case answerTextI18n = "answer_text_i18n"
         case createdAt = "created_at"
         case id
         case isAnswer = "is_answer"
@@ -39,9 +54,12 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
         case user
         case userId = "user_id"
     }
+}
 
+extension PollVoteResponseData: Hashable {
     public static func == (lhs: PollVoteResponseData, rhs: PollVoteResponseData) -> Bool {
         lhs.answerText == rhs.answerText &&
+            lhs.answerTextI18n == rhs.answerTextI18n &&
             lhs.createdAt == rhs.createdAt &&
             lhs.id == rhs.id &&
             lhs.isAnswer == rhs.isAnswer &&
@@ -54,6 +72,7 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(answerText)
+        hasher.combine(answerTextI18n)
         hasher.combine(createdAt)
         hasher.combine(id)
         hasher.combine(isAnswer)

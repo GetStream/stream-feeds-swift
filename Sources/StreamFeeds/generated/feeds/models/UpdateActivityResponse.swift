@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activity: ActivityResponse
     public var duration: String
 
@@ -18,7 +18,9 @@ public final class UpdateActivityResponse: @unchecked Sendable, Codable, JSONEnc
         case activity
         case duration
     }
+}
 
+extension UpdateActivityResponse: Hashable {
     public static func == (lhs: UpdateActivityResponse, rhs: UpdateActivityResponse) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.duration == rhs.duration

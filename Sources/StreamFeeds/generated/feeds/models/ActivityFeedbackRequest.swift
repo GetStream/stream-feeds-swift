@@ -5,9 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class ActivityFeedbackRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Request to provide feedback on an activity
+public final class ActivityFeedbackRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Whether to hide this activity
     public var hide: Bool?
+    /// Whether to show less content like this
     public var showLess: Bool?
+    /// Whether to show more content like this
     public var showMore: Bool?
 
     public init(hide: Bool? = nil, showLess: Bool? = nil, showMore: Bool? = nil) {
@@ -21,11 +25,13 @@ public final class ActivityFeedbackRequest: @unchecked Sendable, Codable, JSONEn
         case showLess = "show_less"
         case showMore = "show_more"
     }
+}
 
+extension ActivityFeedbackRequest: Hashable {
     public static func == (lhs: ActivityFeedbackRequest, rhs: ActivityFeedbackRequest) -> Bool {
         lhs.hide == rhs.hide &&
-        lhs.showLess == rhs.showLess &&
-        lhs.showMore == rhs.showMore
+            lhs.showLess == rhs.showLess &&
+            lhs.showMore == rhs.showMore
     }
 
     public func hash(into hasher: inout Hasher) {

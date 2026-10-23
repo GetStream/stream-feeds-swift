@@ -5,31 +5,43 @@
 import Foundation
 import StreamCore
 
-public final class ImageRuleParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ImageRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var harmLabels: [String]?
+    public var minConfidence: Float?
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(harmLabels: [String]? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
+    public init(
+        harmLabels: [String]? = nil,
+        minConfidence: Float? = nil,
+        threshold: Int? = nil,
+        timeWindow: String? = nil
+    ) {
         self.harmLabels = harmLabels
+        self.minConfidence = minConfidence
         self.threshold = threshold
         self.timeWindow = timeWindow
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case harmLabels = "harm_labels"
+        case minConfidence = "min_confidence"
         case threshold
         case timeWindow = "time_window"
     }
+}
 
+extension ImageRuleParameters: Hashable {
     public static func == (lhs: ImageRuleParameters, rhs: ImageRuleParameters) -> Bool {
         lhs.harmLabels == rhs.harmLabels &&
+            lhs.minConfidence == rhs.minConfidence &&
             lhs.threshold == rhs.threshold &&
             lhs.timeWindow == rhs.timeWindow
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(harmLabels)
+        hasher.combine(minConfidence)
         hasher.combine(threshold)
         hasher.combine(timeWindow)
     }

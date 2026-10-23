@@ -19,7 +19,6 @@ public struct UserData: Identifiable, Equatable, Sendable, Hashable {
     public let lastActive: Date?
     public let name: String?
     public let online: Bool
-    public let revokeTokensIssuedBefore: Date?
     public let role: String
     public let teams: [String]
     public let teamsRole: [String: String]?
@@ -49,7 +48,6 @@ extension UserResponse {
             lastActive: lastActive,
             name: name,
             online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
             role: role,
             teams: teams,
             teamsRole: teamsRole,
@@ -74,7 +72,6 @@ extension UserResponseCommonFields {
             lastActive: lastActive,
             name: name,
             online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
             role: role,
             teams: teams,
             teamsRole: teamsRole,
@@ -99,7 +96,6 @@ extension UserResponsePrivacyFields {
             lastActive: lastActive,
             name: name,
             online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
             role: role,
             teams: teams,
             teamsRole: teamsRole,

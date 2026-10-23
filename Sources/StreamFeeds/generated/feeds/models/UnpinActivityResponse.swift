@@ -5,10 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class UnpinActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UnpinActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activity: ActivityResponse
     public var duration: String
+    /// Fully qualified ID of the feed the activity was unpinned from
     public var feed: String
+    /// ID of the user who unpinned the activity
     public var userId: String
 
     public init(activity: ActivityResponse, duration: String, feed: String, userId: String) {
@@ -24,7 +26,9 @@ public final class UnpinActivityResponse: @unchecked Sendable, Codable, JSONEnco
         case feed
         case userId = "user_id"
     }
+}
 
+extension UnpinActivityResponse: Hashable {
     public static func == (lhs: UnpinActivityResponse, rhs: UnpinActivityResponse) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.duration == rhs.duration &&

@@ -5,16 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a feed group is deleted.
+public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
+    /// The ID of the feed group that was deleted
     public var groupId: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.feed_group.deleted" in this case
     public var type: String = "feeds.feed_group.deleted"
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, groupId: String, receivedAt: Date? = nil) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feedVisibility: String? = nil,
+        fid: String,
+        groupId: String,
+        receivedAt: Date? = nil
+    ) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -32,7 +43,9 @@ public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, J
         case receivedAt = "received_at"
         case type
     }
+}
 
+extension FeedGroupDeletedEvent: Hashable {
     public static func == (lhs: FeedGroupDeletedEvent, rhs: FeedGroupDeletedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

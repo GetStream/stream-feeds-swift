@@ -5,14 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Whether to mark all activities as read
     public var markAllRead: Bool?
+    /// Whether to mark all activities as seen
     public var markAllSeen: Bool?
+    /// List of activity IDs to mark as read
     public var markRead: [String]?
+    /// List of activity IDs to mark as seen
     public var markSeen: [String]?
+    /// List of activity IDs to mark as watched (for stories)
     public var markWatched: [String]?
 
-    public init(markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil) {
+    public init(
+        markAllRead: Bool? = nil,
+        markAllSeen: Bool? = nil,
+        markRead: [String]? = nil,
+        markSeen: [String]? = nil,
+        markWatched: [String]? = nil
+    ) {
         self.markAllRead = markAllRead
         self.markAllSeen = markAllSeen
         self.markRead = markRead
@@ -27,7 +38,9 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
         case markSeen = "mark_seen"
         case markWatched = "mark_watched"
     }
+}
 
+extension MarkActivityRequest: Hashable {
     public static func == (lhs: MarkActivityRequest, rhs: MarkActivityRequest) -> Bool {
         lhs.markAllRead == rhs.markAllRead &&
             lhs.markAllSeen == rhs.markAllSeen &&

@@ -101,7 +101,7 @@ extension PollResponseData {
             updatedAt: updatedAt,
             voteCount: voteCount,
             voteCountsByOption: voteCountsByOption,
-            votingVisibility: votingVisibility
+            votingVisibility: votingVisibility.rawValue
         )
     }
 }

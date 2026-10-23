@@ -5,14 +5,23 @@
 import Foundation
 import StreamCore
 
-public final class AppEventResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AppEventResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// boolean
     public var asyncUrlEnrichEnabled: Bool?
+    /// boolean
     public var autoTranslationEnabled: Bool
     public var fileUploadConfig: FileUploadConfig?
     public var imageUploadConfig: FileUploadConfig?
+    /// string
     public var name: String
 
-    public init(asyncUrlEnrichEnabled: Bool? = nil, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig? = nil, imageUploadConfig: FileUploadConfig? = nil, name: String) {
+    public init(
+        asyncUrlEnrichEnabled: Bool? = nil,
+        autoTranslationEnabled: Bool,
+        fileUploadConfig: FileUploadConfig? = nil,
+        imageUploadConfig: FileUploadConfig? = nil,
+        name: String
+    ) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
         self.autoTranslationEnabled = autoTranslationEnabled
         self.fileUploadConfig = fileUploadConfig
@@ -27,7 +36,9 @@ public final class AppEventResponse: @unchecked Sendable, Codable, JSONEncodable
         case imageUploadConfig = "image_upload_config"
         case name
     }
+}
 
+extension AppEventResponse: Hashable {
     public static func == (lhs: AppEventResponse, rhs: AppEventResponse) -> Bool {
         lhs.asyncUrlEnrichEnabled == rhs.asyncUrlEnrichEnabled &&
             lhs.autoTranslationEnabled == rhs.autoTranslationEnabled &&

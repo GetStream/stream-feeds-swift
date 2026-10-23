@@ -5,10 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// User id who blocked another user
     public var blockedByUserId: String
+    /// User id who got blocked
     public var blockedUserId: String
+    /// Timestamp when the user was blocked
     public var createdAt: Date
+    /// Duration of the request in milliseconds
     public var duration: String
 
     public init(blockedByUserId: String, blockedUserId: String, createdAt: Date, duration: String) {
@@ -24,7 +28,9 @@ public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodab
         case createdAt = "created_at"
         case duration
     }
+}
 
+extension BlockUsersResponse: Hashable {
     public static func == (lhs: BlockUsersResponse, rhs: BlockUsersResponse) -> Bool {
         lhs.blockedByUserId == rhs.blockedByUserId &&
             lhs.blockedUserId == rhs.blockedUserId &&

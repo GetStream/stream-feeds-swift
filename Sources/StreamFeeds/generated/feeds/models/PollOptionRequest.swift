@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PollOptionRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PollOptionRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var custom: [String: RawJSON]?
     public var id: String
     public var text: String?
@@ -21,7 +21,9 @@ public final class PollOptionRequest: @unchecked Sendable, Codable, JSONEncodabl
         case id
         case text
     }
+}
 
+extension PollOptionRequest: Hashable {
     public static func == (lhs: PollOptionRequest, rhs: PollOptionRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&

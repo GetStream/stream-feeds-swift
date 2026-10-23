@@ -5,7 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a feed is created.
+public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feed: FeedResponse
@@ -13,10 +15,20 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var fid: String
     public var members: [FeedMemberResponse]
     public var receivedAt: Date?
+    /// The type of event: "feeds.feed.created" in this case
     public var type: String = "feeds.feed.created"
     public var user: UserResponseCommonFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feed: FeedResponse,
+        feedVisibility: String? = nil,
+        fid: String,
+        members: [FeedMemberResponse],
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields
+    ) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed
@@ -38,7 +50,9 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case type
         case user
     }
+}
 
+extension FeedCreatedEvent: Hashable {
     public static func == (lhs: FeedCreatedEvent, rhs: FeedCreatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

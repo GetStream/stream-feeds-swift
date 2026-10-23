@@ -114,7 +114,7 @@ struct OwnCapabilitiesStateLayerEventMiddleware_Tests {
     @Test func automaticallyFetchCapabilitiesOnWebSocketEventWhenNotLocallyCached() async throws {
         let client = FeedsClient.mock(
             apiTransport: .withPayloads([
-                OwnCapabilitiesBatchResponse.dummy(capabilities: [
+                OwnBatchResponse.dummy(capabilities: [
                     "user:john": [.addActivity, .readFeed]
                 ])
             ])

@@ -5,20 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a feed group is changed.
+public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedGroup: FeedGroup?
     public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.feed_group.changed" in this case
     public var type: String = "feeds.feed_group.changed"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedGroup: FeedGroup? = nil, feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feedVisibility: String? = nil,
+        fid: String,
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields? = nil
+    ) {
         self.createdAt = createdAt
         self.custom = custom
-        self.feedGroup = feedGroup
         self.feedVisibility = feedVisibility
         self.fid = fid
         self.receivedAt = receivedAt
@@ -28,18 +36,18 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case custom
-        case feedGroup = "feed_group"
         case feedVisibility = "feed_visibility"
         case fid
         case receivedAt = "received_at"
         case type
         case user
     }
+}
 
+extension FeedGroupChangedEvent: Hashable {
     public static func == (lhs: FeedGroupChangedEvent, rhs: FeedGroupChangedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
-            lhs.feedGroup == rhs.feedGroup &&
             lhs.feedVisibility == rhs.feedVisibility &&
             lhs.fid == rhs.fid &&
             lhs.receivedAt == rhs.receivedAt &&
@@ -50,7 +58,6 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(custom)
-        hasher.combine(feedGroup)
         hasher.combine(feedVisibility)
         hasher.combine(fid)
         hasher.combine(receivedAt)

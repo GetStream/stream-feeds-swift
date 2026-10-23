@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AutomodRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AutomodRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum AutomodRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
@@ -41,7 +41,9 @@ public final class AutomodRule: @unchecked Sendable, Codable, JSONEncodable, Has
         case label
         case threshold
     }
+}
 
+extension AutomodRule: Hashable {
     public static func == (lhs: AutomodRule, rhs: AutomodRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.label == rhs.label &&

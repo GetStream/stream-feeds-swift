@@ -13,9 +13,6 @@ public struct PollVotesQuery: Sendable {
     /// The unique identifier of the poll to fetch votes for.
     public var pollId: String
     
-    /// Optional user ID used for authentication.
-    public var userId: String?
-    
     /// Optional filter to apply to the poll votes query.
     /// Use this to narrow down results based on specific criteria.
     public var filter: PollVotesFilter?
@@ -40,7 +37,6 @@ public struct PollVotesQuery: Sendable {
     ///
     /// - Parameters:
     ///   - pollId: The unique identifier of the poll to fetch votes for.
-    ///   - userId: Optional user ID used for authentication.
     ///   - filter: Optional filter to apply to the poll votes query.
     ///   - sort: Optional array of sorting criteria to apply to the poll votes.
     ///   - limit: Optional maximum number of poll votes to return in a single request.
@@ -48,7 +44,6 @@ public struct PollVotesQuery: Sendable {
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
     public init(
         pollId: String,
-        userId: String? = nil,
         filter: PollVotesFilter? = nil,
         sort: [Sort<PollVotesSortField>]? = nil,
         limit: Int? = nil,
@@ -61,7 +56,6 @@ public struct PollVotesQuery: Sendable {
         self.previous = previous
         self.pollId = pollId
         self.sort = sort
-        self.userId = userId
     }
 }
 

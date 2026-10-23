@@ -29,7 +29,6 @@ import SwiftUI
         voteList = client.pollVoteList(
             for: .init(
                 pollId: pollId,
-                userId: user.id,
                 filter: .equal(.isAnswer, true)
             )
         )

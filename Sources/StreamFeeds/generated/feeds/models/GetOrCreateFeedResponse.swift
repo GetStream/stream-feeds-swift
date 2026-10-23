@@ -5,10 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activities: [ActivityResponse]
     public var aggregatedActivities: [AggregatedActivityResponse]
     public var created: Bool
+    /// Activity selectors dropped from this read because they exceeded their time budget (see the time_budget_ms selector setting). Their activities are missing from this page, and they stay out for the rest of this pagination session. Omitted when every selector completed
+    public var degradedSelectors: [String]?
+    /// Duration of the request in milliseconds
     public var duration: String
     public var feed: FeedResponse
     public var followers: [FollowResponse]
@@ -22,10 +25,28 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var pinnedActivities: [ActivityPinResponse]
     public var prev: String?
 
-    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
+    public init(
+        activities: [ActivityResponse],
+        aggregatedActivities: [AggregatedActivityResponse],
+        created: Bool,
+        degradedSelectors: [String]? = nil,
+        duration: String,
+        feed: FeedResponse,
+        followers: [FollowResponse],
+        followersPagination: PagerResponse? = nil,
+        following: [FollowResponse],
+        followingPagination: PagerResponse? = nil,
+        memberPagination: PagerResponse? = nil,
+        members: [FeedMemberResponse],
+        next: String? = nil,
+        notificationStatus: NotificationStatusResponse? = nil,
+        pinnedActivities: [ActivityPinResponse],
+        prev: String? = nil
+    ) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.created = created
+        self.degradedSelectors = degradedSelectors
         self.duration = duration
         self.feed = feed
         self.followers = followers
@@ -44,6 +65,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         case activities
         case aggregatedActivities = "aggregated_activities"
         case created
+        case degradedSelectors = "degraded_selectors"
         case duration
         case feed
         case followers
@@ -57,11 +79,14 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         case pinnedActivities = "pinned_activities"
         case prev
     }
+}
 
+extension GetOrCreateFeedResponse: Hashable {
     public static func == (lhs: GetOrCreateFeedResponse, rhs: GetOrCreateFeedResponse) -> Bool {
         lhs.activities == rhs.activities &&
             lhs.aggregatedActivities == rhs.aggregatedActivities &&
             lhs.created == rhs.created &&
+            lhs.degradedSelectors == rhs.degradedSelectors &&
             lhs.duration == rhs.duration &&
             lhs.feed == rhs.feed &&
             lhs.followers == rhs.followers &&
@@ -80,6 +105,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         hasher.combine(activities)
         hasher.combine(aggregatedActivities)
         hasher.combine(created)
+        hasher.combine(degradedSelectors)
         hasher.combine(duration)
         hasher.combine(feed)
         hasher.combine(followers)

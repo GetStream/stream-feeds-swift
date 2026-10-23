@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class UpdateUserPartialRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateUserPartialRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// User ID to update
     public var id: String
     public var set: [String: RawJSON]?
     public var unset: [String]?
@@ -21,7 +22,9 @@ public final class UpdateUserPartialRequest: @unchecked Sendable, Codable, JSONE
         case set
         case unset
     }
+}
 
+extension UpdateUserPartialRequest: Hashable {
     public static func == (lhs: UpdateUserPartialRequest, rhs: UpdateUserPartialRequest) -> Bool {
         lhs.id == rhs.id &&
             lhs.set == rhs.set &&

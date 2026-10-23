@@ -27,7 +27,6 @@ extension UserResponsePrivacyFields {
             name: name,
             online: true,
             privacySettings: nil,
-            revokeTokensIssuedBefore: nil,
             role: "user",
             teams: ["team1"],
             teamsRole: ["team1": "member"],

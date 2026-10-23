@@ -17,7 +17,7 @@ final class CommentsRepository: Sendable {
     // MARK: - Querying Comments
     
     func queryComments(request: QueryCommentsRequest) async throws -> PaginationResult<CommentData> {
-        let response = try await apiClient.queryComments(queryCommentsRequest: request)
+        let response = try await apiClient.queryComments(queryCommentsRequest: request, language: nil, translateText: nil)
         return PaginationResult(
             models: response.comments.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -31,9 +31,13 @@ final class CommentsRepository: Sendable {
             depth: query.depth,
             sort: query.sort?.rawValue,
             repliesLimit: query.repliesLimit,
+            idAround: nil,
+            language: nil,
+            translateText: nil,
             limit: query.limit,
             prev: query.previous,
-            next: query.next
+            next: query.next,
+            includeTopLevelCommentCount: nil
         )
         return PaginationResult(
             models: response.comments.map { $0.toModel() },
@@ -54,12 +58,12 @@ final class CommentsRepository: Sendable {
     }
     
     func deleteComment(commentId: String, hardDelete: Bool?) async throws -> (comment: CommentData, activityId: String) {
-        let response = try await apiClient.deleteComment(id: commentId, hardDelete: hardDelete)
+        let response = try await apiClient.deleteComment(id: commentId, hardDelete: hardDelete, deleteNotificationActivity: nil)
         return (response.comment.toModel(), response.activity.id)
     }
     
     func getComment(commentId: String) async throws -> CommentData {
-        let response = try await apiClient.getComment(id: commentId)
+        let response = try await apiClient.getComment(id: commentId, language: nil, translateText: nil)
         return response.comment.toModel()
     }
     
@@ -76,7 +80,7 @@ final class CommentsRepository: Sendable {
     }
 
     func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
-        let response = try await apiClient.deleteCommentReaction(id: commentId, type: type)
+        let response = try await apiClient.deleteCommentReaction(id: commentId, type: type, deleteNotificationActivity: nil)
         return (response.reaction.toModel(), response.comment.toModel())
     }
     
@@ -98,6 +102,9 @@ final class CommentsRepository: Sendable {
             depth: query.depth,
             sort: query.sort?.rawValue,
             repliesLimit: query.repliesLimit,
+            idAround: nil,
+            language: nil,
+            translateText: nil,
             limit: query.limit,
             prev: query.previous,
             next: query.next

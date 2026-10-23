@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBookmarkFolderRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateBookmarkFolderRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Custom data for the folder
     public var custom: [String: RawJSON]?
+    /// Name of the folder
     public var name: String?
 
     public init(custom: [String: RawJSON]? = nil, name: String? = nil) {
@@ -18,7 +20,9 @@ public final class UpdateBookmarkFolderRequest: @unchecked Sendable, Codable, JS
         case custom
         case name
     }
+}
 
+extension UpdateBookmarkFolderRequest: Hashable {
     public static func == (lhs: UpdateBookmarkFolderRequest, rhs: UpdateBookmarkFolderRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.name == rhs.name

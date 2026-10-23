@@ -18,7 +18,7 @@ public struct FeedAddActivityRequest: Sendable {
         filterTags: [String]? = nil,
         id: String? = nil,
         interestTags: [String]? = nil,
-        location: ActivityLocation? = nil,
+        location: Location? = nil,
         mentionedUserIds: [String]? = nil,
         parentId: String? = nil,
         pollId: String? = nil,

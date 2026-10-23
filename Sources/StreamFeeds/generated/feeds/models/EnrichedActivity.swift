@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable {
     public var actor: StreamData?
     public var foreignId: String?
     public var id: String?
@@ -16,10 +16,25 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
     public var reactionCounts: [String: Int]?
     public var score: Float?
     public var target: StreamData?
+    public var time: String?
     public var to: [String]?
     public var verb: String?
 
-    public init(actor: StreamData? = nil, foreignId: String? = nil, id: String? = nil, latestReactions: [String: [EnrichedReaction]]? = nil, object: StreamData? = nil, origin: StreamData? = nil, ownReactions: [String: [EnrichedReaction]]? = nil, reactionCounts: [String: Int]? = nil, score: Float? = nil, target: StreamData? = nil, to: [String]? = nil, verb: String? = nil) {
+    public init(
+        actor: StreamData? = nil,
+        foreignId: String? = nil,
+        id: String? = nil,
+        latestReactions: [String: [EnrichedReaction]]? = nil,
+        object: StreamData? = nil,
+        origin: StreamData? = nil,
+        ownReactions: [String: [EnrichedReaction]]? = nil,
+        reactionCounts: [String: Int]? = nil,
+        score: Float? = nil,
+        target: StreamData? = nil,
+        time: String? = nil,
+        to: [String]? = nil,
+        verb: String? = nil
+    ) {
         self.actor = actor
         self.foreignId = foreignId
         self.id = id
@@ -30,6 +45,7 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
         self.reactionCounts = reactionCounts
         self.score = score
         self.target = target
+        self.time = time
         self.to = to
         self.verb = verb
     }
@@ -45,10 +61,13 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
         case reactionCounts = "reaction_counts"
         case score
         case target
+        case time
         case to
         case verb
     }
+}
 
+extension EnrichedActivity: Hashable {
     public static func == (lhs: EnrichedActivity, rhs: EnrichedActivity) -> Bool {
         lhs.actor == rhs.actor &&
             lhs.foreignId == rhs.foreignId &&
@@ -60,6 +79,7 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
             lhs.reactionCounts == rhs.reactionCounts &&
             lhs.score == rhs.score &&
             lhs.target == rhs.target &&
+            lhs.time == rhs.time &&
             lhs.to == rhs.to &&
             lhs.verb == rhs.verb
     }
@@ -75,6 +95,7 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
         hasher.combine(reactionCounts)
         hasher.combine(score)
         hasher.combine(target)
+        hasher.combine(time)
         hasher.combine(to)
         hasher.combine(verb)
     }

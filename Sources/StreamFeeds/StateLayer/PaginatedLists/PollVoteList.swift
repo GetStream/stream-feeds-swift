@@ -39,7 +39,6 @@ public final class PollVoteList: Sendable {
             guard let next = state.pagination?.next else { return nil }
             return PollVotesQuery(
                 pollId: query.pollId,
-                userId: query.userId,
                 filter: state.queryConfig?.filter,
                 sort: state.queryConfig?.sort,
                 limit: limit,
@@ -56,7 +55,6 @@ public final class PollVoteList: Sendable {
     private func queryPollVotes(with query: PollVotesQuery) async throws -> [PollVoteData] {
         let result = try await pollsRepository.queryPollVotes(
             pollId: query.pollId,
-            userId: query.userId,
             request: query.toRequest()
         )
         await state.didPaginate(

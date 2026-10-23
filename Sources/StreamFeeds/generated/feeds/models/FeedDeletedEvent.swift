@@ -5,16 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class FeedDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a feed is deleted.
+public final class FeedDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.feed.deleted" in this case
     public var type: String = "feeds.feed.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(
+        createdAt: Date,
+        custom: [String: RawJSON],
+        feedVisibility: String? = nil,
+        fid: String,
+        receivedAt: Date? = nil,
+        user: UserResponseCommonFields? = nil
+    ) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -32,7 +42,9 @@ public final class FeedDeletedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case type
         case user
     }
+}
 
+extension FeedDeletedEvent: Hashable {
     public static func == (lhs: FeedDeletedEvent, rhs: FeedDeletedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

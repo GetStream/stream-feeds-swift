@@ -5,13 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBookmarkRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateBookmarkRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Custom data for the bookmark
     public var custom: [String: RawJSON]?
+    /// ID of the folder containing the bookmark
     public var folderId: String?
     public var newFolder: AddFolderRequest?
+    /// Move the bookmark to this folder (empty string removes the folder)
     public var newFolderId: String?
 
-    public init(custom: [String: RawJSON]? = nil, folderId: String? = nil, newFolder: AddFolderRequest? = nil, newFolderId: String? = nil) {
+    public init(
+        custom: [String: RawJSON]? = nil,
+        folderId: String? = nil,
+        newFolder: AddFolderRequest? = nil,
+        newFolderId: String? = nil
+    ) {
         self.custom = custom
         self.folderId = folderId
         self.newFolder = newFolder
@@ -24,7 +32,9 @@ public final class UpdateBookmarkRequest: @unchecked Sendable, Codable, JSONEnco
         case newFolder = "new_folder"
         case newFolderId = "new_folder_id"
     }
+}
 
+extension UpdateBookmarkRequest: Hashable {
     public static func == (lhs: UpdateBookmarkRequest, rhs: UpdateBookmarkRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.folderId == rhs.folderId &&

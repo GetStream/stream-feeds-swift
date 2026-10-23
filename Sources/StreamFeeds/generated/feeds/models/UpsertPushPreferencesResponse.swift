@@ -5,32 +5,31 @@
 import Foundation
 import StreamCore
 
-public final class UpsertPushPreferencesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpsertPushPreferencesResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
-    public var userChannelPreferences: [String: [String: ChannelPushPreferences?]]
-    public var userPreferences: [String: PushPreferences?]
+    /// The user preferences, always returned regardless if you edited it
+    public var userPreferences: [String: PushPreferencesResponse]
 
-    public init(duration: String, userChannelPreferences: [String: [String: ChannelPushPreferences?]], userPreferences: [String: PushPreferences?]) {
+    public init(duration: String, userPreferences: [String: PushPreferencesResponse]) {
         self.duration = duration
-        self.userChannelPreferences = userChannelPreferences
         self.userPreferences = userPreferences
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case duration
-        case userChannelPreferences = "user_channel_preferences"
         case userPreferences = "user_preferences"
     }
+}
 
+extension UpsertPushPreferencesResponse: Hashable {
     public static func == (lhs: UpsertPushPreferencesResponse, rhs: UpsertPushPreferencesResponse) -> Bool {
         lhs.duration == rhs.duration &&
-            lhs.userChannelPreferences == rhs.userChannelPreferences &&
             lhs.userPreferences == rhs.userPreferences
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(duration)
-        hasher.combine(userChannelPreferences)
         hasher.combine(userPreferences)
     }
 }

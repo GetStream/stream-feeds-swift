@@ -8,7 +8,7 @@ import StreamCore
 public struct ModerationConfigData: Identifiable, Equatable, Sendable {
     public let aiImageConfig: AIImageConfig?
     public let aiTextConfig: AITextConfig?
-    public let aiVideoConfig: AIVideoConfig?
+    public let aiVideoConfig: AIVideoConfigResponse?
     public let async: Bool
     public let automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
     public let automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?

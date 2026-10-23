@@ -14,10 +14,12 @@ extension GetCommentsResponse {
         prev: String? = nil
     ) -> GetCommentsResponse {
         GetCommentsResponse(
+            commentCount: comments.count,
             comments: comments,
             duration: duration,
             next: next,
-            prev: prev
+            prev: prev,
+            sort: "first"
         )
     }
 }

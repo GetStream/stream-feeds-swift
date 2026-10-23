@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class MuteRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class MuteRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// User IDs to mute (if multiple users)
     public var targetIds: [String]
+    /// Duration of mute in minutes
     public var timeout: Int?
 
     public init(targetIds: [String], timeout: Int? = nil) {
@@ -18,7 +20,9 @@ public final class MuteRequest: @unchecked Sendable, Codable, JSONEncodable, Has
         case targetIds = "target_ids"
         case timeout
     }
+}
 
+extension MuteRequest: Hashable {
     public static func == (lhs: MuteRequest, rhs: MuteRequest) -> Bool {
         lhs.targetIds == rhs.targetIds &&
             lhs.timeout == rhs.timeout

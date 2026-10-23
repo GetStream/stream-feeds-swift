@@ -5,8 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class CreateFeedsBatchResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class CreateFeedsBatchResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
+    /// List of created feeds
     public var feeds: [FeedResponse]
 
     public init(duration: String, feeds: [FeedResponse]) {
@@ -18,7 +19,9 @@ public final class CreateFeedsBatchResponse: @unchecked Sendable, Codable, JSONE
         case duration
         case feeds
     }
+}
 
+extension CreateFeedsBatchResponse: Hashable {
     public static func == (lhs: CreateFeedsBatchResponse, rhs: CreateFeedsBatchResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.feeds == rhs.feeds

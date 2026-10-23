@@ -34,11 +34,19 @@ final class ActivitiesRepository: Sendable {
     }
         
     func deleteActivity(activityId: String, hardDelete: Bool) async throws {
-        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete)
+        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete, deleteNotificationActivity: nil)
     }
     
     func getActivity(activityId: String) async throws -> ActivityData {
-        let response = try await apiClient.getActivity(id: activityId)
+        let response = try await apiClient.getActivity(
+            id: activityId,
+            commentSort: nil,
+            commentLimit: nil,
+            skipOwnFollowings: nil,
+            language: nil,
+            translateText: nil,
+            includeTopLevelCommentCount: nil
+        )
         return response.activity.toModel()
     }
 
@@ -97,10 +105,10 @@ final class ActivitiesRepository: Sendable {
     
     func pin(_ flag: Bool, activityId: String, in feed: FeedId) async throws -> ActivityData {
         if flag {
-            let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
+            let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId, pinActivityRequest: PinActivityRequest())
             return response.activity.toModel()
         } else {
-            let response = try await apiClient.unpinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
+            let response = try await apiClient.unpinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId, enrichOwnFields: nil)
             return response.activity.toModel()
         }
     }
@@ -113,7 +121,7 @@ final class ActivitiesRepository: Sendable {
     // MARK: - Activity Pagination
     
     func queryActivities(with query: ActivitiesQuery) async throws -> PaginationResult<ActivityData> {
-        let response = try await apiClient.queryActivities(queryActivitiesRequest: query.toRequest())
+        let response = try await apiClient.queryActivities(language: nil, translateText: nil, queryActivitiesRequest: query.toRequest())
         return PaginationResult(
             models: response.activities.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -128,7 +136,7 @@ final class ActivitiesRepository: Sendable {
     }
     
     func deleteReaction(activityId: String, type: String) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
-        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
+        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type, deleteNotificationActivity: nil)
         return (response.reaction.toModel(), response.activity.toModel())
     }
     

@@ -5,14 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class FileUploadConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FileUploadConfig: @unchecked Sendable, Codable, JSONEncodable {
+    /// The allowed file extensions.
     public var allowedFileExtensions: [String]
+    /// The allowed mime types.
     public var allowedMimeTypes: [String]
+    /// The blocked file extensions.
     public var blockedFileExtensions: [String]
+    /// The blocked mime types.
     public var blockedMimeTypes: [String]
+    /// The file size limit allowed in Bytes. 0 means no app-specific limit.
+    /// This value is configurable from Stream's Dashboard App Settings.
     public var sizeLimit: Int
 
-    public init(allowedFileExtensions: [String], allowedMimeTypes: [String], blockedFileExtensions: [String], blockedMimeTypes: [String], sizeLimit: Int) {
+    public init(
+        allowedFileExtensions: [String],
+        allowedMimeTypes: [String],
+        blockedFileExtensions: [String],
+        blockedMimeTypes: [String],
+        sizeLimit: Int
+    ) {
         self.allowedFileExtensions = allowedFileExtensions
         self.allowedMimeTypes = allowedMimeTypes
         self.blockedFileExtensions = blockedFileExtensions
@@ -27,7 +39,9 @@ public final class FileUploadConfig: @unchecked Sendable, Codable, JSONEncodable
         case blockedMimeTypes = "blocked_mime_types"
         case sizeLimit = "size_limit"
     }
+}
 
+extension FileUploadConfig: Hashable {
     public static func == (lhs: FileUploadConfig, rhs: FileUploadConfig) -> Bool {
         lhs.allowedFileExtensions == rhs.allowedFileExtensions &&
             lhs.allowedMimeTypes == rhs.allowedMimeTypes &&
