@@ -83,7 +83,7 @@ rm -rf "$OUTPUT_DIR_FEEDS"
 rm -f "$OUTPUT_DIR_FEEDS/APIs/DefaultEndpoints.swift" "$OUTPUT_DIR_FEEDS/models/WSClientEvent.swift"
 
 # Already defined by StreamCore or Sources/StreamFeeds.
-for model in APIError ConnectUserDetailsRequest ConnectedEvent ConnectionErrorEvent CreateDeviceRequest DeviceResponse HealthCheckEvent ListDevicesResponse OwnUserResponse User; do
+for model in APIError ConnectUserDetailsRequest CreateDeviceRequest DeviceResponse ListDevicesResponse User; do
   rm -f "$OUTPUT_DIR_FEEDS/models/$model.swift"
 done
 
@@ -108,6 +108,8 @@ remove_property DeleteUserRequestPayload deleteConversationChannels markMessages
 remove_property FullUserResponse channelMutes latestHiddenChannels totalUnreadCount unreadChannels unreadCount unreadThreads
 remove_property ModerationCustomActionEvent message
 remove_property ModerationMarkReviewedEvent message
+remove_property OwnUserResponse channelMutes latestHiddenChannels totalUnreadCount totalUnreadCountByTeam unreadChannels \
+  unreadCount unreadThreads
 remove_property PushPreferenceInput callLevel channelCid chatLevel chatPreferences
 remove_property PushPreferencesResponse callLevel chatLevel chatPreferences
 remove_property ReviewQueueItemResponse call message
@@ -201,6 +203,7 @@ remove_property GetFollowSuggestionsResponse algorithmUsed
 remove_property GetOrCreateFeedRequest discardActors enrichmentOptions friendReactionsOptions \
   idAround overwriteInterestWeights viewerLocation
 remove_property GetOrCreateFeedResponse degradedSelectors
+remove_property HealthCheckEvent custom me
 remove_property ImageContentParameters labelOperator minConfidence
 remove_property ImageRuleParameters minConfidence
 remove_property ListBlockListResponse nextCursor
@@ -215,6 +218,8 @@ remove_property ModerationPayload audios countryCode imageIds imageOrderedKeys o
 remove_property ModerationV2Response blocklistsMatched
 remove_property NotificationTarget comment custom parentActivity
 remove_property NotificationTrigger comment custom
+remove_property OwnUserResponse avgResponseTime banned invisible mutes online privacySettings pushPreferences \
+  teamsRole
 remove_property PollOptionResponseData textI18n
 remove_property PollResponseData descriptionI18n nameI18n
 remove_property PollVoteResponse poll

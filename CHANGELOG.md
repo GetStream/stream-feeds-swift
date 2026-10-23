@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### 🚨 Breaking Changes
 - `Feed.acceptFollow(_:role:)` -> `acceptFollow(_:)`. The backend rejects follower roles from client-side requests [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - `Activity` poll methods no longer take `userId`: `getPoll()`, `deletePoll()`, `getPollOption(optionId:)`, `deletePollOption(optionId:)`, `deletePollVote(voteId:)` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
-- Removed `PollVotesQuery.userId`, `FeedQuery.activitySelectorOptions`, `UserData.revokeTokensIssuedBefore` and `ReactionGroupData.sumScores` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Removed `PollVotesQuery.userId`, `FeedQuery.activitySelectorOptions`, `UserData.revokeTokensIssuedBefore`, `OwnUser.revokeTokensIssuedBefore`, `OwnUser.pushNotifications` and `ReactionGroupData.sumScores` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - `Moderation.ban` returns `ModerationBanResponse` and `Moderation.flag` returns `FlagItemResponse` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - `ModerationConfigData.aiVideoConfig` is `AIVideoConfigResponse?` and `FeedAddActivityRequest.location` is `Location?` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Generated models no longer include chat, video or server-side-only properties, and some models are renamed, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
