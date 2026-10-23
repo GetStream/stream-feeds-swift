@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
+public final class QueryReviewQueueRequest: Sendable, Encodable, JSONEncodable {
     /// Filter conditions for review queue items. Accepts built-in fields (e.g. status, channel_cid, severity, recommended_action) and customer-supplied moderation_payload.custom keys: any key that is not a built-in field is matched against the item's custom moderation data (e.g. {"location_id": "loc-42"}). Use filter_config.filterable_custom_keys to discover which custom keys the app exposes as chips. content_text searches the moderated text: "$q" is a keyword search (terms ANDed, no adjacency) over the indexed tsvector, while "$eq" (or "$in" for several wordings) matches the text exactly. The exact form is unindexed, so scope it with date_range rather than running it across the whole queue.
     public let filter: [String: RawJSON]?
     public let limit: Int?
@@ -32,19 +32,6 @@ public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
         self.prev = prev
         self.sort = sort
         self.statsOnly = statsOnly
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.filter = try container.decodeIfPresent([String: RawJSON].self, forKey: .filter)
-        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-        self.lockCount = try container.decodeIfPresent(Int.self, forKey: .lockCount)
-        self.lockDuration = try container.decodeIfPresent(Int.self, forKey: .lockDuration)
-        self.lockItems = try container.decodeIfPresent(Bool.self, forKey: .lockItems)
-        self.next = try container.decodeIfPresent(String.self, forKey: .next)
-        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-        self.sort = try container.decodeIfPresent([SortParamRequest].self, forKey: .sort)
-        self.statsOnly = try container.decodeIfPresent(Bool.self, forKey: .statsOnly)
     }
 
     public func encode(to encoder: Encoder) throws {

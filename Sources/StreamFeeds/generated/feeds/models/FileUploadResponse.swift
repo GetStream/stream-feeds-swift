@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FileUploadResponse: Sendable, Codable, JSONEncodable {
+public final class FileUploadResponse: Sendable, Decodable {
     /// Duration of the request in milliseconds
     public let duration: String
     /// URL to the uploaded asset. Should be used to put to `asset_url` attachment field
@@ -24,13 +24,6 @@ public final class FileUploadResponse: Sendable, Codable, JSONEncodable {
         self.duration = try container.decode(String.self, forKey: .duration)
         self.file = try container.decodeIfPresent(String.self, forKey: .file)
         self.thumbUrl = try container.decodeIfPresent(String.self, forKey: .thumbUrl)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(file, forKey: .file)
-        try container.encodeIfPresent(thumbUrl, forKey: .thumbUrl)
     }
 }
 

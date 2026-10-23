@@ -17,7 +17,7 @@ public final class ActivityFeedbackEventPayloadAction: RawRepresentable, Codable
     public static let showMore = ActivityFeedbackEventPayloadAction(rawValue: "show_more")
 }
 
-public final class ActivityFeedbackEventPayload: Sendable, Codable, JSONEncodable {
+public final class ActivityFeedbackEventPayload: Sendable, Decodable {
     /// The type of feedback action. One of: hide, show_more, show_less
     public let action: ActivityFeedbackEventPayloadAction
     /// The activity that received feedback
@@ -48,16 +48,6 @@ public final class ActivityFeedbackEventPayload: Sendable, Codable, JSONEncodabl
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.user = try container.decode(UserResponse.self, forKey: .user)
         self.value = try container.decode(String.self, forKey: .value)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(action, forKey: .action)
-        try container.encode(activityId, forKey: .activityId)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(user, forKey: .user)
-        try container.encode(value, forKey: .value)
     }
 }
 

@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Ban information
-public final class BanInfoResponse: Sendable, Codable, JSONEncodable {
+public final class BanInfoResponse: Sendable, Decodable {
     /// When the ban was created
     public let createdAt: Date
     /// User response object
@@ -33,15 +33,6 @@ public final class BanInfoResponse: Sendable, Codable, JSONEncodable {
         self.expires = try container.decodeIfPresent(Date.self, forKey: .expires)
         self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
         self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(createdBy, forKey: .createdBy)
-        try container.encodeIfPresent(expires, forKey: .expires)
-        try container.encodeIfPresent(reason, forKey: .reason)
-        try container.encodeIfPresent(shadow, forKey: .shadow)
     }
 }
 

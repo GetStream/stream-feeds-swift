@@ -160,7 +160,7 @@ struct MemberListState_Tests {
     // MARK: - Helper Methods
 
     private func defaultClientWithMemberResponses(
-        _ additionalPayloads: [any Encodable] = []
+        _ additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

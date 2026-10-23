@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateCommentRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateCommentRequest: Sendable, Encodable, JSONEncodable {
     /// Updated text content of the comment
     public let comment: String?
     /// Updated custom data for the comment
@@ -16,13 +16,6 @@ public final class UpdateCommentRequest: Sendable, Codable, JSONEncodable {
         self.comment = comment
         self.custom = custom
         self.skipPush = skipPush
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.comment = try container.decodeIfPresent(String.self, forKey: .comment)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Configuration for mark reviewed action
-public final class MarkReviewedRequestPayload: Sendable, Codable, JSONEncodable {
+public final class MarkReviewedRequestPayload: Sendable, Encodable, JSONEncodable {
     /// Maximum content items to mark as reviewed
     public let contentToMarkAsReviewedLimit: Int?
     /// Skip marking content as reviewed
@@ -15,12 +15,6 @@ public final class MarkReviewedRequestPayload: Sendable, Codable, JSONEncodable 
     public init(contentToMarkAsReviewedLimit: Int? = nil, disableMarkingContentAsReviewed: Bool? = nil) {
         self.contentToMarkAsReviewedLimit = contentToMarkAsReviewedLimit
         self.disableMarkingContentAsReviewed = disableMarkingContentAsReviewed
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.contentToMarkAsReviewedLimit = try container.decodeIfPresent(Int.self, forKey: .contentToMarkAsReviewedLimit)
-        self.disableMarkingContentAsReviewed = try container.decodeIfPresent(Bool.self, forKey: .disableMarkingContentAsReviewed)
     }
 
     public func encode(to encoder: Encoder) throws {

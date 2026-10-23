@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Basic response information
-public final class GetApplicationResponse: Sendable, Codable, JSONEncodable {
+public final class GetApplicationResponse: Sendable, Decodable {
     /// A type representing the app settings.
     public let app: AppResponseFields
     /// Duration of the request in milliseconds
@@ -21,12 +21,6 @@ public final class GetApplicationResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.app = try container.decode(AppResponseFields.self, forKey: .app)
         self.duration = try container.decode(String.self, forKey: .duration)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(app, forKey: .app)
-        try container.encode(duration, forKey: .duration)
     }
 }
 

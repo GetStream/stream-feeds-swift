@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ModerationV2Response: Sendable, Codable, JSONEncodable {
+public final class ModerationV2Response: Sendable, Decodable {
     public let action: String
     public let blocklistMatched: String?
     public let imageHarms: [String]?
@@ -33,17 +33,6 @@ public final class ModerationV2Response: Sendable, Codable, JSONEncodable {
         self.platformCircumvented = try container.decodeIfPresent(Bool.self, forKey: .platformCircumvented)
         self.semanticFilterMatched = try container.decodeIfPresent(String.self, forKey: .semanticFilterMatched)
         self.textHarms = try container.decodeIfPresent([String].self, forKey: .textHarms)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(action, forKey: .action)
-        try container.encodeIfPresent(blocklistMatched, forKey: .blocklistMatched)
-        try container.encodeIfPresent(imageHarms, forKey: .imageHarms)
-        try container.encode(originalText, forKey: .originalText)
-        try container.encodeIfPresent(platformCircumvented, forKey: .platformCircumvented)
-        try container.encodeIfPresent(semanticFilterMatched, forKey: .semanticFilterMatched)
-        try container.encodeIfPresent(textHarms, forKey: .textHarms)
     }
 }
 

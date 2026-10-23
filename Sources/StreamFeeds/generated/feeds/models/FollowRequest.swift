@@ -16,7 +16,7 @@ public final class FollowRequestPushPreference: RawRepresentable, Codable, Hasha
     public static let none = FollowRequestPushPreference(rawValue: "none")
 }
 
-public final class FollowRequest: Sendable, Codable, JSONEncodable {
+public final class FollowRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to create a notification activity for this follow
     public let createNotificationActivity: Bool?
     /// Custom data for the follow relationship
@@ -37,16 +37,6 @@ public final class FollowRequest: Sendable, Codable, JSONEncodable {
         self.skipPush = skipPush
         self.source = source
         self.target = target
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.pushPreference = try container.decodeIfPresent(FollowRequestPushPreference.self, forKey: .pushPreference)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
-        self.source = try container.decode(String.self, forKey: .source)
-        self.target = try container.decode(String.self, forKey: .target)
     }
 
     public func encode(to encoder: Encoder) throws {

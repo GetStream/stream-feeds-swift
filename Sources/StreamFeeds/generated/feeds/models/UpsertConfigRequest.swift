@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
+public final class UpsertConfigRequest: Sendable, Encodable, JSONEncodable {
     public let aiImageConfig: AIImageConfig?
     public let aiTextConfig: AITextConfig?
     public let aiVideoConfig: AIVideoConfigRequest?
@@ -43,26 +43,6 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
         self.ruleBuilderConfig = ruleBuilderConfig
         self.team = team
         self.velocityFilterConfig = velocityFilterConfig
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.aiImageConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .aiImageConfig)
-        self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
-        self.aiVideoConfig = try container.decodeIfPresent(AIVideoConfigRequest.self, forKey: .aiVideoConfig)
-        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
-        self.automodPlatformCircumventionConfig = try container.decodeIfPresent(AutomodPlatformCircumventionConfig.self, forKey: .automodPlatformCircumventionConfig)
-        self.automodSemanticFiltersConfig = try container.decodeIfPresent(AutomodSemanticFiltersConfig.self, forKey: .automodSemanticFiltersConfig)
-        self.automodToxicityConfig = try container.decodeIfPresent(AutomodToxicityConfig.self, forKey: .automodToxicityConfig)
-        self.awsRekognitionConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .awsRekognitionConfig)
-        self.blockListConfig = try container.decodeIfPresent(BlockListConfig.self, forKey: .blockListConfig)
-        self.bodyguardConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .bodyguardConfig)
-        self.googleVisionConfig = try container.decodeIfPresent(GoogleVisionConfig.self, forKey: .googleVisionConfig)
-        self.key = try container.decode(String.self, forKey: .key)
-        self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
-        self.ruleBuilderConfig = try container.decodeIfPresent(RuleBuilderConfig.self, forKey: .ruleBuilderConfig)
-        self.team = try container.decodeIfPresent(String.self, forKey: .team)
-        self.velocityFilterConfig = try container.decodeIfPresent(VelocityFilterConfig.self, forKey: .velocityFilterConfig)
     }
 
     public func encode(to encoder: Encoder) throws {

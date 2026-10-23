@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PagerRequest: Sendable, Codable, JSONEncodable {
+public final class PagerRequest: Sendable, Encodable, JSONEncodable {
     public let limit: Int?
     public let next: String?
     public let prev: String?
@@ -14,13 +14,6 @@ public final class PagerRequest: Sendable, Codable, JSONEncodable {
         self.limit = limit
         self.next = next
         self.prev = prev
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-        self.next = try container.decodeIfPresent(String.self, forKey: .next)
-        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
 
     public func encode(to encoder: Encoder) throws {

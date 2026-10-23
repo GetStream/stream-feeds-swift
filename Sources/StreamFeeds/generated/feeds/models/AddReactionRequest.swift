@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AddReactionRequest: Sendable, Codable, JSONEncodable {
+public final class AddReactionRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to create a notification activity for this reaction
     public let createNotificationActivity: Bool?
     /// Custom data for the reaction
@@ -22,15 +22,6 @@ public final class AddReactionRequest: Sendable, Codable, JSONEncodable {
         self.enforceUnique = enforceUnique
         self.skipPush = skipPush
         self.type = type
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.enforceUnique = try container.decodeIfPresent(Bool.self, forKey: .enforceUnique)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
-        self.type = try container.decode(String.self, forKey: .type)
     }
 
     public func encode(to encoder: Encoder) throws {

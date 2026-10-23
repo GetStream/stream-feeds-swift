@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class DeleteFeedResponse: Sendable, Codable, JSONEncodable {
+public final class DeleteFeedResponse: Sendable, Decodable {
     public let duration: String
     /// The ID of the async task that will handle feed cleanup and hard deletion
     public let taskId: String
@@ -19,12 +19,6 @@ public final class DeleteFeedResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.taskId = try container.decode(String.self, forKey: .taskId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(taskId, forKey: .taskId)
     }
 }
 

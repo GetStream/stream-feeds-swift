@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// A type representing the app settings.
-public final class AppResponseFields: Sendable, Codable, JSONEncodable {
+public final class AppResponseFields: Sendable, Decodable {
     /// A boolean value determining if async url enrichment is enabled.
     public let asyncUrlEnrichEnabled: Bool
     /// A boolean value determining if auto translation is enabled.
@@ -31,15 +31,6 @@ public final class AppResponseFields: Sendable, Codable, JSONEncodable {
         self.fileUploadConfig = try container.decode(FileUploadConfig.self, forKey: .fileUploadConfig)
         self.imageUploadConfig = try container.decode(FileUploadConfig.self, forKey: .imageUploadConfig)
         self.name = try container.decode(String.self, forKey: .name)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(asyncUrlEnrichEnabled, forKey: .asyncUrlEnrichEnabled)
-        try container.encode(autoTranslationEnabled, forKey: .autoTranslationEnabled)
-        try container.encode(fileUploadConfig, forKey: .fileUploadConfig)
-        try container.encode(imageUploadConfig, forKey: .imageUploadConfig)
-        try container.encode(name, forKey: .name)
     }
 }
 

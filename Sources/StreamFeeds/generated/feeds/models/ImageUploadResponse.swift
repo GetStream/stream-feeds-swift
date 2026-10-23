@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ImageUploadResponse: Sendable, Codable, JSONEncodable {
+public final class ImageUploadResponse: Sendable, Decodable {
     /// Duration of the request in milliseconds
     public let duration: String
     public let file: String?
@@ -26,14 +26,6 @@ public final class ImageUploadResponse: Sendable, Codable, JSONEncodable {
         self.file = try container.decodeIfPresent(String.self, forKey: .file)
         self.thumbUrl = try container.decodeIfPresent(String.self, forKey: .thumbUrl)
         self.uploadSizes = try container.decodeIfPresent([ImageSize].self, forKey: .uploadSizes)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(file, forKey: .file)
-        try container.encodeIfPresent(thumbUrl, forKey: .thumbUrl)
-        try container.encodeIfPresent(uploadSizes, forKey: .uploadSizes)
     }
 }
 

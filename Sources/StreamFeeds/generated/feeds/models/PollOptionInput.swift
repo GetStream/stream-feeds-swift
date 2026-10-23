@@ -5,19 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class PollOptionInput: Sendable, Codable, JSONEncodable {
+public final class PollOptionInput: Sendable, Encodable, JSONEncodable {
     public let custom: [String: RawJSON]?
     public let text: String?
 
     public init(custom: [String: RawJSON]? = nil, text: String? = nil) {
         self.custom = custom
         self.text = text
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.text = try container.decodeIfPresent(String.self, forKey: .text)
     }
 
     public func encode(to encoder: Encoder) throws {

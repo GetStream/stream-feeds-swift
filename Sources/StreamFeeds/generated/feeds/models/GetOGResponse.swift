@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetOGResponse: Sendable, Codable, JSONEncodable {
+public final class GetOGResponse: Sendable, Decodable {
     public let actions: [Action]?
     /// URL of detected video or audio
     public let assetUrl: String?
@@ -91,33 +91,6 @@ public final class GetOGResponse: Sendable, Codable, JSONEncodable {
         self.title = try container.decodeIfPresent(String.self, forKey: .title)
         self.titleLink = try container.decodeIfPresent(String.self, forKey: .titleLink)
         self.type = try container.decodeIfPresent(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(actions, forKey: .actions)
-        try container.encodeIfPresent(assetUrl, forKey: .assetUrl)
-        try container.encodeIfPresent(authorIcon, forKey: .authorIcon)
-        try container.encodeIfPresent(authorLink, forKey: .authorLink)
-        try container.encodeIfPresent(authorName, forKey: .authorName)
-        try container.encodeIfPresent(color, forKey: .color)
-        try container.encode(custom, forKey: .custom)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(fallback, forKey: .fallback)
-        try container.encodeIfPresent(fields, forKey: .fields)
-        try container.encodeIfPresent(footer, forKey: .footer)
-        try container.encodeIfPresent(footerIcon, forKey: .footerIcon)
-        try container.encodeIfPresent(giphy, forKey: .giphy)
-        try container.encodeIfPresent(imageUrl, forKey: .imageUrl)
-        try container.encodeIfPresent(ogScrapeUrl, forKey: .ogScrapeUrl)
-        try container.encodeIfPresent(originalHeight, forKey: .originalHeight)
-        try container.encodeIfPresent(originalWidth, forKey: .originalWidth)
-        try container.encodeIfPresent(pretext, forKey: .pretext)
-        try container.encodeIfPresent(text, forKey: .text)
-        try container.encodeIfPresent(thumbUrl, forKey: .thumbUrl)
-        try container.encodeIfPresent(title, forKey: .title)
-        try container.encodeIfPresent(titleLink, forKey: .titleLink)
-        try container.encodeIfPresent(type, forKey: .type)
     }
 }
 

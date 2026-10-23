@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class MuteRequest: Sendable, Codable, JSONEncodable {
+public final class MuteRequest: Sendable, Encodable, JSONEncodable {
     /// User IDs to mute (if multiple users)
     public let targetIds: [String]
     /// Duration of mute in minutes
@@ -14,12 +14,6 @@ public final class MuteRequest: Sendable, Codable, JSONEncodable {
     public init(targetIds: [String], timeout: Int? = nil) {
         self.targetIds = targetIds
         self.timeout = timeout
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.targetIds = try container.decode([String].self, forKey: .targetIds)
-        self.timeout = try container.decodeIfPresent(Int.self, forKey: .timeout)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Content payload for moderation
-public final class ModerationPayloadResponse: Sendable, Codable, JSONEncodable {
+public final class ModerationPayloadResponse: Sendable, Decodable {
     /// Audio URLs to moderate
     public let audios: [String]?
     /// Custom data for moderation
@@ -53,20 +53,6 @@ public final class ModerationPayloadResponse: Sendable, Codable, JSONEncodable {
         self.textOrderedKeys = try container.decodeIfPresent([String].self, forKey: .textOrderedKeys)
         self.texts = try container.decodeIfPresent([String].self, forKey: .texts)
         self.videos = try container.decodeIfPresent([String].self, forKey: .videos)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(audios, forKey: .audios)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(imageIds, forKey: .imageIds)
-        try container.encodeIfPresent(imageOrderedKeys, forKey: .imageOrderedKeys)
-        try container.encodeIfPresent(images, forKey: .images)
-        try container.encodeIfPresent(otherMedia, forKey: .otherMedia)
-        try container.encodeIfPresent(textIds, forKey: .textIds)
-        try container.encodeIfPresent(textOrderedKeys, forKey: .textOrderedKeys)
-        try container.encodeIfPresent(texts, forKey: .texts)
-        try container.encodeIfPresent(videos, forKey: .videos)
     }
 }
 

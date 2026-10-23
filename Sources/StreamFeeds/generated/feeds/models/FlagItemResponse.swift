@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FlagItemResponse: Sendable, Codable, JSONEncodable {
+public final class FlagItemResponse: Sendable, Decodable {
     public let duration: String
     /// Unique identifier of the created moderation item
     public let itemId: String
@@ -19,12 +19,6 @@ public final class FlagItemResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.itemId = try container.decode(String.self, forKey: .itemId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(itemId, forKey: .itemId)
     }
 }
 

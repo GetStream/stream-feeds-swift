@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class CommentFeedbackEventPayload: Sendable, Codable, JSONEncodable {
+public final class CommentFeedbackEventPayload: Sendable, Decodable {
     /// The comment that received feedback
     public let commentId: String
     /// When the feedback was created
@@ -32,15 +32,6 @@ public final class CommentFeedbackEventPayload: Sendable, Codable, JSONEncodable
         self.hide = try container.decode(Bool.self, forKey: .hide)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.user = try container.decode(UserResponse.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(commentId, forKey: .commentId)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(hide, forKey: .hide)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(user, forKey: .user)
     }
 }
 

@@ -29,7 +29,7 @@ public final class ActivityRequestVisibility: RawRepresentable, Codable, Hashabl
     public static let tag = ActivityRequestVisibility(rawValue: "tag")
 }
 
-public final class ActivityRequest: Sendable, Codable, JSONEncodable {
+public final class ActivityRequest: Sendable, Encodable, JSONEncodable {
     /// List of attachments for the activity
     public let attachments: [Attachment]?
     /// Custom data for the activity
@@ -79,26 +79,6 @@ public final class ActivityRequest: Sendable, Codable, JSONEncodable {
         self.type = type
         self.visibility = visibility
         self.visibilityTag = visibilityTag
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.expiresAt = try container.decodeIfPresent(String.self, forKey: .expiresAt)
-        self.feeds = try container.decode([String].self, forKey: .feeds)
-        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.interestTags = try container.decodeIfPresent([String].self, forKey: .interestTags)
-        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
-        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
-        self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
-        self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.searchData = try container.decodeIfPresent([String: RawJSON].self, forKey: .searchData)
-        self.text = try container.decodeIfPresent(String.self, forKey: .text)
-        self.type = try container.decode(String.self, forKey: .type)
-        self.visibility = try container.decodeIfPresent(ActivityRequestVisibility.self, forKey: .visibility)
-        self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -39,7 +39,7 @@ public final class SubmitActionRequestActionType: RawRepresentable, Codable, Has
     public static let unmask = SubmitActionRequestActionType(rawValue: "unmask")
 }
 
-public final class SubmitActionRequest: Sendable, Codable, JSONEncodable {
+public final class SubmitActionRequest: Sendable, Encodable, JSONEncodable {
     /// Type of moderation action to perform. One of: mark_reviewed, delete_message, delete_activity, delete_comment, delete_reaction, delete_poll, delete_poll_option, delete_poll_answer, ban, custom, unban, restore, delete_user, delete_user_messages, unblock, block, shadow_block, unmask, kick_user, end_call, escalate, de_escalate
     public let actionType: SubmitActionRequestActionType
     /// Configuration for custom moderation action
@@ -60,16 +60,6 @@ public final class SubmitActionRequest: Sendable, Codable, JSONEncodable {
         self.deleteReaction = deleteReaction
         self.itemId = itemId
         self.markReviewed = markReviewed
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.actionType = try container.decode(SubmitActionRequestActionType.self, forKey: .actionType)
-        self.custom = try container.decodeIfPresent(CustomActionRequestPayload.self, forKey: .custom)
-        self.deleteActivity = try container.decodeIfPresent(DeleteActivityRequestPayload.self, forKey: .deleteActivity)
-        self.deleteReaction = try container.decodeIfPresent(DeleteReactionRequestPayload.self, forKey: .deleteReaction)
-        self.itemId = try container.decodeIfPresent(String.self, forKey: .itemId)
-        self.markReviewed = try container.decodeIfPresent(MarkReviewedRequestPayload.self, forKey: .markReviewed)
     }
 
     public func encode(to encoder: Encoder) throws {

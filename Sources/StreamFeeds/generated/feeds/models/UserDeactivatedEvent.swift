@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets deactivated. The event contains information about the user that was deactivated.
-public final class UserDeactivatedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class UserDeactivatedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
     public let createdAt: Date
     public let createdBy: UserResponseCommonFields?
@@ -27,14 +27,6 @@ public final class UserDeactivatedEvent: Sendable, Event, Codable, JSONEncodable
         self.createdBy = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .createdBy)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(createdBy, forKey: .createdBy)
-        try container.encode(type, forKey: .type)
-        try container.encode(user, forKey: .user)
     }
 }
 

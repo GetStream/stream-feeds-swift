@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UserMuteResponse: Sendable, Codable, JSONEncodable {
+public final class UserMuteResponse: Sendable, Decodable {
     public let createdAt: Date
     public let expires: Date?
     /// User response object
@@ -29,15 +29,6 @@ public final class UserMuteResponse: Sendable, Codable, JSONEncodable {
         self.target = try container.decodeIfPresent(UserResponse.self, forKey: .target)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(expires, forKey: .expires)
-        try container.encodeIfPresent(target, forKey: .target)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

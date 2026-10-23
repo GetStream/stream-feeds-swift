@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderCondition: Sendable, Codable, JSONEncodable {
+public final class RuleBuilderCondition: Sendable, Encodable, JSONEncodable {
     public let confidence: Double?
     public let contentCountRuleParams: ContentCountRuleParameters?
     public let imageContentParams: ImageContentParameters?
@@ -32,22 +32,6 @@ public final class RuleBuilderCondition: Sendable, Codable, JSONEncodable {
         self.userRuleParams = userRuleParams
         self.videoContentParams = videoContentParams
         self.videoRuleParams = videoRuleParams
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.confidence = try container.decodeIfPresent(Double.self, forKey: .confidence)
-        self.contentCountRuleParams = try container.decodeIfPresent(ContentCountRuleParameters.self, forKey: .contentCountRuleParams)
-        self.imageContentParams = try container.decodeIfPresent(ImageContentParameters.self, forKey: .imageContentParams)
-        self.imageRuleParams = try container.decodeIfPresent(ImageRuleParameters.self, forKey: .imageRuleParams)
-        self.textContentParams = try container.decodeIfPresent(TextContentParameters.self, forKey: .textContentParams)
-        self.textRuleParams = try container.decodeIfPresent(TextRuleParameters.self, forKey: .textRuleParams)
-        self.type = try container.decodeIfPresent(String.self, forKey: .type)
-        self.userCreatedWithinParams = try container.decodeIfPresent(UserCreatedWithinParameters.self, forKey: .userCreatedWithinParams)
-        self.userCustomPropertyParams = try container.decodeIfPresent(UserCustomPropertyParameters.self, forKey: .userCustomPropertyParams)
-        self.userRuleParams = try container.decodeIfPresent(UserRuleParameters.self, forKey: .userRuleParams)
-        self.videoContentParams = try container.decodeIfPresent(VideoContentParameters.self, forKey: .videoContentParams)
-        self.videoRuleParams = try container.decodeIfPresent(VideoRuleParameters.self, forKey: .videoRuleParams)
     }
 
     public func encode(to encoder: Encoder) throws {

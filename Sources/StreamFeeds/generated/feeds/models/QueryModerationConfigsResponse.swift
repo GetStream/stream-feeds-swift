@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryModerationConfigsResponse: Sendable, Codable, JSONEncodable {
+public final class QueryModerationConfigsResponse: Sendable, Decodable {
     /// List of moderation configurations
     public let configs: [ConfigResponse]
     public let duration: String
@@ -25,14 +25,6 @@ public final class QueryModerationConfigsResponse: Sendable, Codable, JSONEncoda
         self.duration = try container.decode(String.self, forKey: .duration)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(configs, forKey: .configs)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

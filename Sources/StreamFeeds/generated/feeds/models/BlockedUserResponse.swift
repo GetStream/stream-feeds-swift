@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class BlockedUserResponse: Sendable, Codable, JSONEncodable {
+public final class BlockedUserResponse: Sendable, Decodable {
     /// User response object
     public let blockedUser: UserResponse
     /// ID of the user who got blocked
@@ -31,15 +31,6 @@ public final class BlockedUserResponse: Sendable, Codable, JSONEncodable {
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.user = try container.decode(UserResponse.self, forKey: .user)
         self.userId = try container.decode(String.self, forKey: .userId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(blockedUser, forKey: .blockedUser)
-        try container.encode(blockedUserId, forKey: .blockedUserId)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(user, forKey: .user)
-        try container.encode(userId, forKey: .userId)
     }
 }
 

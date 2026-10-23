@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PollClosedFeedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class PollClosedFeedEvent: Sendable, Event, Decodable {
     public let createdAt: Date
     public let custom: [String: RawJSON]
     public let feedVisibility: String?
@@ -33,17 +33,6 @@ public final class PollClosedFeedEvent: Sendable, Event, Codable, JSONEncodable 
         self.poll = try container.decode(PollResponseData.self, forKey: .poll)
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encode(poll, forKey: .poll)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
     }
 }
 

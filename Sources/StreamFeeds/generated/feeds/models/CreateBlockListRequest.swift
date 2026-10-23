@@ -22,7 +22,7 @@ public final class CreateBlockListRequestType: RawRepresentable, Codable, Hashab
 }
 
 /// Block list contains restricted words
-public final class CreateBlockListRequest: Sendable, Codable, JSONEncodable {
+public final class CreateBlockListRequest: Sendable, Encodable, JSONEncodable {
     /// Block list name
     public let name: String
     public let team: String?
@@ -36,14 +36,6 @@ public final class CreateBlockListRequest: Sendable, Codable, JSONEncodable {
         self.team = team
         self.type = type
         self.words = words
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.name = try container.decode(String.self, forKey: .name)
-        self.team = try container.decodeIfPresent(String.self, forKey: .team)
-        self.type = try container.decodeIfPresent(CreateBlockListRequestType.self, forKey: .type)
-        self.words = try container.decode([String].self, forKey: .words)
     }
 
     public func encode(to encoder: Encoder) throws {

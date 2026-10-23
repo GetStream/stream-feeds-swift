@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PagerResponse: Sendable, Codable, JSONEncodable {
+public final class PagerResponse: Sendable, Decodable {
     public let next: String?
     public let prev: String?
 
@@ -18,12 +18,6 @@ public final class PagerResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

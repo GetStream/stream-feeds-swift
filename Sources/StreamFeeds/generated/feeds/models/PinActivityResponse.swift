@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PinActivityResponse: Sendable, Codable, JSONEncodable {
+public final class PinActivityResponse: Sendable, Decodable {
     public let activity: ActivityResponse
     /// When the activity was pinned
     public let createdAt: Date
@@ -30,15 +30,6 @@ public final class PinActivityResponse: Sendable, Codable, JSONEncodable {
         self.duration = try container.decode(String.self, forKey: .duration)
         self.feed = try container.decode(String.self, forKey: .feed)
         self.userId = try container.decode(String.self, forKey: .userId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activity, forKey: .activity)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(feed, forKey: .feed)
-        try container.encode(userId, forKey: .userId)
     }
 }
 

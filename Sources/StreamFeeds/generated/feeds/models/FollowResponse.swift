@@ -28,7 +28,7 @@ public final class FollowResponseStatus: RawRepresentable, Codable, Hashable, Se
     public static let rejected = FollowResponseStatus(rawValue: "rejected")
 }
 
-public final class FollowResponse: Sendable, Codable, JSONEncodable {
+public final class FollowResponse: Sendable, Decodable {
     /// When the follow relationship was created
     public let createdAt: Date
     /// Custom data for the follow relationship
@@ -73,20 +73,6 @@ public final class FollowResponse: Sendable, Codable, JSONEncodable {
         self.status = try container.decode(FollowResponseStatus.self, forKey: .status)
         self.targetFeed = try container.decode(FeedResponse.self, forKey: .targetFeed)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encode(followerRole, forKey: .followerRole)
-        try container.encode(pushPreference, forKey: .pushPreference)
-        try container.encodeIfPresent(requestAcceptedAt, forKey: .requestAcceptedAt)
-        try container.encodeIfPresent(requestRejectedAt, forKey: .requestRejectedAt)
-        try container.encode(sourceFeed, forKey: .sourceFeed)
-        try container.encode(status, forKey: .status)
-        try container.encode(targetFeed, forKey: .targetFeed)
-        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

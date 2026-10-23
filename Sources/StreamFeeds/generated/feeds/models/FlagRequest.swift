@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FlagRequest: Sendable, Codable, JSONEncodable {
+public final class FlagRequest: Sendable, Encodable, JSONEncodable {
     /// Additional metadata about the flag
     public let custom: [String: RawJSON]?
     /// Unique identifier of the entity being flagged
@@ -22,15 +22,6 @@ public final class FlagRequest: Sendable, Codable, JSONEncodable {
         self.entityType = entityType
         self.moderationPayload = moderationPayload
         self.reason = reason
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.entityId = try container.decode(String.self, forKey: .entityId)
-        self.entityType = try container.decode(String.self, forKey: .entityType)
-        self.moderationPayload = try container.decodeIfPresent(ModerationPayload.self, forKey: .moderationPayload)
-        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
     }
 
     public func encode(to encoder: Encoder) throws {

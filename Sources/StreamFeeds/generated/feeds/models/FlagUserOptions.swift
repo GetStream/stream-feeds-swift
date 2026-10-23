@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class FlagUserOptions: Sendable, Codable, JSONEncodable {
+public final class FlagUserOptions: Sendable, Encodable, JSONEncodable {
     public let reason: String?
 
     public init(reason: String? = nil) {
         self.reason = reason
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
     }
 
     public func encode(to encoder: Encoder) throws {

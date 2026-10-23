@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class StreamData: Sendable, Codable, JSONEncodable {
+public final class StreamData: Sendable, Decodable {
     public let id: String
 
     public init(id: String) {
@@ -15,11 +15,6 @@ public final class StreamData: Sendable, Codable, JSONEncodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try container.decode(String.self, forKey: .id)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(id, forKey: .id)
     }
 }
 

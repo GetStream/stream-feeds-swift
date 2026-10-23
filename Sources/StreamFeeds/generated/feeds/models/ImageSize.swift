@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ImageSize: Sendable, Codable, JSONEncodable {
+public final class ImageSize: Sendable, Decodable {
     /// Crop mode. One of: top, bottom, left, right, center
     public let crop: String?
     /// Target image height
@@ -28,14 +28,6 @@ public final class ImageSize: Sendable, Codable, JSONEncodable {
         self.height = try container.decodeIfPresent(Int.self, forKey: .height)
         self.resize = try container.decodeIfPresent(String.self, forKey: .resize)
         self.width = try container.decodeIfPresent(Int.self, forKey: .width)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(crop, forKey: .crop)
-        try container.encodeIfPresent(height, forKey: .height)
-        try container.encodeIfPresent(resize, forKey: .resize)
-        try container.encodeIfPresent(width, forKey: .width)
     }
 }
 

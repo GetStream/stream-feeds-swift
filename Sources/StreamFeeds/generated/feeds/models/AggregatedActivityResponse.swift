@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AggregatedActivityResponse: Sendable, Codable, JSONEncodable {
+public final class AggregatedActivityResponse: Sendable, Decodable {
     /// List of activities in this aggregation
     public let activities: [ActivityResponse]
     /// Number of activities in this aggregation
@@ -47,19 +47,6 @@ public final class AggregatedActivityResponse: Sendable, Codable, JSONEncodable 
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.userCount = try container.decode(Int.self, forKey: .userCount)
         self.userCountTruncated = try container.decode(Bool.self, forKey: .userCountTruncated)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activities, forKey: .activities)
-        try container.encode(activityCount, forKey: .activityCount)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(group, forKey: .group)
-        try container.encodeIfPresent(isWatched, forKey: .isWatched)
-        try container.encode(score, forKey: .score)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(userCount, forKey: .userCount)
-        try container.encode(userCountTruncated, forKey: .userCountTruncated)
     }
 }
 

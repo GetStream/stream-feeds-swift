@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedResponse: Sendable, Codable, JSONEncodable {
+public final class GetOrCreateFeedResponse: Sendable, Decodable {
     public let activities: [ActivityResponse]
     public let aggregatedActivities: [AggregatedActivityResponse]
     public let created: Bool
@@ -58,25 +58,6 @@ public final class GetOrCreateFeedResponse: Sendable, Codable, JSONEncodable {
         self.notificationStatus = try container.decodeIfPresent(NotificationStatusResponse.self, forKey: .notificationStatus)
         self.pinnedActivities = try container.decode([ActivityPinResponse].self, forKey: .pinnedActivities)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activities, forKey: .activities)
-        try container.encode(aggregatedActivities, forKey: .aggregatedActivities)
-        try container.encode(created, forKey: .created)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(feed, forKey: .feed)
-        try container.encode(followers, forKey: .followers)
-        try container.encodeIfPresent(followersPagination, forKey: .followersPagination)
-        try container.encode(following, forKey: .following)
-        try container.encodeIfPresent(followingPagination, forKey: .followingPagination)
-        try container.encodeIfPresent(memberPagination, forKey: .memberPagination)
-        try container.encode(members, forKey: .members)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(notificationStatus, forKey: .notificationStatus)
-        try container.encode(pinnedActivities, forKey: .pinnedActivities)
-        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

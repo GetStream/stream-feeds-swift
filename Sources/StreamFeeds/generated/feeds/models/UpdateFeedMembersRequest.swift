@@ -17,7 +17,7 @@ public final class UpdateFeedMembersRequestOperation: RawRepresentable, Codable,
     public static let upsert = UpdateFeedMembersRequestOperation(rawValue: "upsert")
 }
 
-public final class UpdateFeedMembersRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateFeedMembersRequest: Sendable, Encodable, JSONEncodable {
     public let limit: Int?
     /// List of members to upsert, remove, or set
     public let members: [FeedMemberRequest]?
@@ -32,15 +32,6 @@ public final class UpdateFeedMembersRequest: Sendable, Codable, JSONEncodable {
         self.next = next
         self.operation = operation
         self.prev = prev
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-        self.members = try container.decodeIfPresent([FeedMemberRequest].self, forKey: .members)
-        self.next = try container.decodeIfPresent(String.self, forKey: .next)
-        self.operation = try container.decode(UpdateFeedMembersRequestOperation.self, forKey: .operation)
-        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
 
     public func encode(to encoder: Encoder) throws {

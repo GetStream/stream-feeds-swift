@@ -82,7 +82,7 @@ public final class FeedsPreferencesReaction: RawRepresentable, Codable, Hashable
     public static let none = FeedsPreferencesReaction(rawValue: "none")
 }
 
-public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
+public final class FeedsPreferences: Sendable, Encodable, JSONEncodable {
     /// Push notification preference for comments on user's activities. One of: all, none
     public let comment: FeedsPreferencesComment?
     /// Push notification preference for reactions on comments. One of: all, none
@@ -103,16 +103,6 @@ public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
         self.follow = follow
         self.mention = mention
         self.reaction = reaction
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.comment = try container.decodeIfPresent(FeedsPreferencesComment.self, forKey: .comment)
-        self.commentReaction = try container.decodeIfPresent(FeedsPreferencesCommentReaction.self, forKey: .commentReaction)
-        self.customActivityTypes = try container.decodeIfPresent([String: String].self, forKey: .customActivityTypes)
-        self.follow = try container.decodeIfPresent(FeedsPreferencesFollow.self, forKey: .follow)
-        self.mention = try container.decodeIfPresent(FeedsPreferencesMention.self, forKey: .mention)
-        self.reaction = try container.decodeIfPresent(FeedsPreferencesReaction.self, forKey: .reaction)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -16,7 +16,7 @@ public final class UpdateFollowRequestPushPreference: RawRepresentable, Codable,
     public static let none = UpdateFollowRequestPushPreference(rawValue: "none")
 }
 
-public final class UpdateFollowRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateFollowRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the follow relationship
     public let custom: [String: RawJSON]?
     /// Push preference for the follow relationship
@@ -31,14 +31,6 @@ public final class UpdateFollowRequest: Sendable, Codable, JSONEncodable {
         self.pushPreference = pushPreference
         self.source = source
         self.target = target
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.pushPreference = try container.decodeIfPresent(UpdateFollowRequestPushPreference.self, forKey: .pushPreference)
-        self.source = try container.decode(String.self, forKey: .source)
-        self.target = try container.decode(String.self, forKey: .target)
     }
 
     public func encode(to encoder: Encoder) throws {

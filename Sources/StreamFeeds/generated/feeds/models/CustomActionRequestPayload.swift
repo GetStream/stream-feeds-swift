@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Configuration for custom moderation action
-public final class CustomActionRequestPayload: Sendable, Codable, JSONEncodable {
+public final class CustomActionRequestPayload: Sendable, Encodable, JSONEncodable {
     /// Custom action identifier
     public let id: String?
     /// Custom action options
@@ -15,12 +15,6 @@ public final class CustomActionRequestPayload: Sendable, Codable, JSONEncodable 
     public init(id: String? = nil, options: [String: RawJSON]? = nil) {
         self.id = id
         self.options = options
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.options = try container.decodeIfPresent([String: RawJSON].self, forKey: .options)
     }
 
     public func encode(to encoder: Encoder) throws {

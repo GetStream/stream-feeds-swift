@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryUsersPayload: Sendable, Codable, JSONEncodable {
+public final class QueryUsersPayload: Sendable, Encodable, JSONEncodable {
     /// Filter conditions to apply to the query
     public let filterConditions: [String: RawJSON]
     public let includeDeactivatedUsers: Bool?
@@ -22,16 +22,6 @@ public final class QueryUsersPayload: Sendable, Codable, JSONEncodable {
         self.offset = offset
         self.presence = presence
         self.sort = sort
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.filterConditions = try container.decode([String: RawJSON].self, forKey: .filterConditions)
-        self.includeDeactivatedUsers = try container.decodeIfPresent(Bool.self, forKey: .includeDeactivatedUsers)
-        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-        self.offset = try container.decodeIfPresent(Int.self, forKey: .offset)
-        self.presence = try container.decodeIfPresent(Bool.self, forKey: .presence)
-        self.sort = try container.decodeIfPresent([SortParamRequest].self, forKey: .sort)
     }
 
     public func encode(to encoder: Encoder) throws {

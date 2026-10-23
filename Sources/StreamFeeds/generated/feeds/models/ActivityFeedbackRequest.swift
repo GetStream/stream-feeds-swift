@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Request to provide feedback on an activity
-public final class ActivityFeedbackRequest: Sendable, Codable, JSONEncodable {
+public final class ActivityFeedbackRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to hide this activity
     public let hide: Bool?
     /// Whether to show less content like this
@@ -18,13 +18,6 @@ public final class ActivityFeedbackRequest: Sendable, Codable, JSONEncodable {
         self.hide = hide
         self.showLess = showLess
         self.showMore = showMore
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.hide = try container.decodeIfPresent(Bool.self, forKey: .hide)
-        self.showLess = try container.decodeIfPresent(Bool.self, forKey: .showLess)
-        self.showMore = try container.decodeIfPresent(Bool.self, forKey: .showMore)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedsReactionGroupResponse: Sendable, Codable, JSONEncodable {
+public final class FeedsReactionGroupResponse: Sendable, Decodable {
     public let count: Int
     public let firstReactionAt: Date
     public let lastReactionAt: Date
@@ -21,13 +21,6 @@ public final class FeedsReactionGroupResponse: Sendable, Codable, JSONEncodable 
         self.count = try container.decode(Int.self, forKey: .count)
         self.firstReactionAt = try container.decode(Date.self, forKey: .firstReactionAt)
         self.lastReactionAt = try container.decode(Date.self, forKey: .lastReactionAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(count, forKey: .count)
-        try container.encode(firstReactionAt, forKey: .firstReactionAt)
-        try container.encode(lastReactionAt, forKey: .lastReactionAt)
     }
 }
 

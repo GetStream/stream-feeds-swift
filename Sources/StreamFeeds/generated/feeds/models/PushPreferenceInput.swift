@@ -17,7 +17,7 @@ public final class PushPreferenceInputFeedsLevel: RawRepresentable, Codable, Has
     public static let none = PushPreferenceInputFeedsLevel(rawValue: "none")
 }
 
-public final class PushPreferenceInput: Sendable, Codable, JSONEncodable {
+public final class PushPreferenceInput: Sendable, Encodable, JSONEncodable {
     /// Disable push notifications till a certain time
     public let disabledUntil: Date?
     /// Set the level of feeds push notifications for the user. One of: all, none, default
@@ -34,15 +34,6 @@ public final class PushPreferenceInput: Sendable, Codable, JSONEncodable {
         self.feedsPreferences = feedsPreferences
         self.removeDisable = removeDisable
         self.userId = userId
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.disabledUntil = try container.decodeIfPresent(Date.self, forKey: .disabledUntil)
-        self.feedsLevel = try container.decodeIfPresent(PushPreferenceInputFeedsLevel.self, forKey: .feedsLevel)
-        self.feedsPreferences = try container.decodeIfPresent(FeedsPreferences.self, forKey: .feedsPreferences)
-        self.removeDisable = try container.decodeIfPresent(Bool.self, forKey: .removeDisable)
-        self.userId = try container.decodeIfPresent(String.self, forKey: .userId)
     }
 
     public func encode(to encoder: Encoder) throws {

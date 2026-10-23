@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class MembershipLevelResponse: Sendable, Codable, JSONEncodable {
+public final class MembershipLevelResponse: Sendable, Decodable {
     /// When the membership level was created
     public let createdAt: Date
     /// Custom data for the membership level
@@ -44,18 +44,6 @@ public final class MembershipLevelResponse: Sendable, Codable, JSONEncodable {
         self.priority = try container.decode(Int.self, forKey: .priority)
         self.tags = try container.decode([String].self, forKey: .tags)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(description, forKey: .description)
-        try container.encode(id, forKey: .id)
-        try container.encode(name, forKey: .name)
-        try container.encode(priority, forKey: .priority)
-        try container.encode(tags, forKey: .tags)
-        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

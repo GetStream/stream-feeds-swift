@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class NotificationTrigger: Sendable, Codable, JSONEncodable {
+public final class NotificationTrigger: Sendable, Decodable {
     /// Human-readable text describing the notification
     public let text: String
     /// The type of notification (mention, reaction, comment, follow, etc.)
@@ -20,12 +20,6 @@ public final class NotificationTrigger: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.text = try container.decode(String.self, forKey: .text)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(text, forKey: .text)
-        try container.encode(type, forKey: .type)
     }
 }
 

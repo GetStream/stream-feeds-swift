@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class NotificationStatusResponse: Sendable, Codable, JSONEncodable {
+public final class NotificationStatusResponse: Sendable, Decodable {
     /// When notifications were last read
     public let lastReadAt: Date?
     /// When notifications were last seen
@@ -36,16 +36,6 @@ public final class NotificationStatusResponse: Sendable, Codable, JSONEncodable 
         self.seenActivities = try container.decodeIfPresent([String].self, forKey: .seenActivities)
         self.unread = try container.decode(Int.self, forKey: .unread)
         self.unseen = try container.decode(Int.self, forKey: .unseen)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(lastReadAt, forKey: .lastReadAt)
-        try container.encodeIfPresent(lastSeenAt, forKey: .lastSeenAt)
-        try container.encodeIfPresent(readActivities, forKey: .readActivities)
-        try container.encodeIfPresent(seenActivities, forKey: .seenActivities)
-        try container.encode(unread, forKey: .unread)
-        try container.encode(unseen, forKey: .unseen)
     }
 }
 

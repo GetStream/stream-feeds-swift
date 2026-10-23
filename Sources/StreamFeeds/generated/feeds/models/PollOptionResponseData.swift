@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PollOptionResponseData: Sendable, Codable, JSONEncodable {
+public final class PollOptionResponseData: Sendable, Decodable {
     public let custom: [String: RawJSON]
     public let id: String
     public let text: String
@@ -21,13 +21,6 @@ public final class PollOptionResponseData: Sendable, Codable, JSONEncodable {
         self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
         self.id = try container.decode(String.self, forKey: .id)
         self.text = try container.decode(String.self, forKey: .text)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(custom, forKey: .custom)
-        try container.encode(id, forKey: .id)
-        try container.encode(text, forKey: .text)
     }
 }
 

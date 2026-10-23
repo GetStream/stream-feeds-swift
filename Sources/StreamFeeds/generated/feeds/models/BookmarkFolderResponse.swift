@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkFolderResponse: Sendable, Codable, JSONEncodable {
+public final class BookmarkFolderResponse: Sendable, Decodable {
     /// When the folder was created
     public let createdAt: Date
     /// Custom data for the folder
@@ -32,15 +32,6 @@ public final class BookmarkFolderResponse: Sendable, Codable, JSONEncodable {
         self.id = try container.decode(String.self, forKey: .id)
         self.name = try container.decode(String.self, forKey: .name)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encode(id, forKey: .id)
-        try container.encode(name, forKey: .name)
-        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

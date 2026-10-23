@@ -31,7 +31,7 @@ public final class RuleBuilderActionType: RawRepresentable, Codable, Hashable, S
     public static let webhookOnly = RuleBuilderActionType(rawValue: "webhook_only")
 }
 
-public final class RuleBuilderAction: Sendable, Codable, JSONEncodable {
+public final class RuleBuilderAction: Sendable, Encodable, JSONEncodable {
     public let banOptions: BanOptions?
     public let flagUserOptions: FlagUserOptions?
     public let type: RuleBuilderActionType?
@@ -40,13 +40,6 @@ public final class RuleBuilderAction: Sendable, Codable, JSONEncodable {
         self.banOptions = banOptions
         self.flagUserOptions = flagUserOptions
         self.type = type
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.banOptions = try container.decodeIfPresent(BanOptions.self, forKey: .banOptions)
-        self.flagUserOptions = try container.decodeIfPresent(FlagUserOptions.self, forKey: .flagUserOptions)
-        self.type = try container.decodeIfPresent(RuleBuilderActionType.self, forKey: .type)
     }
 
     public func encode(to encoder: Encoder) throws {

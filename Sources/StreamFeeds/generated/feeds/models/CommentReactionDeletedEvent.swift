@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when a reaction is deleted from a comment.
-public final class CommentReactionDeletedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class CommentReactionDeletedEvent: Sendable, Event, Decodable {
     public let comment: CommentResponse
     /// Date/time of creation
     public let createdAt: Date
@@ -39,18 +39,6 @@ public final class CommentReactionDeletedEvent: Sendable, Event, Codable, JSONEn
         self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(comment, forKey: .comment)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encode(reaction, forKey: .reaction)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
     }
 }
 

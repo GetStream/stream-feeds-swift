@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Basic response information
-public final class UpdateFeedMembersResponse: Sendable, Codable, JSONEncodable {
+public final class UpdateFeedMembersResponse: Sendable, Decodable {
     public let added: [FeedMemberResponse]
     /// Duration of the request in milliseconds
     public let duration: String
@@ -26,14 +26,6 @@ public final class UpdateFeedMembersResponse: Sendable, Codable, JSONEncodable {
         self.duration = try container.decode(String.self, forKey: .duration)
         self.removedIds = try container.decode([String].self, forKey: .removedIds)
         self.updated = try container.decode([FeedMemberResponse].self, forKey: .updated)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(added, forKey: .added)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(removedIds, forKey: .removedIds)
-        try container.encode(updated, forKey: .updated)
     }
 }
 

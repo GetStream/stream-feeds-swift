@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when app settings are updated
-public final class AppUpdatedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class AppUpdatedEvent: Sendable, Event, Decodable {
     public let app: AppEventResponse
     /// Date/time of creation
     public let createdAt: Date
@@ -30,15 +30,6 @@ public final class AppUpdatedEvent: Sendable, Event, Codable, JSONEncodable {
         self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(app, forKey: .app)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
     }
 }
 

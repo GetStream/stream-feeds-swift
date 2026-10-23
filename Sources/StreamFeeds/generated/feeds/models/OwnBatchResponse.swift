@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class OwnBatchResponse: Sendable, Codable, JSONEncodable {
+public final class OwnBatchResponse: Sendable, Decodable {
     /// Map of feed ID to own fields data
     public let data: [String: FeedOwnData]
     public let duration: String
@@ -19,12 +19,6 @@ public final class OwnBatchResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.data = try container.decode([String: FeedOwnData].self, forKey: .data)
         self.duration = try container.decode(String.self, forKey: .duration)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(data, forKey: .data)
-        try container.encode(duration, forKey: .duration)
     }
 }
 

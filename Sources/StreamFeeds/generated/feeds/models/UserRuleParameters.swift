@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class UserRuleParameters: Sendable, Codable, JSONEncodable {
+public final class UserRuleParameters: Sendable, Encodable, JSONEncodable {
     public let maxAge: String?
 
     public init(maxAge: String? = nil) {
         self.maxAge = maxAge
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.maxAge = try container.decodeIfPresent(String.self, forKey: .maxAge)
     }
 
     public func encode(to encoder: Encoder) throws {

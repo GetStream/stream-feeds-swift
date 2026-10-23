@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivitiesRequest: Sendable, Codable, JSONEncodable {
+public final class DeleteActivitiesRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to permanently delete the activities
     public let hardDelete: Bool?
     /// List of activity IDs to delete
@@ -14,12 +14,6 @@ public final class DeleteActivitiesRequest: Sendable, Codable, JSONEncodable {
     public init(hardDelete: Bool? = nil, ids: [String]) {
         self.hardDelete = hardDelete
         self.ids = ids
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.hardDelete = try container.decodeIfPresent(Bool.self, forKey: .hardDelete)
-        self.ids = try container.decode([String].self, forKey: .ids)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UserResponsePrivacyFields: Sendable, Codable, JSONEncodable {
+public final class UserResponsePrivacyFields: Sendable, Decodable {
     public let avgResponseTime: Int?
     public let banned: Bool
     public let blockedUserIds: [String]
@@ -70,29 +70,6 @@ public final class UserResponsePrivacyFields: Sendable, Codable, JSONEncodable {
         self.teams = try container.decode([String].self, forKey: .teams)
         self.teamsRole = try container.decodeIfPresent([String: String].self, forKey: .teamsRole)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(avgResponseTime, forKey: .avgResponseTime)
-        try container.encode(banned, forKey: .banned)
-        try container.encode(blockedUserIds, forKey: .blockedUserIds)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(deactivatedAt, forKey: .deactivatedAt)
-        try container.encodeIfPresent(deletedAt, forKey: .deletedAt)
-        try container.encode(id, forKey: .id)
-        try container.encodeIfPresent(image, forKey: .image)
-        try container.encodeIfPresent(invisible, forKey: .invisible)
-        try container.encode(language, forKey: .language)
-        try container.encodeIfPresent(lastActive, forKey: .lastActive)
-        try container.encodeIfPresent(name, forKey: .name)
-        try container.encode(online, forKey: .online)
-        try container.encodeIfPresent(privacySettings, forKey: .privacySettings)
-        try container.encode(role, forKey: .role)
-        try container.encode(teams, forKey: .teams)
-        try container.encodeIfPresent(teamsRole, forKey: .teamsRole)
-        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

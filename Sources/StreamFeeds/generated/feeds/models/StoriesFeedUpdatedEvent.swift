@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when stories feed is updated.
-public final class StoriesFeedUpdatedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class StoriesFeedUpdatedEvent: Sendable, Event, Decodable {
     /// Individual activities for stories feeds
     public let activities: [ActivityResponse]?
     /// Aggregated activities for stories feeds
@@ -45,19 +45,6 @@ public final class StoriesFeedUpdatedEvent: Sendable, Event, Codable, JSONEncoda
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(activities, forKey: .activities)
-        try container.encodeIfPresent(aggregatedActivities, forKey: .aggregatedActivities)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

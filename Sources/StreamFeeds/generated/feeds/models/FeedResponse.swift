@@ -19,7 +19,7 @@ public final class FeedResponseVisibility: RawRepresentable, Codable, Hashable, 
     public static let visible = FeedResponseVisibility(rawValue: "visible")
 }
 
-public final class FeedResponse: Sendable, Codable, JSONEncodable {
+public final class FeedResponse: Sendable, Decodable {
     /// When the feed was created
     public let createdAt: Date
     /// User response object
@@ -101,29 +101,6 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
         self.pinCount = try container.decode(Int.self, forKey: .pinCount)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.visibility = try container.decodeIfPresent(FeedResponseVisibility.self, forKey: .visibility)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(createdBy, forKey: .createdBy)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(deletedAt, forKey: .deletedAt)
-        try container.encode(description, forKey: .description)
-        try container.encode(feed, forKey: .feed)
-        try container.encodeIfPresent(filterTags, forKey: .filterTags)
-        try container.encode(followerCount, forKey: .followerCount)
-        try container.encode(followingCount, forKey: .followingCount)
-        try container.encode(groupId, forKey: .groupId)
-        try container.encode(id, forKey: .id)
-        try container.encode(memberCount, forKey: .memberCount)
-        try container.encode(name, forKey: .name)
-        try container.encodeIfPresent(ownCapabilities, forKey: .ownCapabilities)
-        try container.encodeIfPresent(ownFollows, forKey: .ownFollows)
-        try container.encodeIfPresent(ownMembership, forKey: .ownMembership)
-        try container.encode(pinCount, forKey: .pinCount)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encodeIfPresent(visibility, forKey: .visibility)
     }
 }
 

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class VideoRuleParameters: Sendable, Codable, JSONEncodable {
+public final class VideoRuleParameters: Sendable, Encodable, JSONEncodable {
     public let harmLabels: [String]?
     public let threshold: Int?
     public let timeWindow: String?
@@ -14,13 +14,6 @@ public final class VideoRuleParameters: Sendable, Codable, JSONEncodable {
         self.harmLabels = harmLabels
         self.threshold = threshold
         self.timeWindow = timeWindow
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.harmLabels = try container.decodeIfPresent([String].self, forKey: .harmLabels)
-        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
-        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class MarkActivityRequest: Sendable, Codable, JSONEncodable {
+public final class MarkActivityRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to mark all activities as read
     public let markAllRead: Bool?
     /// Whether to mark all activities as seen
@@ -23,15 +23,6 @@ public final class MarkActivityRequest: Sendable, Codable, JSONEncodable {
         self.markRead = markRead
         self.markSeen = markSeen
         self.markWatched = markWatched
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.markAllRead = try container.decodeIfPresent(Bool.self, forKey: .markAllRead)
-        self.markAllSeen = try container.decodeIfPresent(Bool.self, forKey: .markAllSeen)
-        self.markRead = try container.decodeIfPresent([String].self, forKey: .markRead)
-        self.markSeen = try container.decodeIfPresent([String].self, forKey: .markSeen)
-        self.markWatched = try container.decodeIfPresent([String].self, forKey: .markWatched)
     }
 
     public func encode(to encoder: Encoder) throws {

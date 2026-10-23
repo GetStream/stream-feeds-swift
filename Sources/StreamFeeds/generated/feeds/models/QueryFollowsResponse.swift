@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryFollowsResponse: Sendable, Codable, JSONEncodable {
+public final class QueryFollowsResponse: Sendable, Decodable {
     public let duration: String
     /// List of follow relationships matching the query
     public let follows: [FollowResponse]
@@ -27,14 +27,6 @@ public final class QueryFollowsResponse: Sendable, Codable, JSONEncodable {
         self.follows = try container.decode([FollowResponse].self, forKey: .follows)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(follows, forKey: .follows)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

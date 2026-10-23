@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpsertConfigResponse: Sendable, Codable, JSONEncodable {
+public final class UpsertConfigResponse: Sendable, Decodable {
     public let config: ConfigResponse?
     public let duration: String
 
@@ -18,12 +18,6 @@ public final class UpsertConfigResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.config = try container.decodeIfPresent(ConfigResponse.self, forKey: .config)
         self.duration = try container.decode(String.self, forKey: .duration)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(config, forKey: .config)
-        try container.encode(duration, forKey: .duration)
     }
 }
 

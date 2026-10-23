@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedOwnData: Sendable, Codable, JSONEncodable {
+public final class FeedOwnData: Sendable, Decodable {
     /// Capabilities the current user has for this feed
     public let ownCapabilities: [FeedOwnCapability]?
     /// Follow relationships where the feed owner's feeds are following the current user's feeds (up to 5 total)
@@ -27,14 +27,6 @@ public final class FeedOwnData: Sendable, Codable, JSONEncodable {
         self.ownFollowings = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollowings)
         self.ownFollows = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollows)
         self.ownMembership = try container.decodeIfPresent(FeedMemberResponse.self, forKey: .ownMembership)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(ownCapabilities, forKey: .ownCapabilities)
-        try container.encodeIfPresent(ownFollowings, forKey: .ownFollowings)
-        try container.encodeIfPresent(ownFollows, forKey: .ownFollows)
-        try container.encodeIfPresent(ownMembership, forKey: .ownMembership)
     }
 }
 

@@ -17,7 +17,7 @@ public final class FeedMemberResponseStatus: RawRepresentable, Codable, Hashable
     public static let rejected = FeedMemberResponseStatus(rawValue: "rejected")
 }
 
-public final class FeedMemberResponse: Sendable, Codable, JSONEncodable {
+public final class FeedMemberResponse: Sendable, Decodable {
     /// When the membership was created
     public let createdAt: Date
     /// Custom data for the membership
@@ -59,19 +59,6 @@ public final class FeedMemberResponse: Sendable, Codable, JSONEncodable {
         self.status = try container.decode(FeedMemberResponseStatus.self, forKey: .status)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.user = try container.decode(UserResponse.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(inviteAcceptedAt, forKey: .inviteAcceptedAt)
-        try container.encodeIfPresent(inviteRejectedAt, forKey: .inviteRejectedAt)
-        try container.encodeIfPresent(membershipLevel, forKey: .membershipLevel)
-        try container.encode(role, forKey: .role)
-        try container.encode(status, forKey: .status)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(user, forKey: .user)
     }
 }
 

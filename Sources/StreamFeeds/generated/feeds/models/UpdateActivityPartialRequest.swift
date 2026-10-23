@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateActivityPartialRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateActivityPartialRequest: Sendable, Encodable, JSONEncodable {
     /// Map of field names to new values. Supported fields: 'text', 'attachments', 'custom', 'visibility', 'visibility_tag', 'restrict_replies' (values: 'everyone', 'people_i_follow', 'nobody'), 'location', 'expires_at', 'filter_tags', 'interest_tags', 'poll_id', 'feeds', 'mentioned_user_ids', 'search_data'. For custom fields, use dot-notation (e.g., 'custom.field_name')
     public let set: [String: RawJSON]?
     /// List of field names to remove. Supported fields: 'custom', 'visibility_tag', 'location', 'expires_at', 'filter_tags', 'interest_tags', 'attachments', 'poll_id', 'mentioned_user_ids', 'search_data'. Use dot-notation for nested custom fields (e.g., 'custom.field_name')
@@ -14,12 +14,6 @@ public final class UpdateActivityPartialRequest: Sendable, Codable, JSONEncodabl
     public init(set: [String: RawJSON]? = nil, unset: [String]? = nil) {
         self.set = set
         self.unset = unset
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.set = try container.decodeIfPresent([String: RawJSON].self, forKey: .set)
-        self.unset = try container.decodeIfPresent([String].self, forKey: .unset)
     }
 
     public func encode(to encoder: Encoder) throws {

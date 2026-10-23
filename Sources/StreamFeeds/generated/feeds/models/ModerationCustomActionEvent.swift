@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a custom moderation action is executed
-public final class ModerationCustomActionEvent: Sendable, Event, Codable, JSONEncodable {
+public final class ModerationCustomActionEvent: Sendable, Event, Decodable {
     /// The ID of the custom action that was executed
     public let actionId: String
     /// Additional options passed to the custom action
@@ -36,17 +36,6 @@ public final class ModerationCustomActionEvent: Sendable, Event, Codable, JSONEn
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.reviewQueueItem = try container.decode(ReviewQueueItemResponse.self, forKey: .reviewQueueItem)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(actionId, forKey: .actionId)
-        try container.encodeIfPresent(actionOptions, forKey: .actionOptions)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(reviewQueueItem, forKey: .reviewQueueItem)
-        try container.encode(type, forKey: .type)
     }
 }
 

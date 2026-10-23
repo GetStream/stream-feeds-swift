@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class TextRuleParameters: Sendable, Codable, JSONEncodable {
+public final class TextRuleParameters: Sendable, Encodable, JSONEncodable {
     public let blocklistMatch: [String]?
     public let containsUrl: Bool?
     public let harmLabels: [String]?
@@ -22,17 +22,6 @@ public final class TextRuleParameters: Sendable, Codable, JSONEncodable {
         self.severity = severity
         self.threshold = threshold
         self.timeWindow = timeWindow
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.blocklistMatch = try container.decodeIfPresent([String].self, forKey: .blocklistMatch)
-        self.containsUrl = try container.decodeIfPresent(Bool.self, forKey: .containsUrl)
-        self.harmLabels = try container.decodeIfPresent([String].self, forKey: .harmLabels)
-        self.llmHarmLabels = try container.decodeIfPresent([String: String].self, forKey: .llmHarmLabels)
-        self.severity = try container.decodeIfPresent(String.self, forKey: .severity)
-        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
-        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
     }
 
     public func encode(to encoder: Encoder) throws {

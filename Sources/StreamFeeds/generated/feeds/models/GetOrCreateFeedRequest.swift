@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedRequest: Sendable, Codable, JSONEncodable {
+public final class GetOrCreateFeedRequest: Sendable, Encodable, JSONEncodable {
     public let data: FeedInput?
     public let externalRanking: [String: RawJSON]?
     public let filter: [String: RawJSON]?
@@ -32,22 +32,6 @@ public final class GetOrCreateFeedRequest: Sendable, Codable, JSONEncodable {
         self.prev = prev
         self.view = view
         self.watch = watch
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.data = try container.decodeIfPresent(FeedInput.self, forKey: .data)
-        self.externalRanking = try container.decodeIfPresent([String: RawJSON].self, forKey: .externalRanking)
-        self.filter = try container.decodeIfPresent([String: RawJSON].self, forKey: .filter)
-        self.followersPagination = try container.decodeIfPresent(PagerRequest.self, forKey: .followersPagination)
-        self.followingPagination = try container.decodeIfPresent(PagerRequest.self, forKey: .followingPagination)
-        self.interestWeights = try container.decodeIfPresent([String: Double].self, forKey: .interestWeights)
-        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-        self.memberPagination = try container.decodeIfPresent(PagerRequest.self, forKey: .memberPagination)
-        self.next = try container.decodeIfPresent(String.self, forKey: .next)
-        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-        self.view = try container.decodeIfPresent(String.self, forKey: .view)
-        self.watch = try container.decodeIfPresent(Bool.self, forKey: .watch)
     }
 
     public func encode(to encoder: Encoder) throws {

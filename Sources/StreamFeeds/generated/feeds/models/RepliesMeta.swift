@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Cursor & depth information for a comment's direct replies. Mirrors Reddit's 'load more replies' semantics.
-public final class RepliesMeta: Sendable, Codable, JSONEncodable {
+public final class RepliesMeta: Sendable, Decodable {
     /// True if the subtree was cut because the requested depth was reached.
     public let depthTruncated: Bool
     /// True if more siblings exist in the database.
@@ -29,14 +29,6 @@ public final class RepliesMeta: Sendable, Codable, JSONEncodable {
         self.hasMore = try container.decode(Bool.self, forKey: .hasMore)
         self.nextCursor = try container.decodeIfPresent(String.self, forKey: .nextCursor)
         self.remaining = try container.decode(Int.self, forKey: .remaining)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(depthTruncated, forKey: .depthTruncated)
-        try container.encode(hasMore, forKey: .hasMore)
-        try container.encodeIfPresent(nextCursor, forKey: .nextCursor)
-        try container.encode(remaining, forKey: .remaining)
     }
 }
 

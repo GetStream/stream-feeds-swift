@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AcceptFollowRequest: Sendable, Codable, JSONEncodable {
+public final class AcceptFollowRequest: Sendable, Encodable, JSONEncodable {
     /// Fully qualified ID of the source feed
     public let source: String
     /// Fully qualified ID of the target feed
@@ -14,12 +14,6 @@ public final class AcceptFollowRequest: Sendable, Codable, JSONEncodable {
     public init(source: String, target: String) {
         self.source = source
         self.target = target
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.source = try container.decode(String.self, forKey: .source)
-        self.target = try container.decode(String.self, forKey: .target)
     }
 
     public func encode(to encoder: Encoder) throws {

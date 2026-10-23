@@ -29,7 +29,7 @@ public final class UpdateActivityRequestVisibility: RawRepresentable, Codable, H
     public static let tag = UpdateActivityRequestVisibility(rawValue: "tag")
 }
 
-public final class UpdateActivityRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateActivityRequest: Sendable, Encodable, JSONEncodable {
     /// List of attachments for the activity
     public let attachments: [Attachment]?
     /// Custom data for the activity
@@ -61,20 +61,6 @@ public final class UpdateActivityRequest: Sendable, Codable, JSONEncodable {
         self.pollId = pollId
         self.text = text
         self.visibility = visibility
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
-        self.feeds = try container.decodeIfPresent([String].self, forKey: .feeds)
-        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.interestTags = try container.decodeIfPresent([String].self, forKey: .interestTags)
-        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
-        self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.text = try container.decodeIfPresent(String.self, forKey: .text)
-        self.visibility = try container.decodeIfPresent(UpdateActivityRequestVisibility.self, forKey: .visibility)
     }
 
     public func encode(to encoder: Encoder) throws {

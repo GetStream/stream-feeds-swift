@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetFollowSuggestionsResponse: Sendable, Codable, JSONEncodable {
+public final class GetFollowSuggestionsResponse: Sendable, Decodable {
     public let duration: String
     /// List of suggested feeds to follow
     public let suggestions: [FeedSuggestionResponse]
@@ -19,12 +19,6 @@ public final class GetFollowSuggestionsResponse: Sendable, Codable, JSONEncodabl
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.suggestions = try container.decode([FeedSuggestionResponse].self, forKey: .suggestions)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(suggestions, forKey: .suggestions)
     }
 }
 

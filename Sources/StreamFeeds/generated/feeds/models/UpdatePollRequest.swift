@@ -16,7 +16,7 @@ public final class UpdatePollRequestVotingVisibility: RawRepresentable, Codable,
     public static let anonymous = UpdatePollRequestVotingVisibility(rawValue: "anonymous")
 }
 
-public final class UpdatePollRequest: Sendable, Codable, JSONEncodable {
+public final class UpdatePollRequest: Sendable, Encodable, JSONEncodable {
     /// Allow answers
     public let allowAnswers: Bool?
     /// Allow user suggested options
@@ -52,21 +52,6 @@ public final class UpdatePollRequest: Sendable, Codable, JSONEncodable {
         self.name = name
         self.options = options
         self.votingVisibility = votingVisibility
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.allowAnswers = try container.decodeIfPresent(Bool.self, forKey: .allowAnswers)
-        self.allowUserSuggestedOptions = try container.decodeIfPresent(Bool.self, forKey: .allowUserSuggestedOptions)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.description = try container.decodeIfPresent(String.self, forKey: .description)
-        self.enforceUniqueVote = try container.decodeIfPresent(Bool.self, forKey: .enforceUniqueVote)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.isClosed = try container.decodeIfPresent(Bool.self, forKey: .isClosed)
-        self.maxVotesAllowed = try container.decodeIfPresent(Int.self, forKey: .maxVotesAllowed)
-        self.name = try container.decode(String.self, forKey: .name)
-        self.options = try container.decodeIfPresent([PollOptionRequest].self, forKey: .options)
-        self.votingVisibility = try container.decodeIfPresent(UpdatePollRequestVotingVisibility.self, forKey: .votingVisibility)
     }
 
     public func encode(to encoder: Encoder) throws {

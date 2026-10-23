@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class UpdateUsersPartialRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateUsersPartialRequest: Sendable, Encodable, JSONEncodable {
     public let users: [UpdateUserPartialRequest]
 
     public init(users: [UpdateUserPartialRequest]) {
         self.users = users
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.users = try container.decode([UpdateUserPartialRequest].self, forKey: .users)
     }
 
     public func encode(to encoder: Encoder) throws {

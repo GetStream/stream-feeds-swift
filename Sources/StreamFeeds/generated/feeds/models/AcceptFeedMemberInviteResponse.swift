@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AcceptFeedMemberInviteResponse: Sendable, Codable, JSONEncodable {
+public final class AcceptFeedMemberInviteResponse: Sendable, Decodable {
     public let duration: String
     public let member: FeedMemberResponse
 
@@ -18,12 +18,6 @@ public final class AcceptFeedMemberInviteResponse: Sendable, Codable, JSONEncoda
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.member = try container.decode(FeedMemberResponse.self, forKey: .member)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(member, forKey: .member)
     }
 }
 

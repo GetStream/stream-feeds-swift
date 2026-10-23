@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Block list contains restricted words
-public final class BlockListResponse: Sendable, Codable, JSONEncodable {
+public final class BlockListResponse: Sendable, Decodable {
     /// Date/time of creation
     public let createdAt: Date?
     public let id: String?
@@ -39,17 +39,6 @@ public final class BlockListResponse: Sendable, Codable, JSONEncodable {
         self.type = try container.decode(String.self, forKey: .type)
         self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
         self.words = try container.decode([String].self, forKey: .words)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(name, forKey: .name)
-        try container.encodeIfPresent(team, forKey: .team)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
-        try container.encode(words, forKey: .words)
     }
 }
 

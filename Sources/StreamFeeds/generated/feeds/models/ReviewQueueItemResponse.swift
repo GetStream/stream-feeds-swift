@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ReviewQueueItemResponse: Sendable, Codable, JSONEncodable {
+public final class ReviewQueueItemResponse: Sendable, Decodable {
     /// Moderation actions taken
     public let actions: [ActionLogResponse]
     public let activity: EnrichedActivity?
@@ -107,35 +107,6 @@ public final class ReviewQueueItemResponse: Sendable, Codable, JSONEncodable {
         self.status = try container.decode(String.self, forKey: .status)
         self.teams = try container.decodeIfPresent([String].self, forKey: .teams)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(actions, forKey: .actions)
-        try container.encodeIfPresent(activity, forKey: .activity)
-        try container.encode(aiTextSeverity, forKey: .aiTextSeverity)
-        try container.encodeIfPresent(assignedTo, forKey: .assignedTo)
-        try container.encode(bans, forKey: .bans)
-        try container.encodeIfPresent(completedAt, forKey: .completedAt)
-        try container.encodeIfPresent(configKey, forKey: .configKey)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(entityCreator, forKey: .entityCreator)
-        try container.encodeIfPresent(entityCreatorId, forKey: .entityCreatorId)
-        try container.encode(entityId, forKey: .entityId)
-        try container.encode(entityType, forKey: .entityType)
-        try container.encodeIfPresent(feedsV2Activity, forKey: .feedsV2Activity)
-        try container.encode(flags, forKey: .flags)
-        try container.encode(flagsCount, forKey: .flagsCount)
-        try container.encode(id, forKey: .id)
-        try container.encode(languages, forKey: .languages)
-        try container.encodeIfPresent(moderationPayload, forKey: .moderationPayload)
-        try container.encode(recommendedAction, forKey: .recommendedAction)
-        try container.encodeIfPresent(reviewedAt, forKey: .reviewedAt)
-        try container.encode(reviewedBy, forKey: .reviewedBy)
-        try container.encode(severity, forKey: .severity)
-        try container.encode(status, forKey: .status)
-        try container.encodeIfPresent(teams, forKey: .teams)
-        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

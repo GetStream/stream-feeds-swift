@@ -5,19 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class ContentCountRuleParameters: Sendable, Codable, JSONEncodable {
+public final class ContentCountRuleParameters: Sendable, Encodable, JSONEncodable {
     public let threshold: Int?
     public let timeWindow: String?
 
     public init(threshold: Int? = nil, timeWindow: String? = nil) {
         self.threshold = threshold
         self.timeWindow = timeWindow
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.threshold = try container.decodeIfPresent(Int.self, forKey: .threshold)
-        self.timeWindow = try container.decodeIfPresent(String.self, forKey: .timeWindow)
     }
 
     public func encode(to encoder: Encoder) throws {

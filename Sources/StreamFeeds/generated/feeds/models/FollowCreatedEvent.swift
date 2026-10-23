@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when a feed follows another feed.
-public final class FollowCreatedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class FollowCreatedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
     public let createdAt: Date
     public let custom: [String: RawJSON]
@@ -36,17 +36,6 @@ public final class FollowCreatedEvent: Sendable, Event, Codable, JSONEncodable {
         self.follow = try container.decode(FollowResponse.self, forKey: .follow)
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encode(follow, forKey: .follow)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
     }
 }
 

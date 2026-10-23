@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ActionLogResponse: Sendable, Codable, JSONEncodable {
+public final class ActionLogResponse: Sendable, Decodable {
     public let aiProviders: [String]
     /// Timestamp when the action was taken
     public let createdAt: Date
@@ -54,21 +54,6 @@ public final class ActionLogResponse: Sendable, Codable, JSONEncodable {
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
         self.userId = try container.decode(String.self, forKey: .userId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(aiProviders, forKey: .aiProviders)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encode(id, forKey: .id)
-        try container.encode(reason, forKey: .reason)
-        try container.encodeIfPresent(reviewQueueItem, forKey: .reviewQueueItem)
-        try container.encodeIfPresent(targetUser, forKey: .targetUser)
-        try container.encode(targetUserId, forKey: .targetUserId)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(user, forKey: .user)
-        try container.encode(userId, forKey: .userId)
     }
 }
 

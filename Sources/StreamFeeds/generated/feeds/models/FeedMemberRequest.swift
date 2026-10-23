@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedMemberRequest: Sendable, Codable, JSONEncodable {
+public final class FeedMemberRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the member
     public let custom: [String: RawJSON]?
     /// Whether this is an invite to become a member
@@ -17,13 +17,6 @@ public final class FeedMemberRequest: Sendable, Codable, JSONEncodable {
         self.custom = custom
         self.invite = invite
         self.userId = userId
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.invite = try container.decodeIfPresent(Bool.self, forKey: .invite)
-        self.userId = try container.decode(String.self, forKey: .userId)
     }
 
     public func encode(to encoder: Encoder) throws {

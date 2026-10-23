@@ -5,17 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class UpsertPushPreferencesRequest: Sendable, Codable, JSONEncodable {
+public final class UpsertPushPreferencesRequest: Sendable, Encodable, JSONEncodable {
     /// A list of push preferences for channels, calls, or the user.
     public let preferences: [PushPreferenceInput]
 
     public init(preferences: [PushPreferenceInput]) {
         self.preferences = preferences
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.preferences = try container.decode([PushPreferenceInput].self, forKey: .preferences)
     }
 
     public func encode(to encoder: Encoder) throws {

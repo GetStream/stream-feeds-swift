@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when a feed member is added.
-public final class FeedMemberAddedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class FeedMemberAddedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
     public let createdAt: Date
     public let custom: [String: RawJSON]
@@ -39,18 +39,6 @@ public final class FeedMemberAddedEvent: Sendable, Event, Codable, JSONEncodable
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encode(member, forKey: .member)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

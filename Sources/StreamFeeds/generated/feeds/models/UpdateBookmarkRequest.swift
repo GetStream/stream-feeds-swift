@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBookmarkRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateBookmarkRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the bookmark
     public let custom: [String: RawJSON]?
     /// ID of the folder containing the bookmark
@@ -19,14 +19,6 @@ public final class UpdateBookmarkRequest: Sendable, Codable, JSONEncodable {
         self.folderId = folderId
         self.newFolder = newFolder
         self.newFolderId = newFolderId
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.folderId = try container.decodeIfPresent(String.self, forKey: .folderId)
-        self.newFolder = try container.decodeIfPresent(AddFolderRequest.self, forKey: .newFolder)
-        self.newFolderId = try container.decodeIfPresent(String.self, forKey: .newFolderId)
     }
 
     public func encode(to encoder: Encoder) throws {

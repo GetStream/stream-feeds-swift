@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Basic response information
-public final class QueryCommentReactionsResponse: Sendable, Codable, JSONEncodable {
+public final class QueryCommentReactionsResponse: Sendable, Decodable {
     /// Duration of the request in milliseconds
     public let duration: String
     public let next: String?
@@ -26,14 +26,6 @@ public final class QueryCommentReactionsResponse: Sendable, Codable, JSONEncodab
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
         self.reactions = try container.decode([FeedsReactionResponse].self, forKey: .reactions)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(prev, forKey: .prev)
-        try container.encode(reactions, forKey: .reactions)
     }
 }
 

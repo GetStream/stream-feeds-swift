@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateUsersResponse: Sendable, Codable, JSONEncodable {
+public final class UpdateUsersResponse: Sendable, Decodable {
     /// Duration of the request in milliseconds
     public let duration: String
     /// Deprecated: Always empty. Removing a user from a team no longer deletes their memberships in that team's channels, so there is no task to poll.
@@ -26,13 +26,6 @@ public final class UpdateUsersResponse: Sendable, Codable, JSONEncodable {
         self.duration = try container.decode(String.self, forKey: .duration)
         self._membershipDeletionTaskId = try container.decode(String.self, forKey: .membershipDeletionTaskId)
         self.users = try container.decode([String: FullUserResponse].self, forKey: .users)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(_membershipDeletionTaskId, forKey: .membershipDeletionTaskId)
-        try container.encode(users, forKey: .users)
     }
 }
 

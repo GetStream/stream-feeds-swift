@@ -20,7 +20,7 @@ public final class ThreadedCommentResponseStatus: RawRepresentable, Codable, Has
 }
 
 /// A comment with an optional, depth‑limited slice of nested replies.
-public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
+public final class ThreadedCommentResponse: Sendable, Decodable {
     public let attachments: [Attachment]?
     public let confidenceScore: Double
     public let controversyScore: Double?
@@ -109,36 +109,6 @@ public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.upvoteCount = try container.decode(Int.self, forKey: .upvoteCount)
         self.user = try container.decode(UserResponse.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(attachments, forKey: .attachments)
-        try container.encode(confidenceScore, forKey: .confidenceScore)
-        try container.encodeIfPresent(controversyScore, forKey: .controversyScore)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(deletedAt, forKey: .deletedAt)
-        try container.encode(downvoteCount, forKey: .downvoteCount)
-        try container.encode(id, forKey: .id)
-        try container.encodeIfPresent(latestReactions, forKey: .latestReactions)
-        try container.encode(mentionedUsers, forKey: .mentionedUsers)
-        try container.encodeIfPresent(meta, forKey: .meta)
-        try container.encodeIfPresent(moderation, forKey: .moderation)
-        try container.encode(objectId, forKey: .objectId)
-        try container.encode(objectType, forKey: .objectType)
-        try container.encode(ownReactions, forKey: .ownReactions)
-        try container.encodeIfPresent(parentId, forKey: .parentId)
-        try container.encode(reactionCount, forKey: .reactionCount)
-        try container.encodeIfPresent(reactionGroups, forKey: .reactionGroups)
-        try container.encodeIfPresent(replies, forKey: .replies)
-        try container.encode(replyCount, forKey: .replyCount)
-        try container.encode(score, forKey: .score)
-        try container.encode(status, forKey: .status)
-        try container.encodeIfPresent(text, forKey: .text)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(upvoteCount, forKey: .upvoteCount)
-        try container.encode(user, forKey: .user)
     }
 }
 

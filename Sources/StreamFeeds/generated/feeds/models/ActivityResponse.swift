@@ -29,7 +29,7 @@ public final class ActivityResponseVisibility: RawRepresentable, Codable, Hashab
     public static let tag = ActivityResponseVisibility(rawValue: "tag")
 }
 
-public final class ActivityResponse: Sendable, Codable, JSONEncodable {
+public final class ActivityResponse: Sendable, Decodable {
     /// Media attachments for the activity
     public let attachments: [Attachment]
     /// Number of bookmarks on the activity
@@ -174,46 +174,6 @@ public final class ActivityResponse: Sendable, Codable, JSONEncodable {
         self.user = try container.decode(UserResponse.self, forKey: .user)
         self.visibility = try container.decode(ActivityResponseVisibility.self, forKey: .visibility)
         self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(attachments, forKey: .attachments)
-        try container.encode(bookmarkCount, forKey: .bookmarkCount)
-        try container.encode(commentCount, forKey: .commentCount)
-        try container.encode(comments, forKey: .comments)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(currentFeed, forKey: .currentFeed)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(deletedAt, forKey: .deletedAt)
-        try container.encodeIfPresent(editedAt, forKey: .editedAt)
-        try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
-        try container.encode(feeds, forKey: .feeds)
-        try container.encode(filterTags, forKey: .filterTags)
-        try container.encode(hidden, forKey: .hidden)
-        try container.encode(id, forKey: .id)
-        try container.encode(interestTags, forKey: .interestTags)
-        try container.encode(latestReactions, forKey: .latestReactions)
-        try container.encodeIfPresent(location, forKey: .location)
-        try container.encode(mentionedUsers, forKey: .mentionedUsers)
-        try container.encodeIfPresent(moderation, forKey: .moderation)
-        try container.encodeIfPresent(notificationContext, forKey: .notificationContext)
-        try container.encode(ownBookmarks, forKey: .ownBookmarks)
-        try container.encode(ownReactions, forKey: .ownReactions)
-        try container.encodeIfPresent(parent, forKey: .parent)
-        try container.encodeIfPresent(poll, forKey: .poll)
-        try container.encode(popularity, forKey: .popularity)
-        try container.encode(reactionCount, forKey: .reactionCount)
-        try container.encode(reactionGroups, forKey: .reactionGroups)
-        try container.encode(score, forKey: .score)
-        try container.encode(searchData, forKey: .searchData)
-        try container.encode(shareCount, forKey: .shareCount)
-        try container.encodeIfPresent(text, forKey: .text)
-        try container.encode(type, forKey: .type)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(user, forKey: .user)
-        try container.encode(visibility, forKey: .visibility)
-        try container.encodeIfPresent(visibilityTag, forKey: .visibilityTag)
     }
 }
 

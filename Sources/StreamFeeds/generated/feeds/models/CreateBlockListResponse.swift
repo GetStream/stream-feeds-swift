@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Basic response information
-public final class CreateBlockListResponse: Sendable, Codable, JSONEncodable {
+public final class CreateBlockListResponse: Sendable, Decodable {
     /// Block list contains restricted words
     public let blocklist: BlockListResponse?
     /// Duration of the request in milliseconds
@@ -21,12 +21,6 @@ public final class CreateBlockListResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.blocklist = try container.decodeIfPresent(BlockListResponse.self, forKey: .blocklist)
         self.duration = try container.decode(String.self, forKey: .duration)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(blocklist, forKey: .blocklist)
-        try container.encode(duration, forKey: .duration)
     }
 }
 

@@ -16,7 +16,7 @@ public final class PollResponseDataVotingVisibility: RawRepresentable, Codable, 
     public static let anonymous = PollResponseDataVotingVisibility(rawValue: "anonymous")
 }
 
-public final class PollResponseData: Sendable, Codable, JSONEncodable {
+public final class PollResponseData: Sendable, Decodable {
     public let allowAnswers: Bool
     public let allowUserSuggestedOptions: Bool
     public let answersCount: Int
@@ -88,31 +88,6 @@ public final class PollResponseData: Sendable, Codable, JSONEncodable {
         self.voteCount = try container.decode(Int.self, forKey: .voteCount)
         self.voteCountsByOption = try container.decode([String: Int].self, forKey: .voteCountsByOption)
         self.votingVisibility = try container.decode(PollResponseDataVotingVisibility.self, forKey: .votingVisibility)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(allowAnswers, forKey: .allowAnswers)
-        try container.encode(allowUserSuggestedOptions, forKey: .allowUserSuggestedOptions)
-        try container.encode(answersCount, forKey: .answersCount)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(createdBy, forKey: .createdBy)
-        try container.encode(createdById, forKey: .createdById)
-        try container.encode(custom, forKey: .custom)
-        try container.encode(description, forKey: .description)
-        try container.encode(enforceUniqueVote, forKey: .enforceUniqueVote)
-        try container.encode(id, forKey: .id)
-        try container.encodeIfPresent(isClosed, forKey: .isClosed)
-        try container.encode(latestAnswers, forKey: .latestAnswers)
-        try container.encode(latestVotesByOption, forKey: .latestVotesByOption)
-        try container.encodeIfPresent(maxVotesAllowed, forKey: .maxVotesAllowed)
-        try container.encode(name, forKey: .name)
-        try container.encode(options, forKey: .options)
-        try container.encode(ownVotes, forKey: .ownVotes)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(voteCount, forKey: .voteCount)
-        try container.encode(voteCountsByOption, forKey: .voteCountsByOption)
-        try container.encode(votingVisibility, forKey: .votingVisibility)
     }
 }
 

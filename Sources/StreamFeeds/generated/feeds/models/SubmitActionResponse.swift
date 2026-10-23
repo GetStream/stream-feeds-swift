@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class SubmitActionResponse: Sendable, Codable, JSONEncodable {
+public final class SubmitActionResponse: Sendable, Decodable {
     public let duration: String
     public let item: ReviewQueueItemResponse?
 
@@ -18,12 +18,6 @@ public final class SubmitActionResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.item = try container.decodeIfPresent(ReviewQueueItemResponse.self, forKey: .item)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(item, forKey: .item)
     }
 }
 

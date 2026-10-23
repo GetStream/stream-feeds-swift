@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when a reaction is added to an activity.
-public final class ActivityReactionAddedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class ActivityReactionAddedEvent: Sendable, Event, Decodable {
     public let activity: ActivityResponse
     /// Date/time of creation
     public let createdAt: Date
@@ -42,19 +42,6 @@ public final class ActivityReactionAddedEvent: Sendable, Event, Codable, JSONEnc
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activity, forKey: .activity)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encode(reaction, forKey: .reaction)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

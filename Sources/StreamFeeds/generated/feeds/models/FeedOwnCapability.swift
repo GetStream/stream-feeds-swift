@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Represents a feed capability value and enumerates all possible capability strings.
-public final class FeedOwnCapability: RawRepresentable, Codable, Hashable, Sendable {
+public final class FeedOwnCapability: RawRepresentable, Decodable, Hashable, Sendable {
     public let rawValue: String
 
     public init(rawValue: String) {

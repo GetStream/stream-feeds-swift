@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when notification feed is updated.
-public final class NotificationFeedUpdatedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class NotificationFeedUpdatedEvent: Sendable, Event, Decodable {
     /// Aggregated activities for notification feeds
     public let aggregatedActivities: [AggregatedActivityResponse]?
     /// Date/time of creation
@@ -44,19 +44,6 @@ public final class NotificationFeedUpdatedEvent: Sendable, Event, Codable, JSONE
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(aggregatedActivities, forKey: .aggregatedActivities)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(feedVisibility, forKey: .feedVisibility)
-        try container.encode(fid, forKey: .fid)
-        try container.encodeIfPresent(notificationStatus, forKey: .notificationStatus)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

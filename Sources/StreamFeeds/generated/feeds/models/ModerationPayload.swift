@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ModerationPayload: Sendable, Codable, JSONEncodable {
+public final class ModerationPayload: Sendable, Encodable, JSONEncodable {
     public let custom: [String: RawJSON]?
     public let images: [String]?
     public let texts: [String]?
@@ -16,14 +16,6 @@ public final class ModerationPayload: Sendable, Codable, JSONEncodable {
         self.images = images
         self.texts = texts
         self.videos = videos
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.images = try container.decodeIfPresent([String].self, forKey: .images)
-        self.texts = try container.decodeIfPresent([String].self, forKey: .texts)
-        self.videos = try container.decodeIfPresent([String].self, forKey: .videos)
     }
 
     public func encode(to encoder: Encoder) throws {

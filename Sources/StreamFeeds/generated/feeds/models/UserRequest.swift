@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// User request object
-public final class UserRequest: Sendable, Codable, JSONEncodable {
+public final class UserRequest: Sendable, Encodable, JSONEncodable {
     /// Custom user data
     public let custom: [String: RawJSON]?
     /// User ID
@@ -28,17 +28,6 @@ public final class UserRequest: Sendable, Codable, JSONEncodable {
         self.language = language
         self.name = name
         self.privacySettings = privacySettings
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.image = try container.decodeIfPresent(String.self, forKey: .image)
-        self.invisible = try container.decodeIfPresent(Bool.self, forKey: .invisible)
-        self.language = try container.decodeIfPresent(String.self, forKey: .language)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
-        self.privacySettings = try container.decodeIfPresent(PrivacySettingsResponse.self, forKey: .privacySettings)
     }
 
     public func encode(to encoder: Encoder) throws {

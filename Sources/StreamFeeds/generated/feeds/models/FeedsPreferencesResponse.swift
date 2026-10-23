@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedsPreferencesResponse: Sendable, Codable, JSONEncodable {
+public final class FeedsPreferencesResponse: Sendable, Decodable {
     public let comment: String?
     public let commentMention: String?
     public let commentReaction: String?
@@ -36,18 +36,6 @@ public final class FeedsPreferencesResponse: Sendable, Codable, JSONEncodable {
         self.follow = try container.decodeIfPresent(String.self, forKey: .follow)
         self.mention = try container.decodeIfPresent(String.self, forKey: .mention)
         self.reaction = try container.decodeIfPresent(String.self, forKey: .reaction)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(comment, forKey: .comment)
-        try container.encodeIfPresent(commentMention, forKey: .commentMention)
-        try container.encodeIfPresent(commentReaction, forKey: .commentReaction)
-        try container.encodeIfPresent(commentReply, forKey: .commentReply)
-        try container.encodeIfPresent(customActivityTypes, forKey: .customActivityTypes)
-        try container.encodeIfPresent(follow, forKey: .follow)
-        try container.encodeIfPresent(mention, forKey: .mention)
-        try container.encodeIfPresent(reaction, forKey: .reaction)
     }
 }
 

@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class ImageContentParameters: Sendable, Codable, JSONEncodable {
+public final class ImageContentParameters: Sendable, Encodable, JSONEncodable {
     public let harmLabels: [String]?
 
     public init(harmLabels: [String]? = nil) {
         self.harmLabels = harmLabels
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.harmLabels = try container.decodeIfPresent([String].self, forKey: .harmLabels)
     }
 
     public func encode(to encoder: Encoder) throws {

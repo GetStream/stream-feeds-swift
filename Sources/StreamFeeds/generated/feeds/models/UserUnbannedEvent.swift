@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets unbanned. The event contains information about the user that was unbanned.
-public final class UserUnbannedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class UserUnbannedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
     public let createdAt: Date
     public let createdBy: UserResponseCommonFields?
@@ -41,18 +41,6 @@ public final class UserUnbannedEvent: Sendable, Event, Codable, JSONEncodable {
         self.team = try container.decodeIfPresent(String.self, forKey: .team)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(createdBy, forKey: .createdBy)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encodeIfPresent(shadow, forKey: .shadow)
-        try container.encodeIfPresent(team, forKey: .team)
-        try container.encode(type, forKey: .type)
-        try container.encode(user, forKey: .user)
     }
 }
 

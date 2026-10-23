@@ -29,7 +29,7 @@ public final class AddActivityRequestVisibility: RawRepresentable, Codable, Hash
     public static let tag = AddActivityRequestVisibility(rawValue: "tag")
 }
 
-public final class AddActivityRequest: Sendable, Codable, JSONEncodable {
+public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
     /// List of attachments for the activity
     public let attachments: [Attachment]?
     /// Collections that this activity references
@@ -94,31 +94,6 @@ public final class AddActivityRequest: Sendable, Codable, JSONEncodable {
         self.type = type
         self.visibility = visibility
         self.visibilityTag = visibilityTag
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
-        self.collectionRefs = try container.decodeIfPresent([String].self, forKey: .collectionRefs)
-        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.expiresAt = try container.decodeIfPresent(String.self, forKey: .expiresAt)
-        self.feeds = try container.decode([String].self, forKey: .feeds)
-        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.interestTags = try container.decodeIfPresent([String].self, forKey: .interestTags)
-        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
-        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
-        self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
-        self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.restrictReplies = try container.decodeIfPresent(AddActivityRequestRestrictReplies.self, forKey: .restrictReplies)
-        self.searchData = try container.decodeIfPresent([String: RawJSON].self, forKey: .searchData)
-        self.skipEnrichUrl = try container.decodeIfPresent(Bool.self, forKey: .skipEnrichUrl)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
-        self.text = try container.decodeIfPresent(String.self, forKey: .text)
-        self.type = try container.decode(String.self, forKey: .type)
-        self.visibility = try container.decodeIfPresent(AddActivityRequestVisibility.self, forKey: .visibility)
-        self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
     }
 
     public func encode(to encoder: Encoder) throws {

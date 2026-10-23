@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class NotificationTarget: Sendable, Codable, JSONEncodable {
+public final class NotificationTarget: Sendable, Decodable {
     /// Attachments on the target activity (for activity targets)
     public let attachments: [Attachment]?
     /// The ID of the target (activity ID or user ID)
@@ -36,16 +36,6 @@ public final class NotificationTarget: Sendable, Codable, JSONEncodable {
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.type = try container.decodeIfPresent(String.self, forKey: .type)
         self.userId = try container.decodeIfPresent(String.self, forKey: .userId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(attachments, forKey: .attachments)
-        try container.encode(id, forKey: .id)
-        try container.encodeIfPresent(name, forKey: .name)
-        try container.encodeIfPresent(text, forKey: .text)
-        try container.encodeIfPresent(type, forKey: .type)
-        try container.encodeIfPresent(userId, forKey: .userId)
     }
 }
 

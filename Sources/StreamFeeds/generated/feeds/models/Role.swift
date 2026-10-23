@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class Role: Sendable, Codable, JSONEncodable {
+public final class Role: Sendable, Decodable {
     /// Date/time of creation
     public let createdAt: Date
     /// Whether this is a custom role or built-in
@@ -32,15 +32,6 @@ public final class Role: Sendable, Codable, JSONEncodable {
         self.name = try container.decode(String.self, forKey: .name)
         self.scopes = try container.decode([String].self, forKey: .scopes)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encode(name, forKey: .name)
-        try container.encode(scopes, forKey: .scopes)
-        try container.encode(updatedAt, forKey: .updatedAt)
     }
 }
 

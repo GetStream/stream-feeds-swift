@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AddActivityResponse: Sendable, Codable, JSONEncodable {
+public final class AddActivityResponse: Sendable, Decodable {
     public let activity: ActivityResponse
     public let duration: String
     /// Number of mention notification activities created for mentioned users
@@ -22,13 +22,6 @@ public final class AddActivityResponse: Sendable, Codable, JSONEncodable {
         self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.mentionNotificationsCreated = try container.decodeIfPresent(Int.self, forKey: .mentionNotificationsCreated)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activity, forKey: .activity)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(mentionNotificationsCreated, forKey: .mentionNotificationsCreated)
     }
 }
 

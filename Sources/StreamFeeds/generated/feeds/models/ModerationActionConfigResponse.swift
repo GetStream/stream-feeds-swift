@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Configuration for a moderation action
-public final class ModerationActionConfigResponse: Sendable, Codable, JSONEncodable {
+public final class ModerationActionConfigResponse: Sendable, Decodable {
     /// The action to take
     public let action: String
     /// Custom data for the action
@@ -37,16 +37,6 @@ public final class ModerationActionConfigResponse: Sendable, Codable, JSONEncoda
         self.entityType = try container.decode(String.self, forKey: .entityType)
         self.icon = try container.decode(String.self, forKey: .icon)
         self.order = try container.decode(Int.self, forKey: .order)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(action, forKey: .action)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encode(description, forKey: .description)
-        try container.encode(entityType, forKey: .entityType)
-        try container.encode(icon, forKey: .icon)
-        try container.encode(order, forKey: .order)
     }
 }
 

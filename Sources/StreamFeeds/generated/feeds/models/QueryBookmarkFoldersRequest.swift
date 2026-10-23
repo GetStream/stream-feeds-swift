@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryBookmarkFoldersRequest: Sendable, Codable, JSONEncodable {
+public final class QueryBookmarkFoldersRequest: Sendable, Encodable, JSONEncodable {
     /// Filters to apply to the query
     public let filter: [String: RawJSON]?
     public let limit: Int?
@@ -20,15 +20,6 @@ public final class QueryBookmarkFoldersRequest: Sendable, Codable, JSONEncodable
         self.next = next
         self.prev = prev
         self.sort = sort
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.filter = try container.decodeIfPresent([String: RawJSON].self, forKey: .filter)
-        self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
-        self.next = try container.decodeIfPresent(String.self, forKey: .next)
-        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-        self.sort = try container.decodeIfPresent([SortParamRequest].self, forKey: .sort)
     }
 
     public func encode(to encoder: Encoder) throws {

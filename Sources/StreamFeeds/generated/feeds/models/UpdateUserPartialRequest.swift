@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateUserPartialRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateUserPartialRequest: Sendable, Encodable, JSONEncodable {
     /// User ID to update
     public let id: String
     public let set: [String: RawJSON]?
@@ -15,13 +15,6 @@ public final class UpdateUserPartialRequest: Sendable, Codable, JSONEncodable {
         self.id = id
         self.set = set
         self.unset = unset
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.set = try container.decodeIfPresent([String: RawJSON].self, forKey: .set)
-        self.unset = try container.decodeIfPresent([String].self, forKey: .unset)
     }
 
     public func encode(to encoder: Encoder) throws {

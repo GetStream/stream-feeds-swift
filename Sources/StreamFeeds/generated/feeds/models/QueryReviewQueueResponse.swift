@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryReviewQueueResponse: Sendable, Codable, JSONEncodable {
+public final class QueryReviewQueueResponse: Sendable, Decodable {
     /// Configuration for moderation actions
     public let actionConfig: [String: [ModerationActionConfigResponse]]
     public let duration: String
@@ -33,16 +33,6 @@ public final class QueryReviewQueueResponse: Sendable, Codable, JSONEncodable {
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
         self.stats = try container.decode([String: RawJSON].self, forKey: .stats)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(actionConfig, forKey: .actionConfig)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(items, forKey: .items)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(prev, forKey: .prev)
-        try container.encode(stats, forKey: .stats)
     }
 }
 

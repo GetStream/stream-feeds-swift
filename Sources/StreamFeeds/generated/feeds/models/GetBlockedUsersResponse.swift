@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetBlockedUsersResponse: Sendable, Codable, JSONEncodable {
+public final class GetBlockedUsersResponse: Sendable, Decodable {
     /// Array of blocked user object
     public let blocks: [BlockedUserResponse]
     /// Duration of the request in milliseconds
@@ -20,12 +20,6 @@ public final class GetBlockedUsersResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.blocks = try container.decode([BlockedUserResponse].self, forKey: .blocks)
         self.duration = try container.decode(String.self, forKey: .duration)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(blocks, forKey: .blocks)
-        try container.encode(duration, forKey: .duration)
     }
 }
 

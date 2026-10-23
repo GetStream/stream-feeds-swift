@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Response for activity feedback submission
-public final class ActivityFeedbackResponse: Sendable, Codable, JSONEncodable {
+public final class ActivityFeedbackResponse: Sendable, Decodable {
     /// The ID of the activity that received feedback
     public let activityId: String
     public let duration: String
@@ -20,12 +20,6 @@ public final class ActivityFeedbackResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.activityId = try container.decode(String.self, forKey: .activityId)
         self.duration = try container.decode(String.self, forKey: .duration)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activityId, forKey: .activityId)
-        try container.encode(duration, forKey: .duration)
     }
 }
 

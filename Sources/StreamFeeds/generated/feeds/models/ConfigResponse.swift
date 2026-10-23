@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ConfigResponse: Sendable, Codable, JSONEncodable {
+public final class ConfigResponse: Sendable, Decodable {
     public let aiImageConfig: AIImageConfig?
     public let aiTextConfig: AITextConfig?
     public let aiVideoConfig: AIVideoConfigResponse?
@@ -59,24 +59,6 @@ public final class ConfigResponse: Sendable, Codable, JSONEncodable {
         self.team = try container.decode(String.self, forKey: .team)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.velocityFilterConfig = try container.decodeIfPresent(VelocityFilterConfig.self, forKey: .velocityFilterConfig)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(aiImageConfig, forKey: .aiImageConfig)
-        try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
-        try container.encodeIfPresent(aiVideoConfig, forKey: .aiVideoConfig)
-        try container.encode(async, forKey: .async)
-        try container.encodeIfPresent(automodPlatformCircumventionConfig, forKey: .automodPlatformCircumventionConfig)
-        try container.encodeIfPresent(automodSemanticFiltersConfig, forKey: .automodSemanticFiltersConfig)
-        try container.encodeIfPresent(automodToxicityConfig, forKey: .automodToxicityConfig)
-        try container.encodeIfPresent(blockListConfig, forKey: .blockListConfig)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(key, forKey: .key)
-        try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
-        try container.encode(team, forKey: .team)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encodeIfPresent(velocityFilterConfig, forKey: .velocityFilterConfig)
     }
 }
 

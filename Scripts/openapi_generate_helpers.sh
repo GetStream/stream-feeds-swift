@@ -45,6 +45,107 @@ remove_type() {
   ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
 }
 
+# Keep only the coding direction each model needs.
+# Required because OpenAPI generator emits all models with Codable conformance
+# even when it is used for decoding or encoding only. This helps to save
+# SDK size when Codable is reduced to Encodable or Decodable.
+# Requires bigger change in the generator for applying it there.
+apply_directional_coding_conformances() {
+  local encodable_csv decodable_csv codable_csv
+  encodable_csv="$(IFS=,; echo "${encodable_only_models[*]}")"
+  decodable_csv="$(IFS=,; echo "${decodable_only_models[*]}")"
+  codable_csv="$(IFS=,; echo "${codable_models[*]}")"
+
+  sed -i '' 's/send<Response: Codable>/send<Response: Decodable>/' "$OUTPUT_DIR_FEEDS/APIs/DefaultAPI.swift"
+
+  python3 - \
+    "$OUTPUT_DIR_FEEDS/models" \
+    "$encodable_csv" \
+    "$decodable_csv" \
+    "$codable_csv" <<'PY'
+import pathlib
+import re
+import sys
+
+models_dir = pathlib.Path(sys.argv[1])
+groups = {
+    "Encodable": set(filter(None, sys.argv[2].split(","))),
+    "Decodable": set(filter(None, sys.argv[3].split(","))),
+    "Codable": set(filter(None, sys.argv[4].split(","))),
+}
+
+all_classified = set()
+for direction, names in groups.items():
+    overlap = all_classified.intersection(names)
+    if overlap:
+        raise SystemExit(f"Models classified more than once: {sorted(overlap)}")
+    all_classified.update(names)
+
+generated = {path.stem for path in models_dir.glob("*.swift")}
+unclassified = generated - all_classified
+missing = all_classified - generated
+if unclassified:
+    raise SystemExit(f"Unclassified generated models: {sorted(unclassified)}")
+if missing:
+    raise SystemExit(f"Classified models missing from generated output: {sorted(missing)}")
+
+# Every model gets an explicit init(from:) and encode(to:) from the generator; the one
+# for the dropped coding direction no longer compiles. The other one must stay: without
+# CodingKeys, synthesis would take the wire keys from the camelCase property names.
+# Keyed by the direction that doesn't need the coder.
+unused_coder = {
+    "Decodable": r"func encode\(to encoder: Encoder\) throws",
+    "Encodable": r"init\(from decoder: Decoder\) throws",
+}
+
+declaration = re.compile(
+    r"^(\s*(?:public )?(?:final )?(?:class|struct|enum)\s+([A-Za-z0-9_]+)[^:\n]*:\s*)(.*)$"
+)
+
+for direction, names in groups.items():
+    for name in sorted(names):
+        path = models_dir / f"{name}.swift"
+        lines = path.read_text().splitlines(keepends=True)
+        output = []
+        top_level_conformances = None
+
+        for line in lines:
+            ending = "\n" if line.endswith("\n") else ""
+            content = line[:-1] if ending else line
+            match = declaration.match(content)
+            if match:
+                prefix, declared_name, conformances = match.groups()
+                if declared_name == name:
+                    if direction != "Codable":
+                        conformances = re.sub(r"\bCodable\b", direction, conformances)
+                        if direction == "Decodable":
+                            conformances = re.sub(r",\s*JSONEncodable\b", "", conformances)
+                    content = f"{prefix}{conformances}"
+                    top_level_conformances = conformances
+            output.append(content + ending)
+
+        if top_level_conformances is None:
+            raise SystemExit(f"Could not find the top-level declaration for {name}")
+        if not re.search(rf"\b{direction}\b", top_level_conformances):
+            raise SystemExit(f"{name} does not conform to {direction}")
+        if direction == "Decodable" and re.search(
+            r"\bEncodable\b|\bJSONEncodable\b", top_level_conformances
+        ):
+            raise SystemExit(f"{name} retains an encoding conformance")
+
+        text = "".join(output)
+        if direction in unused_coder:
+            text = re.sub(
+                rf"\n?^    (?:public )?{unused_coder[direction]} \{{\n.*?^    \}}\n",
+                "",
+                text,
+                count=1,
+                flags=re.M | re.S,
+            )
+        path.write_text(text)
+PY
+}
+
 # Drops StringCodingKey members which neither generated nor handwritten code references.
 prune_unused_string_coding_keys() {
   python3 - "$OUTPUT_DIR_FEEDS/StringCodingKey.swift" "$OUTPUT_DIR_FEEDS" \

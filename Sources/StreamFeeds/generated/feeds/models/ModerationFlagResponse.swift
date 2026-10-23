@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ModerationFlagResponse: Sendable, Codable, JSONEncodable {
+public final class ModerationFlagResponse: Sendable, Decodable {
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let entityCreatorId: String?
@@ -59,25 +59,6 @@ public final class ModerationFlagResponse: Sendable, Codable, JSONEncodable {
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
         self.userId = try container.decode(String.self, forKey: .userId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(entityCreatorId, forKey: .entityCreatorId)
-        try container.encode(entityId, forKey: .entityId)
-        try container.encode(entityType, forKey: .entityType)
-        try container.encodeIfPresent(labels, forKey: .labels)
-        try container.encodeIfPresent(moderationPayload, forKey: .moderationPayload)
-        try container.encodeIfPresent(reason, forKey: .reason)
-        try container.encode(result, forKey: .result)
-        try container.encodeIfPresent(reviewQueueItem, forKey: .reviewQueueItem)
-        try container.encodeIfPresent(reviewQueueItemId, forKey: .reviewQueueItemId)
-        try container.encode(type, forKey: .type)
-        try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encodeIfPresent(user, forKey: .user)
-        try container.encode(userId, forKey: .userId)
     }
 }
 

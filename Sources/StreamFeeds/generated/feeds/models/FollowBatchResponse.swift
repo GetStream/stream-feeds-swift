@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FollowBatchResponse: Sendable, Codable, JSONEncodable {
+public final class FollowBatchResponse: Sendable, Decodable {
     public let duration: String
     /// List of current follow relationships
     public let follows: [FollowResponse]
@@ -19,12 +19,6 @@ public final class FollowBatchResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.follows = try container.decode([FollowResponse].self, forKey: .follows)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(follows, forKey: .follows)
     }
 }
 

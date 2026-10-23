@@ -19,7 +19,7 @@ public final class FeedRequestVisibility: RawRepresentable, Codable, Hashable, S
     public static let visible = FeedRequestVisibility(rawValue: "visible")
 }
 
-public final class FeedRequest: Sendable, Codable, JSONEncodable {
+public final class FeedRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the feed
     public let custom: [String: RawJSON]?
     /// Description of the feed
@@ -46,18 +46,6 @@ public final class FeedRequest: Sendable, Codable, JSONEncodable {
         self.members = members
         self.name = name
         self.visibility = visibility
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.description = try container.decodeIfPresent(String.self, forKey: .description)
-        self.feedGroupId = try container.decode(String.self, forKey: .feedGroupId)
-        self.feedId = try container.decode(String.self, forKey: .feedId)
-        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.members = try container.decodeIfPresent([FeedMemberRequest].self, forKey: .members)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
-        self.visibility = try container.decodeIfPresent(FeedRequestVisibility.self, forKey: .visibility)
     }
 
     public func encode(to encoder: Encoder) throws {

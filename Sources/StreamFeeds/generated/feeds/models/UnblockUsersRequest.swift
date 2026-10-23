@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class UnblockUsersRequest: Sendable, Codable, JSONEncodable {
+public final class UnblockUsersRequest: Sendable, Encodable, JSONEncodable {
     public let blockedUserId: String
 
     public init(blockedUserId: String) {
         self.blockedUserId = blockedUserId
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.blockedUserId = try container.decode(String.self, forKey: .blockedUserId)
     }
 
     public func encode(to encoder: Encoder) throws {

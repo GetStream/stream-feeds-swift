@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class BanRequest: Sendable, Codable, JSONEncodable {
+public final class BanRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to ban the user's IP address
     public let ipBan: Bool?
     /// Optional explanation for the ban
@@ -23,15 +23,6 @@ public final class BanRequest: Sendable, Codable, JSONEncodable {
         self.shadow = shadow
         self.targetUserId = targetUserId
         self.timeout = timeout
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.ipBan = try container.decodeIfPresent(Bool.self, forKey: .ipBan)
-        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
-        self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
-        self.targetUserId = try container.decode(String.self, forKey: .targetUserId)
-        self.timeout = try container.decodeIfPresent(Int.self, forKey: .timeout)
     }
 
     public func encode(to encoder: Encoder) throws {

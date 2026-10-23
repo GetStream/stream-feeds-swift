@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// This event is sent when the WS connection fails
-public final class ConnectionErrorEvent: Sendable, Event, Codable, JSONEncodable {
+public final class ConnectionErrorEvent: Sendable, Event, Decodable {
     public let connectionId: String
     public let createdAt: Date
     public let error: APIError
@@ -26,14 +26,6 @@ public final class ConnectionErrorEvent: Sendable, Event, Codable, JSONEncodable
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.error = try container.decode(APIError.self, forKey: .error)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(connectionId, forKey: .connectionId)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(error, forKey: .error)
-        try container.encode(type, forKey: .type)
     }
 }
 

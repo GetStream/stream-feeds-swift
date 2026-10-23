@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Emitted when comment feedback is provided.
-public final class CommentFeedbackEvent: Sendable, Event, Codable, JSONEncodable {
+public final class CommentFeedbackEvent: Sendable, Event, Decodable {
     public let commentFeedback: CommentFeedbackEventPayload
     /// Date/time of creation
     public let createdAt: Date
@@ -33,16 +33,6 @@ public final class CommentFeedbackEvent: Sendable, Event, Codable, JSONEncodable
         self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(commentFeedback, forKey: .commentFeedback)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(custom, forKey: .custom)
-        try container.encodeIfPresent(receivedAt, forKey: .receivedAt)
-        try container.encode(type, forKey: .type)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 

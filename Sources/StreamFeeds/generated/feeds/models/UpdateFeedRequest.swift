@@ -5,17 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class UpdateFeedRequest: Sendable, Codable, JSONEncodable {
+public final class UpdateFeedRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the feed
     public let custom: [String: RawJSON]?
 
     public init(custom: [String: RawJSON]? = nil) {
         self.custom = custom
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
     }
 
     public func encode(to encoder: Encoder) throws {

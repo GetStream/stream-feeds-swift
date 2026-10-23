@@ -6,17 +6,12 @@ import Foundation
 import StreamCore
 
 /// Configuration for reaction deletion action
-public final class DeleteReactionRequestPayload: Sendable, Codable, JSONEncodable {
+public final class DeleteReactionRequestPayload: Sendable, Encodable, JSONEncodable {
     /// Whether to permanently delete the reaction
     public let hardDelete: Bool?
 
     public init(hardDelete: Bool? = nil) {
         self.hardDelete = hardDelete
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.hardDelete = try container.decodeIfPresent(Bool.self, forKey: .hardDelete)
     }
 
     public func encode(to encoder: Encoder) throws {

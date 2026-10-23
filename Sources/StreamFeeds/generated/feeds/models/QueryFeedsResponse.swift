@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryFeedsResponse: Sendable, Codable, JSONEncodable {
+public final class QueryFeedsResponse: Sendable, Decodable {
     public let duration: String
     /// List of feeds matching the query
     public let feeds: [FeedResponse]
@@ -27,14 +27,6 @@ public final class QueryFeedsResponse: Sendable, Codable, JSONEncodable {
         self.feeds = try container.decode([FeedResponse].self, forKey: .feeds)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(feeds, forKey: .feeds)
-        try container.encodeIfPresent(next, forKey: .next)
-        try container.encodeIfPresent(prev, forKey: .prev)
     }
 }
 

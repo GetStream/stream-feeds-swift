@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
+public final class EnrichedReaction: Sendable, Decodable {
     public let activityId: String
     public let childrenCounts: [String: Int]?
     public let data: [String: RawJSON]?
@@ -45,21 +45,6 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
         self.targetFeeds = try container.decodeIfPresent([String].self, forKey: .targetFeeds)
         self.user = try container.decodeIfPresent(StreamData.self, forKey: .user)
         self.userId = try container.decode(String.self, forKey: .userId)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activityId, forKey: .activityId)
-        try container.encodeIfPresent(childrenCounts, forKey: .childrenCounts)
-        try container.encodeIfPresent(data, forKey: .data)
-        try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(kind, forKey: .kind)
-        try container.encodeIfPresent(latestChildren, forKey: .latestChildren)
-        try container.encodeIfPresent(ownChildren, forKey: .ownChildren)
-        try container.encodeIfPresent(parent, forKey: .parent)
-        try container.encodeIfPresent(targetFeeds, forKey: .targetFeeds)
-        try container.encodeIfPresent(user, forKey: .user)
-        try container.encode(userId, forKey: .userId)
     }
 }
 

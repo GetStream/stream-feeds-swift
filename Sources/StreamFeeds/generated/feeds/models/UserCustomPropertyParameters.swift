@@ -5,19 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class UserCustomPropertyParameters: Sendable, Codable, JSONEncodable {
+public final class UserCustomPropertyParameters: Sendable, Encodable, JSONEncodable {
     public let `operator`: String?
     public let propertyKey: String?
 
     public init(operator: String? = nil, propertyKey: String? = nil) {
         self.operator = `operator`
         self.propertyKey = propertyKey
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.operator = try container.decodeIfPresent(String.self, forKey: .operator)
-        self.propertyKey = try container.decodeIfPresent(String.self, forKey: .propertyKey)
     }
 
     public func encode(to encoder: Encoder) throws {

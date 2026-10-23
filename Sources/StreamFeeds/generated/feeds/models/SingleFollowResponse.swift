@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class SingleFollowResponse: Sendable, Codable, JSONEncodable {
+public final class SingleFollowResponse: Sendable, Decodable {
     public let duration: String
     public let follow: FollowResponse
 
@@ -18,12 +18,6 @@ public final class SingleFollowResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.follow = try container.decode(FollowResponse.self, forKey: .follow)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(follow, forKey: .follow)
     }
 }
 

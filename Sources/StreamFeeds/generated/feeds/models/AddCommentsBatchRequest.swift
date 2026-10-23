@@ -5,17 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class AddCommentsBatchRequest: Sendable, Codable, JSONEncodable {
+public final class AddCommentsBatchRequest: Sendable, Encodable, JSONEncodable {
     /// List of comments to add
     public let comments: [AddCommentRequest]
 
     public init(comments: [AddCommentRequest]) {
         self.comments = comments
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.comments = try container.decode([AddCommentRequest].self, forKey: .comments)
     }
 
     public func encode(to encoder: Encoder) throws {

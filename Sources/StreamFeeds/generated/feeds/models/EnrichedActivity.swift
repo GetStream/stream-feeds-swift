@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
+public final class EnrichedActivity: Sendable, Decodable {
     public let actor: StreamData?
     public let foreignId: String?
     public let id: String?
@@ -48,22 +48,6 @@ public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
         self.target = try container.decodeIfPresent(StreamData.self, forKey: .target)
         self.to = try container.decodeIfPresent([String].self, forKey: .to)
         self.verb = try container.decodeIfPresent(String.self, forKey: .verb)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(actor, forKey: .actor)
-        try container.encodeIfPresent(foreignId, forKey: .foreignId)
-        try container.encodeIfPresent(id, forKey: .id)
-        try container.encodeIfPresent(latestReactions, forKey: .latestReactions)
-        try container.encodeIfPresent(object, forKey: .object)
-        try container.encodeIfPresent(origin, forKey: .origin)
-        try container.encodeIfPresent(ownReactions, forKey: .ownReactions)
-        try container.encodeIfPresent(reactionCounts, forKey: .reactionCounts)
-        try container.encodeIfPresent(score, forKey: .score)
-        try container.encodeIfPresent(target, forKey: .target)
-        try container.encodeIfPresent(to, forKey: .to)
-        try container.encodeIfPresent(verb, forKey: .verb)
     }
 }
 

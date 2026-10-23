@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class NotificationContext: Sendable, Codable, JSONEncodable {
+public final class NotificationContext: Sendable, Decodable {
     public let target: NotificationTarget?
     public let trigger: NotificationTrigger?
 
@@ -18,12 +18,6 @@ public final class NotificationContext: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.target = try container.decodeIfPresent(NotificationTarget.self, forKey: .target)
         self.trigger = try container.decodeIfPresent(NotificationTrigger.self, forKey: .trigger)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(target, forKey: .target)
-        try container.encodeIfPresent(trigger, forKey: .trigger)
     }
 }
 

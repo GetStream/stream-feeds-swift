@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class CastPollVoteRequest: Sendable, Codable, JSONEncodable {
+public final class CastPollVoteRequest: Sendable, Encodable, JSONEncodable {
     public let vote: VoteData?
 
     public init(vote: VoteData? = nil) {
         self.vote = vote
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.vote = try container.decodeIfPresent(VoteData.self, forKey: .vote)
     }
 
     public func encode(to encoder: Encoder) throws {

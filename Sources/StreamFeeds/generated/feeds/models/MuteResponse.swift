@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class MuteResponse: Sendable, Codable, JSONEncodable {
+public final class MuteResponse: Sendable, Decodable {
     public let duration: String
     /// Object with mutes (if multiple users were muted)
     public let mutes: [UserMuteResponse]?
@@ -26,14 +26,6 @@ public final class MuteResponse: Sendable, Codable, JSONEncodable {
         self.mutes = try container.decodeIfPresent([UserMuteResponse].self, forKey: .mutes)
         self.nonExistingUsers = try container.decodeIfPresent([String].self, forKey: .nonExistingUsers)
         self.ownUser = try container.decodeIfPresent(OwnUserResponse.self, forKey: .ownUser)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(mutes, forKey: .mutes)
-        try container.encodeIfPresent(nonExistingUsers, forKey: .nonExistingUsers)
-        try container.encodeIfPresent(ownUser, forKey: .ownUser)
     }
 }
 

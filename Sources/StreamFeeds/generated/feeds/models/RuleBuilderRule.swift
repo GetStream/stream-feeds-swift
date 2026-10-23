@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderRule: Sendable, Codable, JSONEncodable {
+public final class RuleBuilderRule: Sendable, Encodable, JSONEncodable {
     public let action: RuleBuilderAction?
     public let conditions: [RuleBuilderCondition]?
     public let cooldownPeriod: String?
@@ -22,17 +22,6 @@ public final class RuleBuilderRule: Sendable, Codable, JSONEncodable {
         self.id = id
         self.logic = logic
         self.ruleType = ruleType
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.action = try container.decodeIfPresent(RuleBuilderAction.self, forKey: .action)
-        self.conditions = try container.decodeIfPresent([RuleBuilderCondition].self, forKey: .conditions)
-        self.cooldownPeriod = try container.decodeIfPresent(String.self, forKey: .cooldownPeriod)
-        self.groups = try container.decodeIfPresent([RuleBuilderConditionGroup].self, forKey: .groups)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.logic = try container.decodeIfPresent(String.self, forKey: .logic)
-        self.ruleType = try container.decode(String.self, forKey: .ruleType)
     }
 
     public func encode(to encoder: Encoder) throws {

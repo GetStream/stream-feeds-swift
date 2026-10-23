@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AddCommentRequest: Sendable, Codable, JSONEncodable {
+public final class AddCommentRequest: Sendable, Encodable, JSONEncodable {
     /// Media attachments for the reply
     public let attachments: [Attachment]?
     /// Text content of the comment
@@ -34,19 +34,6 @@ public final class AddCommentRequest: Sendable, Codable, JSONEncodable {
         self.objectType = objectType
         self.parentId = parentId
         self.skipPush = skipPush
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
-        self.comment = try container.decodeIfPresent(String.self, forKey: .comment)
-        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
-        self.objectId = try container.decodeIfPresent(String.self, forKey: .objectId)
-        self.objectType = try container.decodeIfPresent(String.self, forKey: .objectType)
-        self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
     }
 
     public func encode(to encoder: Encoder) throws {

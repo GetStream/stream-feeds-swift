@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// This event is sent when content is flagged for moderation
-public final class ModerationFlaggedEvent: Sendable, Event, Codable, JSONEncodable {
+public final class ModerationFlaggedEvent: Sendable, Event, Decodable {
     public let createdAt: Date
     /// The ID of the flagged content
     public let objectId: String
@@ -23,13 +23,6 @@ public final class ModerationFlaggedEvent: Sendable, Event, Codable, JSONEncodab
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.objectId = try container.decode(String.self, forKey: .objectId)
         self.type = try container.decode(String.self, forKey: .type)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(createdAt, forKey: .createdAt)
-        try container.encode(objectId, forKey: .objectId)
-        try container.encode(type, forKey: .type)
     }
 }
 

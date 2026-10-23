@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteResponse: Sendable, Codable, JSONEncodable {
+public final class PollVoteResponse: Sendable, Decodable {
     /// Duration of the request in milliseconds
     public let duration: String
     public let vote: PollVoteResponseData?
@@ -19,12 +19,6 @@ public final class PollVoteResponse: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.vote = try container.decodeIfPresent(PollVoteResponseData.self, forKey: .vote)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encodeIfPresent(vote, forKey: .vote)
     }
 }
 

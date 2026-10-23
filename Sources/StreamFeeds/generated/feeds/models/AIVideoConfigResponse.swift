@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AIVideoConfigResponse: Sendable, Codable, JSONEncodable {
+public final class AIVideoConfigResponse: Sendable, Decodable {
     public let async: Bool?
     public let enabled: Bool
     public let rules: [AWSRekognitionRule]
@@ -21,13 +21,6 @@ public final class AIVideoConfigResponse: Sendable, Codable, JSONEncodable {
         self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
         self.enabled = try container.decode(Bool.self, forKey: .enabled)
         self.rules = try container.decode([AWSRekognitionRule].self, forKey: .rules)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(async, forKey: .async)
-        try container.encode(enabled, forKey: .enabled)
-        try container.encode(rules, forKey: .rules)
     }
 }
 

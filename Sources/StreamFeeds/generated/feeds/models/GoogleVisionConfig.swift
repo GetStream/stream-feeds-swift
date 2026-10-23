@@ -5,16 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class GoogleVisionConfig: Sendable, Codable, JSONEncodable {
+public final class GoogleVisionConfig: Sendable, Encodable, JSONEncodable {
     public let enabled: Bool?
 
     public init(enabled: Bool? = nil) {
         self.enabled = enabled
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled)
     }
 
     public func encode(to encoder: Encoder) throws {
