@@ -1223,24 +1223,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func longPoll(close: Bool?, json: WSAuthMessage?) async throws {
-        let path = "/api/v2/longpoll"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "close": (wrappedValue: close?.encodeToJSON(), isExplode: true),
-            "json": (wrappedValue: json?.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "GET"
-        )
-        _ = try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(EmptyResponse.self, from: $0)
-        }
-    }
-
     open func ban(banRequest: BanRequest) async throws -> ModerationBanResponse {
         let path = "/api/v2/moderation/ban"
 
@@ -1847,8 +1829,6 @@ protocol DefaultAPIEndpoints {
     func unfollow(source: String, target: String, deleteNotificationActivity: Bool?, keepHistory: Bool?, enrichOwnFields: Bool?) async throws -> UnfollowResponse
 
     func createGuest(createGuestRequest: CreateGuestRequest) async throws -> CreateGuestResponse
-
-    func longPoll(close: Bool?, json: WSAuthMessage?) async throws
 
     func ban(banRequest: BanRequest) async throws -> ModerationBanResponse
 
