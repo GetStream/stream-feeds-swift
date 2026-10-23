@@ -52,7 +52,8 @@ extension Attachment: Identifiable {
             thumbUrl: thumbUrl,
             title: title,
             titleLink: titleLink,
-            type: type
+            // `String?` selects the generated init instead of this one.
+            type: type as String?
         )
     }
 }
