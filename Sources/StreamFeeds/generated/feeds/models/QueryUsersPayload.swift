@@ -5,12 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryUsersPayload: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryUsersPayload: @unchecked Sendable, Codable, JSONEncodable {
+    /// Filter conditions to apply to the query
     public var filterConditions: [String: RawJSON]
     public var includeDeactivatedUsers: Bool?
     public var limit: Int?
     public var offset: Int?
     public var presence: Bool?
+    /// Array of sort parameters
     public var sort: [SortParamRequest]?
 
     public init(filterConditions: [String: RawJSON], includeDeactivatedUsers: Bool? = nil, limit: Int? = nil, offset: Int? = nil, presence: Bool? = nil, sort: [SortParamRequest]? = nil) {
@@ -30,7 +32,9 @@ public final class QueryUsersPayload: @unchecked Sendable, Codable, JSONEncodabl
         case presence
         case sort
     }
+}
 
+extension QueryUsersPayload: Hashable {
     public static func == (lhs: QueryUsersPayload, rhs: QueryUsersPayload) -> Bool {
         lhs.filterConditions == rhs.filterConditions &&
             lhs.includeDeactivatedUsers == rhs.includeDeactivatedUsers &&

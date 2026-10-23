@@ -15,9 +15,9 @@ public final class Moderation: Sendable {
     
     /// Bans a user from the platform
     /// - Parameter banRequest: The ban request containing details about the user to ban and ban parameters
-    /// - Returns: A `BanResponse` containing information about the ban duration
+    /// - Returns: A `ModerationBanResponse` containing information about the ban duration
     /// - Throws: An error if the ban operation fails
-    public func ban(banRequest: BanRequest) async throws -> BanResponse {
+    public func ban(banRequest: BanRequest) async throws -> ModerationBanResponse {
         try await apiClient.ban(banRequest: banRequest)
     }
     
@@ -56,9 +56,9 @@ public final class Moderation: Sendable {
     
     /// Flags content for moderation review
     /// - Parameter flagRequest: The flag request containing details about the content to flag
-    /// - Returns: A `FlagResponse` containing information about the flag operation
+    /// - Returns: A `FlagItemResponse` containing information about the flag operation
     /// - Throws: An error if the flag operation fails
-    public func flag(flagRequest: FlagRequest) async throws -> FlagResponse {
+    public func flag(flagRequest: FlagRequest) async throws -> FlagItemResponse {
         try await apiClient.flag(flagRequest: flagRequest)
     }
     

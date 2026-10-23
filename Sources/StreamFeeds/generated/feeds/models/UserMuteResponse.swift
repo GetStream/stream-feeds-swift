@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class UserMuteResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UserMuteResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var createdAt: Date
     public var expires: Date?
+    /// User response object
     public var target: UserResponse?
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse?
 
     public init(createdAt: Date, expires: Date? = nil, target: UserResponse? = nil, updatedAt: Date, user: UserResponse? = nil) {
@@ -27,7 +29,9 @@ public final class UserMuteResponse: @unchecked Sendable, Codable, JSONEncodable
         case updatedAt = "updated_at"
         case user
     }
+}
 
+extension UserMuteResponse: Hashable {
     public static func == (lhs: UserMuteResponse, rhs: UserMuteResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.expires == rhs.expires &&

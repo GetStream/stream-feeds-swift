@@ -5,8 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum AutomodSemanticFiltersRuleAction: String, Sendable, Codable, CaseIterable {
+        case bounce
+        case bounceFlag = "bounce_flag"
+        case bounceRemove = "bounce_remove"
         case flag
         case remove
         case shadow
@@ -38,7 +41,9 @@ public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSO
         case name
         case threshold
     }
+}
 
+extension AutomodSemanticFiltersRule: Hashable {
     public static func == (lhs: AutomodSemanticFiltersRule, rhs: AutomodSemanticFiltersRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.name == rhs.name &&

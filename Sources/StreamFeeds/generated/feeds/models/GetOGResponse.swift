@@ -5,11 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class GetOGResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetOGResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var actions: [Action]?
+    /// URL of detected video or audio
     public var assetUrl: String?
     public var authorIcon: String?
+    /// og:site
     public var authorLink: String?
+    /// og:site_name
     public var authorName: String?
     public var color: String?
     public var custom: [String: RawJSON]
@@ -19,15 +22,22 @@ public final class GetOGResponse: @unchecked Sendable, Codable, JSONEncodable, H
     public var footer: String?
     public var footerIcon: String?
     public var giphy: Images?
+    /// URL of detected image
     public var imageUrl: String?
+    /// extracted url from the text
     public var ogScrapeUrl: String?
     public var originalHeight: Int?
     public var originalWidth: Int?
     public var pretext: String?
+    /// og:description
     public var text: String?
+    /// URL of detected thumb image
     public var thumbUrl: String?
+    /// og:title
     public var title: String?
+    /// og:url
     public var titleLink: String?
+    /// Attachment type, could be empty, image, audio or video
     public var type: String?
 
     public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], duration: String, fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil) {
@@ -80,7 +90,9 @@ public final class GetOGResponse: @unchecked Sendable, Codable, JSONEncodable, H
         case titleLink = "title_link"
         case type
     }
+}
 
+extension GetOGResponse: Hashable {
     public static func == (lhs: GetOGResponse, rhs: GetOGResponse) -> Bool {
         lhs.actions == rhs.actions &&
             lhs.assetUrl == rhs.assetUrl &&

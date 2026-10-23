@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable {
     public var actor: StreamData?
     public var foreignId: String?
     public var id: String?
@@ -48,7 +48,9 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
         case to
         case verb
     }
+}
 
+extension EnrichedActivity: Hashable {
     public static func == (lhs: EnrichedActivity, rhs: EnrichedActivity) -> Bool {
         lhs.actor == rhs.actor &&
             lhs.foreignId == rhs.foreignId &&

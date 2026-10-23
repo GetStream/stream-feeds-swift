@@ -5,14 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class StoriesFeedUpdatedEvent: @unchecked Sendable,  Event, Codable, JSONEncodable, Hashable {
+/// Emitted when stories feed is updated.
+public final class StoriesFeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Individual activities for stories feeds
     public var activities: [ActivityResponse]?
+    /// Aggregated activities for stories feeds
     public var aggregatedActivities: [AggregatedActivityResponse]?
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
+    /// The ID of the feed
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.stories_feed.updated" in this case
     public var type: String = "feeds.stories_feed.updated"
     public var user: UserResponseCommonFields?
 
@@ -38,17 +44,19 @@ public final class StoriesFeedUpdatedEvent: @unchecked Sendable,  Event, Codable
         case type
         case user
     }
+}
 
+extension StoriesFeedUpdatedEvent: Hashable {
     public static func == (lhs: StoriesFeedUpdatedEvent, rhs: StoriesFeedUpdatedEvent) -> Bool {
         lhs.activities == rhs.activities &&
-        lhs.aggregatedActivities == rhs.aggregatedActivities &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.custom == rhs.custom &&
-        lhs.feedVisibility == rhs.feedVisibility &&
-        lhs.fid == rhs.fid &&
-        lhs.receivedAt == rhs.receivedAt &&
-        lhs.type == rhs.type &&
-        lhs.user == rhs.user
+            lhs.aggregatedActivities == rhs.aggregatedActivities &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.feedVisibility == rhs.feedVisibility &&
+            lhs.fid == rhs.fid &&
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.type == rhs.type &&
+            lhs.user == rhs.user
     }
 
     public func hash(into hasher: inout Hasher) {

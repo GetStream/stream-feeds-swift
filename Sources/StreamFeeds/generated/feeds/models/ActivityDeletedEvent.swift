@@ -5,13 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when an activity is deleted.
+public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var activity: ActivityResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.activity.deleted" in this case
     public var type: String = "feeds.activity.deleted"
     public var user: UserResponseCommonFields?
 
@@ -35,7 +38,9 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
         case type
         case user
     }
+}
 
+extension ActivityDeletedEvent: Hashable {
     public static func == (lhs: ActivityDeletedEvent, rhs: ActivityDeletedEvent) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&

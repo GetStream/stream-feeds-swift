@@ -5,50 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class ImageSize: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum ImageSizeCrop: String, Sendable, Codable, CaseIterable {
-        case bottom
-        case center
-        case left
-        case right
-        case top
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum ImageSizeResize: String, Sendable, Codable, CaseIterable {
-        case clip
-        case crop
-        case fill
-        case scale
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var crop: ImageSizeCrop?
+public final class ImageSize: @unchecked Sendable, Codable, JSONEncodable {
+    /// Crop mode. One of: top, bottom, left, right, center
+    public var crop: String?
+    /// Target image height
     public var height: Int?
-    public var resize: ImageSizeResize?
+    /// Resize method. One of: clip, crop, scale, fill
+    public var resize: String?
+    /// Target image width
     public var width: Int?
 
-    public init(crop: ImageSizeCrop? = nil, height: Int? = nil, resize: ImageSizeResize? = nil, width: Int? = nil) {
+    public init(crop: String? = nil, height: Int? = nil, resize: String? = nil, width: Int? = nil) {
         self.crop = crop
         self.height = height
         self.resize = resize
@@ -61,7 +28,9 @@ public final class ImageSize: @unchecked Sendable, Codable, JSONEncodable, Hasha
         case resize
         case width
     }
+}
 
+extension ImageSize: Hashable {
     public static func == (lhs: ImageSize, rhs: ImageSize) -> Bool {
         lhs.crop == rhs.crop &&
             lhs.height == rhs.height &&

@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// List of moderation configurations
     public var configs: [ConfigResponse]
     public var duration: String
     public var next: String?
@@ -24,7 +25,9 @@ public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable,
         case next
         case prev
     }
+}
 
+extension QueryModerationConfigsResponse: Hashable {
     public static func == (lhs: QueryModerationConfigsResponse, rhs: QueryModerationConfigsResponse) -> Bool {
         lhs.configs == rhs.configs &&
             lhs.duration == rhs.duration &&

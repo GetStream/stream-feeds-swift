@@ -5,10 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryCommentsResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// List of comments matching the query
     public var comments: [CommentResponse]
     public var duration: String
+    /// Cursor for next page
     public var next: String?
+    /// Cursor for previous page
     public var prev: String?
 
     public init(comments: [CommentResponse], duration: String, next: String? = nil, prev: String? = nil) {
@@ -24,7 +27,9 @@ public final class QueryCommentsResponse: @unchecked Sendable, Codable, JSONEnco
         case next
         case prev
     }
+}
 
+extension QueryCommentsResponse: Hashable {
     public static func == (lhs: QueryCommentsResponse, rhs: QueryCommentsResponse) -> Bool {
         lhs.comments == rhs.comments &&
             lhs.duration == rhs.duration &&

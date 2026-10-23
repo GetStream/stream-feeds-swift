@@ -5,8 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var comment: CommentResponse
+    /// Duration of the request
     public var duration: String
     public var reaction: FeedsReactionResponse
 
@@ -22,6 +23,22 @@ public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSO
         case reaction
     }
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.comment = try container.decode(CommentResponse.self, forKey: .comment)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(comment, forKey: .comment)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(reaction, forKey: .reaction)
+    }
+}
+
+extension AddCommentReactionResponse: Hashable {
     public static func == (lhs: AddCommentReactionResponse, rhs: AddCommentReactionResponse) -> Bool {
         lhs.comment == rhs.comment &&
             lhs.duration == rhs.duration &&

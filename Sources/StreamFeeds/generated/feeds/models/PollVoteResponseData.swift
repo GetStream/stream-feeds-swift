@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncodable {
     public var answerText: String?
     public var createdAt: Date
     public var id: String
@@ -13,6 +13,7 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
     public var optionId: String
     public var pollId: String
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse?
     public var userId: String?
 
@@ -39,7 +40,9 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
         case user
         case userId = "user_id"
     }
+}
 
+extension PollVoteResponseData: Hashable {
     public static func == (lhs: PollVoteResponseData, rhs: PollVoteResponseData) -> Bool {
         lhs.answerText == rhs.answerText &&
             lhs.createdAt == rhs.createdAt &&

@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class QueryUsersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryUsersResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
+    /// Array of users as result of filters applied.
     public var users: [FullUserResponse]
 
     public init(duration: String, users: [FullUserResponse]) {
@@ -18,7 +20,9 @@ public final class QueryUsersResponse: @unchecked Sendable, Codable, JSONEncodab
         case duration
         case users
     }
+}
 
+extension QueryUsersResponse: Hashable {
     public static func == (lhs: QueryUsersResponse, rhs: QueryUsersResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.users == rhs.users

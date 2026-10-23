@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var blocklistMatch: [String]?
     public var containsUrl: Bool?
     public var harmLabels: [String]?
@@ -33,7 +33,9 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
         case threshold
         case timeWindow = "time_window"
     }
+}
 
+extension TextRuleParameters: Hashable {
     public static func == (lhs: TextRuleParameters, rhs: TextRuleParameters) -> Bool {
         lhs.blocklistMatch == rhs.blocklistMatch &&
             lhs.containsUrl == rhs.containsUrl &&

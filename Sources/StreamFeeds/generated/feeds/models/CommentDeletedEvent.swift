@@ -5,13 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class CommentDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a comment is deleted.
+public final class CommentDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var comment: CommentResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.comment.deleted" in this case
     public var type: String = "feeds.comment.deleted"
     public var user: UserResponseCommonFields?
 
@@ -35,7 +38,9 @@ public final class CommentDeletedEvent: @unchecked Sendable, Event, Codable, JSO
         case type
         case user
     }
+}
 
+extension CommentDeletedEvent: Hashable {
     public static func == (lhs: CommentDeletedEvent, rhs: CommentDeletedEvent) -> Bool {
         lhs.comment == rhs.comment &&
             lhs.createdAt == rhs.createdAt &&

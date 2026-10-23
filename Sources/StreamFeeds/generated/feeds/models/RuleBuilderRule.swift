@@ -5,8 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var action: RuleBuilderAction
+public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable {
+    public var action: RuleBuilderAction?
     public var conditions: [RuleBuilderCondition]?
     public var cooldownPeriod: String?
     public var groups: [RuleBuilderConditionGroup]?
@@ -14,7 +14,7 @@ public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable,
     public var logic: String?
     public var ruleType: String
 
-    public init(action: RuleBuilderAction, conditions: [RuleBuilderCondition]? = nil, cooldownPeriod: String? = nil, groups: [RuleBuilderConditionGroup]? = nil, id: String? = nil, logic: String? = nil, ruleType: String) {
+    public init(action: RuleBuilderAction? = nil, conditions: [RuleBuilderCondition]? = nil, cooldownPeriod: String? = nil, groups: [RuleBuilderConditionGroup]? = nil, id: String? = nil, logic: String? = nil, ruleType: String) {
         self.action = action
         self.conditions = conditions
         self.cooldownPeriod = cooldownPeriod
@@ -33,7 +33,9 @@ public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable,
         case logic
         case ruleType = "rule_type"
     }
+}
 
+extension RuleBuilderRule: Hashable {
     public static func == (lhs: RuleBuilderRule, rhs: RuleBuilderRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.conditions == rhs.conditions &&

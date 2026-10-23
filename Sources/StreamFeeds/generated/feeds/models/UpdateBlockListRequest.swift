@@ -5,8 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBlockListRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateBlockListRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var team: String?
+    /// List of words to block
     public var words: [String]?
 
     public init(team: String? = nil, words: [String]? = nil) {
@@ -18,7 +19,9 @@ public final class UpdateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
         case team
         case words
     }
+}
 
+extension UpdateBlockListRequest: Hashable {
     public static func == (lhs: UpdateBlockListRequest, rhs: UpdateBlockListRequest) -> Bool {
         lhs.team == rhs.team &&
             lhs.words == rhs.words

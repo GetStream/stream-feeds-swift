@@ -5,11 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable {
+    public enum PollResponseDataVotingVisibility: String, Sendable, Codable, CaseIterable {
+        case `public`
+        case anonymous
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var allowAnswers: Bool
     public var allowUserSuggestedOptions: Bool
     public var answersCount: Int
     public var createdAt: Date
+    /// User response object
     public var createdBy: UserResponse?
     public var createdById: String
     public var custom: [String: RawJSON]
@@ -26,9 +43,10 @@ public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable
     public var updatedAt: Date
     public var voteCount: Int
     public var voteCountsByOption: [String: Int]
-    public var votingVisibility: String
+    /// Voting visibility of the poll
+    public var votingVisibility: PollResponseDataVotingVisibility
 
-    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: String) {
+    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: PollResponseDataVotingVisibility) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.answersCount = answersCount
@@ -75,7 +93,9 @@ public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable
         case voteCountsByOption = "vote_counts_by_option"
         case votingVisibility = "voting_visibility"
     }
+}
 
+extension PollResponseData: Hashable {
     public static func == (lhs: PollResponseData, rhs: PollResponseData) -> Bool {
         lhs.allowAnswers == rhs.allowAnswers &&
             lhs.allowUserSuggestedOptions == rhs.allowUserSuggestedOptions &&

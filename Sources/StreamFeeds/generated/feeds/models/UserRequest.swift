@@ -5,13 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class UserRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// User request object
+public final class UserRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Custom user data
     public var custom: [String: RawJSON]?
+    /// User ID
     public var id: String
+    /// User's profile image URL
     public var image: String?
     public var invisible: Bool?
     public var language: String?
+    /// Optional name of user
     public var name: String?
+    /// The privacy settings of the user.
     public var privacySettings: PrivacySettingsResponse?
 
     public init(custom: [String: RawJSON]? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String? = nil, name: String? = nil, privacySettings: PrivacySettingsResponse? = nil) {
@@ -33,7 +39,9 @@ public final class UserRequest: @unchecked Sendable, Codable, JSONEncodable, Has
         case name
         case privacySettings = "privacy_settings"
     }
+}
 
+extension UserRequest: Hashable {
     public static func == (lhs: UserRequest, rhs: UserRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&

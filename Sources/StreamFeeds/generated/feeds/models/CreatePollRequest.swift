@@ -5,9 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Contains all information needed to create a new poll
+public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodable {
     public enum CreatePollRequestVotingVisibility: String, Sendable, Codable, CaseIterable {
+        /// Votes are public and can be seen by everyone.
         case `public`
+        /// Votes are anonymous and cannot be attributed to individual users.
         case anonymous
         case unknown = "_unknown"
 
@@ -22,16 +25,24 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
         }
     }
 
+    /// Indicates whether users can suggest user defined answers
     public var allowAnswers: Bool?
     public var allowUserSuggestedOptions: Bool?
+    /// Custom data for this object
     public var custom: [String: RawJSON]?
+    /// A description of the poll
     public var description: String?
+    /// Indicates whether users can cast multiple votes
     public var enforceUniqueVote: Bool?
     public var id: String?
+    /// Indicates whether the poll is open for voting
     public var isClosed: Bool?
+    /// Indicates the maximum amount of votes a user can cast
     public var maxVotesAllowed: Int?
+    /// The name of the poll
     public var name: String
     public var options: [PollOptionInput]?
+    /// Represents the visibility of votes in a poll.
     public var votingVisibility: CreatePollRequestVotingVisibility?
 
     public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
@@ -51,7 +62,7 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case allowAnswers = "allow_answers"
         case allowUserSuggestedOptions = "allow_user_suggested_options"
-        case custom = "Custom"
+        case custom
         case description
         case enforceUniqueVote = "enforce_unique_vote"
         case id
@@ -61,7 +72,9 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
         case options
         case votingVisibility = "voting_visibility"
     }
+}
 
+extension CreatePollRequest: Hashable {
     public static func == (lhs: CreatePollRequest, rhs: CreatePollRequest) -> Bool {
         lhs.allowAnswers == rhs.allowAnswers &&
             lhs.allowUserSuggestedOptions == rhs.allowUserSuggestedOptions &&

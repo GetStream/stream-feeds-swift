@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum OCRRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
@@ -38,7 +38,9 @@ public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable, Hashabl
         case action
         case label
     }
+}
 
+extension OCRRule: Hashable {
     public static func == (lhs: OCRRule, rhs: OCRRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.label == rhs.label

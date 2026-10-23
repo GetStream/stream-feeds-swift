@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable {
     public var activityId: String
     public var childrenCounts: [String: Int]?
     public var data: [String: RawJSON]?
@@ -45,7 +45,9 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
         case user
         case userId = "user_id"
     }
+}
 
+extension EnrichedReaction: Hashable {
     public static func == (lhs: EnrichedReaction, rhs: EnrichedReaction) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.childrenCounts == rhs.childrenCounts &&

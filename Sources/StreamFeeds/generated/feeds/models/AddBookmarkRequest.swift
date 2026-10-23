@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class AddBookmarkRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AddBookmarkRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Custom data for the bookmark
     public var custom: [String: RawJSON]?
+    /// ID of the folder to add the bookmark to
     public var folderId: String?
     public var newFolder: AddFolderRequest?
 
@@ -21,7 +23,9 @@ public final class AddBookmarkRequest: @unchecked Sendable, Codable, JSONEncodab
         case folderId = "folder_id"
         case newFolder = "new_folder"
     }
+}
 
+extension AddBookmarkRequest: Hashable {
     public static func == (lhs: AddBookmarkRequest, rhs: AddBookmarkRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.folderId == rhs.folderId &&

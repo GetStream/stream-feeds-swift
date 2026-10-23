@@ -5,7 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
+    public enum ActivityResponseRestrictReplies: String, Sendable, Codable, CaseIterable {
+        case everyone
+        case nobody
+        case peopleIFollow = "people_i_follow"
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+    
     public enum ActivityResponseVisibility: String, Sendable, Codable, CaseIterable {
         case `private`
         case `public`
@@ -23,44 +40,74 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         }
     }
 
+    /// Media attachments for the activity
     public var attachments: [Attachment]
+    /// Number of bookmarks on the activity
     public var bookmarkCount: Int
+    /// Number of comments on the activity
     public var commentCount: Int
+    /// Latest 5 comments of this activity (comment replies excluded)
     public var comments: [CommentResponse]
+    /// When the activity was created
     public var createdAt: Date
     public var currentFeed: FeedResponse?
+    /// Custom data for the activity
     public var custom: [String: RawJSON]
+    /// When the activity was deleted
     public var deletedAt: Date?
+    /// When the activity was last edited
     public var editedAt: Date?
+    /// When the activity will expire
     public var expiresAt: Date?
+    /// List of feed IDs containing this activity
     public var feeds: [String]
+    /// Tags for filtering
     public var filterTags: [String]
-    public var hidden: Bool?
+    /// If this activity is hidden by this user (using activity feedback)
+    public var hidden: Bool
+    /// Unique identifier for the activity
     public var id: String
+    /// Tags for user interests
     public var interestTags: [String]
+    /// Recent reactions to the activity
     public var latestReactions: [FeedsReactionResponse]
-    public var location: ActivityLocation?
+    public var location: Location?
+    /// Users mentioned in the activity
     public var mentionedUsers: [UserResponse]
     public var moderation: ModerationV2Response?
     public var notificationContext: NotificationContext?
+    /// Current user's bookmarks for this activity
     public var ownBookmarks: [BookmarkResponse]
+    /// Current user's reactions to this activity
     public var ownReactions: [FeedsReactionResponse]
     public var parent: ActivityResponse?
     public var poll: PollResponseData?
+    /// Popularity score of the activity
     public var popularity: Int
+    /// Number of reactions to the activity
     public var reactionCount: Int
-    public var reactionGroups: [String: ReactionGroupResponse?]
+    /// Grouped reactions by type
+    public var reactionGroups: [String: FeedsReactionGroupResponse]
+    /// Ranking score for this activity
     public var score: Float
+    /// Data for search indexing
     public var searchData: [String: RawJSON]
+    /// Number of times the activity was shared
     public var shareCount: Int
+    /// Text content of the activity
     public var text: String?
+    /// Type of activity
     public var type: String
+    /// When the activity was last updated
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse
+    /// Visibility setting for the activity. One of: public, private, tag
     public var visibility: ActivityResponseVisibility
+    /// If visibility is 'tag', this is the tag name
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool? = nil, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: ActivityLocation? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -137,7 +184,9 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         case visibility
         case visibilityTag = "visibility_tag"
     }
+}
 
+extension ActivityResponse: Hashable {
     public static func == (lhs: ActivityResponse, rhs: ActivityResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.bookmarkCount == rhs.bookmarkCount &&

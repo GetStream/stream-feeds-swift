@@ -5,13 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class FeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a feed is updated.
+public final class FeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feed: FeedResponse
     public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.feed.updated" in this case
     public var type: String = "feeds.feed.updated"
     public var user: UserResponseCommonFields?
 
@@ -35,7 +37,9 @@ public final class FeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         case type
         case user
     }
+}
 
+extension FeedUpdatedEvent: Hashable {
     public static func == (lhs: FeedUpdatedEvent, rhs: FeedUpdatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

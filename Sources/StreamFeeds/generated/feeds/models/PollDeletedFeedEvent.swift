@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class PollDeletedFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+public final class PollDeletedFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
@@ -32,7 +32,9 @@ public final class PollDeletedFeedEvent: @unchecked Sendable, Event, Codable, JS
         case receivedAt = "received_at"
         case type
     }
+}
 
+extension PollDeletedFeedEvent: Hashable {
     public static func == (lhs: PollDeletedFeedEvent, rhs: PollDeletedFeedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum AWSRekognitionRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
@@ -41,7 +41,9 @@ public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodab
         case label
         case minConfidence = "min_confidence"
     }
+}
 
+extension AWSRekognitionRule: Hashable {
     public static func == (lhs: AWSRekognitionRule, rhs: AWSRekognitionRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.label == rhs.label &&

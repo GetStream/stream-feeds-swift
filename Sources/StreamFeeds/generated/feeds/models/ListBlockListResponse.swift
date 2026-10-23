@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class ListBlockListResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class ListBlockListResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var blocklists: [BlockListResponse]
+    /// Duration of the request in milliseconds
     public var duration: String
 
     public init(blocklists: [BlockListResponse], duration: String) {
@@ -18,7 +20,9 @@ public final class ListBlockListResponse: @unchecked Sendable, Codable, JSONEnco
         case blocklists
         case duration
     }
+}
 
+extension ListBlockListResponse: Hashable {
     public static func == (lhs: ListBlockListResponse, rhs: ListBlockListResponse) -> Bool {
         lhs.blocklists == rhs.blocklists &&
             lhs.duration == rhs.duration

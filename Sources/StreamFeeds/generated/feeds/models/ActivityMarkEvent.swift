@@ -5,17 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class ActivityMarkEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when activities are marked as read, seen, or watched.
+public final class ActivityMarkEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
+    /// Whether all activities were marked as read
     public var markAllRead: Bool?
+    /// Whether all activities were marked as seen
     public var markAllSeen: Bool?
+    /// The IDs of activities marked as read
     public var markRead: [String]?
+    /// The IDs of activities marked as seen
     public var markSeen: [String]?
+    /// The IDs of activities marked as watched
     public var markWatched: [String]?
     public var receivedAt: Date?
+    /// The type of event: "feeds.activity.marked" in this case
     public var type: String = "feeds.activity.marked"
     public var user: UserResponseCommonFields?
 
@@ -47,7 +55,9 @@ public final class ActivityMarkEvent: @unchecked Sendable, Event, Codable, JSONE
         case type
         case user
     }
+}
 
+extension ActivityMarkEvent: Hashable {
     public static func == (lhs: ActivityMarkEvent, rhs: ActivityMarkEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

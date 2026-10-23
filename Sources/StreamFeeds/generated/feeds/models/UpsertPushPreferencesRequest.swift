@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class UpsertPushPreferencesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpsertPushPreferencesRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// A list of push preferences for channels, calls, or the user.
     public var preferences: [PushPreferenceInput]
 
     public init(preferences: [PushPreferenceInput]) {
@@ -15,7 +16,9 @@ public final class UpsertPushPreferencesRequest: @unchecked Sendable, Codable, J
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case preferences
     }
+}
 
+extension UpsertPushPreferencesRequest: Hashable {
     public static func == (lhs: UpsertPushPreferencesRequest, rhs: UpsertPushPreferencesRequest) -> Bool {
         lhs.preferences == rhs.preferences
     }

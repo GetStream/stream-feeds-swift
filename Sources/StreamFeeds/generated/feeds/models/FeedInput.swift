@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
     public enum FeedInputVisibility: String, Sendable, Codable, CaseIterable {
         case `private`
         case `public`
@@ -49,7 +49,9 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
         case name
         case visibility
     }
+}
 
+extension FeedInput: Hashable {
     public static func == (lhs: FeedInput, rhs: FeedInput) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.description == rhs.description &&

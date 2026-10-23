@@ -5,9 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class FileUploadResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FileUploadResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
+    /// URL to the uploaded asset. Should be used to put to `asset_url` attachment field
     public var file: String?
+    /// URL of the file thumbnail for supported file formats. Should be put to `thumb_url` attachment field
     public var thumbUrl: String?
 
     public init(duration: String, file: String? = nil, thumbUrl: String? = nil) {
@@ -21,7 +24,9 @@ public final class FileUploadResponse: @unchecked Sendable, Codable, JSONEncodab
         case file
         case thumbUrl = "thumb_url"
     }
+}
 
+extension FileUploadResponse: Hashable {
     public static func == (lhs: FileUploadResponse, rhs: FileUploadResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.file == rhs.file &&

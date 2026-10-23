@@ -1,31 +1,72 @@
+//
+// Copyright © 2026 Stream.io Inc. All rights reserved.
+//
+
 import Foundation
 import StreamCore
 
-public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEncodable {
+    public enum FeedSuggestionResponseVisibility: String, Sendable, Codable, CaseIterable {
+        case `private`
+        case `public`
+        case followers
+        case members
+        case visible
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var algorithmScores: [String: Float]?
+    /// When the feed was created
     public var createdAt: Date
+    /// User response object
     public var createdBy: UserResponse
+    /// Custom data for the feed
     public var custom: [String: RawJSON]?
+    /// When the feed was deleted
     public var deletedAt: Date?
+    /// Description of the feed
     public var description: String
+    /// Fully qualified feed ID (group_id:id)
     public var feed: String
+    /// Tags used for filtering feeds
     public var filterTags: [String]?
+    /// Number of followers of this feed
     public var followerCount: Int
+    /// Number of feeds this feed follows
     public var followingCount: Int
+    /// Group this feed belongs to
     public var groupId: String
+    /// Unique identifier for the feed
     public var id: String
+    /// Number of members in this feed
     public var memberCount: Int
+    /// Name of the feed
     public var name: String
+    /// Capabilities the current user has for this feed
     public var ownCapabilities: [FeedOwnCapability]?
+    /// Follow relationships where the current user's feeds are following this feed
     public var ownFollows: [FollowResponse]?
     public var ownMembership: FeedMemberResponse?
+    /// Number of pinned activities in this feed
     public var pinCount: Int
     public var reason: String?
     public var recommendationScore: Float?
+    /// When the feed was last updated
     public var updatedAt: Date
-    public var visibility: String?
+    /// Visibility setting for the feed
+    public var visibility: FeedSuggestionResponseVisibility?
 
-    public init(algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: String? = nil) {
+    public init(algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: FeedSuggestionResponseVisibility? = nil) {
         self.algorithmScores = algorithmScores
         self.createdAt = createdAt
         self.createdBy = createdBy
@@ -50,54 +91,56 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
         self.visibility = visibility
     }
 
-public enum CodingKeys: String, CodingKey, CaseIterable {
-    case algorithmScores = "algorithm_scores"
-    case createdAt = "created_at"
-    case createdBy = "created_by"
-    case custom
-    case deletedAt = "deleted_at"
-    case description
-    case feed
-    case filterTags = "filter_tags"
-    case followerCount = "follower_count"
-    case followingCount = "following_count"
-    case groupId = "group_id"
-    case id
-    case memberCount = "member_count"
-    case name
-    case ownCapabilities = "own_capabilities"
-    case ownFollows = "own_follows"
-    case ownMembership = "own_membership"
-    case pinCount = "pin_count"
-    case reason
-    case recommendationScore = "recommendation_score"
-    case updatedAt = "updated_at"
-    case visibility
+    public enum CodingKeys: String, CodingKey, CaseIterable {
+        case algorithmScores = "algorithm_scores"
+        case createdAt = "created_at"
+        case createdBy = "created_by"
+        case custom
+        case deletedAt = "deleted_at"
+        case description
+        case feed
+        case filterTags = "filter_tags"
+        case followerCount = "follower_count"
+        case followingCount = "following_count"
+        case groupId = "group_id"
+        case id
+        case memberCount = "member_count"
+        case name
+        case ownCapabilities = "own_capabilities"
+        case ownFollows = "own_follows"
+        case ownMembership = "own_membership"
+        case pinCount = "pin_count"
+        case reason
+        case recommendationScore = "recommendation_score"
+        case updatedAt = "updated_at"
+        case visibility
+    }
 }
 
+extension FeedSuggestionResponse: Hashable {
     public static func == (lhs: FeedSuggestionResponse, rhs: FeedSuggestionResponse) -> Bool {
         lhs.algorithmScores == rhs.algorithmScores &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.createdBy == rhs.createdBy &&
-        lhs.custom == rhs.custom &&
-        lhs.deletedAt == rhs.deletedAt &&
-        lhs.description == rhs.description &&
-        lhs.feed == rhs.feed &&
-        lhs.filterTags == rhs.filterTags &&
-        lhs.followerCount == rhs.followerCount &&
-        lhs.followingCount == rhs.followingCount &&
-        lhs.groupId == rhs.groupId &&
-        lhs.id == rhs.id &&
-        lhs.memberCount == rhs.memberCount &&
-        lhs.name == rhs.name &&
-        lhs.ownCapabilities == rhs.ownCapabilities &&
-        lhs.ownFollows == rhs.ownFollows &&
-        lhs.ownMembership == rhs.ownMembership &&
-        lhs.pinCount == rhs.pinCount &&
-        lhs.reason == rhs.reason &&
-        lhs.recommendationScore == rhs.recommendationScore &&
-        lhs.updatedAt == rhs.updatedAt &&
-        lhs.visibility == rhs.visibility
+            lhs.createdAt == rhs.createdAt &&
+            lhs.createdBy == rhs.createdBy &&
+            lhs.custom == rhs.custom &&
+            lhs.deletedAt == rhs.deletedAt &&
+            lhs.description == rhs.description &&
+            lhs.feed == rhs.feed &&
+            lhs.filterTags == rhs.filterTags &&
+            lhs.followerCount == rhs.followerCount &&
+            lhs.followingCount == rhs.followingCount &&
+            lhs.groupId == rhs.groupId &&
+            lhs.id == rhs.id &&
+            lhs.memberCount == rhs.memberCount &&
+            lhs.name == rhs.name &&
+            lhs.ownCapabilities == rhs.ownCapabilities &&
+            lhs.ownFollows == rhs.ownFollows &&
+            lhs.ownMembership == rhs.ownMembership &&
+            lhs.pinCount == rhs.pinCount &&
+            lhs.reason == rhs.reason &&
+            lhs.recommendationScore == rhs.recommendationScore &&
+            lhs.updatedAt == rhs.updatedAt &&
+            lhs.visibility == rhs.visibility
     }
 
     public func hash(into hasher: inout Hasher) {

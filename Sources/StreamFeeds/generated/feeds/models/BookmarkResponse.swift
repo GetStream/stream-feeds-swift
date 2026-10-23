@@ -5,12 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activity: ActivityResponse
+    /// When the bookmark was created
     public var createdAt: Date
+    /// Custom data for the bookmark
     public var custom: [String: RawJSON]?
     public var folder: BookmarkFolderResponse?
+    /// When the bookmark was last updated
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse
 
     public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse? = nil, updatedAt: Date, user: UserResponse) {
@@ -30,7 +34,9 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
         case updatedAt = "updated_at"
         case user
     }
+}
 
+extension BookmarkResponse: Hashable {
     public static func == (lhs: BookmarkResponse, rhs: BookmarkResponse) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&

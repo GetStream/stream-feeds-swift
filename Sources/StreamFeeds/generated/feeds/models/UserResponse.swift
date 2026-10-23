@@ -5,27 +5,40 @@
 import Foundation
 import StreamCore
 
-public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// User response object
+public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var avgResponseTime: Int?
+    /// Whether a user is banned or not
     public var banned: Bool
     public var blockedUserIds: [String]
+    /// Date/time of creation
     public var createdAt: Date
+    /// Custom data for this object
     public var custom: [String: RawJSON]
+    /// Date of deactivation
     public var deactivatedAt: Date?
+    /// Date/time of deletion
     public var deletedAt: Date?
+    /// Unique user identifier
     public var id: String
     public var image: String?
+    /// Preferred language of a user
     public var language: String
+    /// Date of last activity
     public var lastActive: Date?
+    /// Optional name of user
     public var name: String?
+    /// Whether a user online or not
     public var online: Bool
-    public var revokeTokensIssuedBefore: Date?
+    /// Determines the set of user permissions
     public var role: String
+    /// List of teams user is a part of
     public var teams: [String]
     public var teamsRole: [String: String]?
+    /// Date/time of the last update
     public var updatedAt: Date
 
-    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banned = banned
         self.blockedUserIds = blockedUserIds
@@ -39,7 +52,6 @@ public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         self.lastActive = lastActive
         self.name = name
         self.online = online
-        self.revokeTokensIssuedBefore = revokeTokensIssuedBefore
         self.role = role
         self.teams = teams
         self.teamsRole = teamsRole
@@ -60,13 +72,14 @@ public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case lastActive = "last_active"
         case name
         case online
-        case revokeTokensIssuedBefore = "revoke_tokens_issued_before"
         case role
         case teams
         case teamsRole = "teams_role"
         case updatedAt = "updated_at"
     }
+}
 
+extension UserResponse: Hashable {
     public static func == (lhs: UserResponse, rhs: UserResponse) -> Bool {
         lhs.avgResponseTime == rhs.avgResponseTime &&
             lhs.banned == rhs.banned &&
@@ -81,7 +94,6 @@ public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
             lhs.lastActive == rhs.lastActive &&
             lhs.name == rhs.name &&
             lhs.online == rhs.online &&
-            lhs.revokeTokensIssuedBefore == rhs.revokeTokensIssuedBefore &&
             lhs.role == rhs.role &&
             lhs.teams == rhs.teams &&
             lhs.teamsRole == rhs.teamsRole &&
@@ -102,7 +114,6 @@ public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         hasher.combine(lastActive)
         hasher.combine(name)
         hasher.combine(online)
-        hasher.combine(revokeTokensIssuedBefore)
         hasher.combine(role)
         hasher.combine(teams)
         hasher.combine(teamsRole)

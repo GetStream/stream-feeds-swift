@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UpdateCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateCommentResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var comment: CommentResponse
     public var duration: String
 
@@ -18,7 +18,9 @@ public final class UpdateCommentResponse: @unchecked Sendable, Codable, JSONEnco
         case comment
         case duration
     }
+}
 
+extension UpdateCommentResponse: Hashable {
     public static func == (lhs: UpdateCommentResponse, rhs: UpdateCommentResponse) -> Bool {
         lhs.comment == rhs.comment &&
             lhs.duration == rhs.duration

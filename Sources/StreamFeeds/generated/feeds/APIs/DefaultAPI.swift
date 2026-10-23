@@ -6,11 +6,11 @@ import Foundation
 import StreamCore
 
 open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
-    var transport: DefaultAPITransport
-    var middlewares: [DefaultAPIClientMiddleware]
-    var basePath: String
-    var jsonDecoder: JSONDecoder
-    var jsonEncoder: JSONEncoder
+    internal var transport: DefaultAPITransport
+    internal var middlewares: [DefaultAPIClientMiddleware]
+    internal var basePath: String
+    internal var jsonDecoder: JSONDecoder
+    internal var jsonEncoder: JSONEncoder
 
     init(
         basePath: String,
@@ -32,7 +32,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
     ) async throws -> Response {
         // TODO: make this a bit nicer and create an API error to make it easier to handle stuff
         func makeError(_ error: Error) -> Error {
-            error
+            return error
         }
 
         func wrappingErrors<R>(
@@ -112,11 +112,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func listBlockLists(team: String?) async throws -> ListBlockListResponse {
+    open func listBlockLists(team: String?, cursor: String?, limit: Int?) async throws -> ListBlockListResponse {
         let path = "/api/v2/blocklists"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true)
+            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
+            "cursor": (wrappedValue: cursor?.encodeToJSON(), isExplode: true),
+            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -260,11 +262,17 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse {
+    open func queryActivities(language: String?, translateText: Bool?, queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse {
         let path = "/api/v2/feeds/activities/query"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "POST",
             request: queryActivitiesRequest
         )
@@ -364,7 +372,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deletePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse {
+    open func deletePollVote(activityId: String, pollId: String, voteId: String) async throws -> PollVoteResponse {
         var path = "/api/v2/feeds/activities/{activity_id}/polls/{poll_id}/vote/{vote_id}"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
@@ -376,13 +384,9 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let voteIdPreEscape = "\(APIHelper.mapValueToPathItem(voteId))"
         let voteIdPostEscape = voteIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "vote_id"), with: voteIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -424,7 +428,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteActivityReaction(activityId: String, type: String) async throws -> DeleteActivityReactionResponse {
+    open func deleteActivityReaction(activityId: String, type: String, deleteNotificationActivity: Bool?) async throws -> DeleteActivityReactionResponse {
         var path = "/api/v2/feeds/activities/{activity_id}/reactions/{type}"
 
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
@@ -433,9 +437,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let typePreEscape = "\(APIHelper.mapValueToPathItem(type))"
         let typePostEscape = typePreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "type"), with: typePostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "delete_notification_activity": (wrappedValue: deleteNotificationActivity?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -443,14 +451,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteActivity(id: String, hardDelete: Bool?) async throws -> DeleteActivityResponse {
+    open func deleteActivity(id: String, hardDelete: Bool?, deleteNotificationActivity: Bool?) async throws -> DeleteActivityResponse {
         var path = "/api/v2/feeds/activities/{id}"
 
         let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
         let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
+            "delete_notification_activity": (wrappedValue: deleteNotificationActivity?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -463,15 +472,24 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getActivity(id: String) async throws -> GetActivityResponse {
+    open func getActivity(id: String, commentSort: String?, commentLimit: Int?, skipOwnFollowings: Bool?, language: String?, translateText: Bool?, includeTopLevelCommentCount: Bool?) async throws -> GetActivityResponse {
         var path = "/api/v2/feeds/activities/{id}"
 
         let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
         let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "comment_sort": (wrappedValue: commentSort?.encodeToJSON(), isExplode: true),
+            "comment_limit": (wrappedValue: commentLimit?.encodeToJSON(), isExplode: true),
+            "skip_own_followings": (wrappedValue: skipOwnFollowings?.encodeToJSON(), isExplode: true),
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true),
+            "include_top_level_comment_count": (wrappedValue: includeTopLevelCommentCount?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "GET"
         )
         return try await send(request: urlRequest) {
@@ -559,11 +577,17 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func queryBookmarks(queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse {
+    open func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse {
         let path = "/api/v2/feeds/bookmarks/query"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "POST",
             request: queryBookmarksRequest
         )
@@ -572,7 +596,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse {
+    open func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?, includeTopLevelCommentCount: Bool?) async throws -> GetCommentsResponse {
         let path = "/api/v2/feeds/comments"
 
         let queryParams = APIHelper.mapValuesToQueryItems([
@@ -581,9 +605,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             "depth": (wrappedValue: depth?.encodeToJSON(), isExplode: true),
             "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
             "replies_limit": (wrappedValue: repliesLimit?.encodeToJSON(), isExplode: true),
+            "id_around": (wrappedValue: idAround?.encodeToJSON(), isExplode: true),
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true),
             "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
             "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
-            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true)
+            "next": (wrappedValue: next?.encodeToJSON(), isExplode: true),
+            "include_top_level_comment_count": (wrappedValue: includeTopLevelCommentCount?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -622,11 +650,17 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func queryComments(queryCommentsRequest: QueryCommentsRequest) async throws -> QueryCommentsResponse {
+    open func queryComments(queryCommentsRequest: QueryCommentsRequest, language: String?, translateText: Bool?) async throws -> QueryCommentsResponse {
         let path = "/api/v2/feeds/comments/query"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "POST",
             request: queryCommentsRequest
         )
@@ -635,14 +669,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteComment(id: String, hardDelete: Bool?) async throws -> DeleteCommentResponse {
+    open func deleteComment(id: String, hardDelete: Bool?, deleteNotificationActivity: Bool?) async throws -> DeleteCommentResponse {
         var path = "/api/v2/feeds/comments/{id}"
 
         let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
         let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
+            "delete_notification_activity": (wrappedValue: deleteNotificationActivity?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -655,15 +690,20 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getComment(id: String) async throws -> GetCommentResponse {
+    open func getComment(id: String, language: String?, translateText: Bool?) async throws -> GetCommentResponse {
         var path = "/api/v2/feeds/comments/{id}"
 
         let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
         let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "GET"
         )
         return try await send(request: urlRequest) {
@@ -722,7 +762,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteCommentReaction(id: String, type: String) async throws -> DeleteCommentReactionResponse {
+    open func deleteCommentReaction(id: String, type: String, deleteNotificationActivity: Bool?) async throws -> DeleteCommentReactionResponse {
         var path = "/api/v2/feeds/comments/{id}/reactions/{type}"
 
         let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
@@ -731,9 +771,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let typePreEscape = "\(APIHelper.mapValueToPathItem(type))"
         let typePostEscape = typePreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "type"), with: typePostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "delete_notification_activity": (wrappedValue: deleteNotificationActivity?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -741,7 +785,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getCommentReplies(id: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse {
+    open func getCommentReplies(id: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse {
         var path = "/api/v2/feeds/comments/{id}/replies"
 
         let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
@@ -751,6 +795,9 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             "depth": (wrappedValue: depth?.encodeToJSON(), isExplode: true),
             "sort": (wrappedValue: sort?.encodeToJSON(), isExplode: true),
             "replies_limit": (wrappedValue: repliesLimit?.encodeToJSON(), isExplode: true),
+            "id_around": (wrappedValue: idAround?.encodeToJSON(), isExplode: true),
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true),
             "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true),
             "prev": (wrappedValue: prev?.encodeToJSON(), isExplode: true),
             "next": (wrappedValue: next?.encodeToJSON(), isExplode: true)
@@ -766,7 +813,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse {
+    open func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?, purgeUserActivities: Bool?) async throws -> DeleteFeedResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -776,7 +823,8 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
         let queryParams = APIHelper.mapValuesToQueryItems([
-            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true)
+            "hard_delete": (wrappedValue: hardDelete?.encodeToJSON(), isExplode: true),
+            "purge_user_activities": (wrappedValue: purgeUserActivities?.encodeToJSON(), isExplode: true)
         ])
 
         let urlRequest = try makeRequest(
@@ -789,7 +837,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse {
+    open func getOrCreateFeed(feedGroupId: String, feedId: String, language: String?, translateText: Bool?, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -798,9 +846,14 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let feedIdPreEscape = "\(APIHelper.mapValueToPathItem(feedId))"
         let feedIdPostEscape = feedIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "feed_id"), with: feedIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "language": (wrappedValue: language?.encodeToJSON(), isExplode: true),
+            "translate_text": (wrappedValue: translateText?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "POST",
             request: getOrCreateFeedRequest
         )
@@ -849,7 +902,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func unpinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> UnpinActivityResponse {
+    open func unpinActivity(feedGroupId: String, feedId: String, activityId: String, enrichOwnFields: Bool?) async throws -> UnpinActivityResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/{activity_id}/pin"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -861,9 +914,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
         let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "enrich_own_fields": (wrappedValue: enrichOwnFields?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -871,7 +928,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func pinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> PinActivityResponse {
+    open func pinActivity(feedGroupId: String, feedId: String, activityId: String, pinActivityRequest: PinActivityRequest) async throws -> PinActivityResponse {
         var path = "/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/{activity_id}/pin"
 
         let feedGroupIdPreEscape = "\(APIHelper.mapValueToPathItem(feedGroupId))"
@@ -886,7 +943,8 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            httpMethod: "POST"
+            httpMethod: "POST",
+            request: pinActivityRequest
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(PinActivityResponse.self, from: $0)
@@ -1023,6 +1081,19 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func ownBatch(ownBatchRequest: OwnBatchRequest) async throws -> OwnBatchResponse {
+        let path = "/api/v2/feeds/feeds/own/batch"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: ownBatchRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(OwnBatchResponse.self, from: $0)
+        }
+    }
+
     open func queryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse {
         let path = "/api/v2/feeds/feeds/query"
 
@@ -1114,7 +1185,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func unfollow(source: String, target: String) async throws -> UnfollowResponse {
+    open func unfollow(source: String, target: String, deleteNotificationActivity: Bool?, keepHistory: Bool?, enrichOwnFields: Bool?) async throws -> UnfollowResponse {
         var path = "/api/v2/feeds/follows/{source}/{target}"
 
         let sourcePreEscape = "\(APIHelper.mapValueToPathItem(source))"
@@ -1123,9 +1194,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let targetPreEscape = "\(APIHelper.mapValueToPathItem(target))"
         let targetPostEscape = targetPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "target"), with: targetPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "delete_notification_activity": (wrappedValue: deleteNotificationActivity?.encodeToJSON(), isExplode: true),
+            "keep_history": (wrappedValue: keepHistory?.encodeToJSON(), isExplode: true),
+            "enrich_own_fields": (wrappedValue: enrichOwnFields?.encodeToJSON(), isExplode: true)
+        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
+            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -1146,24 +1223,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func longPoll(json: WSAuthMessage?) async throws {
-        let path = "/api/v2/longpoll"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "json": (wrappedValue: json?.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "GET"
-        )
-        _ = try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(EmptyResponse.self, from: $0)
-        }
-    }
-
-    open func ban(banRequest: BanRequest) async throws -> BanResponse {
+    open func ban(banRequest: BanRequest) async throws -> ModerationBanResponse {
         let path = "/api/v2/moderation/ban"
 
         let urlRequest = try makeRequest(
@@ -1172,7 +1232,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             request: banRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(BanResponse.self, from: $0)
+            try self.jsonDecoder.decode(ModerationBanResponse.self, from: $0)
         }
     }
 
@@ -1242,7 +1302,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func flag(flagRequest: FlagRequest) async throws -> FlagResponse {
+    open func flag(flagRequest: FlagRequest) async throws -> FlagItemResponse {
         let path = "/api/v2/moderation/flag"
 
         let urlRequest = try makeRequest(
@@ -1251,7 +1311,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             request: flagRequest
         )
         return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FlagResponse.self, from: $0)
+            try self.jsonDecoder.decode(FlagItemResponse.self, from: $0)
         }
     }
 
@@ -1337,16 +1397,11 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func queryPolls(userId: String?, queryPollsRequest: QueryPollsRequest) async throws -> QueryPollsResponse {
+    open func queryPolls(queryPollsRequest: QueryPollsRequest) async throws -> QueryPollsResponse {
         let path = "/api/v2/polls/query"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "POST",
             request: queryPollsRequest
         )
@@ -1355,19 +1410,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deletePoll(pollId: String, userId: String?) async throws -> Response {
+    open func deletePoll(pollId: String) async throws -> Response {
         var path = "/api/v2/polls/{poll_id}"
 
         let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
         let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -1375,19 +1426,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getPoll(pollId: String, userId: String?) async throws -> PollResponse {
+    open func getPoll(pollId: String) async throws -> PollResponse {
         var path = "/api/v2/polls/{poll_id}"
 
         let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
         let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "GET"
         )
         return try await send(request: urlRequest) {
@@ -1446,7 +1493,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func deletePollOption(pollId: String, optionId: String, userId: String?) async throws -> Response {
+    open func deletePollOption(pollId: String, optionId: String) async throws -> Response {
         var path = "/api/v2/polls/{poll_id}/options/{option_id}"
 
         let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
@@ -1455,13 +1502,9 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let optionIdPreEscape = "\(APIHelper.mapValueToPathItem(optionId))"
         let optionIdPostEscape = optionIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "option_id"), with: optionIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "DELETE"
         )
         return try await send(request: urlRequest) {
@@ -1469,7 +1512,7 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getPollOption(pollId: String, optionId: String, userId: String?) async throws -> PollOptionResponse {
+    open func getPollOption(pollId: String, optionId: String) async throws -> PollOptionResponse {
         var path = "/api/v2/polls/{poll_id}/options/{option_id}"
 
         let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
@@ -1478,13 +1521,9 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         let optionIdPreEscape = "\(APIHelper.mapValueToPathItem(optionId))"
         let optionIdPostEscape = optionIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "option_id"), with: optionIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "GET"
         )
         return try await send(request: urlRequest) {
@@ -1492,19 +1531,15 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func queryPollVotes(pollId: String, userId: String?, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse {
+    open func queryPollVotes(pollId: String, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse {
         var path = "/api/v2/polls/{poll_id}/votes"
 
         let pollIdPreEscape = "\(APIHelper.mapValueToPathItem(pollId))"
         let pollIdPostEscape = pollIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
         path = path.replacingOccurrences(of: String(format: "{%@}", "poll_id"), with: pollIdPostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "user_id": (wrappedValue: userId?.encodeToJSON(), isExplode: true)
-        ])
 
         let urlRequest = try makeRequest(
             uriPath: path,
-            queryParams: queryParams ?? [],
             httpMethod: "POST",
             request: queryPollVotesRequest
         )
@@ -1543,13 +1578,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func uploadFile(fileUploadRequest: FileUploadRequest) async throws -> FileUploadResponse {
+    open func uploadFile(multipartFormData: MultipartFormData) async throws -> FileUploadResponse {
         let path = "/api/v2/uploads/file"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: fileUploadRequest
+            request: multipartFormData
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(FileUploadResponse.self, from: $0)
@@ -1573,13 +1608,13 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func uploadImage(imageUploadRequest: ImageUploadRequest) async throws -> ImageUploadResponse {
+    open func uploadImage(multipartFormData: MultipartFormData) async throws -> ImageUploadResponse {
         let path = "/api/v2/uploads/image"
 
         let urlRequest = try makeRequest(
             uriPath: path,
             httpMethod: "POST",
-            request: imageUploadRequest
+            request: multipartFormData
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(ImageUploadResponse.self, from: $0)
@@ -1654,31 +1689,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func getUserLiveLocations() async throws -> SharedLocationsResponse {
-        let path = "/api/v2/users/live_locations"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(SharedLocationsResponse.self, from: $0)
-        }
-    }
-
-    open func updateLiveLocation(updateLiveLocationRequest: UpdateLiveLocationRequest) async throws -> SharedLocationResponse {
-        let path = "/api/v2/users/live_locations"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PUT",
-            request: updateLiveLocationRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(SharedLocationResponse.self, from: $0)
-        }
-    }
-
     open func unblockUsers(unblockUsersRequest: UnblockUsersRequest) async throws -> UnblockUsersResponse {
         let path = "/api/v2/users/unblock"
 
@@ -1691,25 +1701,12 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
             try self.jsonDecoder.decode(UnblockUsersResponse.self, from: $0)
         }
     }
-    
-    open func ownCapabilitiesBatch(ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest) async throws -> OwnCapabilitiesBatchResponse {
-        let path = "/api/v2/feeds/feeds/own_capabilities/batch"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: ownCapabilitiesBatchRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(OwnCapabilitiesBatchResponse.self, from: $0)
-        }
-    }
 }
 
 protocol DefaultAPIEndpoints {
     func getApp() async throws -> GetApplicationResponse
 
-    func listBlockLists(team: String?) async throws -> ListBlockListResponse
+    func listBlockLists(team: String?, cursor: String?, limit: Int?) async throws -> ListBlockListResponse
 
     func createBlockList(createBlockListRequest: CreateBlockListRequest) async throws -> CreateBlockListResponse
 
@@ -1729,7 +1726,7 @@ protocol DefaultAPIEndpoints {
 
     func deleteActivities(deleteActivitiesRequest: DeleteActivitiesRequest) async throws -> DeleteActivitiesResponse
 
-    func queryActivities(queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
+    func queryActivities(language: String?, translateText: Bool?, queryActivitiesRequest: QueryActivitiesRequest) async throws -> QueryActivitiesResponse
 
     func deleteBookmark(activityId: String, folderId: String?) async throws -> DeleteBookmarkResponse
 
@@ -1741,17 +1738,17 @@ protocol DefaultAPIEndpoints {
 
     func castPollVote(activityId: String, pollId: String, castPollVoteRequest: CastPollVoteRequest) async throws -> PollVoteResponse
 
-    func deletePollVote(activityId: String, pollId: String, voteId: String, userId: String?) async throws -> PollVoteResponse
+    func deletePollVote(activityId: String, pollId: String, voteId: String) async throws -> PollVoteResponse
 
     func addActivityReaction(activityId: String, addReactionRequest: AddReactionRequest) async throws -> AddReactionResponse
 
     func queryActivityReactions(activityId: String, queryActivityReactionsRequest: QueryActivityReactionsRequest) async throws -> QueryActivityReactionsResponse
 
-    func deleteActivityReaction(activityId: String, type: String) async throws -> DeleteActivityReactionResponse
+    func deleteActivityReaction(activityId: String, type: String, deleteNotificationActivity: Bool?) async throws -> DeleteActivityReactionResponse
 
-    func deleteActivity(id: String, hardDelete: Bool?) async throws -> DeleteActivityResponse
+    func deleteActivity(id: String, hardDelete: Bool?, deleteNotificationActivity: Bool?) async throws -> DeleteActivityResponse
 
-    func getActivity(id: String) async throws -> GetActivityResponse
+    func getActivity(id: String, commentSort: String?, commentLimit: Int?, skipOwnFollowings: Bool?, language: String?, translateText: Bool?, includeTopLevelCommentCount: Bool?) async throws -> GetActivityResponse
 
     func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
 
@@ -1763,19 +1760,19 @@ protocol DefaultAPIEndpoints {
 
     func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse
 
-    func queryBookmarks(queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
+    func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
 
-    func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentsResponse
+    func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?, includeTopLevelCommentCount: Bool?) async throws -> GetCommentsResponse
 
     func addComment(addCommentRequest: AddCommentRequest) async throws -> AddCommentResponse
 
     func addCommentsBatch(addCommentsBatchRequest: AddCommentsBatchRequest) async throws -> AddCommentsBatchResponse
 
-    func queryComments(queryCommentsRequest: QueryCommentsRequest) async throws -> QueryCommentsResponse
+    func queryComments(queryCommentsRequest: QueryCommentsRequest, language: String?, translateText: Bool?) async throws -> QueryCommentsResponse
 
-    func deleteComment(id: String, hardDelete: Bool?) async throws -> DeleteCommentResponse
+    func deleteComment(id: String, hardDelete: Bool?, deleteNotificationActivity: Bool?) async throws -> DeleteCommentResponse
 
-    func getComment(id: String) async throws -> GetCommentResponse
+    func getComment(id: String, language: String?, translateText: Bool?) async throws -> GetCommentResponse
 
     func updateComment(id: String, updateCommentRequest: UpdateCommentRequest) async throws -> UpdateCommentResponse
 
@@ -1783,21 +1780,21 @@ protocol DefaultAPIEndpoints {
 
     func queryCommentReactions(id: String, queryCommentReactionsRequest: QueryCommentReactionsRequest) async throws -> QueryCommentReactionsResponse
 
-    func deleteCommentReaction(id: String, type: String) async throws -> DeleteCommentReactionResponse
+    func deleteCommentReaction(id: String, type: String, deleteNotificationActivity: Bool?) async throws -> DeleteCommentReactionResponse
 
-    func getCommentReplies(id: String, depth: Int?, sort: String?, repliesLimit: Int?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
+    func getCommentReplies(id: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?) async throws -> GetCommentRepliesResponse
 
-    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?) async throws -> DeleteFeedResponse
+    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool?, purgeUserActivities: Bool?) async throws -> DeleteFeedResponse
 
-    func getOrCreateFeed(feedGroupId: String, feedId: String, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
+    func getOrCreateFeed(feedGroupId: String, feedId: String, language: String?, translateText: Bool?, getOrCreateFeedRequest: GetOrCreateFeedRequest) async throws -> GetOrCreateFeedResponse
 
     func updateFeed(feedGroupId: String, feedId: String, updateFeedRequest: UpdateFeedRequest) async throws -> UpdateFeedResponse
 
     func markActivity(feedGroupId: String, feedId: String, markActivityRequest: MarkActivityRequest) async throws -> Response
 
-    func unpinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> UnpinActivityResponse
+    func unpinActivity(feedGroupId: String, feedId: String, activityId: String, enrichOwnFields: Bool?) async throws -> UnpinActivityResponse
 
-    func pinActivity(feedGroupId: String, feedId: String, activityId: String) async throws -> PinActivityResponse
+    func pinActivity(feedGroupId: String, feedId: String, activityId: String, pinActivityRequest: PinActivityRequest) async throws -> PinActivityResponse
 
     func updateFeedMembers(feedGroupId: String, feedId: String, updateFeedMembersRequest: UpdateFeedMembersRequest) async throws -> UpdateFeedMembersResponse
 
@@ -1813,6 +1810,8 @@ protocol DefaultAPIEndpoints {
 
     func createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest) async throws -> CreateFeedsBatchResponse
 
+    func ownBatch(ownBatchRequest: OwnBatchRequest) async throws -> OwnBatchResponse
+
     func queryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse
 
     func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
@@ -1827,13 +1826,11 @@ protocol DefaultAPIEndpoints {
 
     func rejectFollow(rejectFollowRequest: RejectFollowRequest) async throws -> RejectFollowResponse
 
-    func unfollow(source: String, target: String) async throws -> UnfollowResponse
+    func unfollow(source: String, target: String, deleteNotificationActivity: Bool?, keepHistory: Bool?, enrichOwnFields: Bool?) async throws -> UnfollowResponse
 
     func createGuest(createGuestRequest: CreateGuestRequest) async throws -> CreateGuestResponse
 
-    func longPoll(json: WSAuthMessage?) async throws
-
-    func ban(banRequest: BanRequest) async throws -> BanResponse
+    func ban(banRequest: BanRequest) async throws -> ModerationBanResponse
 
     func upsertConfig(upsertConfigRequest: UpsertConfigRequest) async throws -> UpsertConfigResponse
 
@@ -1843,7 +1840,7 @@ protocol DefaultAPIEndpoints {
 
     func queryModerationConfigs(queryModerationConfigsRequest: QueryModerationConfigsRequest) async throws -> QueryModerationConfigsResponse
 
-    func flag(flagRequest: FlagRequest) async throws -> FlagResponse
+    func flag(flagRequest: FlagRequest) async throws -> FlagItemResponse
 
     func mute(muteRequest: MuteRequest) async throws -> MuteResponse
 
@@ -1857,11 +1854,11 @@ protocol DefaultAPIEndpoints {
 
     func updatePoll(updatePollRequest: UpdatePollRequest) async throws -> PollResponse
 
-    func queryPolls(userId: String?, queryPollsRequest: QueryPollsRequest) async throws -> QueryPollsResponse
+    func queryPolls(queryPollsRequest: QueryPollsRequest) async throws -> QueryPollsResponse
 
-    func deletePoll(pollId: String, userId: String?) async throws -> Response
+    func deletePoll(pollId: String) async throws -> Response
 
-    func getPoll(pollId: String, userId: String?) async throws -> PollResponse
+    func getPoll(pollId: String) async throws -> PollResponse
 
     func updatePollPartial(pollId: String, updatePollPartialRequest: UpdatePollPartialRequest) async throws -> PollResponse
 
@@ -1869,21 +1866,21 @@ protocol DefaultAPIEndpoints {
 
     func updatePollOption(pollId: String, updatePollOptionRequest: UpdatePollOptionRequest) async throws -> PollOptionResponse
 
-    func deletePollOption(pollId: String, optionId: String, userId: String?) async throws -> Response
+    func deletePollOption(pollId: String, optionId: String) async throws -> Response
 
-    func getPollOption(pollId: String, optionId: String, userId: String?) async throws -> PollOptionResponse
+    func getPollOption(pollId: String, optionId: String) async throws -> PollOptionResponse
 
-    func queryPollVotes(pollId: String, userId: String?, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse
+    func queryPollVotes(pollId: String, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse
 
     func updatePushNotificationPreferences(upsertPushPreferencesRequest: UpsertPushPreferencesRequest) async throws -> UpsertPushPreferencesResponse
 
     func deleteFile(url: String?) async throws -> Response
 
-    func uploadFile(fileUploadRequest: FileUploadRequest) async throws -> FileUploadResponse
+    func uploadFile(multipartFormData: MultipartFormData) async throws -> FileUploadResponse
 
     func deleteImage(url: String?) async throws -> Response
 
-    func uploadImage(imageUploadRequest: ImageUploadRequest) async throws -> ImageUploadResponse
+    func uploadImage(multipartFormData: MultipartFormData) async throws -> ImageUploadResponse
 
     func queryUsers(payload: QueryUsersPayload?) async throws -> QueryUsersResponse
 
@@ -1895,11 +1892,5 @@ protocol DefaultAPIEndpoints {
 
     func blockUsers(blockUsersRequest: BlockUsersRequest) async throws -> BlockUsersResponse
 
-    func getUserLiveLocations() async throws -> SharedLocationsResponse
-
-    func updateLiveLocation(updateLiveLocationRequest: UpdateLiveLocationRequest) async throws -> SharedLocationResponse
-
     func unblockUsers(unblockUsersRequest: UnblockUsersRequest) async throws -> UnblockUsersResponse
-    
-    func ownCapabilitiesBatch(ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest) async throws -> OwnCapabilitiesBatchResponse
 }

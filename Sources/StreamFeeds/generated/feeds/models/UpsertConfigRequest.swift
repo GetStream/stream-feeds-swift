@@ -5,10 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var aiImageConfig: AIImageConfig?
     public var aiTextConfig: AITextConfig?
-    public var aiVideoConfig: AIVideoConfig?
+    public var aiVideoConfig: AIVideoConfigRequest?
+    /// Whether moderation should be performed asynchronously
     public var async: Bool?
     public var automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
     public var automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
@@ -17,13 +18,15 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
     public var blockListConfig: BlockListConfig?
     public var bodyguardConfig: AITextConfig?
     public var googleVisionConfig: GoogleVisionConfig?
+    /// Unique identifier for the moderation configuration
     public var key: String
     public var llmConfig: LLMConfig?
     public var ruleBuilderConfig: RuleBuilderConfig?
+    /// Team associated with the configuration
     public var team: String?
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfig? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
+    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigRequest? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
         self.aiTextConfig = aiTextConfig
         self.aiVideoConfig = aiVideoConfig
@@ -60,7 +63,9 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
         case team
         case velocityFilterConfig = "velocity_filter_config"
     }
+}
 
+extension UpsertConfigRequest: Hashable {
     public static func == (lhs: UpsertConfigRequest, rhs: UpsertConfigRequest) -> Bool {
         lhs.aiImageConfig == rhs.aiImageConfig &&
             lhs.aiTextConfig == rhs.aiTextConfig &&

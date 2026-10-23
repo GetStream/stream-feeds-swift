@@ -5,7 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class ActivityFeedbackResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Response for activity feedback submission
+public final class ActivityFeedbackResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// The ID of the activity that received feedback
     public var activityId: String
     public var duration: String
 
@@ -18,7 +20,9 @@ public final class ActivityFeedbackResponse: @unchecked Sendable, Codable, JSONE
         case activityId = "activity_id"
         case duration
     }
+}
 
+extension ActivityFeedbackResponse: Hashable {
     public static func == (lhs: ActivityFeedbackResponse, rhs: ActivityFeedbackResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.duration == rhs.duration

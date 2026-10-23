@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSONEncodable {
     public var avgResponseTime: Int?
     public var banned: Bool
     public var blockedUserIds: [String]
@@ -20,14 +20,14 @@ public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSON
     public var lastActive: Date?
     public var name: String?
     public var online: Bool
+    /// The privacy settings of the user.
     public var privacySettings: PrivacySettingsResponse?
-    public var revokeTokensIssuedBefore: Date?
     public var role: String
     public var teams: [String]
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banned = banned
         self.blockedUserIds = blockedUserIds
@@ -43,7 +43,6 @@ public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSON
         self.name = name
         self.online = online
         self.privacySettings = privacySettings
-        self.revokeTokensIssuedBefore = revokeTokensIssuedBefore
         self.role = role
         self.teams = teams
         self.teamsRole = teamsRole
@@ -66,13 +65,14 @@ public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSON
         case name
         case online
         case privacySettings = "privacy_settings"
-        case revokeTokensIssuedBefore = "revoke_tokens_issued_before"
         case role
         case teams
         case teamsRole = "teams_role"
         case updatedAt = "updated_at"
     }
+}
 
+extension UserResponsePrivacyFields: Hashable {
     public static func == (lhs: UserResponsePrivacyFields, rhs: UserResponsePrivacyFields) -> Bool {
         lhs.avgResponseTime == rhs.avgResponseTime &&
             lhs.banned == rhs.banned &&
@@ -89,7 +89,6 @@ public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSON
             lhs.name == rhs.name &&
             lhs.online == rhs.online &&
             lhs.privacySettings == rhs.privacySettings &&
-            lhs.revokeTokensIssuedBefore == rhs.revokeTokensIssuedBefore &&
             lhs.role == rhs.role &&
             lhs.teams == rhs.teams &&
             lhs.teamsRole == rhs.teamsRole &&
@@ -112,7 +111,6 @@ public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSON
         hasher.combine(name)
         hasher.combine(online)
         hasher.combine(privacySettings)
-        hasher.combine(revokeTokensIssuedBefore)
         hasher.combine(role)
         hasher.combine(teams)
         hasher.combine(teamsRole)

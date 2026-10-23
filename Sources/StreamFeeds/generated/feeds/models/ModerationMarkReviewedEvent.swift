@@ -5,36 +5,34 @@
 import Foundation
 import StreamCore
 
-public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// This event is sent when a moderation item is marked as reviewed
+public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var createdAt: Date
-    public var item: ReviewQueueItemResponse?
+    public var item: ReviewQueueItemResponse
     public var type: String = "moderation.mark_reviewed"
-    public var user: User?
 
-    public init(createdAt: Date, item: ReviewQueueItemResponse? = nil, user: User? = nil) {
+    public init(createdAt: Date, item: ReviewQueueItemResponse) {
         self.createdAt = createdAt
         self.item = item
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case item
         case type
-        case user
     }
+}
 
+extension ModerationMarkReviewedEvent: Hashable {
     public static func == (lhs: ModerationMarkReviewedEvent, rhs: ModerationMarkReviewedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.item == rhs.item &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(item)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class UpsertActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpsertActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// List of activities to create or update
     public var activities: [ActivityRequest]
 
     public init(activities: [ActivityRequest]) {
@@ -15,7 +16,9 @@ public final class UpsertActivitiesRequest: @unchecked Sendable, Codable, JSONEn
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case activities
     }
+}
 
+extension UpsertActivitiesRequest: Hashable {
     public static func == (lhs: UpsertActivitiesRequest, rhs: UpsertActivitiesRequest) -> Bool {
         lhs.activities == rhs.activities
     }

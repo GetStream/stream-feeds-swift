@@ -5,11 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkFolderUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a bookmark folder is updated.
+public final class BookmarkFolderUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var bookmarkFolder: BookmarkFolderResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var receivedAt: Date?
+    /// The type of event: "feeds.bookmark_folder.updated" in this case
     public var type: String = "feeds.bookmark_folder.updated"
     public var user: UserResponseCommonFields?
 
@@ -29,7 +32,9 @@ public final class BookmarkFolderUpdatedEvent: @unchecked Sendable, Event, Codab
         case type
         case user
     }
+}
 
+extension BookmarkFolderUpdatedEvent: Hashable {
     public static func == (lhs: BookmarkFolderUpdatedEvent, rhs: BookmarkFolderUpdatedEvent) -> Bool {
         lhs.bookmarkFolder == rhs.bookmarkFolder &&
             lhs.createdAt == rhs.createdAt &&

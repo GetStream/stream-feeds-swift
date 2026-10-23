@@ -5,10 +5,41 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodable {
+    public enum RuleBuilderActionType: String, Sendable, Codable, CaseIterable {
+        case banUser = "ban_user"
+        case blockContent = "block_content"
+        case blur
+        case bounceContent = "bounce_content"
+        case bounceFlagContent = "bounce_flag_content"
+        case bounceRemoveContent = "bounce_remove_content"
+        case callBlur = "call_blur"
+        case callWarning = "call_warning"
+        case endCall = "end_call"
+        case flagContent = "flag_content"
+        case flagUser = "flag_user"
+        case kickUser = "kick_user"
+        case muteAudio = "mute_audio"
+        case muteVideo = "mute_video"
+        case shadowContent = "shadow_content"
+        case warning
+        case webhookOnly = "webhook_only"
+        case unknown = "_unknown"
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let decodedValue = try? container.decode(String.self),
+               let value = Self(rawValue: decodedValue) {
+                self = value
+            } else {
+                self = .unknown
+            }
+        }
+    }
+
     public var banOptions: BanOptions?
     public var flagUserOptions: FlagUserOptions?
-    public var type: String?
+    public var type: RuleBuilderActionType?
 
     public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil) {
         self.banOptions = banOptions
@@ -20,7 +51,9 @@ public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodabl
         case flagUserOptions = "flag_user_options"
         case type
     }
+}
 
+extension RuleBuilderAction: Hashable {
     public static func == (lhs: RuleBuilderAction, rhs: RuleBuilderAction) -> Bool {
         lhs.banOptions == rhs.banOptions &&
             lhs.flagUserOptions == rhs.flagUserOptions &&

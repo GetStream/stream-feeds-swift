@@ -5,7 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class Response: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class Response: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
 
     public init(duration: String) {
@@ -15,7 +17,9 @@ public final class Response: @unchecked Sendable, Codable, JSONEncodable, Hashab
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case duration
     }
+}
 
+extension Response: Hashable {
     public static func == (lhs: Response, rhs: Response) -> Bool {
         lhs.duration == rhs.duration
     }

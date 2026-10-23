@@ -5,13 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Block list contains restricted words
+public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEncodable {
     public enum CreateBlockListRequestType: String, Sendable, Codable, CaseIterable {
         case domain
         case domainAllowlist = "domain_allowlist"
         case email
+        case emailAllowlist = "email_allowlist"
         case regex
         case word
+        case wordAllowlist = "word_allowlist"
         case unknown = "_unknown"
 
         public init(from decoder: Decoder) throws {
@@ -25,9 +28,12 @@ public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
         }
     }
 
+    /// Block list name
     public var name: String
     public var team: String?
+    /// Block list type. One of: regex, domain, domain_allowlist, email, email_allowlist, word, word_allowlist
     public var type: CreateBlockListRequestType?
+    /// List of words to block
     public var words: [String]
 
     public init(name: String, team: String? = nil, words: [String]) {
@@ -42,7 +48,9 @@ public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
         case type
         case words
     }
+}
 
+extension CreateBlockListRequest: Hashable {
     public static func == (lhs: CreateBlockListRequest, rhs: CreateBlockListRequest) -> Bool {
         lhs.name == rhs.name &&
             lhs.team == rhs.team &&

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
     public enum FeedRequestVisibility: String, Sendable, Codable, CaseIterable {
         case `private`
         case `public`
@@ -25,18 +25,24 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
         }
     }
 
-    public var createdById: String?
+    /// Custom data for the feed
     public var custom: [String: RawJSON]?
+    /// Description of the feed
     public var description: String?
+    /// ID of the feed group
     public var feedGroupId: String
+    /// ID of the feed
     public var feedId: String
+    /// Tags used for filtering feeds
     public var filterTags: [String]?
+    /// Initial members for the feed
     public var members: [FeedMemberRequest]?
+    /// Name of the feed
     public var name: String?
+    /// Visibility setting for the feed. One of: public, visible, followers, members, private
     public var visibility: FeedRequestVisibility?
 
-    public init(createdById: String? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
-        self.createdById = createdById
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.feedGroupId = feedGroupId
@@ -48,7 +54,6 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdById = "created_by_id"
         case custom
         case description
         case feedGroupId = "feed_group_id"
@@ -58,10 +63,11 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
         case name
         case visibility
     }
+}
 
+extension FeedRequest: Hashable {
     public static func == (lhs: FeedRequest, rhs: FeedRequest) -> Bool {
-        lhs.createdById == rhs.createdById &&
-            lhs.custom == rhs.custom &&
+        lhs.custom == rhs.custom &&
             lhs.description == rhs.description &&
             lhs.feedGroupId == rhs.feedGroupId &&
             lhs.feedId == rhs.feedId &&
@@ -72,7 +78,6 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable, Has
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(createdById)
         hasher.combine(custom)
         hasher.combine(description)
         hasher.combine(feedGroupId)

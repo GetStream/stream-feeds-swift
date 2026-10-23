@@ -5,13 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class ActivityRemovedFromFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when an activity is removed from a feed.
+public final class ActivityRemovedFromFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var activity: ActivityResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feedVisibility: String?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.activity.removed_from_feed" in this case
     public var type: String = "feeds.activity.removed_from_feed"
     public var user: UserResponseCommonFields?
 
@@ -35,7 +38,9 @@ public final class ActivityRemovedFromFeedEvent: @unchecked Sendable, Event, Cod
         case type
         case user
     }
+}
 
+extension ActivityRemovedFromFeedEvent: Hashable {
     public static func == (lhs: ActivityRemovedFromFeedEvent, rhs: ActivityRemovedFromFeedEvent) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&
