@@ -20,7 +20,6 @@ public final class FeedResponseVisibility: RawRepresentable, Codable, Hashable, 
 }
 
 public final class FeedResponse: Sendable, Codable, JSONEncodable {
-    public let activityCount: Int
     /// When the feed was created
     public let createdAt: Date
     /// User response object
@@ -43,15 +42,12 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
     public let groupId: String
     /// Unique identifier for the feed
     public let id: String
-    public let location: Location?
     /// Number of members in this feed
     public let memberCount: Int
     /// Name of the feed
     public let name: String
     /// Capabilities the current user has for this feed
     public let ownCapabilities: [FeedOwnCapability]?
-    /// Follow relationships where the feed owner’s feeds are following the current user's feeds
-    public let ownFollowings: [FollowResponse]?
     /// Follow relationships where the current user's feeds are following this feed
     public let ownFollows: [FollowResponse]?
     public let ownMembership: FeedMemberResponse?
@@ -62,8 +58,7 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
     /// Visibility setting for the feed
     public let visibility: FeedResponseVisibility?
 
-    public init(activityCount: Int, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, location: Location? = nil, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedResponseVisibility? = nil) {
-        self.activityCount = activityCount
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedResponseVisibility? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -75,11 +70,9 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
         self.followingCount = followingCount
         self.groupId = groupId
         self.id = id
-        self.location = location
         self.memberCount = memberCount
         self.name = name
         self.ownCapabilities = ownCapabilities
-        self.ownFollowings = ownFollowings
         self.ownFollows = ownFollows
         self.ownMembership = ownMembership
         self.pinCount = pinCount
@@ -89,7 +82,6 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.activityCount = try container.decode(Int.self, forKey: .activityCount)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.createdBy = try container.decode(UserResponse.self, forKey: .createdBy)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
@@ -101,11 +93,9 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
         self.followingCount = try container.decode(Int.self, forKey: .followingCount)
         self.groupId = try container.decode(String.self, forKey: .groupId)
         self.id = try container.decode(String.self, forKey: .id)
-        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
         self.memberCount = try container.decode(Int.self, forKey: .memberCount)
         self.name = try container.decode(String.self, forKey: .name)
         self.ownCapabilities = try container.decodeIfPresent([FeedOwnCapability].self, forKey: .ownCapabilities)
-        self.ownFollowings = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollowings)
         self.ownFollows = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollows)
         self.ownMembership = try container.decodeIfPresent(FeedMemberResponse.self, forKey: .ownMembership)
         self.pinCount = try container.decode(Int.self, forKey: .pinCount)
@@ -115,7 +105,6 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encode(activityCount, forKey: .activityCount)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encode(createdBy, forKey: .createdBy)
         try container.encodeIfPresent(custom, forKey: .custom)
@@ -127,11 +116,9 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
         try container.encode(followingCount, forKey: .followingCount)
         try container.encode(groupId, forKey: .groupId)
         try container.encode(id, forKey: .id)
-        try container.encodeIfPresent(location, forKey: .location)
         try container.encode(memberCount, forKey: .memberCount)
         try container.encode(name, forKey: .name)
         try container.encodeIfPresent(ownCapabilities, forKey: .ownCapabilities)
-        try container.encodeIfPresent(ownFollowings, forKey: .ownFollowings)
         try container.encodeIfPresent(ownFollows, forKey: .ownFollows)
         try container.encodeIfPresent(ownMembership, forKey: .ownMembership)
         try container.encode(pinCount, forKey: .pinCount)
@@ -142,8 +129,7 @@ public final class FeedResponse: Sendable, Codable, JSONEncodable {
 
 extension FeedResponse: Hashable {
     public static func == (lhs: FeedResponse, rhs: FeedResponse) -> Bool {
-        lhs.activityCount == rhs.activityCount &&
-            lhs.createdAt == rhs.createdAt &&
+        lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
             lhs.custom == rhs.custom &&
             lhs.deletedAt == rhs.deletedAt &&
@@ -154,11 +140,9 @@ extension FeedResponse: Hashable {
             lhs.followingCount == rhs.followingCount &&
             lhs.groupId == rhs.groupId &&
             lhs.id == rhs.id &&
-            lhs.location == rhs.location &&
             lhs.memberCount == rhs.memberCount &&
             lhs.name == rhs.name &&
             lhs.ownCapabilities == rhs.ownCapabilities &&
-            lhs.ownFollowings == rhs.ownFollowings &&
             lhs.ownFollows == rhs.ownFollows &&
             lhs.ownMembership == rhs.ownMembership &&
             lhs.pinCount == rhs.pinCount &&
@@ -167,7 +151,6 @@ extension FeedResponse: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityCount)
         hasher.combine(createdAt)
         hasher.combine(createdBy)
         hasher.combine(custom)
@@ -179,11 +162,9 @@ extension FeedResponse: Hashable {
         hasher.combine(followingCount)
         hasher.combine(groupId)
         hasher.combine(id)
-        hasher.combine(location)
         hasher.combine(memberCount)
         hasher.combine(name)
         hasher.combine(ownCapabilities)
-        hasher.combine(ownFollowings)
         hasher.combine(ownFollows)
         hasher.combine(ownMembership)
         hasher.combine(pinCount)

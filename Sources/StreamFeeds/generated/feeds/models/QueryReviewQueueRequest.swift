@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
-    public let excludeDefaultActionConfig: Bool?
     /// Filter conditions for review queue items. Accepts built-in fields (e.g. status, channel_cid, severity, recommended_action) and customer-supplied moderation_payload.custom keys: any key that is not a built-in field is matched against the item's custom moderation data (e.g. {"location_id": "loc-42"}). Use filter_config.filterable_custom_keys to discover which custom keys the app exposes as chips. content_text searches the moderated text: "$q" is a keyword search (terms ANDed, no adjacency) over the indexed tsvector, while "$eq" (or "$in" for several wordings) matches the text exactly. The exact form is unindexed, so scope it with date_range rather than running it across the whole queue.
     public let filter: [String: RawJSON]?
     public let limit: Int?
@@ -23,8 +22,7 @@ public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
     /// Whether to return only statistics
     public let statsOnly: Bool?
 
-    public init(excludeDefaultActionConfig: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, lockCount: Int? = nil, lockDuration: Int? = nil, lockItems: Bool? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, statsOnly: Bool? = nil) {
-        self.excludeDefaultActionConfig = excludeDefaultActionConfig
+    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, lockCount: Int? = nil, lockDuration: Int? = nil, lockItems: Bool? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, statsOnly: Bool? = nil) {
         self.filter = filter
         self.limit = limit
         self.lockCount = lockCount
@@ -38,7 +36,6 @@ public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.excludeDefaultActionConfig = try container.decodeIfPresent(Bool.self, forKey: .excludeDefaultActionConfig)
         self.filter = try container.decodeIfPresent([String: RawJSON].self, forKey: .filter)
         self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
         self.lockCount = try container.decodeIfPresent(Int.self, forKey: .lockCount)
@@ -52,7 +49,6 @@ public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(excludeDefaultActionConfig, forKey: .excludeDefaultActionConfig)
         try container.encodeIfPresent(filter, forKey: .filter)
         try container.encodeIfPresent(limit, forKey: .limit)
         try container.encodeIfPresent(lockCount, forKey: .lockCount)
@@ -67,8 +63,7 @@ public final class QueryReviewQueueRequest: Sendable, Codable, JSONEncodable {
 
 extension QueryReviewQueueRequest: Hashable {
     public static func == (lhs: QueryReviewQueueRequest, rhs: QueryReviewQueueRequest) -> Bool {
-        lhs.excludeDefaultActionConfig == rhs.excludeDefaultActionConfig &&
-            lhs.filter == rhs.filter &&
+        lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&
             lhs.lockCount == rhs.lockCount &&
             lhs.lockDuration == rhs.lockDuration &&
@@ -80,7 +75,6 @@ extension QueryReviewQueueRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(excludeDefaultActionConfig)
         hasher.combine(filter)
         hasher.combine(limit)
         hasher.combine(lockCount)

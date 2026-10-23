@@ -10,14 +10,11 @@ public final class AddActivityResponse: Sendable, Codable, JSONEncodable {
     public let duration: String
     /// Number of mention notification activities created for mentioned users
     public let mentionNotificationsCreated: Int?
-    /// Contains the activity ID when skip_existing is true and the activity already existed, so it was left unchanged.
-    public let skippedExisting: [String]?
 
-    public init(activity: ActivityResponse, duration: String, mentionNotificationsCreated: Int? = nil, skippedExisting: [String]? = nil) {
+    public init(activity: ActivityResponse, duration: String, mentionNotificationsCreated: Int? = nil) {
         self.activity = activity
         self.duration = duration
         self.mentionNotificationsCreated = mentionNotificationsCreated
-        self.skippedExisting = skippedExisting
     }
 
     public init(from decoder: Decoder) throws {
@@ -25,7 +22,6 @@ public final class AddActivityResponse: Sendable, Codable, JSONEncodable {
         self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.mentionNotificationsCreated = try container.decodeIfPresent(Int.self, forKey: .mentionNotificationsCreated)
-        self.skippedExisting = try container.decodeIfPresent([String].self, forKey: .skippedExisting)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -33,7 +29,6 @@ public final class AddActivityResponse: Sendable, Codable, JSONEncodable {
         try container.encode(activity, forKey: .activity)
         try container.encode(duration, forKey: .duration)
         try container.encodeIfPresent(mentionNotificationsCreated, forKey: .mentionNotificationsCreated)
-        try container.encodeIfPresent(skippedExisting, forKey: .skippedExisting)
     }
 }
 
@@ -41,14 +36,12 @@ extension AddActivityResponse: Hashable {
     public static func == (lhs: AddActivityResponse, rhs: AddActivityResponse) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.duration == rhs.duration &&
-            lhs.mentionNotificationsCreated == rhs.mentionNotificationsCreated &&
-            lhs.skippedExisting == rhs.skippedExisting
+            lhs.mentionNotificationsCreated == rhs.mentionNotificationsCreated
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activity)
         hasher.combine(duration)
         hasher.combine(mentionNotificationsCreated)
-        hasher.combine(skippedExisting)
     }
 }

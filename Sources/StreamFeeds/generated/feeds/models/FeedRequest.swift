@@ -30,7 +30,6 @@ public final class FeedRequest: Sendable, Codable, JSONEncodable {
     public let feedId: String
     /// Tags used for filtering feeds
     public let filterTags: [String]?
-    public let location: Location?
     /// Initial members for the feed
     public let members: [FeedMemberRequest]?
     /// Name of the feed
@@ -38,13 +37,12 @@ public final class FeedRequest: Sendable, Codable, JSONEncodable {
     /// Visibility setting for the feed. One of: public, visible, followers, members, private
     public let visibility: FeedRequestVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, location: Location? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.feedGroupId = feedGroupId
         self.feedId = feedId
         self.filterTags = filterTags
-        self.location = location
         self.members = members
         self.name = name
         self.visibility = visibility
@@ -57,7 +55,6 @@ public final class FeedRequest: Sendable, Codable, JSONEncodable {
         self.feedGroupId = try container.decode(String.self, forKey: .feedGroupId)
         self.feedId = try container.decode(String.self, forKey: .feedId)
         self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
         self.members = try container.decodeIfPresent([FeedMemberRequest].self, forKey: .members)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.visibility = try container.decodeIfPresent(FeedRequestVisibility.self, forKey: .visibility)
@@ -70,7 +67,6 @@ public final class FeedRequest: Sendable, Codable, JSONEncodable {
         try container.encode(feedGroupId, forKey: .feedGroupId)
         try container.encode(feedId, forKey: .feedId)
         try container.encodeIfPresent(filterTags, forKey: .filterTags)
-        try container.encodeIfPresent(location, forKey: .location)
         try container.encodeIfPresent(members, forKey: .members)
         try container.encodeIfPresent(name, forKey: .name)
         try container.encodeIfPresent(visibility, forKey: .visibility)
@@ -84,7 +80,6 @@ extension FeedRequest: Hashable {
             lhs.feedGroupId == rhs.feedGroupId &&
             lhs.feedId == rhs.feedId &&
             lhs.filterTags == rhs.filterTags &&
-            lhs.location == rhs.location &&
             lhs.members == rhs.members &&
             lhs.name == rhs.name &&
             lhs.visibility == rhs.visibility
@@ -96,7 +91,6 @@ extension FeedRequest: Hashable {
         hasher.combine(feedGroupId)
         hasher.combine(feedId)
         hasher.combine(filterTags)
-        hasher.combine(location)
         hasher.combine(members)
         hasher.combine(name)
         hasher.combine(visibility)

@@ -23,16 +23,14 @@ public final class FeedInput: Sendable, Codable, JSONEncodable {
     public let custom: [String: RawJSON]?
     public let description: String?
     public let filterTags: [String]?
-    public let location: Location?
     public let members: [FeedMemberRequest]?
     public let name: String?
     public let visibility: FeedInputVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, location: Location? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.filterTags = filterTags
-        self.location = location
         self.members = members
         self.name = name
         self.visibility = visibility
@@ -43,7 +41,6 @@ public final class FeedInput: Sendable, Codable, JSONEncodable {
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
         self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
         self.members = try container.decodeIfPresent([FeedMemberRequest].self, forKey: .members)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.visibility = try container.decodeIfPresent(FeedInputVisibility.self, forKey: .visibility)
@@ -54,7 +51,6 @@ public final class FeedInput: Sendable, Codable, JSONEncodable {
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(description, forKey: .description)
         try container.encodeIfPresent(filterTags, forKey: .filterTags)
-        try container.encodeIfPresent(location, forKey: .location)
         try container.encodeIfPresent(members, forKey: .members)
         try container.encodeIfPresent(name, forKey: .name)
         try container.encodeIfPresent(visibility, forKey: .visibility)
@@ -66,7 +62,6 @@ extension FeedInput: Hashable {
         lhs.custom == rhs.custom &&
             lhs.description == rhs.description &&
             lhs.filterTags == rhs.filterTags &&
-            lhs.location == rhs.location &&
             lhs.members == rhs.members &&
             lhs.name == rhs.name &&
             lhs.visibility == rhs.visibility
@@ -76,7 +71,6 @@ extension FeedInput: Hashable {
         hasher.combine(custom)
         hasher.combine(description)
         hasher.combine(filterTags)
-        hasher.combine(location)
         hasher.combine(members)
         hasher.combine(name)
         hasher.combine(visibility)

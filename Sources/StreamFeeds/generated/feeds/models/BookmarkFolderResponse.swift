@@ -16,16 +16,13 @@ public final class BookmarkFolderResponse: Sendable, Codable, JSONEncodable {
     public let name: String
     /// When the folder was last updated
     public let updatedAt: Date
-    /// User response object
-    public let user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
         self.id = id
         self.name = name
         self.updatedAt = updatedAt
-        self.user = user
     }
 
     public init(from decoder: Decoder) throws {
@@ -35,7 +32,6 @@ public final class BookmarkFolderResponse: Sendable, Codable, JSONEncodable {
         self.id = try container.decode(String.self, forKey: .id)
         self.name = try container.decode(String.self, forKey: .name)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-        self.user = try container.decode(UserResponse.self, forKey: .user)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -45,7 +41,6 @@ public final class BookmarkFolderResponse: Sendable, Codable, JSONEncodable {
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
         try container.encode(updatedAt, forKey: .updatedAt)
-        try container.encode(user, forKey: .user)
     }
 }
 
@@ -55,8 +50,7 @@ extension BookmarkFolderResponse: Hashable {
             lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&
             lhs.name == rhs.name &&
-            lhs.updatedAt == rhs.updatedAt &&
-            lhs.user == rhs.user
+            lhs.updatedAt == rhs.updatedAt
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -65,6 +59,5 @@ extension BookmarkFolderResponse: Hashable {
         hasher.combine(id)
         hasher.combine(name)
         hasher.combine(updatedAt)
-        hasher.combine(user)
     }
 }

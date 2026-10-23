@@ -77,6 +77,7 @@ swiftlint --strict
   • The script needs the backend repo checked out at ../chat (override with CHAT_DIR). It regenerates the spec, builds the generator, and rewrites Sources/StreamFeeds/generated/feeds.
   • Endpoints in ignored_endpoints are not exposed. To expose one, remove it from the list and rerun; its models come back automatically. Models that DefaultAPI and FeedsEvent no longer reach are deleted.
   • Strip chat, video, and server-side-only properties with remove_property and nested enums with remove_type. When an exclusion waits on a backend change, reference the CHA ticket in a comment.
+  • New properties on existing models are held back in their own remove_property group until reviewed. To expose one, remove it from the group and rerun.
   • Do not build while the script runs; it deletes and recreates the generated folder. Do not commit project.pbxproj changes that only reorder entries.
   • After regenerating: a second run must produce identical output, the build and tests must pass, and public API changes go to the CHANGELOG.
 

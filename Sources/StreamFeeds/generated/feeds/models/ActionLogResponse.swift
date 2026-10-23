@@ -15,8 +15,6 @@ public final class ActionLogResponse: Sendable, Codable, JSONEncodable {
     public let id: String
     /// Reason for the moderation action
     public let reason: String
-    /// Classification of who triggered the action (e.g. user, moderator, automod, api_integration)
-    public let reporterType: String
     public let reviewQueueItem: ReviewQueueItemResponse?
     /// User response object
     public let targetUser: UserResponse?
@@ -29,13 +27,12 @@ public final class ActionLogResponse: Sendable, Codable, JSONEncodable {
     /// ID of the user who performed the action
     public let userId: String
 
-    public init(aiProviders: [String], createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reporterType: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
+    public init(aiProviders: [String], createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
         self.aiProviders = aiProviders
         self.createdAt = createdAt
         self.custom = custom
         self.id = id
         self.reason = reason
-        self.reporterType = reporterType
         self.reviewQueueItem = reviewQueueItem
         self.targetUser = targetUser
         self.targetUserId = targetUserId
@@ -51,7 +48,6 @@ public final class ActionLogResponse: Sendable, Codable, JSONEncodable {
         self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
         self.id = try container.decode(String.self, forKey: .id)
         self.reason = try container.decode(String.self, forKey: .reason)
-        self.reporterType = try container.decode(String.self, forKey: .reporterType)
         self.reviewQueueItem = try container.decodeIfPresent(ReviewQueueItemResponse.self, forKey: .reviewQueueItem)
         self.targetUser = try container.decodeIfPresent(UserResponse.self, forKey: .targetUser)
         self.targetUserId = try container.decode(String.self, forKey: .targetUserId)
@@ -67,7 +63,6 @@ public final class ActionLogResponse: Sendable, Codable, JSONEncodable {
         try container.encode(custom, forKey: .custom)
         try container.encode(id, forKey: .id)
         try container.encode(reason, forKey: .reason)
-        try container.encode(reporterType, forKey: .reporterType)
         try container.encodeIfPresent(reviewQueueItem, forKey: .reviewQueueItem)
         try container.encodeIfPresent(targetUser, forKey: .targetUser)
         try container.encode(targetUserId, forKey: .targetUserId)
@@ -84,7 +79,6 @@ extension ActionLogResponse: Hashable {
             lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&
             lhs.reason == rhs.reason &&
-            lhs.reporterType == rhs.reporterType &&
             lhs.reviewQueueItem == rhs.reviewQueueItem &&
             lhs.targetUser == rhs.targetUser &&
             lhs.targetUserId == rhs.targetUserId &&
@@ -99,7 +93,6 @@ extension ActionLogResponse: Hashable {
         hasher.combine(custom)
         hasher.combine(id)
         hasher.combine(reason)
-        hasher.combine(reporterType)
         hasher.combine(reviewQueueItem)
         hasher.combine(targetUser)
         hasher.combine(targetUserId)

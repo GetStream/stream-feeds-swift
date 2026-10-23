@@ -23,14 +23,12 @@ extension ThreadedCommentResponse {
     ) -> ThreadedCommentResponse {
         ThreadedCommentResponse(
             attachments: nil,
-            bookmarkCount: 0,
             confidenceScore: 0.95,
             controversyScore: nil,
             createdAt: createdAt,
             custom: nil,
             deletedAt: nil,
             downvoteCount: 0,
-            hidden: false,
             id: id,
             latestReactions: latestReactions,
             mentionedUsers: [UserResponse.dummy()],

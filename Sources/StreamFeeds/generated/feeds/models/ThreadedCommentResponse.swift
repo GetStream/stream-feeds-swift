@@ -22,16 +22,12 @@ public final class ThreadedCommentResponseStatus: RawRepresentable, Codable, Has
 /// A comment with an optional, depth‑limited slice of nested replies.
 public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
     public let attachments: [Attachment]?
-    public let bookmarkCount: Int
     public let confidenceScore: Double
     public let controversyScore: Double?
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let deletedAt: Date?
     public let downvoteCount: Int
-    public let editedAt: Date?
-    public let hidden: Bool
-    public let i18n: [String: String]?
     public let id: String
     public let latestReactions: [FeedsReactionResponse]?
     public let mentionedUsers: [UserResponse]
@@ -56,18 +52,14 @@ public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
     /// User response object
     public let user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, bookmarkCount: Int, confidenceScore: Double, controversyScore: Double? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, editedAt: Date? = nil, hidden: Bool, i18n: [String: String]? = nil, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: ThreadedCommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Double, controversyScore: Double? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: ThreadedCommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
-        self.bookmarkCount = bookmarkCount
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
         self.createdAt = createdAt
         self.custom = custom
         self.deletedAt = deletedAt
         self.downvoteCount = downvoteCount
-        self.editedAt = editedAt
-        self.hidden = hidden
-        self.i18n = i18n
         self.id = id
         self.latestReactions = latestReactions
         self.mentionedUsers = mentionedUsers
@@ -92,16 +84,12 @@ public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
-        self.bookmarkCount = try container.decode(Int.self, forKey: .bookmarkCount)
         self.confidenceScore = try container.decode(Double.self, forKey: .confidenceScore)
         self.controversyScore = try container.decodeIfPresent(Double.self, forKey: .controversyScore)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
         self.downvoteCount = try container.decode(Int.self, forKey: .downvoteCount)
-        self.editedAt = try container.decodeIfPresent(Date.self, forKey: .editedAt)
-        self.hidden = try container.decode(Bool.self, forKey: .hidden)
-        self.i18n = try container.decodeIfPresent([String: String].self, forKey: .i18n)
         self.id = try container.decode(String.self, forKey: .id)
         self.latestReactions = try container.decodeIfPresent([FeedsReactionResponse].self, forKey: .latestReactions)
         self.mentionedUsers = try container.decode([UserResponse].self, forKey: .mentionedUsers)
@@ -126,16 +114,12 @@ public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(attachments, forKey: .attachments)
-        try container.encode(bookmarkCount, forKey: .bookmarkCount)
         try container.encode(confidenceScore, forKey: .confidenceScore)
         try container.encodeIfPresent(controversyScore, forKey: .controversyScore)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(deletedAt, forKey: .deletedAt)
         try container.encode(downvoteCount, forKey: .downvoteCount)
-        try container.encodeIfPresent(editedAt, forKey: .editedAt)
-        try container.encode(hidden, forKey: .hidden)
-        try container.encodeIfPresent(i18n, forKey: .i18n)
         try container.encode(id, forKey: .id)
         try container.encodeIfPresent(latestReactions, forKey: .latestReactions)
         try container.encode(mentionedUsers, forKey: .mentionedUsers)
@@ -161,16 +145,12 @@ public final class ThreadedCommentResponse: Sendable, Codable, JSONEncodable {
 extension ThreadedCommentResponse: Hashable {
     public static func == (lhs: ThreadedCommentResponse, rhs: ThreadedCommentResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
-            lhs.bookmarkCount == rhs.bookmarkCount &&
             lhs.confidenceScore == rhs.confidenceScore &&
             lhs.controversyScore == rhs.controversyScore &&
             lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&
             lhs.deletedAt == rhs.deletedAt &&
             lhs.downvoteCount == rhs.downvoteCount &&
-            lhs.editedAt == rhs.editedAt &&
-            lhs.hidden == rhs.hidden &&
-            lhs.i18n == rhs.i18n &&
             lhs.id == rhs.id &&
             lhs.latestReactions == rhs.latestReactions &&
             lhs.mentionedUsers == rhs.mentionedUsers &&
@@ -194,16 +174,12 @@ extension ThreadedCommentResponse: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
-        hasher.combine(bookmarkCount)
         hasher.combine(confidenceScore)
         hasher.combine(controversyScore)
         hasher.combine(createdAt)
         hasher.combine(custom)
         hasher.combine(deletedAt)
         hasher.combine(downvoteCount)
-        hasher.combine(editedAt)
-        hasher.combine(hidden)
-        hasher.combine(i18n)
         hasher.combine(id)
         hasher.combine(latestReactions)
         hasher.combine(mentionedUsers)

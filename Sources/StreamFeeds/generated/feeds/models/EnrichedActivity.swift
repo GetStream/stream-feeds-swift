@@ -16,11 +16,10 @@ public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
     public let reactionCounts: [String: Int]?
     public let score: Double?
     public let target: StreamData?
-    public let time: String?
     public let to: [String]?
     public let verb: String?
 
-    public init(actor: StreamData? = nil, foreignId: String? = nil, id: String? = nil, latestReactions: [String: [EnrichedReaction]]? = nil, object: StreamData? = nil, origin: StreamData? = nil, ownReactions: [String: [EnrichedReaction]]? = nil, reactionCounts: [String: Int]? = nil, score: Double? = nil, target: StreamData? = nil, time: String? = nil, to: [String]? = nil, verb: String? = nil) {
+    public init(actor: StreamData? = nil, foreignId: String? = nil, id: String? = nil, latestReactions: [String: [EnrichedReaction]]? = nil, object: StreamData? = nil, origin: StreamData? = nil, ownReactions: [String: [EnrichedReaction]]? = nil, reactionCounts: [String: Int]? = nil, score: Double? = nil, target: StreamData? = nil, to: [String]? = nil, verb: String? = nil) {
         self.actor = actor
         self.foreignId = foreignId
         self.id = id
@@ -31,7 +30,6 @@ public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
         self.reactionCounts = reactionCounts
         self.score = score
         self.target = target
-        self.time = time
         self.to = to
         self.verb = verb
     }
@@ -48,7 +46,6 @@ public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
         self.reactionCounts = try container.decodeIfPresent([String: Int].self, forKey: .reactionCounts)
         self.score = try container.decodeIfPresent(Double.self, forKey: .score)
         self.target = try container.decodeIfPresent(StreamData.self, forKey: .target)
-        self.time = try container.decodeIfPresent(String.self, forKey: .time)
         self.to = try container.decodeIfPresent([String].self, forKey: .to)
         self.verb = try container.decodeIfPresent(String.self, forKey: .verb)
     }
@@ -65,7 +62,6 @@ public final class EnrichedActivity: Sendable, Codable, JSONEncodable {
         try container.encodeIfPresent(reactionCounts, forKey: .reactionCounts)
         try container.encodeIfPresent(score, forKey: .score)
         try container.encodeIfPresent(target, forKey: .target)
-        try container.encodeIfPresent(time, forKey: .time)
         try container.encodeIfPresent(to, forKey: .to)
         try container.encodeIfPresent(verb, forKey: .verb)
     }
@@ -83,7 +79,6 @@ extension EnrichedActivity: Hashable {
             lhs.reactionCounts == rhs.reactionCounts &&
             lhs.score == rhs.score &&
             lhs.target == rhs.target &&
-            lhs.time == rhs.time &&
             lhs.to == rhs.to &&
             lhs.verb == rhs.verb
     }
@@ -99,7 +94,6 @@ extension EnrichedActivity: Hashable {
         hasher.combine(reactionCounts)
         hasher.combine(score)
         hasher.combine(target)
-        hasher.combine(time)
         hasher.combine(to)
         hasher.combine(verb)
     }

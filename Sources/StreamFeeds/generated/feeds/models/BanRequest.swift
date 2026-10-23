@@ -6,8 +6,6 @@ import Foundation
 import StreamCore
 
 public final class BanRequest: Sendable, Codable, JSONEncodable {
-    /// Whether to delete reactions by the banned user on other users' messages
-    public let deleteReactions: Bool?
     /// Whether to ban the user's IP address
     public let ipBan: Bool?
     /// Optional explanation for the ban
@@ -19,8 +17,7 @@ public final class BanRequest: Sendable, Codable, JSONEncodable {
     /// Duration of the ban in minutes
     public let timeout: Int?
 
-    public init(deleteReactions: Bool? = nil, ipBan: Bool? = nil, reason: String? = nil, shadow: Bool? = nil, targetUserId: String, timeout: Int? = nil) {
-        self.deleteReactions = deleteReactions
+    public init(ipBan: Bool? = nil, reason: String? = nil, shadow: Bool? = nil, targetUserId: String, timeout: Int? = nil) {
         self.ipBan = ipBan
         self.reason = reason
         self.shadow = shadow
@@ -30,7 +27,6 @@ public final class BanRequest: Sendable, Codable, JSONEncodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.deleteReactions = try container.decodeIfPresent(Bool.self, forKey: .deleteReactions)
         self.ipBan = try container.decodeIfPresent(Bool.self, forKey: .ipBan)
         self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
         self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
@@ -40,7 +36,6 @@ public final class BanRequest: Sendable, Codable, JSONEncodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(deleteReactions, forKey: .deleteReactions)
         try container.encodeIfPresent(ipBan, forKey: .ipBan)
         try container.encodeIfPresent(reason, forKey: .reason)
         try container.encodeIfPresent(shadow, forKey: .shadow)
@@ -51,8 +46,7 @@ public final class BanRequest: Sendable, Codable, JSONEncodable {
 
 extension BanRequest: Hashable {
     public static func == (lhs: BanRequest, rhs: BanRequest) -> Bool {
-        lhs.deleteReactions == rhs.deleteReactions &&
-            lhs.ipBan == rhs.ipBan &&
+        lhs.ipBan == rhs.ipBan &&
             lhs.reason == rhs.reason &&
             lhs.shadow == rhs.shadow &&
             lhs.targetUserId == rhs.targetUserId &&
@@ -60,7 +54,6 @@ extension BanRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(deleteReactions)
         hasher.combine(ipBan)
         hasher.combine(reason)
         hasher.combine(shadow)

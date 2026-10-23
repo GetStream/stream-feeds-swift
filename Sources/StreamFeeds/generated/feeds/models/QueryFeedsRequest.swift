@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class QueryFeedsRequest: Sendable, Codable, JSONEncodable {
-    public let enrichOwnFields: Bool?
     /// Filters to apply to the query
     public let filter: [String: RawJSON]?
     public let limit: Int?
@@ -17,8 +16,7 @@ public final class QueryFeedsRequest: Sendable, Codable, JSONEncodable {
     /// Whether to subscribe to realtime updates
     public let watch: Bool?
 
-    public init(enrichOwnFields: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, watch: Bool? = nil) {
-        self.enrichOwnFields = enrichOwnFields
+    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, watch: Bool? = nil) {
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -29,7 +27,6 @@ public final class QueryFeedsRequest: Sendable, Codable, JSONEncodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
         self.filter = try container.decodeIfPresent([String: RawJSON].self, forKey: .filter)
         self.limit = try container.decodeIfPresent(Int.self, forKey: .limit)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
@@ -40,7 +37,6 @@ public final class QueryFeedsRequest: Sendable, Codable, JSONEncodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
         try container.encodeIfPresent(filter, forKey: .filter)
         try container.encodeIfPresent(limit, forKey: .limit)
         try container.encodeIfPresent(next, forKey: .next)
@@ -52,8 +48,7 @@ public final class QueryFeedsRequest: Sendable, Codable, JSONEncodable {
 
 extension QueryFeedsRequest: Hashable {
     public static func == (lhs: QueryFeedsRequest, rhs: QueryFeedsRequest) -> Bool {
-        lhs.enrichOwnFields == rhs.enrichOwnFields &&
-            lhs.filter == rhs.filter &&
+        lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev &&
@@ -62,7 +57,6 @@ extension QueryFeedsRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(enrichOwnFields)
         hasher.combine(filter)
         hasher.combine(limit)
         hasher.combine(next)

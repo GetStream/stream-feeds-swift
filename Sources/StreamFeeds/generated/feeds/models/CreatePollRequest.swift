@@ -37,11 +37,10 @@ public final class CreatePollRequest: Sendable, Codable, JSONEncodable {
     /// The name of the poll
     public let name: String
     public let options: [PollOptionInput]?
-    public let team: String?
     /// Represents the visibility of votes in a poll.
     public let votingVisibility: CreatePollRequestVotingVisibility?
 
-    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, team: String? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom
@@ -52,7 +51,6 @@ public final class CreatePollRequest: Sendable, Codable, JSONEncodable {
         self.maxVotesAllowed = maxVotesAllowed
         self.name = name
         self.options = options
-        self.team = team
         self.votingVisibility = votingVisibility
     }
 
@@ -68,7 +66,6 @@ public final class CreatePollRequest: Sendable, Codable, JSONEncodable {
         self.maxVotesAllowed = try container.decodeIfPresent(Int.self, forKey: .maxVotesAllowed)
         self.name = try container.decode(String.self, forKey: .name)
         self.options = try container.decodeIfPresent([PollOptionInput].self, forKey: .options)
-        self.team = try container.decodeIfPresent(String.self, forKey: .team)
         self.votingVisibility = try container.decodeIfPresent(CreatePollRequestVotingVisibility.self, forKey: .votingVisibility)
     }
 
@@ -84,7 +81,6 @@ public final class CreatePollRequest: Sendable, Codable, JSONEncodable {
         try container.encodeIfPresent(maxVotesAllowed, forKey: .maxVotesAllowed)
         try container.encode(name, forKey: .name)
         try container.encodeIfPresent(options, forKey: .options)
-        try container.encodeIfPresent(team, forKey: .team)
         try container.encodeIfPresent(votingVisibility, forKey: .votingVisibility)
     }
 }
@@ -101,7 +97,6 @@ extension CreatePollRequest: Hashable {
             lhs.maxVotesAllowed == rhs.maxVotesAllowed &&
             lhs.name == rhs.name &&
             lhs.options == rhs.options &&
-            lhs.team == rhs.team &&
             lhs.votingVisibility == rhs.votingVisibility
     }
 
@@ -116,7 +111,6 @@ extension CreatePollRequest: Hashable {
         hasher.combine(maxVotesAllowed)
         hasher.combine(name)
         hasher.combine(options)
-        hasher.combine(team)
         hasher.combine(votingVisibility)
     }
 }

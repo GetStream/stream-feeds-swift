@@ -34,15 +34,11 @@ public final class RuleBuilderActionType: RawRepresentable, Codable, Hashable, S
 public final class RuleBuilderAction: Sendable, Codable, JSONEncodable {
     public let banOptions: BanOptions?
     public let flagUserOptions: FlagUserOptions?
-    public let reason: String?
-    public let skipInbox: Bool?
     public let type: RuleBuilderActionType?
 
-    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil, reason: String? = nil, skipInbox: Bool? = nil, type: RuleBuilderActionType? = nil) {
+    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil, type: RuleBuilderActionType? = nil) {
         self.banOptions = banOptions
         self.flagUserOptions = flagUserOptions
-        self.reason = reason
-        self.skipInbox = skipInbox
         self.type = type
     }
 
@@ -50,8 +46,6 @@ public final class RuleBuilderAction: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.banOptions = try container.decodeIfPresent(BanOptions.self, forKey: .banOptions)
         self.flagUserOptions = try container.decodeIfPresent(FlagUserOptions.self, forKey: .flagUserOptions)
-        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
-        self.skipInbox = try container.decodeIfPresent(Bool.self, forKey: .skipInbox)
         self.type = try container.decodeIfPresent(RuleBuilderActionType.self, forKey: .type)
     }
 
@@ -59,8 +53,6 @@ public final class RuleBuilderAction: Sendable, Codable, JSONEncodable {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(banOptions, forKey: .banOptions)
         try container.encodeIfPresent(flagUserOptions, forKey: .flagUserOptions)
-        try container.encodeIfPresent(reason, forKey: .reason)
-        try container.encodeIfPresent(skipInbox, forKey: .skipInbox)
         try container.encodeIfPresent(type, forKey: .type)
     }
 }
@@ -69,16 +61,12 @@ extension RuleBuilderAction: Hashable {
     public static func == (lhs: RuleBuilderAction, rhs: RuleBuilderAction) -> Bool {
         lhs.banOptions == rhs.banOptions &&
             lhs.flagUserOptions == rhs.flagUserOptions &&
-            lhs.reason == rhs.reason &&
-            lhs.skipInbox == rhs.skipInbox &&
             lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(banOptions)
         hasher.combine(flagUserOptions)
-        hasher.combine(reason)
-        hasher.combine(skipInbox)
         hasher.combine(type)
     }
 }

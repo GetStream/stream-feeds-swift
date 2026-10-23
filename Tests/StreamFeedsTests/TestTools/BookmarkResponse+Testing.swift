@@ -20,8 +20,6 @@ extension BookmarkResponse {
             createdAt: createdAt,
             custom: custom,
             folder: folder,
-            objectId: activity.id,
-            objectType: "activity",
             updatedAt: updatedAt,
             user: user
         )

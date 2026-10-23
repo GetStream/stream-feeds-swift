@@ -85,12 +85,8 @@ public final class FeedsPreferencesReaction: RawRepresentable, Codable, Hashable
 public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
     /// Push notification preference for comments on user's activities. One of: all, none
     public let comment: FeedsPreferencesComment?
-    /// Push notification preference for mentions in comments. One of: all, none
-    public let commentMention: FeedsPreferencesCommentMention?
     /// Push notification preference for reactions on comments. One of: all, none
     public let commentReaction: FeedsPreferencesCommentReaction?
-    /// Push notification preference for replies to comments. One of: all, none
-    public let commentReply: FeedsPreferencesCommentReply?
     /// Push notification preferences for custom activity types. Map of activity type to preference (all or none)
     public let customActivityTypes: [String: String]?
     /// Push notification preference for new followers. One of: all, none
@@ -100,11 +96,9 @@ public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
     /// Push notification preference for reactions on user's activities or comments. One of: all, none
     public let reaction: FeedsPreferencesReaction?
 
-    public init(comment: FeedsPreferencesComment? = nil, commentMention: FeedsPreferencesCommentMention? = nil, commentReaction: FeedsPreferencesCommentReaction? = nil, commentReply: FeedsPreferencesCommentReply? = nil, customActivityTypes: [String: String]? = nil, follow: FeedsPreferencesFollow? = nil, mention: FeedsPreferencesMention? = nil, reaction: FeedsPreferencesReaction? = nil) {
+    public init(comment: FeedsPreferencesComment? = nil, commentReaction: FeedsPreferencesCommentReaction? = nil, customActivityTypes: [String: String]? = nil, follow: FeedsPreferencesFollow? = nil, mention: FeedsPreferencesMention? = nil, reaction: FeedsPreferencesReaction? = nil) {
         self.comment = comment
-        self.commentMention = commentMention
         self.commentReaction = commentReaction
-        self.commentReply = commentReply
         self.customActivityTypes = customActivityTypes
         self.follow = follow
         self.mention = mention
@@ -114,9 +108,7 @@ public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.comment = try container.decodeIfPresent(FeedsPreferencesComment.self, forKey: .comment)
-        self.commentMention = try container.decodeIfPresent(FeedsPreferencesCommentMention.self, forKey: .commentMention)
         self.commentReaction = try container.decodeIfPresent(FeedsPreferencesCommentReaction.self, forKey: .commentReaction)
-        self.commentReply = try container.decodeIfPresent(FeedsPreferencesCommentReply.self, forKey: .commentReply)
         self.customActivityTypes = try container.decodeIfPresent([String: String].self, forKey: .customActivityTypes)
         self.follow = try container.decodeIfPresent(FeedsPreferencesFollow.self, forKey: .follow)
         self.mention = try container.decodeIfPresent(FeedsPreferencesMention.self, forKey: .mention)
@@ -126,9 +118,7 @@ public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(comment, forKey: .comment)
-        try container.encodeIfPresent(commentMention, forKey: .commentMention)
         try container.encodeIfPresent(commentReaction, forKey: .commentReaction)
-        try container.encodeIfPresent(commentReply, forKey: .commentReply)
         try container.encodeIfPresent(customActivityTypes, forKey: .customActivityTypes)
         try container.encodeIfPresent(follow, forKey: .follow)
         try container.encodeIfPresent(mention, forKey: .mention)
@@ -139,9 +129,7 @@ public final class FeedsPreferences: Sendable, Codable, JSONEncodable {
 extension FeedsPreferences: Hashable {
     public static func == (lhs: FeedsPreferences, rhs: FeedsPreferences) -> Bool {
         lhs.comment == rhs.comment &&
-            lhs.commentMention == rhs.commentMention &&
             lhs.commentReaction == rhs.commentReaction &&
-            lhs.commentReply == rhs.commentReply &&
             lhs.customActivityTypes == rhs.customActivityTypes &&
             lhs.follow == rhs.follow &&
             lhs.mention == rhs.mention &&
@@ -150,9 +138,7 @@ extension FeedsPreferences: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(comment)
-        hasher.combine(commentMention)
         hasher.combine(commentReaction)
-        hasher.combine(commentReply)
         hasher.combine(customActivityTypes)
         hasher.combine(follow)
         hasher.combine(mention)

@@ -17,16 +17,13 @@ public final class BanInfoResponse: Sendable, Codable, JSONEncodable {
     public let reason: String?
     /// Whether this is a shadow ban
     public let shadow: Bool?
-    /// User response object
-    public let user: UserResponse?
 
-    public init(createdAt: Date, createdBy: UserResponse? = nil, expires: Date? = nil, reason: String? = nil, shadow: Bool? = nil, user: UserResponse? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse? = nil, expires: Date? = nil, reason: String? = nil, shadow: Bool? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.expires = expires
         self.reason = reason
         self.shadow = shadow
-        self.user = user
     }
 
     public init(from decoder: Decoder) throws {
@@ -36,7 +33,6 @@ public final class BanInfoResponse: Sendable, Codable, JSONEncodable {
         self.expires = try container.decodeIfPresent(Date.self, forKey: .expires)
         self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
         self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
-        self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -46,7 +42,6 @@ public final class BanInfoResponse: Sendable, Codable, JSONEncodable {
         try container.encodeIfPresent(expires, forKey: .expires)
         try container.encodeIfPresent(reason, forKey: .reason)
         try container.encodeIfPresent(shadow, forKey: .shadow)
-        try container.encodeIfPresent(user, forKey: .user)
     }
 }
 
@@ -56,8 +51,7 @@ extension BanInfoResponse: Hashable {
             lhs.createdBy == rhs.createdBy &&
             lhs.expires == rhs.expires &&
             lhs.reason == rhs.reason &&
-            lhs.shadow == rhs.shadow &&
-            lhs.user == rhs.user
+            lhs.shadow == rhs.shadow
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -66,6 +60,5 @@ extension BanInfoResponse: Hashable {
         hasher.combine(expires)
         hasher.combine(reason)
         hasher.combine(shadow)
-        hasher.combine(user)
     }
 }

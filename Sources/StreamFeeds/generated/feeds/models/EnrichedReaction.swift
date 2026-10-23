@@ -8,7 +8,6 @@ import StreamCore
 public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
     public let activityId: String
     public let childrenCounts: [String: Int]?
-    public let createdAt: String?
     public let data: [String: RawJSON]?
     public let id: String?
     public let kind: String
@@ -16,14 +15,12 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
     public let ownChildren: [String: [EnrichedReaction]]?
     public let parent: String?
     public let targetFeeds: [String]?
-    public let updatedAt: String?
     public let user: StreamData?
     public let userId: String
 
-    public init(activityId: String, childrenCounts: [String: Int]? = nil, createdAt: String? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, updatedAt: String? = nil, user: StreamData? = nil, userId: String) {
+    public init(activityId: String, childrenCounts: [String: Int]? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, user: StreamData? = nil, userId: String) {
         self.activityId = activityId
         self.childrenCounts = childrenCounts
-        self.createdAt = createdAt
         self.data = data
         self.id = id
         self.kind = kind
@@ -31,7 +28,6 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
         self.ownChildren = ownChildren
         self.parent = parent
         self.targetFeeds = targetFeeds
-        self.updatedAt = updatedAt
         self.user = user
         self.userId = userId
     }
@@ -40,7 +36,6 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.activityId = try container.decode(String.self, forKey: .activityId)
         self.childrenCounts = try container.decodeIfPresent([String: Int].self, forKey: .childrenCounts)
-        self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
         self.data = try container.decodeIfPresent([String: RawJSON].self, forKey: .data)
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.kind = try container.decode(String.self, forKey: .kind)
@@ -48,7 +43,6 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
         self.ownChildren = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .ownChildren)
         self.parent = try container.decodeIfPresent(String.self, forKey: .parent)
         self.targetFeeds = try container.decodeIfPresent([String].self, forKey: .targetFeeds)
-        self.updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
         self.user = try container.decodeIfPresent(StreamData.self, forKey: .user)
         self.userId = try container.decode(String.self, forKey: .userId)
     }
@@ -57,7 +51,6 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encode(activityId, forKey: .activityId)
         try container.encodeIfPresent(childrenCounts, forKey: .childrenCounts)
-        try container.encodeIfPresent(createdAt, forKey: .createdAt)
         try container.encodeIfPresent(data, forKey: .data)
         try container.encodeIfPresent(id, forKey: .id)
         try container.encode(kind, forKey: .kind)
@@ -65,7 +58,6 @@ public final class EnrichedReaction: Sendable, Codable, JSONEncodable {
         try container.encodeIfPresent(ownChildren, forKey: .ownChildren)
         try container.encodeIfPresent(parent, forKey: .parent)
         try container.encodeIfPresent(targetFeeds, forKey: .targetFeeds)
-        try container.encodeIfPresent(updatedAt, forKey: .updatedAt)
         try container.encodeIfPresent(user, forKey: .user)
         try container.encode(userId, forKey: .userId)
     }
@@ -75,7 +67,6 @@ extension EnrichedReaction: Hashable {
     public static func == (lhs: EnrichedReaction, rhs: EnrichedReaction) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.childrenCounts == rhs.childrenCounts &&
-            lhs.createdAt == rhs.createdAt &&
             lhs.data == rhs.data &&
             lhs.id == rhs.id &&
             lhs.kind == rhs.kind &&
@@ -83,7 +74,6 @@ extension EnrichedReaction: Hashable {
             lhs.ownChildren == rhs.ownChildren &&
             lhs.parent == rhs.parent &&
             lhs.targetFeeds == rhs.targetFeeds &&
-            lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user &&
             lhs.userId == rhs.userId
     }
@@ -91,7 +81,6 @@ extension EnrichedReaction: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activityId)
         hasher.combine(childrenCounts)
-        hasher.combine(createdAt)
         hasher.combine(data)
         hasher.combine(id)
         hasher.combine(kind)
@@ -99,7 +88,6 @@ extension EnrichedReaction: Hashable {
         hasher.combine(ownChildren)
         hasher.combine(parent)
         hasher.combine(targetFeeds)
-        hasher.combine(updatedAt)
         hasher.combine(user)
         hasher.combine(userId)
     }

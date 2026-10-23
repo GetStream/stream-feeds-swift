@@ -17,21 +17,16 @@ public final class ModerationActionConfigResponse: Sendable, Codable, JSONEncoda
     public let entityType: String
     /// Icon for the dashboard
     public let icon: String
-    public let id: String?
     /// Display order (lower numbers shown first)
     public let order: Int
-    /// Queue type this action config belongs to
-    public let queueType: String?
 
-    public init(action: String, custom: [String: RawJSON]? = nil, description: String, entityType: String, icon: String, id: String? = nil, order: Int, queueType: String? = nil) {
+    public init(action: String, custom: [String: RawJSON]? = nil, description: String, entityType: String, icon: String, order: Int) {
         self.action = action
         self.custom = custom
         self.description = description
         self.entityType = entityType
         self.icon = icon
-        self.id = id
         self.order = order
-        self.queueType = queueType
     }
 
     public init(from decoder: Decoder) throws {
@@ -41,9 +36,7 @@ public final class ModerationActionConfigResponse: Sendable, Codable, JSONEncoda
         self.description = try container.decode(String.self, forKey: .description)
         self.entityType = try container.decode(String.self, forKey: .entityType)
         self.icon = try container.decode(String.self, forKey: .icon)
-        self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.order = try container.decode(Int.self, forKey: .order)
-        self.queueType = try container.decodeIfPresent(String.self, forKey: .queueType)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -53,9 +46,7 @@ public final class ModerationActionConfigResponse: Sendable, Codable, JSONEncoda
         try container.encode(description, forKey: .description)
         try container.encode(entityType, forKey: .entityType)
         try container.encode(icon, forKey: .icon)
-        try container.encodeIfPresent(id, forKey: .id)
         try container.encode(order, forKey: .order)
-        try container.encodeIfPresent(queueType, forKey: .queueType)
     }
 }
 
@@ -66,9 +57,7 @@ extension ModerationActionConfigResponse: Hashable {
             lhs.description == rhs.description &&
             lhs.entityType == rhs.entityType &&
             lhs.icon == rhs.icon &&
-            lhs.id == rhs.id &&
-            lhs.order == rhs.order &&
-            lhs.queueType == rhs.queueType
+            lhs.order == rhs.order
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -77,8 +66,6 @@ extension ModerationActionConfigResponse: Hashable {
         hasher.combine(description)
         hasher.combine(entityType)
         hasher.combine(icon)
-        hasher.combine(id)
         hasher.combine(order)
-        hasher.combine(queueType)
     }
 }

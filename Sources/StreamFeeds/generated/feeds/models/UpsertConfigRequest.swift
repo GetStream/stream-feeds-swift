@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
-    public let aiAudioConfig: AIAudioConfigRequest?
     public let aiImageConfig: AIImageConfig?
     public let aiTextConfig: AITextConfig?
     public let aiVideoConfig: AIVideoConfigRequest?
@@ -18,9 +17,7 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
     public let awsRekognitionConfig: AIImageConfig?
     public let blockListConfig: BlockListConfig?
     public let bodyguardConfig: AITextConfig?
-    public let floodConfig: FloodConfig?
     public let googleVisionConfig: GoogleVisionConfig?
-    public let intentConfig: IntentConfigRequest?
     /// Unique identifier for the moderation configuration
     public let key: String
     public let llmConfig: LLMConfig?
@@ -29,8 +26,7 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
     public let team: String?
     public let velocityFilterConfig: VelocityFilterConfig?
 
-    public init(aiAudioConfig: AIAudioConfigRequest? = nil, aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigRequest? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, floodConfig: FloodConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, intentConfig: IntentConfigRequest? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
-        self.aiAudioConfig = aiAudioConfig
+    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigRequest? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
         self.aiTextConfig = aiTextConfig
         self.aiVideoConfig = aiVideoConfig
@@ -41,9 +37,7 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
         self.awsRekognitionConfig = awsRekognitionConfig
         self.blockListConfig = blockListConfig
         self.bodyguardConfig = bodyguardConfig
-        self.floodConfig = floodConfig
         self.googleVisionConfig = googleVisionConfig
-        self.intentConfig = intentConfig
         self.key = key
         self.llmConfig = llmConfig
         self.ruleBuilderConfig = ruleBuilderConfig
@@ -53,7 +47,6 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.aiAudioConfig = try container.decodeIfPresent(AIAudioConfigRequest.self, forKey: .aiAudioConfig)
         self.aiImageConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .aiImageConfig)
         self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
         self.aiVideoConfig = try container.decodeIfPresent(AIVideoConfigRequest.self, forKey: .aiVideoConfig)
@@ -64,9 +57,7 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
         self.awsRekognitionConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .awsRekognitionConfig)
         self.blockListConfig = try container.decodeIfPresent(BlockListConfig.self, forKey: .blockListConfig)
         self.bodyguardConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .bodyguardConfig)
-        self.floodConfig = try container.decodeIfPresent(FloodConfig.self, forKey: .floodConfig)
         self.googleVisionConfig = try container.decodeIfPresent(GoogleVisionConfig.self, forKey: .googleVisionConfig)
-        self.intentConfig = try container.decodeIfPresent(IntentConfigRequest.self, forKey: .intentConfig)
         self.key = try container.decode(String.self, forKey: .key)
         self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
         self.ruleBuilderConfig = try container.decodeIfPresent(RuleBuilderConfig.self, forKey: .ruleBuilderConfig)
@@ -76,7 +67,6 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
-        try container.encodeIfPresent(aiAudioConfig, forKey: .aiAudioConfig)
         try container.encodeIfPresent(aiImageConfig, forKey: .aiImageConfig)
         try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
         try container.encodeIfPresent(aiVideoConfig, forKey: .aiVideoConfig)
@@ -87,9 +77,7 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
         try container.encodeIfPresent(awsRekognitionConfig, forKey: .awsRekognitionConfig)
         try container.encodeIfPresent(blockListConfig, forKey: .blockListConfig)
         try container.encodeIfPresent(bodyguardConfig, forKey: .bodyguardConfig)
-        try container.encodeIfPresent(floodConfig, forKey: .floodConfig)
         try container.encodeIfPresent(googleVisionConfig, forKey: .googleVisionConfig)
-        try container.encodeIfPresent(intentConfig, forKey: .intentConfig)
         try container.encode(key, forKey: .key)
         try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
         try container.encodeIfPresent(ruleBuilderConfig, forKey: .ruleBuilderConfig)
@@ -100,8 +88,7 @@ public final class UpsertConfigRequest: Sendable, Codable, JSONEncodable {
 
 extension UpsertConfigRequest: Hashable {
     public static func == (lhs: UpsertConfigRequest, rhs: UpsertConfigRequest) -> Bool {
-        lhs.aiAudioConfig == rhs.aiAudioConfig &&
-            lhs.aiImageConfig == rhs.aiImageConfig &&
+        lhs.aiImageConfig == rhs.aiImageConfig &&
             lhs.aiTextConfig == rhs.aiTextConfig &&
             lhs.aiVideoConfig == rhs.aiVideoConfig &&
             lhs.async == rhs.async &&
@@ -111,9 +98,7 @@ extension UpsertConfigRequest: Hashable {
             lhs.awsRekognitionConfig == rhs.awsRekognitionConfig &&
             lhs.blockListConfig == rhs.blockListConfig &&
             lhs.bodyguardConfig == rhs.bodyguardConfig &&
-            lhs.floodConfig == rhs.floodConfig &&
             lhs.googleVisionConfig == rhs.googleVisionConfig &&
-            lhs.intentConfig == rhs.intentConfig &&
             lhs.key == rhs.key &&
             lhs.llmConfig == rhs.llmConfig &&
             lhs.ruleBuilderConfig == rhs.ruleBuilderConfig &&
@@ -122,7 +107,6 @@ extension UpsertConfigRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(aiAudioConfig)
         hasher.combine(aiImageConfig)
         hasher.combine(aiTextConfig)
         hasher.combine(aiVideoConfig)
@@ -133,9 +117,7 @@ extension UpsertConfigRequest: Hashable {
         hasher.combine(awsRekognitionConfig)
         hasher.combine(blockListConfig)
         hasher.combine(bodyguardConfig)
-        hasher.combine(floodConfig)
         hasher.combine(googleVisionConfig)
-        hasher.combine(intentConfig)
         hasher.combine(key)
         hasher.combine(llmConfig)
         hasher.combine(ruleBuilderConfig)
