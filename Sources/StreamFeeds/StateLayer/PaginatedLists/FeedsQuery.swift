@@ -163,7 +163,7 @@ extension FeedsFilterField {
     /// Filter by the visibility setting of the feed.
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let visibility = Self("visibility", localValue: \.visibility)
+    public static let visibility = Self("visibility", localValue: \.visibility?.rawValue)
     
     /// Filter by feeds that this feed is following.
     ///

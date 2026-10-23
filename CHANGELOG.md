@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `ModerationConfigData.aiVideoConfig` is `AIVideoConfigResponse?` and `FeedAddActivityRequest.location` is `Location?` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Generated models no longer include chat, video or server-side-only properties, and some models are renamed, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Generated models are immutable, and `Double` is used instead of `Float` [#84](https://github.com/GetStream/stream-feeds-swift/pull/84)
-- Generated models use `RawRepresentable` types instead of enums [#84](https://github.com/GetStream/stream-feeds-swift/pull/84)
+- Generated models use `RawRepresentable` types instead of enums, and `FeedData.visibility`, `CommentData.status`, `ThreadedCommentData.status`, `FollowData.pushPreference` and `PollData.votingVisibility` use them instead of `String` [#84](https://github.com/GetStream/stream-feeds-swift/pull/84)
 
 # [0.5.3](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.3)
 _June 11, 2026_

@@ -113,7 +113,7 @@ extension CommentsFilterField {
     /// Filter by the status of the comment (e.g., "active", "deleted", "moderated").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let status = Self("status", localValue: \.status)
+    public static let status = Self("status", localValue: \.status.rawValue)
     
     /// Filter by the number of upvotes the comment has received.
     ///

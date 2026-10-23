@@ -127,7 +127,7 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     public let score: Int
     
     /// The current status of the comment (e.g., "active", "deleted", "moderated").
-    public let status: String
+    public let status: CommentStatus
     
     /// The text content of the comment.
     ///
@@ -144,6 +144,8 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     /// The user who created the comment.
     public private(set) var user: UserData
 }
+
+public typealias CommentStatus = CommentResponseStatus
 
 // MARK: - Mutating the Data
 
@@ -206,7 +208,7 @@ extension CommentResponse {
             reactionGroups: reactionGroups?.mapValues { $0.toModel() } ?? [:],
             replyCount: replyCount,
             score: score,
-            status: status.rawValue,
+            status: status,
             text: text,
             updatedAt: updatedAt,
             upvoteCount: upvoteCount,

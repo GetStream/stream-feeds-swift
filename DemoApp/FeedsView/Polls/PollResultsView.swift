@@ -99,7 +99,7 @@ struct PollOptionResultsView: View {
             
             ForEach(votes, id: \.displayId) { vote in
                 HStack {
-                    if poll.votingVisibility != "anonymous" {
+                    if poll.votingVisibility != .anonymous {
                         UserAvatar(url: vote.user?.imageURL, size: 20)
                     }
                     Text(vote.user?.name ?? (vote.user?.id ?? "anonymous"))

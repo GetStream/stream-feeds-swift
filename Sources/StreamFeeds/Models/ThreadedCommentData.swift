@@ -131,7 +131,7 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     public let score: Int
     
     /// The current status of the comment (e.g., "active", "deleted", "moderated").
-    public let status: String
+    public let status: CommentStatus
     
     /// The text content of the comment.
     ///
@@ -308,7 +308,7 @@ extension ThreadedCommentResponse {
             replies: replies?.map { $0.toModel() },
             replyCount: replyCount,
             score: score,
-            status: status.rawValue,
+            status: CommentStatus(rawValue: status.rawValue),
             text: text,
             updatedAt: updatedAt,
             upvoteCount: upvoteCount,
