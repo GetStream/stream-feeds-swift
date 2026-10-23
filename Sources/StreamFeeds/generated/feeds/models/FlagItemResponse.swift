@@ -5,19 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class FlagItemResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
+public final class FlagItemResponse: Sendable, Decodable {
+    public let duration: String
     /// Unique identifier of the created moderation item
-    public var itemId: String
+    public let itemId: String
 
     public init(duration: String, itemId: String) {
         self.duration = duration
         self.itemId = itemId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case itemId = "item_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.itemId = try container.decode(String.self, forKey: .itemId)
     }
 }
 

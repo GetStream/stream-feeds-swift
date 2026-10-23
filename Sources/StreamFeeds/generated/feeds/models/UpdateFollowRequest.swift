@@ -5,31 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum UpdateFollowRequestPushPreference: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
+public final class UpdateFollowRequestPushPreference: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let all = UpdateFollowRequestPushPreference(rawValue: "all")
+    public static let none = UpdateFollowRequestPushPreference(rawValue: "none")
+}
+
+public final class UpdateFollowRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the follow relationship
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Push preference for the follow relationship
-    public var pushPreference: UpdateFollowRequestPushPreference?
+    public let pushPreference: UpdateFollowRequestPushPreference?
     /// Fully qualified ID of the source feed
-    public var source: String
+    public let source: String
     /// Fully qualified ID of the target feed
-    public var target: String
+    public let target: String
 
     public init(custom: [String: RawJSON]? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
         self.custom = custom
@@ -38,23 +33,8 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         self.target = target
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case pushPreference = "push_preference"
-        case source
-        case target
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.pushPreference = try container.decodeIfPresent(UpdateFollowRequestPushPreference.self, forKey: .pushPreference)
-        self.source = try container.decode(String.self, forKey: .source)
-        self.target = try container.decode(String.self, forKey: .target)
-    }
-
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(pushPreference, forKey: .pushPreference)
         try container.encode(source, forKey: .source)

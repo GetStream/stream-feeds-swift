@@ -6,20 +6,21 @@ import Foundation
 import StreamCore
 
 /// Basic response information
-public final class GetApplicationResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class GetApplicationResponse: Sendable, Decodable {
     /// A type representing the app settings.
-    public var app: AppResponseFields
+    public let app: AppResponseFields
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
 
     public init(app: AppResponseFields, duration: String) {
         self.app = app
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case app
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.app = try container.decode(AppResponseFields.self, forKey: .app)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 

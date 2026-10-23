@@ -5,46 +5,41 @@
 import Foundation
 import StreamCore
 
-public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable {
-    public enum PollResponseDataVotingVisibility: String, Sendable, Codable, CaseIterable {
-        case `public`
-        case anonymous
-        case unknown = "_unknown"
+public final class PollResponseDataVotingVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var allowAnswers: Bool
-    public var allowUserSuggestedOptions: Bool
-    public var answersCount: Int
-    public var createdAt: Date
+    public static let `public` = PollResponseDataVotingVisibility(rawValue: "public")
+    public static let anonymous = PollResponseDataVotingVisibility(rawValue: "anonymous")
+}
+
+public final class PollResponseData: Sendable, Decodable {
+    public let allowAnswers: Bool
+    public let allowUserSuggestedOptions: Bool
+    public let answersCount: Int
+    public let createdAt: Date
     /// User response object
-    public var createdBy: UserResponse?
-    public var createdById: String
-    public var custom: [String: RawJSON]
-    public var description: String
-    public var enforceUniqueVote: Bool
-    public var id: String
-    public var isClosed: Bool?
-    public var latestAnswers: [PollVoteResponseData]
-    public var latestVotesByOption: [String: [PollVoteResponseData]]
-    public var maxVotesAllowed: Int?
-    public var name: String
-    public var options: [PollOptionResponseData]
-    public var ownVotes: [PollVoteResponseData]
-    public var updatedAt: Date
-    public var voteCount: Int
-    public var voteCountsByOption: [String: Int]
+    public let createdBy: UserResponse?
+    public let createdById: String
+    public let custom: [String: RawJSON]
+    public let description: String
+    public let enforceUniqueVote: Bool
+    public let id: String
+    public let isClosed: Bool?
+    public let latestAnswers: [PollVoteResponseData]
+    public let latestVotesByOption: [String: [PollVoteResponseData]]
+    public let maxVotesAllowed: Int?
+    public let name: String
+    public let options: [PollOptionResponseData]
+    public let ownVotes: [PollVoteResponseData]
+    public let updatedAt: Date
+    public let voteCount: Int
+    public let voteCountsByOption: [String: Int]
     /// Voting visibility of the poll
-    public var votingVisibility: PollResponseDataVotingVisibility
+    public let votingVisibility: PollResponseDataVotingVisibility
 
     public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: PollResponseDataVotingVisibility) {
         self.allowAnswers = allowAnswers
@@ -70,28 +65,29 @@ public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable
         self.votingVisibility = votingVisibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case allowAnswers = "allow_answers"
-        case allowUserSuggestedOptions = "allow_user_suggested_options"
-        case answersCount = "answers_count"
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case createdById = "created_by_id"
-        case custom
-        case description
-        case enforceUniqueVote = "enforce_unique_vote"
-        case id
-        case isClosed = "is_closed"
-        case latestAnswers = "latest_answers"
-        case latestVotesByOption = "latest_votes_by_option"
-        case maxVotesAllowed = "max_votes_allowed"
-        case name
-        case options
-        case ownVotes = "own_votes"
-        case updatedAt = "updated_at"
-        case voteCount = "vote_count"
-        case voteCountsByOption = "vote_counts_by_option"
-        case votingVisibility = "voting_visibility"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.allowAnswers = try container.decode(Bool.self, forKey: .allowAnswers)
+        self.allowUserSuggestedOptions = try container.decode(Bool.self, forKey: .allowUserSuggestedOptions)
+        self.answersCount = try container.decode(Int.self, forKey: .answersCount)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decodeIfPresent(UserResponse.self, forKey: .createdBy)
+        self.createdById = try container.decode(String.self, forKey: .createdById)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.enforceUniqueVote = try container.decode(Bool.self, forKey: .enforceUniqueVote)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.isClosed = try container.decodeIfPresent(Bool.self, forKey: .isClosed)
+        self.latestAnswers = try container.decode([PollVoteResponseData].self, forKey: .latestAnswers)
+        self.latestVotesByOption = try container.decode([String: [PollVoteResponseData]].self, forKey: .latestVotesByOption)
+        self.maxVotesAllowed = try container.decodeIfPresent(Int.self, forKey: .maxVotesAllowed)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.options = try container.decode([PollOptionResponseData].self, forKey: .options)
+        self.ownVotes = try container.decode([PollVoteResponseData].self, forKey: .ownVotes)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.voteCount = try container.decode(Int.self, forKey: .voteCount)
+        self.voteCountsByOption = try container.decode([String: Int].self, forKey: .voteCountsByOption)
+        self.votingVisibility = try container.decode(PollResponseDataVotingVisibility.self, forKey: .votingVisibility)
     }
 }
 

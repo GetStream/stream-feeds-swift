@@ -6,19 +6,19 @@ import Foundation
 import StreamCore
 
 /// Block list contains restricted words
-public final class BlockListResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class BlockListResponse: Sendable, Decodable {
     /// Date/time of creation
-    public var createdAt: Date?
-    public var id: String?
+    public let createdAt: Date?
+    public let id: String?
     /// Block list name
-    public var name: String
-    public var team: String?
+    public let name: String
+    public let team: String?
     /// Block list type. One of: regex, domain, domain_allowlist, email, email_allowlist, word, word_allowlist
-    public var type: String
+    public let type: String
     /// Date/time of the last update
-    public var updatedAt: Date?
+    public let updatedAt: Date?
     /// List of words to block
-    public var words: [String]
+    public let words: [String]
 
     public init(createdAt: Date? = nil, id: String? = nil, name: String, team: String? = nil, type: String, updatedAt: Date? = nil, words: [String]) {
         self.createdAt = createdAt
@@ -30,14 +30,15 @@ public final class BlockListResponse: @unchecked Sendable, Codable, JSONEncodabl
         self.words = words
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case id
-        case name
-        case team
-        case type
-        case updatedAt = "updated_at"
-        case words
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        self.id = try container.decodeIfPresent(String.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.team = try container.decodeIfPresent(String.self, forKey: .team)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+        self.words = try container.decode([String].self, forKey: .words)
     }
 }
 

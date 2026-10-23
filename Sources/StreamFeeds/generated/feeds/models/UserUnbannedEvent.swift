@@ -6,39 +6,41 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets unbanned. The event contains information about the user that was unbanned.
-public final class UserUnbannedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class UserUnbannedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var createdBy: UserResponseCommonFields?
-    public var custom: [String: RawJSON]
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let createdBy: UserResponseCommonFields?
+    public let custom: [String: RawJSON]
+    public let receivedAt: Date?
     /// Whether the target user was shadow unbanned
-    public var shadow: Bool?
+    public let shadow: Bool?
     /// The team of the channel where the target user was unbanned
-    public var team: String?
+    public let team: String?
     /// The type of event: "user.unbanned" in this case
-    public var type: String = "user.unbanned"
-    public var user: UserResponseCommonFields
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], receivedAt: Date? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], receivedAt: Date? = nil, shadow: Bool? = nil, team: String? = nil, type: String = "user.unbanned", user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
         self.receivedAt = receivedAt
         self.shadow = shadow
         self.team = team
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case custom
-        case receivedAt = "received_at"
-        case shadow
-        case team
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .createdBy)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
+        self.team = try container.decodeIfPresent(String.self, forKey: .team)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

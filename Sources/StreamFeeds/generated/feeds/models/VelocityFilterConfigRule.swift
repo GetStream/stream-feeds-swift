@@ -5,57 +5,47 @@
 import Foundation
 import StreamCore
 
-public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum VelocityFilterConfigRuleAction: String, Sendable, Codable, CaseIterable {
-        case ban
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class VelocityFilterConfigRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum VelocityFilterConfigRuleCascadingAction: String, Sendable, Codable, CaseIterable {
-        case ban
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: VelocityFilterConfigRuleAction
-    public var banDuration: Int
-    public var cascadingAction: VelocityFilterConfigRuleCascadingAction
-    public var cascadingThreshold: Int
-    public var checkMessageContext: Bool
-    public var fastSpamThreshold: Int
-    public var fastSpamTtl: Int
-    public var ipBan: Bool
-    public var probationPeriod: Int
-    public var shadowBan: Bool
-    public var slowSpamBanDuration: Int?
-    public var slowSpamThreshold: Int
-    public var slowSpamTtl: Int
-    public var urlOnly: Bool
+    public static let ban = VelocityFilterConfigRuleAction(rawValue: "ban")
+    public static let flag = VelocityFilterConfigRuleAction(rawValue: "flag")
+    public static let remove = VelocityFilterConfigRuleAction(rawValue: "remove")
+    public static let shadow = VelocityFilterConfigRuleAction(rawValue: "shadow")
+}
+
+public final class VelocityFilterConfigRuleCascadingAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let ban = VelocityFilterConfigRuleCascadingAction(rawValue: "ban")
+    public static let flag = VelocityFilterConfigRuleCascadingAction(rawValue: "flag")
+    public static let remove = VelocityFilterConfigRuleCascadingAction(rawValue: "remove")
+    public static let shadow = VelocityFilterConfigRuleCascadingAction(rawValue: "shadow")
+}
+
+public final class VelocityFilterConfigRule: Sendable, Codable, JSONEncodable {
+    public let action: VelocityFilterConfigRuleAction
+    public let banDuration: Int
+    public let cascadingAction: VelocityFilterConfigRuleCascadingAction
+    public let cascadingThreshold: Int
+    public let checkMessageContext: Bool
+    public let fastSpamThreshold: Int
+    public let fastSpamTtl: Int
+    public let ipBan: Bool
+    public let probationPeriod: Int
+    public let shadowBan: Bool
+    public let slowSpamBanDuration: Int?
+    public let slowSpamThreshold: Int
+    public let slowSpamTtl: Int
+    public let urlOnly: Bool
 
     public init(action: VelocityFilterConfigRuleAction, banDuration: Int, cascadingAction: VelocityFilterConfigRuleCascadingAction, cascadingThreshold: Int, checkMessageContext: Bool, fastSpamThreshold: Int, fastSpamTtl: Int, ipBan: Bool, probationPeriod: Int, shadowBan: Bool, slowSpamBanDuration: Int? = nil, slowSpamThreshold: Int, slowSpamTtl: Int, urlOnly: Bool) {
         self.action = action
@@ -74,21 +64,40 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
         self.urlOnly = urlOnly
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case banDuration = "ban_duration"
-        case cascadingAction = "cascading_action"
-        case cascadingThreshold = "cascading_threshold"
-        case checkMessageContext = "check_message_context"
-        case fastSpamThreshold = "fast_spam_threshold"
-        case fastSpamTtl = "fast_spam_ttl"
-        case ipBan = "ip_ban"
-        case probationPeriod = "probation_period"
-        case shadowBan = "shadow_ban"
-        case slowSpamBanDuration = "slow_spam_ban_duration"
-        case slowSpamThreshold = "slow_spam_threshold"
-        case slowSpamTtl = "slow_spam_ttl"
-        case urlOnly = "url_only"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(VelocityFilterConfigRuleAction.self, forKey: .action)
+        self.banDuration = try container.decode(Int.self, forKey: .banDuration)
+        self.cascadingAction = try container.decode(VelocityFilterConfigRuleCascadingAction.self, forKey: .cascadingAction)
+        self.cascadingThreshold = try container.decode(Int.self, forKey: .cascadingThreshold)
+        self.checkMessageContext = try container.decode(Bool.self, forKey: .checkMessageContext)
+        self.fastSpamThreshold = try container.decode(Int.self, forKey: .fastSpamThreshold)
+        self.fastSpamTtl = try container.decode(Int.self, forKey: .fastSpamTtl)
+        self.ipBan = try container.decode(Bool.self, forKey: .ipBan)
+        self.probationPeriod = try container.decode(Int.self, forKey: .probationPeriod)
+        self.shadowBan = try container.decode(Bool.self, forKey: .shadowBan)
+        self.slowSpamBanDuration = try container.decodeIfPresent(Int.self, forKey: .slowSpamBanDuration)
+        self.slowSpamThreshold = try container.decode(Int.self, forKey: .slowSpamThreshold)
+        self.slowSpamTtl = try container.decode(Int.self, forKey: .slowSpamTtl)
+        self.urlOnly = try container.decode(Bool.self, forKey: .urlOnly)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(banDuration, forKey: .banDuration)
+        try container.encode(cascadingAction, forKey: .cascadingAction)
+        try container.encode(cascadingThreshold, forKey: .cascadingThreshold)
+        try container.encode(checkMessageContext, forKey: .checkMessageContext)
+        try container.encode(fastSpamThreshold, forKey: .fastSpamThreshold)
+        try container.encode(fastSpamTtl, forKey: .fastSpamTtl)
+        try container.encode(ipBan, forKey: .ipBan)
+        try container.encode(probationPeriod, forKey: .probationPeriod)
+        try container.encode(shadowBan, forKey: .shadowBan)
+        try container.encodeIfPresent(slowSpamBanDuration, forKey: .slowSpamBanDuration)
+        try container.encode(slowSpamThreshold, forKey: .slowSpamThreshold)
+        try container.encode(slowSpamTtl, forKey: .slowSpamTtl)
+        try container.encode(urlOnly, forKey: .urlOnly)
     }
 }
 

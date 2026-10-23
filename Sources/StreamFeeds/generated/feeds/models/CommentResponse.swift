@@ -5,75 +5,70 @@
 import Foundation
 import StreamCore
 
-public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum CommentResponseStatus: String, Sendable, Codable, CaseIterable {
-        case active
-        case deleted
-        case hidden
-        case removed
-        case shadowBlocked = "shadow_blocked"
-        case unknown = "_unknown"
+public final class CommentResponseStatus: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    /// Attachments associated with the comment
-    public var attachments: [Attachment]?
-    /// Confidence score of the comment
-    public var confidenceScore: Float
-    /// Controversy score of the comment
-    public var controversyScore: Float?
-    /// When the comment was created
-    public var createdAt: Date
-    /// Custom data for the comment
-    public var custom: [String: RawJSON]?
-    /// When the comment was deleted
-    public var deletedAt: Date?
-    /// Number of downvotes for this comment
-    public var downvoteCount: Int
-    /// Unique identifier for the comment
-    public var id: String
-    /// Recent reactions to the comment
-    public var latestReactions: [FeedsReactionResponse]?
-    /// Users mentioned in the comment
-    public var mentionedUsers: [UserResponse]
-    public var moderation: ModerationV2Response?
-    /// ID of the object this comment is associated with
-    public var objectId: String
-    /// Type of the object this comment is associated with
-    public var objectType: String
-    /// Current user's reactions to this activity
-    public var ownReactions: [FeedsReactionResponse]
-    /// ID of parent comment for nested replies
-    public var parentId: String?
-    /// Number of reactions to this comment
-    public var reactionCount: Int
-    /// Grouped reactions by type
-    public var reactionGroups: [String: FeedsReactionGroupResponse]?
-    /// Number of replies to this comment
-    public var replyCount: Int
-    /// Score of the comment based on reactions
-    public var score: Int
-    /// Status of the comment. One of: active, deleted, removed, hidden
-    public var status: CommentResponseStatus
-    /// Text content of the comment
-    public var text: String?
-    /// When the comment was last updated
-    public var updatedAt: Date
-    /// Number of upvotes for this comment
-    public var upvoteCount: Int
-    /// User response object
-    public var user: UserResponse
+    public static let active = CommentResponseStatus(rawValue: "active")
+    public static let deleted = CommentResponseStatus(rawValue: "deleted")
+    public static let hidden = CommentResponseStatus(rawValue: "hidden")
+    public static let removed = CommentResponseStatus(rawValue: "removed")
+    public static let shadowBlocked = CommentResponseStatus(rawValue: "shadow_blocked")
+}
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+public final class CommentResponse: Sendable, Decodable {
+    /// Attachments associated with the comment
+    public let attachments: [Attachment]?
+    /// Confidence score of the comment
+    public let confidenceScore: Double
+    /// Controversy score of the comment
+    public let controversyScore: Double?
+    /// When the comment was created
+    public let createdAt: Date
+    /// Custom data for the comment
+    public let custom: [String: RawJSON]?
+    /// When the comment was deleted
+    public let deletedAt: Date?
+    /// Number of downvotes for this comment
+    public let downvoteCount: Int
+    /// Unique identifier for the comment
+    public let id: String
+    /// Recent reactions to the comment
+    public let latestReactions: [FeedsReactionResponse]?
+    /// Users mentioned in the comment
+    public let mentionedUsers: [UserResponse]
+    public let moderation: ModerationV2Response?
+    /// ID of the object this comment is associated with
+    public let objectId: String
+    /// Type of the object this comment is associated with
+    public let objectType: String
+    /// Current user's reactions to this activity
+    public let ownReactions: [FeedsReactionResponse]
+    /// ID of parent comment for nested replies
+    public let parentId: String?
+    /// Number of reactions to this comment
+    public let reactionCount: Int
+    /// Grouped reactions by type
+    public let reactionGroups: [String: FeedsReactionGroupResponse]?
+    /// Number of replies to this comment
+    public let replyCount: Int
+    /// Score of the comment based on reactions
+    public let score: Int
+    /// Status of the comment. One of: active, deleted, removed, hidden
+    public let status: CommentResponseStatus
+    /// Text content of the comment
+    public let text: String?
+    /// When the comment was last updated
+    public let updatedAt: Date
+    /// Number of upvotes for this comment
+    public let upvoteCount: Int
+    /// User response object
+    public let user: UserResponse
+
+    public init(attachments: [Attachment]? = nil, confidenceScore: Double, controversyScore: Double? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
@@ -100,31 +95,32 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable 
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case confidenceScore = "confidence_score"
-        case controversyScore = "controversy_score"
-        case createdAt = "created_at"
-        case custom
-        case deletedAt = "deleted_at"
-        case downvoteCount = "downvote_count"
-        case id
-        case latestReactions = "latest_reactions"
-        case mentionedUsers = "mentioned_users"
-        case moderation
-        case objectId = "object_id"
-        case objectType = "object_type"
-        case ownReactions = "own_reactions"
-        case parentId = "parent_id"
-        case reactionCount = "reaction_count"
-        case reactionGroups = "reaction_groups"
-        case replyCount = "reply_count"
-        case score
-        case status
-        case text
-        case updatedAt = "updated_at"
-        case upvoteCount = "upvote_count"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
+        self.confidenceScore = try container.decode(Double.self, forKey: .confidenceScore)
+        self.controversyScore = try container.decodeIfPresent(Double.self, forKey: .controversyScore)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        self.downvoteCount = try container.decode(Int.self, forKey: .downvoteCount)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.latestReactions = try container.decodeIfPresent([FeedsReactionResponse].self, forKey: .latestReactions)
+        self.mentionedUsers = try container.decode([UserResponse].self, forKey: .mentionedUsers)
+        self.moderation = try container.decodeIfPresent(ModerationV2Response.self, forKey: .moderation)
+        self.objectId = try container.decode(String.self, forKey: .objectId)
+        self.objectType = try container.decode(String.self, forKey: .objectType)
+        self.ownReactions = try container.decode([FeedsReactionResponse].self, forKey: .ownReactions)
+        self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
+        self.reactionCount = try container.decode(Int.self, forKey: .reactionCount)
+        self.reactionGroups = try container.decodeIfPresent([String: FeedsReactionGroupResponse].self, forKey: .reactionGroups)
+        self.replyCount = try container.decode(Int.self, forKey: .replyCount)
+        self.score = try container.decode(Int.self, forKey: .score)
+        self.status = try container.decode(CommentResponseStatus.self, forKey: .status)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.upvoteCount = try container.decode(Int.self, forKey: .upvoteCount)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
     }
 }
 

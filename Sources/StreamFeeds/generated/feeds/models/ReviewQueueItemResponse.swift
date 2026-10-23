@@ -5,52 +5,52 @@
 import Foundation
 import StreamCore
 
-public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class ReviewQueueItemResponse: Sendable, Decodable {
     /// Moderation actions taken
-    public var actions: [ActionLogResponse]
-    public var activity: EnrichedActivity?
+    public let actions: [ActionLogResponse]
+    public let activity: EnrichedActivity?
     /// AI-determined text severity
-    public var aiTextSeverity: String
+    public let aiTextSeverity: String
     /// User response object
-    public var assignedTo: UserResponse?
+    public let assignedTo: UserResponse?
     /// Associated ban records
-    public var bans: [BanInfoResponse]
+    public let bans: [BanInfoResponse]
     /// When the review was completed
-    public var completedAt: Date?
-    public var configKey: String?
+    public let completedAt: Date?
+    public let configKey: String?
     /// When the item was created
-    public var createdAt: Date
-    public var entityCreator: EntityCreatorResponse?
+    public let createdAt: Date
+    public let entityCreator: EntityCreatorResponse?
     /// ID of who created the entity
-    public var entityCreatorId: String?
+    public let entityCreatorId: String?
     /// ID of the entity being reviewed
-    public var entityId: String
+    public let entityId: String
     /// Type of entity being reviewed
-    public var entityType: String
-    public var feedsV2Activity: EnrichedActivity?
+    public let entityType: String
+    public let feedsV2Activity: EnrichedActivity?
     /// Associated flag records
-    public var flags: [ModerationFlagResponse]
-    public var flagsCount: Int
+    public let flags: [ModerationFlagResponse]
+    public let flagsCount: Int
     /// Unique identifier of the review queue item
-    public var id: String
+    public let id: String
     /// Detected languages in the content
-    public var languages: [String]
+    public let languages: [String]
     /// Content payload for moderation
-    public var moderationPayload: ModerationPayloadResponse?
+    public let moderationPayload: ModerationPayloadResponse?
     /// Suggested moderation action
-    public var recommendedAction: String
+    public let recommendedAction: String
     /// When the item was reviewed
-    public var reviewedAt: Date?
+    public let reviewedAt: Date?
     /// ID of the moderator who reviewed the item
-    public var reviewedBy: String
+    public let reviewedBy: String
     /// Severity level of the content
-    public var severity: Int
+    public let severity: Int
     /// Current status of the review
-    public var status: String
+    public let status: String
     /// Teams associated with this item
-    public var teams: [String]?
+    public let teams: [String]?
     /// When the item was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
 
     public init(actions: [ActionLogResponse], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: UserResponse? = nil, bans: [BanInfoResponse], completedAt: Date? = nil, configKey: String? = nil, createdAt: Date, entityCreator: EntityCreatorResponse? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flags: [ModerationFlagResponse], flagsCount: Int, id: String, languages: [String], moderationPayload: ModerationPayloadResponse? = nil, recommendedAction: String, reviewedAt: Date? = nil, reviewedBy: String, severity: Int, status: String, teams: [String]? = nil, updatedAt: Date) {
         self.actions = actions
@@ -80,32 +80,33 @@ public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEn
         self.updatedAt = updatedAt
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actions
-        case activity
-        case aiTextSeverity = "ai_text_severity"
-        case assignedTo = "assigned_to"
-        case bans
-        case completedAt = "completed_at"
-        case configKey = "config_key"
-        case createdAt = "created_at"
-        case entityCreator = "entity_creator"
-        case entityCreatorId = "entity_creator_id"
-        case entityId = "entity_id"
-        case entityType = "entity_type"
-        case feedsV2Activity = "feeds_v2_activity"
-        case flags
-        case flagsCount = "flags_count"
-        case id
-        case languages
-        case moderationPayload = "moderation_payload"
-        case recommendedAction = "recommended_action"
-        case reviewedAt = "reviewed_at"
-        case reviewedBy = "reviewed_by"
-        case severity
-        case status
-        case teams
-        case updatedAt = "updated_at"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actions = try container.decode([ActionLogResponse].self, forKey: .actions)
+        self.activity = try container.decodeIfPresent(EnrichedActivity.self, forKey: .activity)
+        self.aiTextSeverity = try container.decode(String.self, forKey: .aiTextSeverity)
+        self.assignedTo = try container.decodeIfPresent(UserResponse.self, forKey: .assignedTo)
+        self.bans = try container.decode([BanInfoResponse].self, forKey: .bans)
+        self.completedAt = try container.decodeIfPresent(Date.self, forKey: .completedAt)
+        self.configKey = try container.decodeIfPresent(String.self, forKey: .configKey)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.entityCreator = try container.decodeIfPresent(EntityCreatorResponse.self, forKey: .entityCreator)
+        self.entityCreatorId = try container.decodeIfPresent(String.self, forKey: .entityCreatorId)
+        self.entityId = try container.decode(String.self, forKey: .entityId)
+        self.entityType = try container.decode(String.self, forKey: .entityType)
+        self.feedsV2Activity = try container.decodeIfPresent(EnrichedActivity.self, forKey: .feedsV2Activity)
+        self.flags = try container.decode([ModerationFlagResponse].self, forKey: .flags)
+        self.flagsCount = try container.decode(Int.self, forKey: .flagsCount)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.languages = try container.decode([String].self, forKey: .languages)
+        self.moderationPayload = try container.decodeIfPresent(ModerationPayloadResponse.self, forKey: .moderationPayload)
+        self.recommendedAction = try container.decode(String.self, forKey: .recommendedAction)
+        self.reviewedAt = try container.decodeIfPresent(Date.self, forKey: .reviewedAt)
+        self.reviewedBy = try container.decode(String.self, forKey: .reviewedBy)
+        self.severity = try container.decode(Int.self, forKey: .severity)
+        self.status = try container.decode(String.self, forKey: .status)
+        self.teams = try container.decodeIfPresent([String].self, forKey: .teams)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
     }
 }
 

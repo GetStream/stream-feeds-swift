@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class ImageSize: @unchecked Sendable, Codable, JSONEncodable {
+public final class ImageSize: Sendable, Decodable {
     /// Crop mode. One of: top, bottom, left, right, center
-    public var crop: String?
+    public let crop: String?
     /// Target image height
-    public var height: Int?
+    public let height: Int?
     /// Resize method. One of: clip, crop, scale, fill
-    public var resize: String?
+    public let resize: String?
     /// Target image width
-    public var width: Int?
+    public let width: Int?
 
     public init(crop: String? = nil, height: Int? = nil, resize: String? = nil, width: Int? = nil) {
         self.crop = crop
@@ -22,11 +22,12 @@ public final class ImageSize: @unchecked Sendable, Codable, JSONEncodable {
         self.width = width
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case crop
-        case height
-        case resize
-        case width
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.crop = try container.decodeIfPresent(String.self, forKey: .crop)
+        self.height = try container.decodeIfPresent(Int.self, forKey: .height)
+        self.resize = try container.decodeIfPresent(String.self, forKey: .resize)
+        self.width = try container.decodeIfPresent(Int.self, forKey: .width)
     }
 }
 

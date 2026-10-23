@@ -6,20 +6,20 @@ import Foundation
 import StreamCore
 
 /// Emitted when a feed is created.
-public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class FeedCreatedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feed: FeedResponse
-    public var feedVisibility: String?
-    public var fid: String
-    public var members: [FeedMemberResponse]
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let feed: FeedResponse
+    public let feedVisibility: String?
+    public let fid: String
+    public let members: [FeedMemberResponse]
+    public let receivedAt: Date?
     /// The type of event: "feeds.feed.created" in this case
-    public var type: String = "feeds.feed.created"
-    public var user: UserResponseCommonFields
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, type: String = "feeds.feed.created", user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed
@@ -27,19 +27,21 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
         self.fid = fid
         self.members = members
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case feed
-        case feedVisibility = "feed_visibility"
-        case fid
-        case members
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feed = try container.decode(FeedResponse.self, forKey: .feed)
+        self.feedVisibility = try container.decodeIfPresent(String.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.members = try container.decode([FeedMemberResponse].self, forKey: .members)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

@@ -5,16 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class CreateFeedsBatchRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class CreateFeedsBatchRequest: Sendable, Encodable, JSONEncodable {
     /// List of feeds to create
-    public var feeds: [FeedRequest]
+    public let feeds: [FeedRequest]
 
     public init(feeds: [FeedRequest]) {
         self.feeds = feeds
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case feeds
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(feeds, forKey: .feeds)
     }
 }
 

@@ -5,41 +5,44 @@
 import Foundation
 import StreamCore
 
-public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum AWSRekognitionRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class AWSRekognitionRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: AWSRekognitionRuleAction
-    public var label: String
-    public var minConfidence: Float
+    public static let bounce = AWSRekognitionRuleAction(rawValue: "bounce")
+    public static let bounceFlag = AWSRekognitionRuleAction(rawValue: "bounce_flag")
+    public static let bounceRemove = AWSRekognitionRuleAction(rawValue: "bounce_remove")
+    public static let flag = AWSRekognitionRuleAction(rawValue: "flag")
+    public static let remove = AWSRekognitionRuleAction(rawValue: "remove")
+    public static let shadow = AWSRekognitionRuleAction(rawValue: "shadow")
+}
 
-    public init(action: AWSRekognitionRuleAction, label: String, minConfidence: Float) {
+public final class AWSRekognitionRule: Sendable, Codable, JSONEncodable {
+    public let action: AWSRekognitionRuleAction
+    public let label: String
+    public let minConfidence: Double
+
+    public init(action: AWSRekognitionRuleAction, label: String, minConfidence: Double) {
         self.action = action
         self.label = label
         self.minConfidence = minConfidence
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case label
-        case minConfidence = "min_confidence"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(AWSRekognitionRuleAction.self, forKey: .action)
+        self.label = try container.decode(String.self, forKey: .label)
+        self.minConfidence = try container.decode(Double.self, forKey: .minConfidence)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(label, forKey: .label)
+        try container.encode(minConfidence, forKey: .minConfidence)
     }
 }
 

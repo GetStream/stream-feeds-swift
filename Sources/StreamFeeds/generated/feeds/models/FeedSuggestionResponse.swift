@@ -5,68 +5,63 @@
 import Foundation
 import StreamCore
 
-public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedSuggestionResponseVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case followers
-        case members
-        case visible
-        case unknown = "_unknown"
+public final class FeedSuggestionResponseVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var algorithmScores: [String: Float]?
-    /// When the feed was created
-    public var createdAt: Date
-    /// User response object
-    public var createdBy: UserResponse
-    /// Custom data for the feed
-    public var custom: [String: RawJSON]?
-    /// When the feed was deleted
-    public var deletedAt: Date?
-    /// Description of the feed
-    public var description: String
-    /// Fully qualified feed ID (group_id:id)
-    public var feed: String
-    /// Tags used for filtering feeds
-    public var filterTags: [String]?
-    /// Number of followers of this feed
-    public var followerCount: Int
-    /// Number of feeds this feed follows
-    public var followingCount: Int
-    /// Group this feed belongs to
-    public var groupId: String
-    /// Unique identifier for the feed
-    public var id: String
-    /// Number of members in this feed
-    public var memberCount: Int
-    /// Name of the feed
-    public var name: String
-    /// Capabilities the current user has for this feed
-    public var ownCapabilities: [FeedOwnCapability]?
-    /// Follow relationships where the current user's feeds are following this feed
-    public var ownFollows: [FollowResponse]?
-    public var ownMembership: FeedMemberResponse?
-    /// Number of pinned activities in this feed
-    public var pinCount: Int
-    public var reason: String?
-    public var recommendationScore: Float?
-    /// When the feed was last updated
-    public var updatedAt: Date
-    /// Visibility setting for the feed
-    public var visibility: FeedSuggestionResponseVisibility?
+    public static let `private` = FeedSuggestionResponseVisibility(rawValue: "private")
+    public static let `public` = FeedSuggestionResponseVisibility(rawValue: "public")
+    public static let followers = FeedSuggestionResponseVisibility(rawValue: "followers")
+    public static let members = FeedSuggestionResponseVisibility(rawValue: "members")
+    public static let visible = FeedSuggestionResponseVisibility(rawValue: "visible")
+}
 
-    public init(algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: FeedSuggestionResponseVisibility? = nil) {
+public final class FeedSuggestionResponse: Sendable, Decodable {
+    public let algorithmScores: [String: Double]?
+    /// When the feed was created
+    public let createdAt: Date
+    /// User response object
+    public let createdBy: UserResponse
+    /// Custom data for the feed
+    public let custom: [String: RawJSON]?
+    /// When the feed was deleted
+    public let deletedAt: Date?
+    /// Description of the feed
+    public let description: String
+    /// Fully qualified feed ID (group_id:id)
+    public let feed: String
+    /// Tags used for filtering feeds
+    public let filterTags: [String]?
+    /// Number of followers of this feed
+    public let followerCount: Int
+    /// Number of feeds this feed follows
+    public let followingCount: Int
+    /// Group this feed belongs to
+    public let groupId: String
+    /// Unique identifier for the feed
+    public let id: String
+    /// Number of members in this feed
+    public let memberCount: Int
+    /// Name of the feed
+    public let name: String
+    /// Capabilities the current user has for this feed
+    public let ownCapabilities: [FeedOwnCapability]?
+    /// Follow relationships where the current user's feeds are following this feed
+    public let ownFollows: [FollowResponse]?
+    public let ownMembership: FeedMemberResponse?
+    /// Number of pinned activities in this feed
+    public let pinCount: Int
+    public let reason: String?
+    public let recommendationScore: Double?
+    /// When the feed was last updated
+    public let updatedAt: Date
+    /// Visibility setting for the feed
+    public let visibility: FeedSuggestionResponseVisibility?
+
+    public init(algorithmScores: [String: Double]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Double? = nil, updatedAt: Date, visibility: FeedSuggestionResponseVisibility? = nil) {
         self.algorithmScores = algorithmScores
         self.createdAt = createdAt
         self.createdBy = createdBy
@@ -91,29 +86,30 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case algorithmScores = "algorithm_scores"
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case custom
-        case deletedAt = "deleted_at"
-        case description
-        case feed
-        case filterTags = "filter_tags"
-        case followerCount = "follower_count"
-        case followingCount = "following_count"
-        case groupId = "group_id"
-        case id
-        case memberCount = "member_count"
-        case name
-        case ownCapabilities = "own_capabilities"
-        case ownFollows = "own_follows"
-        case ownMembership = "own_membership"
-        case pinCount = "pin_count"
-        case reason
-        case recommendationScore = "recommendation_score"
-        case updatedAt = "updated_at"
-        case visibility
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.algorithmScores = try container.decodeIfPresent([String: Double].self, forKey: .algorithmScores)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decode(UserResponse.self, forKey: .createdBy)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.feed = try container.decode(String.self, forKey: .feed)
+        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
+        self.followerCount = try container.decode(Int.self, forKey: .followerCount)
+        self.followingCount = try container.decode(Int.self, forKey: .followingCount)
+        self.groupId = try container.decode(String.self, forKey: .groupId)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.memberCount = try container.decode(Int.self, forKey: .memberCount)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.ownCapabilities = try container.decodeIfPresent([FeedOwnCapability].self, forKey: .ownCapabilities)
+        self.ownFollows = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollows)
+        self.ownMembership = try container.decodeIfPresent(FeedMemberResponse.self, forKey: .ownMembership)
+        self.pinCount = try container.decode(Int.self, forKey: .pinCount)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+        self.recommendationScore = try container.decodeIfPresent(Double.self, forKey: .recommendationScore)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.visibility = try container.decodeIfPresent(FeedSuggestionResponseVisibility.self, forKey: .visibility)
     }
 }
 

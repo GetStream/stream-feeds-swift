@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteChangedFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feedVisibility: String?
-    public var fid: String
-    public var poll: PollResponseData
-    public var pollVote: PollVoteResponseData
-    public var receivedAt: Date?
-    public var type: String = "feeds.poll.vote_changed"
+public final class PollVoteChangedFeedEvent: Sendable, Event, Decodable {
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let feedVisibility: String?
+    public let fid: String
+    public let poll: PollResponseData
+    public let pollVote: PollVoteResponseData
+    public let receivedAt: Date?
+    public let type: String
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, poll: PollResponseData, pollVote: PollVoteResponseData, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, poll: PollResponseData, pollVote: PollVoteResponseData, receivedAt: Date? = nil, type: String = "feeds.poll.vote_changed") {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -23,17 +23,19 @@ public final class PollVoteChangedFeedEvent: @unchecked Sendable, Event, Codable
         self.poll = poll
         self.pollVote = pollVote
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case poll
-        case pollVote = "poll_vote"
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(String.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.poll = try container.decode(PollResponseData.self, forKey: .poll)
+        self.pollVote = try container.decode(PollVoteResponseData.self, forKey: .pollVote)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
     }
 }
 

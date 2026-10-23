@@ -6,11 +6,11 @@ import Foundation
 import StreamCore
 
 /// The push preference details.
-public final class PushPreferencesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class PushPreferencesResponse: Sendable, Decodable {
     /// If provided the notifications will be disabled until the set date.
-    public var disabledUntil: Date?
-    public var feedsLevel: String?
-    public var feedsPreferences: FeedsPreferencesResponse?
+    public let disabledUntil: Date?
+    public let feedsLevel: String?
+    public let feedsPreferences: FeedsPreferencesResponse?
 
     public init(disabledUntil: Date? = nil, feedsLevel: String? = nil, feedsPreferences: FeedsPreferencesResponse? = nil) {
         self.disabledUntil = disabledUntil
@@ -18,10 +18,11 @@ public final class PushPreferencesResponse: @unchecked Sendable, Codable, JSONEn
         self.feedsPreferences = feedsPreferences
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case disabledUntil = "disabled_until"
-        case feedsLevel = "feeds_level"
-        case feedsPreferences = "feeds_preferences"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.disabledUntil = try container.decodeIfPresent(Date.self, forKey: .disabledUntil)
+        self.feedsLevel = try container.decodeIfPresent(String.self, forKey: .feedsLevel)
+        self.feedsPreferences = try container.decodeIfPresent(FeedsPreferencesResponse.self, forKey: .feedsPreferences)
     }
 }
 

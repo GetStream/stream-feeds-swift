@@ -6,36 +6,38 @@ import Foundation
 import StreamCore
 
 /// Emitted when a feed is updated.
-public final class FeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feed: FeedResponse
-    public var feedVisibility: String?
-    public var fid: String
-    public var receivedAt: Date?
+public final class FeedUpdatedEvent: Sendable, Event, Decodable {
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let feed: FeedResponse
+    public let feedVisibility: String?
+    public let fid: String
+    public let receivedAt: Date?
     /// The type of event: "feeds.feed.updated" in this case
-    public var type: String = "feeds.feed.updated"
-    public var user: UserResponseCommonFields?
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, type: String = "feeds.feed.updated", user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed
         self.feedVisibility = feedVisibility
         self.fid = fid
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case feed
-        case feedVisibility = "feed_visibility"
-        case fid
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feed = try container.decode(FeedResponse.self, forKey: .feed)
+        self.feedVisibility = try container.decodeIfPresent(String.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

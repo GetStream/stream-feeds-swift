@@ -5,41 +5,44 @@
 import Foundation
 import StreamCore
 
-public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum AutomodSemanticFiltersRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class AutomodSemanticFiltersRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: AutomodSemanticFiltersRuleAction
-    public var name: String
-    public var threshold: Float
+    public static let bounce = AutomodSemanticFiltersRuleAction(rawValue: "bounce")
+    public static let bounceFlag = AutomodSemanticFiltersRuleAction(rawValue: "bounce_flag")
+    public static let bounceRemove = AutomodSemanticFiltersRuleAction(rawValue: "bounce_remove")
+    public static let flag = AutomodSemanticFiltersRuleAction(rawValue: "flag")
+    public static let remove = AutomodSemanticFiltersRuleAction(rawValue: "remove")
+    public static let shadow = AutomodSemanticFiltersRuleAction(rawValue: "shadow")
+}
 
-    public init(action: AutomodSemanticFiltersRuleAction, name: String, threshold: Float) {
+public final class AutomodSemanticFiltersRule: Sendable, Codable, JSONEncodable {
+    public let action: AutomodSemanticFiltersRuleAction
+    public let name: String
+    public let threshold: Double
+
+    public init(action: AutomodSemanticFiltersRuleAction, name: String, threshold: Double) {
         self.action = action
         self.name = name
         self.threshold = threshold
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case name
-        case threshold
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(AutomodSemanticFiltersRuleAction.self, forKey: .action)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.threshold = try container.decode(Double.self, forKey: .threshold)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(name, forKey: .name)
+        try container.encode(threshold, forKey: .threshold)
     }
 }
 

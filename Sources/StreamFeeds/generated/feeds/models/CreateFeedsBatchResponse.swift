@@ -5,19 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class CreateFeedsBatchResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
+public final class CreateFeedsBatchResponse: Sendable, Decodable {
+    public let duration: String
     /// List of created feeds
-    public var feeds: [FeedResponse]
+    public let feeds: [FeedResponse]
 
     public init(duration: String, feeds: [FeedResponse]) {
         self.duration = duration
         self.feeds = feeds
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case feeds
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.feeds = try container.decode([FeedResponse].self, forKey: .feeds)
     }
 }
 

@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class FeedsReactionGroupResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var count: Int
-    public var firstReactionAt: Date
-    public var lastReactionAt: Date
+public final class FeedsReactionGroupResponse: Sendable, Decodable {
+    public let count: Int
+    public let firstReactionAt: Date
+    public let lastReactionAt: Date
 
     public init(count: Int, firstReactionAt: Date, lastReactionAt: Date) {
         self.count = count
@@ -16,10 +16,11 @@ public final class FeedsReactionGroupResponse: @unchecked Sendable, Codable, JSO
         self.lastReactionAt = lastReactionAt
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case count
-        case firstReactionAt = "first_reaction_at"
-        case lastReactionAt = "last_reaction_at"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.count = try container.decode(Int.self, forKey: .count)
+        self.firstReactionAt = try container.decode(Date.self, forKey: .firstReactionAt)
+        self.lastReactionAt = try container.decode(Date.self, forKey: .lastReactionAt)
     }
 }
 

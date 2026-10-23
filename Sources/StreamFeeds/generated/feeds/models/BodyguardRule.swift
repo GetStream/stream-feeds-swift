@@ -5,33 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class BodyguardRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum BodyguardRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case keep
-        case mask
-        case maskFlag = "mask_flag"
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class BodyguardRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: BodyguardRuleAction
-    public var label: String
-    public var severityRules: [BodyguardSeverityRule]
+    public static let bounce = BodyguardRuleAction(rawValue: "bounce")
+    public static let bounceFlag = BodyguardRuleAction(rawValue: "bounce_flag")
+    public static let bounceRemove = BodyguardRuleAction(rawValue: "bounce_remove")
+    public static let flag = BodyguardRuleAction(rawValue: "flag")
+    public static let keep = BodyguardRuleAction(rawValue: "keep")
+    public static let mask = BodyguardRuleAction(rawValue: "mask")
+    public static let maskFlag = BodyguardRuleAction(rawValue: "mask_flag")
+    public static let remove = BodyguardRuleAction(rawValue: "remove")
+    public static let shadow = BodyguardRuleAction(rawValue: "shadow")
+}
+
+public final class BodyguardRule: Sendable, Codable, JSONEncodable {
+    public let action: BodyguardRuleAction
+    public let label: String
+    public let severityRules: [BodyguardSeverityRule]
 
     public init(action: BodyguardRuleAction, label: String, severityRules: [BodyguardSeverityRule]) {
         self.action = action
@@ -39,10 +34,18 @@ public final class BodyguardRule: @unchecked Sendable, Codable, JSONEncodable {
         self.severityRules = severityRules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case label
-        case severityRules = "severity_rules"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(BodyguardRuleAction.self, forKey: .action)
+        self.label = try container.decode(String.self, forKey: .label)
+        self.severityRules = try container.decode([BodyguardSeverityRule].self, forKey: .severityRules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(label, forKey: .label)
+        try container.encode(severityRules, forKey: .severityRules)
     }
 }
 

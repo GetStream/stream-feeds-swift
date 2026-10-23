@@ -5,33 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class PushPreferenceInput: @unchecked Sendable, Codable, JSONEncodable {
-    public enum PushPreferenceInputFeedsLevel: String, Sendable, Codable, CaseIterable {
-        case `default`
-        case all
-        case none
-        case unknown = "_unknown"
+public final class PushPreferenceInputFeedsLevel: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let `default` = PushPreferenceInputFeedsLevel(rawValue: "default")
+    public static let all = PushPreferenceInputFeedsLevel(rawValue: "all")
+    public static let none = PushPreferenceInputFeedsLevel(rawValue: "none")
+}
+
+public final class PushPreferenceInput: Sendable, Encodable, JSONEncodable {
     /// Disable push notifications till a certain time
-    public var disabledUntil: Date?
+    public let disabledUntil: Date?
     /// Set the level of feeds push notifications for the user. One of: all, none, default
-    public var feedsLevel: PushPreferenceInputFeedsLevel?
-    public var feedsPreferences: FeedsPreferences?
+    public let feedsLevel: PushPreferenceInputFeedsLevel?
+    public let feedsPreferences: FeedsPreferences?
     /// Remove the disabled until time. (IE stop snoozing notifications)
-    public var removeDisable: Bool?
+    public let removeDisable: Bool?
     /// The user id for which to set the push preferences. Required when using server side auths, defaults to current user with client side auth.
-    public var userId: String?
+    public let userId: String?
 
     public init(disabledUntil: Date? = nil, feedsLevel: PushPreferenceInputFeedsLevel? = nil, feedsPreferences: FeedsPreferences? = nil, removeDisable: Bool? = nil, userId: String? = nil) {
         self.disabledUntil = disabledUntil
@@ -41,12 +36,13 @@ public final class PushPreferenceInput: @unchecked Sendable, Codable, JSONEncoda
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case disabledUntil = "disabled_until"
-        case feedsLevel = "feeds_level"
-        case feedsPreferences = "feeds_preferences"
-        case removeDisable = "remove_disable"
-        case userId = "user_id"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(disabledUntil, forKey: .disabledUntil)
+        try container.encodeIfPresent(feedsLevel, forKey: .feedsLevel)
+        try container.encodeIfPresent(feedsPreferences, forKey: .feedsPreferences)
+        try container.encodeIfPresent(removeDisable, forKey: .removeDisable)
+        try container.encodeIfPresent(userId, forKey: .userId)
     }
 }
 

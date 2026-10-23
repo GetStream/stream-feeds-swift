@@ -5,20 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeleteActivitiesRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to permanently delete the activities
-    public var hardDelete: Bool?
+    public let hardDelete: Bool?
     /// List of activity IDs to delete
-    public var ids: [String]
+    public let ids: [String]
 
     public init(hardDelete: Bool? = nil, ids: [String]) {
         self.hardDelete = hardDelete
         self.ids = ids
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case hardDelete = "hard_delete"
-        case ids
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(hardDelete, forKey: .hardDelete)
+        try container.encode(ids, forKey: .ids)
     }
 }
 

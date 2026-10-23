@@ -822,15 +822,21 @@ struct Activity_Tests {
         let feedId = FeedId(group: "user", id: "jane")
         
         let client = FeedsClient.mock(
-            apiTransport: .withPayloads(
+            apiTransport: .withMatchedResponses(
                 [
-                    GetActivityResponse.dummy(
-                        activity: .dummy(
-                            currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity]),
-                            id: "activity-123"
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/activities/"),
+                        payload: GetActivityResponse.dummy(
+                            activity: .dummy(
+                                currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: [.readFeed, .addActivity]),
+                                id: "activity-123"
+                            )
                         )
                     ),
-                    GetCommentsResponse.dummy(comments: [])
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/comments"),
+                        payload: GetCommentsResponse.dummy(comments: [])
+                    )
                 ]
             )
         )
@@ -853,15 +859,21 @@ struct Activity_Tests {
         let feedId = FeedId(group: "user", id: "jane")
         let initialCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
         let client = FeedsClient.mock(
-            apiTransport: .withPayloads(
+            apiTransport: .withMatchedResponses(
                 [
-                    GetActivityResponse.dummy(
-                        activity: .dummy(
-                            currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: Array(initialCapabilities)),
-                            id: "activity-123"
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/activities/"),
+                        payload: GetActivityResponse.dummy(
+                            activity: .dummy(
+                                currentFeed: .dummy(feed: feedId.rawValue, ownCapabilities: Array(initialCapabilities)),
+                                id: "activity-123"
+                            )
                         )
                     ),
-                    GetCommentsResponse.dummy(comments: [])
+                    .init(
+                        matching: .pathPrefix("/api/v2/feeds/comments"),
+                        payload: GetCommentsResponse.dummy(comments: [])
+                    )
                 ]
             )
         )
@@ -891,7 +903,7 @@ struct Activity_Tests {
     private func defaultClientWithActivityAndCommentsResponses(
         hasOwnVote: Bool = true,
         uniqueVotes: Bool = true,
-        _ additionalPayloads: [any Encodable] = []
+        _ additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         var ownVotes = [PollVoteResponseData]()
         if hasOwnVote {

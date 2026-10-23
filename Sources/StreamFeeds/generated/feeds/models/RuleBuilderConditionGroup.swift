@@ -5,18 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderConditionGroup: @unchecked Sendable, Codable, JSONEncodable {
-    public var conditions: [RuleBuilderCondition]?
-    public var logic: String?
+public final class RuleBuilderConditionGroup: Sendable, Encodable, JSONEncodable {
+    public let conditions: [RuleBuilderCondition]?
+    public let logic: String?
 
     public init(conditions: [RuleBuilderCondition]? = nil, logic: String? = nil) {
         self.conditions = conditions
         self.logic = logic
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case conditions
-        case logic
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(conditions, forKey: .conditions)
+        try container.encodeIfPresent(logic, forKey: .logic)
     }
 }
 

@@ -5,42 +5,37 @@
 import Foundation
 import StreamCore
 
-public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedRequestVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case followers
-        case members
-        case visible
-        case unknown = "_unknown"
+public final class FeedRequestVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let `private` = FeedRequestVisibility(rawValue: "private")
+    public static let `public` = FeedRequestVisibility(rawValue: "public")
+    public static let followers = FeedRequestVisibility(rawValue: "followers")
+    public static let members = FeedRequestVisibility(rawValue: "members")
+    public static let visible = FeedRequestVisibility(rawValue: "visible")
+}
+
+public final class FeedRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the feed
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Description of the feed
-    public var description: String?
+    public let description: String?
     /// ID of the feed group
-    public var feedGroupId: String
+    public let feedGroupId: String
     /// ID of the feed
-    public var feedId: String
+    public let feedId: String
     /// Tags used for filtering feeds
-    public var filterTags: [String]?
+    public let filterTags: [String]?
     /// Initial members for the feed
-    public var members: [FeedMemberRequest]?
+    public let members: [FeedMemberRequest]?
     /// Name of the feed
-    public var name: String?
+    public let name: String?
     /// Visibility setting for the feed. One of: public, visible, followers, members, private
-    public var visibility: FeedRequestVisibility?
+    public let visibility: FeedRequestVisibility?
 
     public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
         self.custom = custom
@@ -53,15 +48,16 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case description
-        case feedGroupId = "feed_group_id"
-        case feedId = "feed_id"
-        case filterTags = "filter_tags"
-        case members
-        case name
-        case visibility
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(description, forKey: .description)
+        try container.encode(feedGroupId, forKey: .feedGroupId)
+        try container.encode(feedId, forKey: .feedId)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(members, forKey: .members)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
     }
 }
 

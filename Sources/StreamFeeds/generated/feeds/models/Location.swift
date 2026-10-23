@@ -5,20 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class Location: @unchecked Sendable, Codable, JSONEncodable {
+public final class Location: Sendable, Codable, JSONEncodable {
     /// Latitude coordinate
-    public var lat: Float
+    public let lat: Double
     /// Longitude coordinate
-    public var lng: Float
+    public let lng: Double
 
-    public init(lat: Float, lng: Float) {
+    public init(lat: Double, lng: Double) {
         self.lat = lat
         self.lng = lng
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case lat
-        case lng
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.lat = try container.decode(Double.self, forKey: .lat)
+        self.lng = try container.decode(Double.self, forKey: .lng)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(lat, forKey: .lat)
+        try container.encode(lng, forKey: .lng)
     }
 }
 

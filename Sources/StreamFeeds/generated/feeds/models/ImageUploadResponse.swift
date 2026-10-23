@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class ImageUploadResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class ImageUploadResponse: Sendable, Decodable {
     /// Duration of the request in milliseconds
-    public var duration: String
-    public var file: String?
-    public var thumbUrl: String?
+    public let duration: String
+    public let file: String?
+    public let thumbUrl: String?
     /// Array of image size configurations
-    public var uploadSizes: [ImageSize]?
+    public let uploadSizes: [ImageSize]?
 
     public init(duration: String, file: String? = nil, thumbUrl: String? = nil, uploadSizes: [ImageSize]? = nil) {
         self.duration = duration
@@ -20,11 +20,12 @@ public final class ImageUploadResponse: @unchecked Sendable, Codable, JSONEncoda
         self.uploadSizes = uploadSizes
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case file
-        case thumbUrl = "thumb_url"
-        case uploadSizes = "upload_sizes"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.file = try container.decodeIfPresent(String.self, forKey: .file)
+        self.thumbUrl = try container.decodeIfPresent(String.self, forKey: .thumbUrl)
+        self.uploadSizes = try container.decodeIfPresent([ImageSize].self, forKey: .uploadSizes)
     }
 }
 

@@ -5,32 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedInputVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case followers
-        case members
-        case visible
-        case unknown = "_unknown"
+public final class FeedInputVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var custom: [String: RawJSON]?
-    public var description: String?
-    public var filterTags: [String]?
-    public var members: [FeedMemberRequest]?
-    public var name: String?
-    public var visibility: FeedInputVisibility?
+    public static let `private` = FeedInputVisibility(rawValue: "private")
+    public static let `public` = FeedInputVisibility(rawValue: "public")
+    public static let followers = FeedInputVisibility(rawValue: "followers")
+    public static let members = FeedInputVisibility(rawValue: "members")
+    public static let visible = FeedInputVisibility(rawValue: "visible")
+}
+
+public final class FeedInput: Sendable, Encodable, JSONEncodable {
+    public let custom: [String: RawJSON]?
+    public let description: String?
+    public let filterTags: [String]?
+    public let members: [FeedMemberRequest]?
+    public let name: String?
+    public let visibility: FeedInputVisibility?
 
     public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
         self.custom = custom
@@ -41,13 +36,14 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case description
-        case filterTags = "filter_tags"
-        case members
-        case name
-        case visibility
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(description, forKey: .description)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(members, forKey: .members)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
     }
 }
 

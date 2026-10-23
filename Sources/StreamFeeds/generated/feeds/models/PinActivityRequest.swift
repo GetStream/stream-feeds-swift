@@ -5,16 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class PinActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class PinActivityRequest: Sendable, Encodable, JSONEncodable {
     /// If true, enriches the activity's current_feed with own_* fields (own_follows, own_followings, own_capabilities, own_membership). Defaults to false for performance.
-    public var enrichOwnFields: Bool?
+    public let enrichOwnFields: Bool?
 
     public init(enrichOwnFields: Bool? = nil) {
         self.enrichOwnFields = enrichOwnFields
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enrichOwnFields = "enrich_own_fields"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
     }
 }
 

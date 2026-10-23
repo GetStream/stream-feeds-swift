@@ -5,41 +5,36 @@
 import Foundation
 import StreamCore
 
-public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedMemberResponseStatus: String, Sendable, Codable, CaseIterable {
-        case member
-        case pending
-        case rejected
-        case unknown = "_unknown"
+public final class FeedMemberResponseStatus: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let member = FeedMemberResponseStatus(rawValue: "member")
+    public static let pending = FeedMemberResponseStatus(rawValue: "pending")
+    public static let rejected = FeedMemberResponseStatus(rawValue: "rejected")
+}
+
+public final class FeedMemberResponse: Sendable, Decodable {
     /// When the membership was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Custom data for the membership
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// When the invite was accepted
-    public var inviteAcceptedAt: Date?
+    public let inviteAcceptedAt: Date?
     /// When the invite was rejected
-    public var inviteRejectedAt: Date?
-    public var membershipLevel: MembershipLevelResponse?
+    public let inviteRejectedAt: Date?
+    public let membershipLevel: MembershipLevelResponse?
     /// Role of the member in the feed
-    public var role: String
+    public let role: String
     /// Status of the membership. One of: member, pending, rejected
-    public var status: FeedMemberResponseStatus
+    public let status: FeedMemberResponseStatus
     /// When the membership was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
@@ -53,16 +48,17 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case inviteAcceptedAt = "invite_accepted_at"
-        case inviteRejectedAt = "invite_rejected_at"
-        case membershipLevel = "membership_level"
-        case role
-        case status
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.inviteAcceptedAt = try container.decodeIfPresent(Date.self, forKey: .inviteAcceptedAt)
+        self.inviteRejectedAt = try container.decodeIfPresent(Date.self, forKey: .inviteRejectedAt)
+        self.membershipLevel = try container.decodeIfPresent(MembershipLevelResponse.self, forKey: .membershipLevel)
+        self.role = try container.decode(String.self, forKey: .role)
+        self.status = try container.decode(FeedMemberResponseStatus.self, forKey: .status)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
     }
 }
 

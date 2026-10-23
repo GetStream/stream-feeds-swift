@@ -5,109 +5,99 @@
 import Foundation
 import StreamCore
 
-public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum ActivityResponseRestrictReplies: String, Sendable, Codable, CaseIterable {
-        case everyone
-        case nobody
-        case peopleIFollow = "people_i_follow"
-        case unknown = "_unknown"
+public final class ActivityResponseRestrictReplies: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum ActivityResponseVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case tag
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let everyone = ActivityResponseRestrictReplies(rawValue: "everyone")
+    public static let nobody = ActivityResponseRestrictReplies(rawValue: "nobody")
+    public static let peopleIFollow = ActivityResponseRestrictReplies(rawValue: "people_i_follow")
+}
+
+public final class ActivityResponseVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    public static let `private` = ActivityResponseVisibility(rawValue: "private")
+    public static let `public` = ActivityResponseVisibility(rawValue: "public")
+    public static let tag = ActivityResponseVisibility(rawValue: "tag")
+}
+
+public final class ActivityResponse: Sendable, Decodable {
     /// Media attachments for the activity
-    public var attachments: [Attachment]
+    public let attachments: [Attachment]
     /// Number of bookmarks on the activity
-    public var bookmarkCount: Int
+    public let bookmarkCount: Int
     /// Number of comments on the activity
-    public var commentCount: Int
+    public let commentCount: Int
     /// Latest 5 comments of this activity (comment replies excluded)
-    public var comments: [CommentResponse]
+    public let comments: [CommentResponse]
     /// When the activity was created
-    public var createdAt: Date
-    public var currentFeed: FeedResponse?
+    public let createdAt: Date
+    public let currentFeed: FeedResponse?
     /// Custom data for the activity
-    public var custom: [String: RawJSON]
+    public let custom: [String: RawJSON]
     /// When the activity was deleted
-    public var deletedAt: Date?
+    public let deletedAt: Date?
     /// When the activity was last edited
-    public var editedAt: Date?
+    public let editedAt: Date?
     /// When the activity will expire
-    public var expiresAt: Date?
+    public let expiresAt: Date?
     /// List of feed IDs containing this activity
-    public var feeds: [String]
+    public let feeds: [String]
     /// Tags for filtering
-    public var filterTags: [String]
+    public let filterTags: [String]
     /// If this activity is hidden by this user (using activity feedback)
-    public var hidden: Bool
+    public let hidden: Bool
     /// Unique identifier for the activity
-    public var id: String
+    public let id: String
     /// Tags for user interests
-    public var interestTags: [String]
+    public let interestTags: [String]
     /// Recent reactions to the activity
-    public var latestReactions: [FeedsReactionResponse]
-    public var location: Location?
+    public let latestReactions: [FeedsReactionResponse]
+    public let location: Location?
     /// Users mentioned in the activity
-    public var mentionedUsers: [UserResponse]
-    public var moderation: ModerationV2Response?
-    public var notificationContext: NotificationContext?
+    public let mentionedUsers: [UserResponse]
+    public let moderation: ModerationV2Response?
+    public let notificationContext: NotificationContext?
     /// Current user's bookmarks for this activity
-    public var ownBookmarks: [BookmarkResponse]
+    public let ownBookmarks: [BookmarkResponse]
     /// Current user's reactions to this activity
-    public var ownReactions: [FeedsReactionResponse]
-    public var parent: ActivityResponse?
-    public var poll: PollResponseData?
+    public let ownReactions: [FeedsReactionResponse]
+    public let parent: ActivityResponse?
+    public let poll: PollResponseData?
     /// Popularity score of the activity
-    public var popularity: Int
+    public let popularity: Int
     /// Number of reactions to the activity
-    public var reactionCount: Int
+    public let reactionCount: Int
     /// Grouped reactions by type
-    public var reactionGroups: [String: FeedsReactionGroupResponse]
+    public let reactionGroups: [String: FeedsReactionGroupResponse]
     /// Ranking score for this activity
-    public var score: Float
+    public let score: Double
     /// Data for search indexing
-    public var searchData: [String: RawJSON]
+    public let searchData: [String: RawJSON]
     /// Number of times the activity was shared
-    public var shareCount: Int
+    public let shareCount: Int
     /// Text content of the activity
-    public var text: String?
+    public let text: String?
     /// Type of activity
-    public var type: String
+    public let type: String
     /// When the activity was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
     /// Visibility setting for the activity. One of: public, private, tag
-    public var visibility: ActivityResponseVisibility
+    public let visibility: ActivityResponseVisibility
     /// If visibility is 'tag', this is the tag name
-    public var visibilityTag: String?
+    public let visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], score: Float, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], score: Double, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityResponseVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.commentCount = commentCount
@@ -146,43 +136,44 @@ public final class ActivityResponse: @unchecked Sendable, Codable, JSONEncodable
         self.visibilityTag = visibilityTag
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case bookmarkCount = "bookmark_count"
-        case commentCount = "comment_count"
-        case comments
-        case createdAt = "created_at"
-        case currentFeed = "current_feed"
-        case custom
-        case deletedAt = "deleted_at"
-        case editedAt = "edited_at"
-        case expiresAt = "expires_at"
-        case feeds
-        case filterTags = "filter_tags"
-        case hidden
-        case id
-        case interestTags = "interest_tags"
-        case latestReactions = "latest_reactions"
-        case location
-        case mentionedUsers = "mentioned_users"
-        case moderation
-        case notificationContext = "notification_context"
-        case ownBookmarks = "own_bookmarks"
-        case ownReactions = "own_reactions"
-        case parent
-        case poll
-        case popularity
-        case reactionCount = "reaction_count"
-        case reactionGroups = "reaction_groups"
-        case score
-        case searchData = "search_data"
-        case shareCount = "share_count"
-        case text
-        case type
-        case updatedAt = "updated_at"
-        case user
-        case visibility
-        case visibilityTag = "visibility_tag"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.attachments = try container.decode([Attachment].self, forKey: .attachments)
+        self.bookmarkCount = try container.decode(Int.self, forKey: .bookmarkCount)
+        self.commentCount = try container.decode(Int.self, forKey: .commentCount)
+        self.comments = try container.decode([CommentResponse].self, forKey: .comments)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.currentFeed = try container.decodeIfPresent(FeedResponse.self, forKey: .currentFeed)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        self.editedAt = try container.decodeIfPresent(Date.self, forKey: .editedAt)
+        self.expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
+        self.feeds = try container.decode([String].self, forKey: .feeds)
+        self.filterTags = try container.decode([String].self, forKey: .filterTags)
+        self.hidden = try container.decode(Bool.self, forKey: .hidden)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.interestTags = try container.decode([String].self, forKey: .interestTags)
+        self.latestReactions = try container.decode([FeedsReactionResponse].self, forKey: .latestReactions)
+        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
+        self.mentionedUsers = try container.decode([UserResponse].self, forKey: .mentionedUsers)
+        self.moderation = try container.decodeIfPresent(ModerationV2Response.self, forKey: .moderation)
+        self.notificationContext = try container.decodeIfPresent(NotificationContext.self, forKey: .notificationContext)
+        self.ownBookmarks = try container.decode([BookmarkResponse].self, forKey: .ownBookmarks)
+        self.ownReactions = try container.decode([FeedsReactionResponse].self, forKey: .ownReactions)
+        self.parent = try container.decodeIfPresent(ActivityResponse.self, forKey: .parent)
+        self.poll = try container.decodeIfPresent(PollResponseData.self, forKey: .poll)
+        self.popularity = try container.decode(Int.self, forKey: .popularity)
+        self.reactionCount = try container.decode(Int.self, forKey: .reactionCount)
+        self.reactionGroups = try container.decode([String: FeedsReactionGroupResponse].self, forKey: .reactionGroups)
+        self.score = try container.decode(Double.self, forKey: .score)
+        self.searchData = try container.decode([String: RawJSON].self, forKey: .searchData)
+        self.shareCount = try container.decode(Int.self, forKey: .shareCount)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+        self.visibility = try container.decode(ActivityResponseVisibility.self, forKey: .visibility)
+        self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
     }
 }
 

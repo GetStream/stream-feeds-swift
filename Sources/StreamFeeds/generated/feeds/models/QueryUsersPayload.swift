@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class QueryUsersPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class QueryUsersPayload: Sendable, Encodable, JSONEncodable {
     /// Filter conditions to apply to the query
-    public var filterConditions: [String: RawJSON]
-    public var includeDeactivatedUsers: Bool?
-    public var limit: Int?
-    public var offset: Int?
-    public var presence: Bool?
+    public let filterConditions: [String: RawJSON]
+    public let includeDeactivatedUsers: Bool?
+    public let limit: Int?
+    public let offset: Int?
+    public let presence: Bool?
     /// Array of sort parameters
-    public var sort: [SortParamRequest]?
+    public let sort: [SortParamRequest]?
 
     public init(filterConditions: [String: RawJSON], includeDeactivatedUsers: Bool? = nil, limit: Int? = nil, offset: Int? = nil, presence: Bool? = nil, sort: [SortParamRequest]? = nil) {
         self.filterConditions = filterConditions
@@ -24,13 +24,14 @@ public final class QueryUsersPayload: @unchecked Sendable, Codable, JSONEncodabl
         self.sort = sort
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case filterConditions = "filter_conditions"
-        case includeDeactivatedUsers = "include_deactivated_users"
-        case limit
-        case offset
-        case presence
-        case sort
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(filterConditions, forKey: .filterConditions)
+        try container.encodeIfPresent(includeDeactivatedUsers, forKey: .includeDeactivatedUsers)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(offset, forKey: .offset)
+        try container.encodeIfPresent(presence, forKey: .presence)
+        try container.encodeIfPresent(sort, forKey: .sort)
     }
 }
 

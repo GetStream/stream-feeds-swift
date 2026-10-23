@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkFolderResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class BookmarkFolderResponse: Sendable, Decodable {
     /// When the folder was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Custom data for the folder
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Unique identifier for the folder
-    public var id: String
+    public let id: String
     /// Name of the folder
-    public var name: String
+    public let name: String
     /// When the folder was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
 
     public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date) {
         self.createdAt = createdAt
@@ -25,12 +25,13 @@ public final class BookmarkFolderResponse: @unchecked Sendable, Codable, JSONEnc
         self.updatedAt = updatedAt
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case id
-        case name
-        case updatedAt = "updated_at"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
     }
 }
 

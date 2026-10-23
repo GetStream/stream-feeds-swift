@@ -7,9 +7,23 @@ import StreamCore
 
 /// A request for adding activities when interacting with ``Feed``.
 public struct FeedAddActivityRequest: Sendable {
-    private let request: AddActivityRequest
+    private let attachments: [Attachment]?
     let attachmentUploads: [AnyAttachmentPayload]?
-    
+    private let custom: [String: RawJSON]?
+    private let expiresAt: String?
+    private let filterTags: [String]?
+    private let id: String?
+    private let interestTags: [String]?
+    private let location: Location?
+    private let mentionedUserIds: [String]?
+    private let parentId: String?
+    private let pollId: String?
+    private let searchData: [String: RawJSON]?
+    private let text: String?
+    private let type: String
+    private let visibility: AddActivityRequestVisibility?
+    private let visibilityTag: String?
+
     public init(
         attachments: [Attachment]? = nil,
         attachmentUploads: [AnyAttachmentPayload]? = nil,
@@ -25,15 +39,34 @@ public struct FeedAddActivityRequest: Sendable {
         searchData: [String: RawJSON]? = nil,
         text: String? = nil,
         type: String,
-        visibility: AddActivityRequest.AddActivityRequestVisibility? = nil,
+        visibility: AddActivityRequestVisibility? = nil,
         visibilityTag: String? = nil
     ) {
+        self.attachments = attachments
         self.attachmentUploads = attachmentUploads
-        request = AddActivityRequest(
-            attachments: attachments,
+        self.custom = custom
+        self.expiresAt = expiresAt
+        self.filterTags = filterTags
+        self.id = id
+        self.interestTags = interestTags
+        self.location = location
+        self.mentionedUserIds = mentionedUserIds
+        self.parentId = parentId
+        self.pollId = pollId
+        self.searchData = searchData
+        self.text = text
+        self.type = type
+        self.visibility = visibility
+        self.visibilityTag = visibilityTag
+    }
+
+    func withFeed(_ feed: FeedId, uploadedAttachments: [Attachment]) -> AddActivityRequest {
+        let attachments = (attachments ?? []) + uploadedAttachments
+        return AddActivityRequest(
+            attachments: attachments.isEmpty ? nil : attachments,
             custom: custom,
             expiresAt: expiresAt,
-            feeds: [],
+            feeds: [feed.rawValue],
             filterTags: filterTags,
             id: id,
             interestTags: interestTags,
@@ -47,15 +80,5 @@ public struct FeedAddActivityRequest: Sendable {
             visibility: visibility,
             visibilityTag: visibilityTag
         )
-    }
-    
-    var feed: String? { request.feeds.first }
-    
-    func withFeed(_ feed: FeedId, uploadedAttachments: [Attachment]) -> AddActivityRequest {
-        request.feeds = [feed.rawValue]
-        
-        let attachments = (request.attachments ?? []) + uploadedAttachments
-        request.attachments = attachments.isEmpty ? nil : attachments
-        return request
     }
 }

@@ -1567,7 +1567,7 @@ struct Feed_Tests {
 
     private func defaultClientWithActivities(
         feed: String,
-        _ additionalPayloads: [any Encodable] = []
+        _ additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(
