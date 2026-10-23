@@ -14,15 +14,7 @@ public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable 
     public var logic: String?
     public var ruleType: String
 
-    public init(
-        action: RuleBuilderAction? = nil,
-        conditions: [RuleBuilderCondition]? = nil,
-        cooldownPeriod: String? = nil,
-        groups: [RuleBuilderConditionGroup]? = nil,
-        id: String? = nil,
-        logic: String? = nil,
-        ruleType: String
-    ) {
+    public init(action: RuleBuilderAction? = nil, conditions: [RuleBuilderCondition]? = nil, cooldownPeriod: String? = nil, groups: [RuleBuilderConditionGroup]? = nil, id: String? = nil, logic: String? = nil, ruleType: String) {
         self.action = action
         self.conditions = conditions
         self.cooldownPeriod = cooldownPeriod

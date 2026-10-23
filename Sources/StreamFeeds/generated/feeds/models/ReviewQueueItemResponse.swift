@@ -73,48 +73,7 @@ public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEn
     /// When the item was last updated
     public var updatedAt: Date
 
-    public init(
-        actions: [ActionLogResponse],
-        activity: EnrichedActivity? = nil,
-        aiTextSeverity: String,
-        appeal: AppealItemResponse? = nil,
-        assignedTo: UserResponse? = nil,
-        bans: [BanInfoResponse],
-        completedAt: Date? = nil,
-        confidenceScore: Float? = nil,
-        configKey: String? = nil,
-        countryCode: String? = nil,
-        createdAt: Date,
-        entityCreator: EntityCreatorResponse? = nil,
-        entityCreatorId: String? = nil,
-        entityId: String,
-        entityType: String,
-        escalated: Bool,
-        escalatedAt: Date? = nil,
-        escalatedBy: String? = nil,
-        escalationMetadata: EscalationMetadata? = nil,
-        falsePositiveFlags: [String]? = nil,
-        feedsV2Activity: EnrichedActivity? = nil,
-        feedsV2Reaction: Reaction? = nil,
-        feedsV3Activity: ActivityResponse? = nil,
-        feedsV3Comment: CommentResponse? = nil,
-        flags: [ModerationFlagResponse],
-        flagsCount: Int,
-        id: String,
-        languages: [String],
-        latestModeratorAction: String,
-        mediaDisplay: MediaDisplayResponse,
-        moderationPayload: ModerationPayloadResponse? = nil,
-        poll: PollResponseData? = nil,
-        reaction: Reaction? = nil,
-        recommendedAction: String,
-        reviewedAt: Date? = nil,
-        reviewedBy: String,
-        severity: Int,
-        status: String,
-        teams: [String]? = nil,
-        updatedAt: Date
-    ) {
+    public init(actions: [ActionLogResponse], activity: EnrichedActivity? = nil, aiTextSeverity: String, appeal: AppealItemResponse? = nil, assignedTo: UserResponse? = nil, bans: [BanInfoResponse], completedAt: Date? = nil, confidenceScore: Float? = nil, configKey: String? = nil, countryCode: String? = nil, createdAt: Date, entityCreator: EntityCreatorResponse? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, escalated: Bool, escalatedAt: Date? = nil, escalatedBy: String? = nil, escalationMetadata: EscalationMetadata? = nil, falsePositiveFlags: [String]? = nil, feedsV2Activity: EnrichedActivity? = nil, feedsV2Reaction: Reaction? = nil, feedsV3Activity: ActivityResponse? = nil, feedsV3Comment: CommentResponse? = nil, flags: [ModerationFlagResponse], flagsCount: Int, id: String, languages: [String], latestModeratorAction: String, mediaDisplay: MediaDisplayResponse, moderationPayload: ModerationPayloadResponse? = nil, poll: PollResponseData? = nil, reaction: Reaction? = nil, recommendedAction: String, reviewedAt: Date? = nil, reviewedBy: String, severity: Int, status: String, teams: [String]? = nil, updatedAt: Date) {
         self.actions = actions
         self.activity = activity
         self.aiTextSeverity = aiTextSeverity

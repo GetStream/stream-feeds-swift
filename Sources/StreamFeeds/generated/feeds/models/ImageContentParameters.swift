@@ -10,11 +10,7 @@ public final class ImageContentParameters: @unchecked Sendable, Codable, JSONEnc
     public var labelOperator: String?
     public var minConfidence: Float?
 
-    public init(
-        harmLabels: [String]? = nil,
-        labelOperator: String? = nil,
-        minConfidence: Float? = nil
-    ) {
+    public init(harmLabels: [String]? = nil, labelOperator: String? = nil, minConfidence: Float? = nil) {
         self.harmLabels = harmLabels
         self.labelOperator = labelOperator
         self.minConfidence = minConfidence

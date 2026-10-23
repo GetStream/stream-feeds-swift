@@ -38,25 +38,7 @@ public final class UserResponse: @unchecked Sendable, Codable, JSONEncodable {
     /// Date/time of the last update
     public var updatedAt: Date
 
-    public init(
-        avgResponseTime: Int? = nil,
-        banned: Bool,
-        blockedUserIds: [String],
-        createdAt: Date,
-        custom: [String: RawJSON],
-        deactivatedAt: Date? = nil,
-        deletedAt: Date? = nil,
-        id: String,
-        image: String? = nil,
-        language: String,
-        lastActive: Date? = nil,
-        name: String? = nil,
-        online: Bool,
-        role: String,
-        teams: [String],
-        teamsRole: [String: String]? = nil,
-        updatedAt: Date
-    ) {
+    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banned = banned
         self.blockedUserIds = blockedUserIds

@@ -17,15 +17,7 @@ public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Whether to subscribe to realtime updates
     public var watch: Bool?
 
-    public init(
-        enrichOwnFields: Bool? = nil,
-        filter: [String: RawJSON]? = nil,
-        limit: Int? = nil,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: [SortParamRequest]? = nil,
-        watch: Bool? = nil
-    ) {
+    public init(enrichOwnFields: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, watch: Bool? = nil) {
         self.enrichOwnFields = enrichOwnFields
         self.filter = filter
         self.limit = limit

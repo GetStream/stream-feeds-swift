@@ -17,14 +17,7 @@ public final class FollowUpdatedEvent: @unchecked Sendable, Event, Codable, JSON
     /// The type of event: "feeds.follow.updated" in this case
     public var type: String = "feeds.follow.updated"
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        follow: FollowResponse,
-        receivedAt: Date? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

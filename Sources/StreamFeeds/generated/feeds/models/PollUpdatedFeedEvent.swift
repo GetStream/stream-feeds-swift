@@ -14,14 +14,7 @@ public final class PollUpdatedFeedEvent: @unchecked Sendable, Event, Codable, JS
     public var receivedAt: Date?
     public var type: String = "feeds.poll.updated"
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        poll: PollResponseData,
-        receivedAt: Date? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, poll: PollResponseData, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

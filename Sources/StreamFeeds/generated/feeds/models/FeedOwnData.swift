@@ -14,12 +14,7 @@ public final class FeedOwnData: @unchecked Sendable, Codable, JSONEncodable {
     public var ownFollows: [FollowResponse]?
     public var ownMembership: FeedMemberResponse?
 
-    public init(
-        ownCapabilities: [FeedOwnCapability]? = nil,
-        ownFollowings: [FollowResponse]? = nil,
-        ownFollows: [FollowResponse]? = nil,
-        ownMembership: FeedMemberResponse? = nil
-    ) {
+    public init(ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil) {
         self.ownCapabilities = ownCapabilities
         self.ownFollowings = ownFollowings
         self.ownFollows = ownFollows

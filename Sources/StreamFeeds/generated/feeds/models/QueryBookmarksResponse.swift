@@ -14,12 +14,7 @@ public final class QueryBookmarksResponse: @unchecked Sendable, Codable, JSONEnc
     /// Cursor for previous page
     public var prev: String?
 
-    public init(
-        bookmarks: [BookmarkResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(bookmarks: [BookmarkResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.bookmarks = bookmarks
         self.duration = duration
         self.next = next

@@ -79,36 +79,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable 
     /// User response object
     public var user: UserResponse
 
-    public init(
-        attachments: [Attachment]? = nil,
-        bookmarkCount: Int,
-        confidenceScore: Float,
-        controversyScore: Float? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        deletedAt: Date? = nil,
-        downvoteCount: Int,
-        editedAt: Date? = nil,
-        hidden: Bool,
-        i18n: [String: String]? = nil,
-        id: String,
-        latestReactions: [FeedsReactionResponse]? = nil,
-        mentionedUsers: [UserResponse],
-        moderation: ModerationV2Response? = nil,
-        objectId: String,
-        objectType: String,
-        ownReactions: [FeedsReactionResponse],
-        parentId: String? = nil,
-        reactionCount: Int,
-        reactionGroups: [String: FeedsReactionGroupResponse]? = nil,
-        replyCount: Int,
-        score: Int,
-        status: CommentResponseStatus,
-        text: String? = nil,
-        updatedAt: Date,
-        upvoteCount: Int,
-        user: UserResponse
-    ) {
+    public init(attachments: [Attachment]? = nil, bookmarkCount: Int, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, editedAt: Date? = nil, hidden: Bool, i18n: [String: String]? = nil, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.confidenceScore = confidenceScore

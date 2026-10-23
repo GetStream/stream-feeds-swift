@@ -18,15 +18,7 @@ public final class FeedMemberAddedEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "feeds.feed_member.added"
     public var user: UserResponseCommonFields?
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        member: FeedMemberResponse,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, member: FeedMemberResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

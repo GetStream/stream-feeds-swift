@@ -24,25 +24,7 @@ public final class Reaction: @unchecked Sendable, Codable, JSONEncodable {
     public var user: User?
     public var userId: String
 
-    public init(
-        activityId: String,
-        childrenCounts: [String: RawJSON]? = nil,
-        createdAt: Date,
-        data: [String: RawJSON]? = nil,
-        deletedAt: Date? = nil,
-        id: String? = nil,
-        kind: String,
-        latestChildren: [String: [Reaction]]? = nil,
-        moderation: [String: RawJSON]? = nil,
-        ownChildren: [String: [Reaction]]? = nil,
-        parent: String? = nil,
-        score: Float? = nil,
-        targetFeeds: [String]? = nil,
-        targetFeedsExtraData: [String: RawJSON]? = nil,
-        updatedAt: Date,
-        user: User? = nil,
-        userId: String
-    ) {
+    public init(activityId: String, childrenCounts: [String: RawJSON]? = nil, createdAt: Date, data: [String: RawJSON]? = nil, deletedAt: Date? = nil, id: String? = nil, kind: String, latestChildren: [String: [Reaction]]? = nil, moderation: [String: RawJSON]? = nil, ownChildren: [String: [Reaction]]? = nil, parent: String? = nil, score: Float? = nil, targetFeeds: [String]? = nil, targetFeedsExtraData: [String: RawJSON]? = nil, updatedAt: Date, user: User? = nil, userId: String) {
         self.activityId = activityId
         self.childrenCounts = childrenCounts
         self.createdAt = createdAt

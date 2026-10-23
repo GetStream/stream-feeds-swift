@@ -20,10 +20,7 @@ public final class ShadowBlockActionRequestPayload: @unchecked Sendable, Codable
 }
 
 extension ShadowBlockActionRequestPayload: Hashable {
-    public static func == (
-        lhs: ShadowBlockActionRequestPayload,
-        rhs: ShadowBlockActionRequestPayload
-    ) -> Bool {
+    public static func == (lhs: ShadowBlockActionRequestPayload, rhs: ShadowBlockActionRequestPayload) -> Bool {
         lhs.reason == rhs.reason
     }
 

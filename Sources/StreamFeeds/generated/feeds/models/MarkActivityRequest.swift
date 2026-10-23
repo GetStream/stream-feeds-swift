@@ -17,13 +17,7 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
     /// List of activity IDs to mark as watched (for stories)
     public var markWatched: [String]?
 
-    public init(
-        markAllRead: Bool? = nil,
-        markAllSeen: Bool? = nil,
-        markRead: [String]? = nil,
-        markSeen: [String]? = nil,
-        markWatched: [String]? = nil
-    ) {
+    public init(markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil) {
         self.markAllRead = markAllRead
         self.markAllSeen = markAllSeen
         self.markRead = markRead

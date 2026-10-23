@@ -16,13 +16,7 @@ public final class BlockedUserResponse: @unchecked Sendable, Codable, JSONEncoda
     /// ID of the user who blocked another user
     public var userId: String
 
-    public init(
-        blockedUser: UserResponse,
-        blockedUserId: String,
-        createdAt: Date,
-        user: UserResponse,
-        userId: String
-    ) {
+    public init(blockedUser: UserResponse, blockedUserId: String, createdAt: Date, user: UserResponse, userId: String) {
         self.blockedUser = blockedUser
         self.blockedUserId = blockedUserId
         self.createdAt = createdAt

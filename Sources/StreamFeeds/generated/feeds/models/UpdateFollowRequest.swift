@@ -33,13 +33,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     /// Fully qualified ID of the target feed
     public var target: String
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        enrichOwnFields: Bool? = nil,
-        pushPreference: UpdateFollowRequestPushPreference? = nil,
-        source: String,
-        target: String
-    ) {
+    public init(custom: [String: RawJSON]? = nil, enrichOwnFields: Bool? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
         self.custom = custom
         self.enrichOwnFields = enrichOwnFields
         self.pushPreference = pushPreference
@@ -59,10 +53,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
-        self.pushPreference = try container.decodeIfPresent(
-            UpdateFollowRequestPushPreference.self,
-            forKey: .pushPreference
-        )
+        self.pushPreference = try container.decodeIfPresent(UpdateFollowRequestPushPreference.self, forKey: .pushPreference)
         self.source = try container.decode(String.self, forKey: .source)
         self.target = try container.decode(String.self, forKey: .target)
     }

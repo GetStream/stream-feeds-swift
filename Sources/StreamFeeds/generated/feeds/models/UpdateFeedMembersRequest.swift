@@ -31,13 +31,7 @@ public final class UpdateFeedMembersRequest: @unchecked Sendable, Codable, JSONE
     public var operation: UpdateFeedMembersRequestOperation
     public var prev: String?
 
-    public init(
-        limit: Int? = nil,
-        members: [FeedMemberRequest]? = nil,
-        next: String? = nil,
-        operation: UpdateFeedMembersRequestOperation,
-        prev: String? = nil
-    ) {
+    public init(limit: Int? = nil, members: [FeedMemberRequest]? = nil, next: String? = nil, operation: UpdateFeedMembersRequestOperation, prev: String? = nil) {
         self.limit = limit
         self.members = members
         self.next = next

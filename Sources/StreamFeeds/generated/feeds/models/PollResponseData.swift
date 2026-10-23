@@ -48,31 +48,7 @@ public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable
     /// Voting visibility of the poll
     public var votingVisibility: PollResponseDataVotingVisibility
 
-    public init(
-        allowAnswers: Bool,
-        allowUserSuggestedOptions: Bool,
-        answersCount: Int,
-        createdAt: Date,
-        createdBy: UserResponse? = nil,
-        createdById: String,
-        custom: [String: RawJSON],
-        description: String,
-        descriptionI18n: [String: String]? = nil,
-        enforceUniqueVote: Bool,
-        id: String,
-        isClosed: Bool? = nil,
-        latestAnswers: [PollVoteResponseData],
-        latestVotesByOption: [String: [PollVoteResponseData]],
-        maxVotesAllowed: Int? = nil,
-        name: String,
-        nameI18n: [String: String]? = nil,
-        options: [PollOptionResponseData],
-        ownVotes: [PollVoteResponseData],
-        updatedAt: Date,
-        voteCount: Int,
-        voteCountsByOption: [String: Int],
-        votingVisibility: PollResponseDataVotingVisibility
-    ) {
+    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, descriptionI18n: [String: String]? = nil, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, nameI18n: [String: String]? = nil, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: PollResponseDataVotingVisibility) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.answersCount = answersCount

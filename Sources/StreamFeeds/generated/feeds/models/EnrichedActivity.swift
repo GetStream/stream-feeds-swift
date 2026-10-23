@@ -20,21 +20,7 @@ public final class EnrichedActivity: @unchecked Sendable, Codable, JSONEncodable
     public var to: [String]?
     public var verb: String?
 
-    public init(
-        actor: StreamData? = nil,
-        foreignId: String? = nil,
-        id: String? = nil,
-        latestReactions: [String: [EnrichedReaction]]? = nil,
-        object: StreamData? = nil,
-        origin: StreamData? = nil,
-        ownReactions: [String: [EnrichedReaction]]? = nil,
-        reactionCounts: [String: Int]? = nil,
-        score: Float? = nil,
-        target: StreamData? = nil,
-        time: String? = nil,
-        to: [String]? = nil,
-        verb: String? = nil
-    ) {
+    public init(actor: StreamData? = nil, foreignId: String? = nil, id: String? = nil, latestReactions: [String: [EnrichedReaction]]? = nil, object: StreamData? = nil, origin: StreamData? = nil, ownReactions: [String: [EnrichedReaction]]? = nil, reactionCounts: [String: Int]? = nil, score: Float? = nil, target: StreamData? = nil, time: String? = nil, to: [String]? = nil, verb: String? = nil) {
         self.actor = actor
         self.foreignId = foreignId
         self.id = id

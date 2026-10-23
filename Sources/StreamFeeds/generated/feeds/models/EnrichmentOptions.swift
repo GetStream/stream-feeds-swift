@@ -48,28 +48,7 @@ public final class EnrichmentOptions: @unchecked Sendable, Codable, JSONEncodabl
     /// Default: false. When true, skips enriching pinned activities.
     public var skipPins: Bool?
 
-    public init(
-        enrichOwnFollowings: Bool? = nil,
-        includeFlatActivities: Bool? = nil,
-        includeScoreVars: Bool? = nil,
-        skipActivity: Bool? = nil,
-        skipActivityCollections: Bool? = nil,
-        skipActivityComments: Bool? = nil,
-        skipActivityCurrentFeed: Bool? = nil,
-        skipActivityMentionedUsers: Bool? = nil,
-        skipActivityOwnBookmarks: Bool? = nil,
-        skipActivityParents: Bool? = nil,
-        skipActivityPoll: Bool? = nil,
-        skipActivityReactions: Bool? = nil,
-        skipActivityRefreshImageUrls: Bool? = nil,
-        skipAll: Bool? = nil,
-        skipFeedMemberUser: Bool? = nil,
-        skipFollowers: Bool? = nil,
-        skipFollowing: Bool? = nil,
-        skipOwnCapabilities: Bool? = nil,
-        skipOwnFollows: Bool? = nil,
-        skipPins: Bool? = nil
-    ) {
+    public init(enrichOwnFollowings: Bool? = nil, includeFlatActivities: Bool? = nil, includeScoreVars: Bool? = nil, skipActivity: Bool? = nil, skipActivityCollections: Bool? = nil, skipActivityComments: Bool? = nil, skipActivityCurrentFeed: Bool? = nil, skipActivityMentionedUsers: Bool? = nil, skipActivityOwnBookmarks: Bool? = nil, skipActivityParents: Bool? = nil, skipActivityPoll: Bool? = nil, skipActivityReactions: Bool? = nil, skipActivityRefreshImageUrls: Bool? = nil, skipAll: Bool? = nil, skipFeedMemberUser: Bool? = nil, skipFollowers: Bool? = nil, skipFollowing: Bool? = nil, skipOwnCapabilities: Bool? = nil, skipOwnFollows: Bool? = nil, skipPins: Bool? = nil) {
         self.enrichOwnFollowings = enrichOwnFollowings
         self.includeFlatActivities = includeFlatActivities
         self.includeScoreVars = includeScoreVars

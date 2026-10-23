@@ -16,13 +16,7 @@ public final class UserReactivatedEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "user.reactivated"
     public var user: UserResponseCommonFields
 
-    public init(
-        createdAt: Date,
-        createdBy: UserResponseCommonFields? = nil,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields
-    ) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom

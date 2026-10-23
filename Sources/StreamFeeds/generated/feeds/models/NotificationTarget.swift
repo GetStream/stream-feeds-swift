@@ -23,16 +23,7 @@ public final class NotificationTarget: @unchecked Sendable, Codable, JSONEncodab
     /// The ID of the user who created the target activity (for activity targets)
     public var userId: String?
 
-    public init(
-        attachments: [Attachment]? = nil,
-        comment: NotificationComment? = nil,
-        custom: [String: RawJSON]? = nil,
-        id: String,
-        name: String? = nil,
-        parentActivity: NotificationParentActivity? = nil,
-        text: String? = nil,
-        userId: String? = nil
-    ) {
+    public init(attachments: [Attachment]? = nil, comment: NotificationComment? = nil, custom: [String: RawJSON]? = nil, id: String, name: String? = nil, parentActivity: NotificationParentActivity? = nil, text: String? = nil, userId: String? = nil) {
         self.attachments = attachments
         self.comment = comment
         self.custom = custom

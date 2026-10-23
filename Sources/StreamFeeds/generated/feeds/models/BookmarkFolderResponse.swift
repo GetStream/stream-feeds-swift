@@ -19,14 +19,7 @@ public final class BookmarkFolderResponse: @unchecked Sendable, Codable, JSONEnc
     /// User response object
     public var user: UserResponse
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        id: String,
-        name: String,
-        updatedAt: Date,
-        user: UserResponse
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.id = id

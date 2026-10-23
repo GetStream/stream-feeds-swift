@@ -25,20 +25,7 @@ public final class BlockListResponse: @unchecked Sendable, Codable, JSONEncodabl
     /// List of words to block
     public var words: [String]
 
-    public init(
-        createdAt: Date? = nil,
-        id: String? = nil,
-        isConfusableFoldingEnabled: Bool,
-        isLeetCheckEnabled: Bool,
-        isPluralCheckEnabled: Bool,
-        isSubstringMatchingEnabled: Bool,
-        name: String,
-        ownerUserId: String? = nil,
-        team: String? = nil,
-        type: String,
-        updatedAt: Date? = nil,
-        words: [String]
-    ) {
+    public init(createdAt: Date? = nil, id: String? = nil, isConfusableFoldingEnabled: Bool, isLeetCheckEnabled: Bool, isPluralCheckEnabled: Bool, isSubstringMatchingEnabled: Bool, name: String, ownerUserId: String? = nil, team: String? = nil, type: String, updatedAt: Date? = nil, words: [String]) {
         self.createdAt = createdAt
         self.id = id
         self.isConfusableFoldingEnabled = isConfusableFoldingEnabled

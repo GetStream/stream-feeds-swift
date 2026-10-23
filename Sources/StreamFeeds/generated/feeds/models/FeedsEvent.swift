@@ -611,13 +611,7 @@ public enum FeedsEvent: Codable, Hashable {
             let value = try container.decode(UserUpdatedEvent.self)
             self = .typeUserUpdatedEvent(value)
         } else {
-            throw DecodingError.typeMismatch(
-                Self.Type.self,
-                .init(
-                    codingPath: decoder.codingPath,
-                    debugDescription: "Unable to decode instance of FeedsEvent"
-                )
-            )
+            throw DecodingError.typeMismatch(Self.Type.self, .init(codingPath: decoder.codingPath, debugDescription: "Unable to decode instance of FeedsEvent"))
         }
     }
 }

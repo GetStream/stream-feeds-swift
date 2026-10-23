@@ -20,15 +20,7 @@ public final class UserRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// The privacy settings of the user.
     public var privacySettings: PrivacySettingsResponse?
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        id: String,
-        image: String? = nil,
-        invisible: Bool? = nil,
-        language: String? = nil,
-        name: String? = nil,
-        privacySettings: PrivacySettingsResponse? = nil
-    ) {
+    public init(custom: [String: RawJSON]? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String? = nil, name: String? = nil, privacySettings: PrivacySettingsResponse? = nil) {
         self.custom = custom
         self.id = id
         self.image = image

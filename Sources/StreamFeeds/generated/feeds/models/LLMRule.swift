@@ -32,12 +32,7 @@ public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable {
     public var label: String
     public var severityRules: [BodyguardSeverityRule]
 
-    public init(
-        action: LLMRuleAction,
-        description: String,
-        label: String,
-        severityRules: [BodyguardSeverityRule]
-    ) {
+    public init(action: LLMRuleAction, description: String, label: String, severityRules: [BodyguardSeverityRule]) {
         self.action = action
         self.description = description
         self.label = label

@@ -11,12 +11,7 @@ public final class AITextConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var rules: [BodyguardRule]
     public var severityRules: [BodyguardSeverityRule]
 
-    public init(
-        async: Bool? = nil,
-        enabled: Bool,
-        rules: [BodyguardRule],
-        severityRules: [BodyguardSeverityRule]
-    ) {
+    public init(async: Bool? = nil, enabled: Bool, rules: [BodyguardRule], severityRules: [BodyguardSeverityRule]) {
         self.async = async
         self.enabled = enabled
         self.rules = rules

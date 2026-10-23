@@ -36,14 +36,7 @@ public final class ActivityFeedbackEventPayload: @unchecked Sendable, Codable, J
     /// The feedback value (true/false)
     public var value: String
 
-    public init(
-        action: ActivityFeedbackEventPayloadAction,
-        activityId: String,
-        createdAt: Date,
-        updatedAt: Date,
-        user: UserResponse,
-        value: String
-    ) {
+    public init(action: ActivityFeedbackEventPayloadAction, activityId: String, createdAt: Date, updatedAt: Date, user: UserResponse, value: String) {
         self.action = action
         self.activityId = activityId
         self.createdAt = createdAt

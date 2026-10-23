@@ -70,33 +70,7 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
     /// Visibility setting for the feed
     public var visibility: FeedSuggestionResponseVisibility?
 
-    public init(
-        activityCount: Int,
-        algorithmScores: [String: Float]? = nil,
-        createdAt: Date,
-        createdBy: UserResponse,
-        custom: [String: RawJSON]? = nil,
-        deletedAt: Date? = nil,
-        description: String,
-        feed: String,
-        filterTags: [String]? = nil,
-        followerCount: Int,
-        followingCount: Int,
-        groupId: String,
-        id: String,
-        location: Location? = nil,
-        memberCount: Int,
-        name: String,
-        ownCapabilities: [FeedOwnCapability]? = nil,
-        ownFollowings: [FollowResponse]? = nil,
-        ownFollows: [FollowResponse]? = nil,
-        ownMembership: FeedMemberResponse? = nil,
-        pinCount: Int,
-        reason: String? = nil,
-        recommendationScore: Float? = nil,
-        updatedAt: Date,
-        visibility: FeedSuggestionResponseVisibility? = nil
-    ) {
+    public init(activityCount: Int, algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, location: Location? = nil, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: FeedSuggestionResponseVisibility? = nil) {
         self.activityCount = activityCount
         self.algorithmScores = algorithmScores
         self.createdAt = createdAt

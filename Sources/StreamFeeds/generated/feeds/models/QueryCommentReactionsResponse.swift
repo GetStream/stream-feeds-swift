@@ -13,12 +13,7 @@ public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, 
     public var prev: String?
     public var reactions: [FeedsReactionResponse]
 
-    public init(
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil,
-        reactions: [FeedsReactionResponse]
-    ) {
+    public init(duration: String, next: String? = nil, prev: String? = nil, reactions: [FeedsReactionResponse]) {
         self.duration = duration
         self.next = next
         self.prev = prev

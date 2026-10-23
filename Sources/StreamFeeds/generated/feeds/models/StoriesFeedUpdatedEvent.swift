@@ -22,16 +22,7 @@ public final class StoriesFeedUpdatedEvent: @unchecked Sendable, Event, Codable,
     public var type: String = "feeds.stories_feed.updated"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activities: [ActivityResponse]? = nil,
-        aggregatedActivities: [AggregatedActivityResponse]? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activities: [ActivityResponse]? = nil, aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.createdAt = createdAt

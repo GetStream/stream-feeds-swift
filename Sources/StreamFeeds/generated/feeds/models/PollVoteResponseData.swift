@@ -18,18 +18,7 @@ public final class PollVoteResponseData: @unchecked Sendable, Codable, JSONEncod
     public var user: UserResponse?
     public var userId: String?
 
-    public init(
-        answerText: String? = nil,
-        answerTextI18n: [String: String]? = nil,
-        createdAt: Date,
-        id: String,
-        isAnswer: Bool? = nil,
-        optionId: String,
-        pollId: String,
-        updatedAt: Date,
-        user: UserResponse? = nil,
-        userId: String? = nil
-    ) {
+    public init(answerText: String? = nil, answerTextI18n: [String: String]? = nil, createdAt: Date, id: String, isAnswer: Bool? = nil, optionId: String, pollId: String, updatedAt: Date, user: UserResponse? = nil, userId: String? = nil) {
         self.answerText = answerText
         self.answerTextI18n = answerTextI18n
         self.createdAt = createdAt

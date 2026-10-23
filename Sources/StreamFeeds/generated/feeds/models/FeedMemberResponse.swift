@@ -41,17 +41,7 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
     /// User response object
     public var user: UserResponse
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        inviteAcceptedAt: Date? = nil,
-        inviteRejectedAt: Date? = nil,
-        membershipLevel: MembershipLevelResponse? = nil,
-        role: String,
-        status: FeedMemberResponseStatus,
-        updatedAt: Date,
-        user: UserResponse
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.inviteAcceptedAt = inviteAcceptedAt

@@ -11,12 +11,7 @@ public final class BlockListConfig: @unchecked Sendable, Codable, JSONEncodable 
     public var matchSubstring: Bool?
     public var rules: [BlockListRule]
 
-    public init(
-        async: Bool? = nil,
-        enabled: Bool,
-        matchSubstring: Bool? = nil,
-        rules: [BlockListRule]
-    ) {
+    public init(async: Bool? = nil, enabled: Bool, matchSubstring: Bool? = nil, rules: [BlockListRule]) {
         self.async = async
         self.enabled = enabled
         self.matchSubstring = matchSubstring

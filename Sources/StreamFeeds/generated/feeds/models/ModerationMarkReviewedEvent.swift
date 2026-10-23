@@ -13,12 +13,7 @@ public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Coda
     public var receivedAt: Date?
     public var type: String = "moderation.mark_reviewed"
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        item: ReviewQueueItemResponse,
-        receivedAt: Date? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], item: ReviewQueueItemResponse, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.item = item

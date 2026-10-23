@@ -16,17 +16,7 @@ public final class TextRuleParameters: @unchecked Sendable, Codable, JSONEncodab
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(
-        blocklistMatch: [String]? = nil,
-        containsUrl: Bool? = nil,
-        harmLabels: [String]? = nil,
-        llmHarmLabels: [String: String]? = nil,
-        semanticFilterMinThreshold: Float? = nil,
-        semanticFilterNames: [String]? = nil,
-        severity: String? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil
-    ) {
+    public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, llmHarmLabels: [String: String]? = nil, semanticFilterMinThreshold: Float? = nil, semanticFilterNames: [String]? = nil, severity: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.blocklistMatch = blocklistMatch
         self.containsUrl = containsUrl
         self.harmLabels = harmLabels

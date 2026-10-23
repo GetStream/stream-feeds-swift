@@ -27,19 +27,7 @@ public final class ActivityMarkEvent: @unchecked Sendable, Event, Codable, JSONE
     public var type: String = "feeds.activity.marked"
     public var user: UserResponseCommonFields?
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        markAllRead: Bool? = nil,
-        markAllSeen: Bool? = nil,
-        markRead: [String]? = nil,
-        markSeen: [String]? = nil,
-        markWatched: [String]? = nil,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

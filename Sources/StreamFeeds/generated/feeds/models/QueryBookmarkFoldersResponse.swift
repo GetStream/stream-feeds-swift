@@ -14,12 +14,7 @@ public final class QueryBookmarkFoldersResponse: @unchecked Sendable, Codable, J
     /// Cursor for previous page
     public var prev: String?
 
-    public init(
-        bookmarkFolders: [BookmarkFolderResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(bookmarkFolders: [BookmarkFolderResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.bookmarkFolders = bookmarkFolders
         self.duration = duration
         self.next = next

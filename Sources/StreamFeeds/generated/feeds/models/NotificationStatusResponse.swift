@@ -19,14 +19,7 @@ public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSO
     /// Number of unseen notifications
     public var unseen: Int
 
-    public init(
-        lastReadAt: Date? = nil,
-        lastSeenAt: Date? = nil,
-        readActivities: [String]? = nil,
-        seenActivities: [String]? = nil,
-        unread: Int,
-        unseen: Int
-    ) {
+    public init(lastReadAt: Date? = nil, lastSeenAt: Date? = nil, readActivities: [String]? = nil, seenActivities: [String]? = nil, unread: Int, unseen: Int) {
         self.lastReadAt = lastReadAt
         self.lastSeenAt = lastSeenAt
         self.readActivities = readActivities

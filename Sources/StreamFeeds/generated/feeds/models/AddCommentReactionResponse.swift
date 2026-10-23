@@ -26,18 +26,7 @@ public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSO
     public var reaction: FeedsReactionResponse
     public var referenceActivity: ActivityResponse?
 
-    public init(
-        comment: CommentResponse,
-        counterDelta: Int,
-        duration: String,
-        notificationAccepted: Bool? = nil,
-        notificationCreated: Bool? = nil,
-        notificationTaskId: String? = nil,
-        outcome: String,
-        previousReactionType: String? = nil,
-        reaction: FeedsReactionResponse,
-        referenceActivity: ActivityResponse? = nil
-    ) {
+    public init(comment: CommentResponse, counterDelta: Int, duration: String, notificationAccepted: Bool? = nil, notificationCreated: Bool? = nil, notificationTaskId: String? = nil, outcome: String, previousReactionType: String? = nil, reaction: FeedsReactionResponse, referenceActivity: ActivityResponse? = nil) {
         self.comment = comment
         self.counterDelta = counterDelta
         self.duration = duration
@@ -68,28 +57,13 @@ public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSO
         self.comment = try container.decode(CommentResponse.self, forKey: .comment)
         self.counterDelta = try container.decode(Int.self, forKey: .counterDelta)
         self.duration = try container.decode(String.self, forKey: .duration)
-        self.notificationAccepted = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .notificationAccepted
-        )
-        self._notificationCreated = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .notificationCreated
-        )
-        self.notificationTaskId = try container.decodeIfPresent(
-            String.self,
-            forKey: .notificationTaskId
-        )
+        self.notificationAccepted = try container.decodeIfPresent(Bool.self, forKey: .notificationAccepted)
+        self._notificationCreated = try container.decodeIfPresent(Bool.self, forKey: .notificationCreated)
+        self.notificationTaskId = try container.decodeIfPresent(String.self, forKey: .notificationTaskId)
         self.outcome = try container.decode(String.self, forKey: .outcome)
-        self.previousReactionType = try container.decodeIfPresent(
-            String.self,
-            forKey: .previousReactionType
-        )
+        self.previousReactionType = try container.decodeIfPresent(String.self, forKey: .previousReactionType)
         self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
-        self.referenceActivity = try container.decodeIfPresent(
-            ActivityResponse.self,
-            forKey: .referenceActivity
-        )
+        self.referenceActivity = try container.decodeIfPresent(ActivityResponse.self, forKey: .referenceActivity)
     }
 
     public func encode(to encoder: Encoder) throws {

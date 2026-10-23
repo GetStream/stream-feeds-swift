@@ -13,12 +13,7 @@ public final class UpdateFeedMembersResponse: @unchecked Sendable, Codable, JSON
     public var removedIds: [String]
     public var updated: [FeedMemberResponse]
 
-    public init(
-        added: [FeedMemberResponse],
-        duration: String,
-        removedIds: [String],
-        updated: [FeedMemberResponse]
-    ) {
+    public init(added: [FeedMemberResponse], duration: String, removedIds: [String], updated: [FeedMemberResponse]) {
         self.added = added
         self.duration = duration
         self.removedIds = removedIds

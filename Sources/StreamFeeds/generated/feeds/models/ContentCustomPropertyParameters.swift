@@ -21,10 +21,7 @@ public final class ContentCustomPropertyParameters: @unchecked Sendable, Codable
 }
 
 extension ContentCustomPropertyParameters: Hashable {
-    public static func == (
-        lhs: ContentCustomPropertyParameters,
-        rhs: ContentCustomPropertyParameters
-    ) -> Bool {
+    public static func == (lhs: ContentCustomPropertyParameters, rhs: ContentCustomPropertyParameters) -> Bool {
         lhs.operator == rhs.operator &&
             lhs.propertyKey == rhs.propertyKey
     }

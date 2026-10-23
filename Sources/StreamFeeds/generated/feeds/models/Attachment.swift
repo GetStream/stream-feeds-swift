@@ -31,29 +31,7 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable {
     /// Attachment type (e.g. image, video, url)
     public var type: String?
 
-    public init(
-        actions: [Action]? = nil,
-        assetUrl: String? = nil,
-        authorIcon: String? = nil,
-        authorLink: String? = nil,
-        authorName: String? = nil,
-        color: String? = nil,
-        custom: [String: RawJSON],
-        fallback: String? = nil,
-        fields: [Field]? = nil,
-        footer: String? = nil,
-        footerIcon: String? = nil,
-        giphy: Images? = nil,
-        imageUrl: String? = nil,
-        ogScrapeUrl: String? = nil,
-        originalHeight: Int? = nil,
-        originalWidth: Int? = nil,
-        pretext: String? = nil,
-        text: String? = nil,
-        thumbUrl: String? = nil,
-        title: String? = nil,
-        titleLink: String? = nil
-    ) {
+    public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil) {
         self.actions = actions
         self.assetUrl = assetUrl
         self.authorIcon = authorIcon

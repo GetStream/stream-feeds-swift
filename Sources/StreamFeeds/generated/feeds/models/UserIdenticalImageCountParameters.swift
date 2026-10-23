@@ -11,12 +11,7 @@ public final class UserIdenticalImageCountParameters: @unchecked Sendable, Codab
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(
-        match: String? = nil,
-        similarityDistance: Int? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil
-    ) {
+    public init(match: String? = nil, similarityDistance: Int? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.match = match
         self.similarityDistance = similarityDistance
         self.threshold = threshold
@@ -32,10 +27,7 @@ public final class UserIdenticalImageCountParameters: @unchecked Sendable, Codab
 }
 
 extension UserIdenticalImageCountParameters: Hashable {
-    public static func == (
-        lhs: UserIdenticalImageCountParameters,
-        rhs: UserIdenticalImageCountParameters
-    ) -> Bool {
+    public static func == (lhs: UserIdenticalImageCountParameters, rhs: UserIdenticalImageCountParameters) -> Bool {
         lhs.match == rhs.match &&
             lhs.similarityDistance == rhs.similarityDistance &&
             lhs.threshold == rhs.threshold &&

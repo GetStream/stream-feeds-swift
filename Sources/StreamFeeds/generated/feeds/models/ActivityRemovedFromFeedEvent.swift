@@ -18,15 +18,7 @@ public final class ActivityRemovedFromFeedEvent: @unchecked Sendable, Event, Cod
     public var type: String = "feeds.activity.removed_from_feed"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activity: ActivityResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom

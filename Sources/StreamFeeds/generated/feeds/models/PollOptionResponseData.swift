@@ -11,12 +11,7 @@ public final class PollOptionResponseData: @unchecked Sendable, Codable, JSONEnc
     public var text: String
     public var textI18n: [String: String]?
 
-    public init(
-        custom: [String: RawJSON],
-        id: String,
-        text: String,
-        textI18n: [String: String]? = nil
-    ) {
+    public init(custom: [String: RawJSON], id: String, text: String, textI18n: [String: String]? = nil) {
         self.custom = custom
         self.id = id
         self.text = text

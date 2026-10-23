@@ -20,14 +20,7 @@ public final class BanInfoResponse: @unchecked Sendable, Codable, JSONEncodable 
     /// User response object
     public var user: UserResponse?
 
-    public init(
-        createdAt: Date,
-        createdBy: UserResponse? = nil,
-        expires: Date? = nil,
-        reason: String? = nil,
-        shadow: Bool? = nil,
-        user: UserResponse? = nil
-    ) {
+    public init(createdAt: Date, createdBy: UserResponse? = nil, expires: Date? = nil, reason: String? = nil, shadow: Bool? = nil, user: UserResponse? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.expires = expires

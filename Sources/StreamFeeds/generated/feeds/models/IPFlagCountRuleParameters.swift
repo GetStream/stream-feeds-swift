@@ -11,12 +11,7 @@ public final class IPFlagCountRuleParameters: @unchecked Sendable, Codable, JSON
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(
-        harmLabels: [String]? = nil,
-        severity: String? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil
-    ) {
+    public init(harmLabels: [String]? = nil, severity: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.harmLabels = harmLabels
         self.severity = severity
         self.threshold = threshold

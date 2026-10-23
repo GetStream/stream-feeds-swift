@@ -17,13 +17,7 @@ public final class NotificationComment: @unchecked Sendable, Codable, JSONEncoda
     /// The ID of the user who wrote the comment
     public var userId: String
 
-    public init(
-        attachments: [Attachment]? = nil,
-        comment: String,
-        id: String,
-        parentId: String? = nil,
-        userId: String
-    ) {
+    public init(attachments: [Attachment]? = nil, comment: String, id: String, parentId: String? = nil, userId: String) {
         self.attachments = attachments
         self.comment = comment
         self.id = id

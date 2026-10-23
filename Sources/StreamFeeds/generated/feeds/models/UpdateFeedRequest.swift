@@ -20,15 +20,7 @@ public final class UpdateFeedRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Name of the feed
     public var name: String?
 
-    public init(
-        clearLocation: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        description: String? = nil,
-        enrichOwnFields: Bool? = nil,
-        filterTags: [String]? = nil,
-        location: Location? = nil,
-        name: String? = nil
-    ) {
+    public init(clearLocation: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enrichOwnFields: Bool? = nil, filterTags: [String]? = nil, location: Location? = nil, name: String? = nil) {
         self.clearLocation = clearLocation
         self.custom = custom
         self.description = description

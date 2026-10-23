@@ -37,15 +37,7 @@ public final class PushPreferenceInput: @unchecked Sendable, Codable, JSONEncoda
     /// The user id for which to set the push preferences. Required when using server side auths, defaults to current user with client side auth.
     public var userId: String?
 
-    public init(
-        disabledUntil: Date? = nil,
-        feedsLevel: PushPreferenceInputFeedsLevel? = nil,
-        feedsPreferences: FeedsPreferences? = nil,
-        removeDisable: Bool? = nil,
-        removeSchedule: Bool? = nil,
-        schedule: PushScheduleInput? = nil,
-        userId: String? = nil
-    ) {
+    public init(disabledUntil: Date? = nil, feedsLevel: PushPreferenceInputFeedsLevel? = nil, feedsPreferences: FeedsPreferences? = nil, removeDisable: Bool? = nil, removeSchedule: Bool? = nil, schedule: PushScheduleInput? = nil, userId: String? = nil) {
         self.disabledUntil = disabledUntil
         self.feedsLevel = feedsLevel
         self.feedsPreferences = feedsPreferences

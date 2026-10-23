@@ -12,12 +12,7 @@ public final class SubmitActionResponse: @unchecked Sendable, Codable, JSONEncod
     public var duration: String
     public var item: ReviewQueueItemResponse?
 
-    public init(
-        appealItem: AppealItemResponse? = nil,
-        autoRestoreWarning: String? = nil,
-        duration: String,
-        item: ReviewQueueItemResponse? = nil
-    ) {
+    public init(appealItem: AppealItemResponse? = nil, autoRestoreWarning: String? = nil, duration: String, item: ReviewQueueItemResponse? = nil) {
         self.appealItem = appealItem
         self.autoRestoreWarning = autoRestoreWarning
         self.duration = duration

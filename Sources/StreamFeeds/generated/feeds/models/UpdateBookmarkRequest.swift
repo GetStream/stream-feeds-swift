@@ -14,12 +14,7 @@ public final class UpdateBookmarkRequest: @unchecked Sendable, Codable, JSONEnco
     /// Move the bookmark to this folder (empty string removes the folder)
     public var newFolderId: String?
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        folderId: String? = nil,
-        newFolder: AddFolderRequest? = nil,
-        newFolderId: String? = nil
-    ) {
+    public init(custom: [String: RawJSON]? = nil, folderId: String? = nil, newFolder: AddFolderRequest? = nil, newFolderId: String? = nil) {
         self.custom = custom
         self.folderId = folderId
         self.newFolder = newFolder

@@ -17,14 +17,7 @@ public final class ModerationCustomActionEvent: @unchecked Sendable, Event, Coda
     public var reviewQueueItem: ReviewQueueItemResponse
     public var type: String = "moderation.custom_action"
 
-    public init(
-        actionId: String,
-        actionOptions: [String: RawJSON]? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        reviewQueueItem: ReviewQueueItemResponse
-    ) {
+    public init(actionId: String, actionOptions: [String: RawJSON]? = nil, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, reviewQueueItem: ReviewQueueItemResponse) {
         self.actionId = actionId
         self.actionOptions = actionOptions
         self.createdAt = createdAt

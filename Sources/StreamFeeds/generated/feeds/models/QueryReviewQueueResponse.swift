@@ -18,16 +18,7 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
     /// Statistics about the review queue
     public var stats: [String: RawJSON]
 
-    public init(
-        actionConfig: [String: [ModerationActionConfigResponse]],
-        defaultActionConfig: [String: [ModerationActionConfigResponse]]? = nil,
-        duration: String,
-        filterConfig: FilterConfigResponse? = nil,
-        items: [ReviewQueueItemResponse],
-        next: String? = nil,
-        prev: String? = nil,
-        stats: [String: RawJSON]
-    ) {
+    public init(actionConfig: [String: [ModerationActionConfigResponse]], defaultActionConfig: [String: [ModerationActionConfigResponse]]? = nil, duration: String, filterConfig: FilterConfigResponse? = nil, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
         self.actionConfig = actionConfig
         self.defaultActionConfig = defaultActionConfig
         self.duration = duration

@@ -24,10 +24,7 @@ public final class AutomodPlatformCircumventionConfig: @unchecked Sendable, Coda
 }
 
 extension AutomodPlatformCircumventionConfig: Hashable {
-    public static func == (
-        lhs: AutomodPlatformCircumventionConfig,
-        rhs: AutomodPlatformCircumventionConfig
-    ) -> Bool {
+    public static func == (lhs: AutomodPlatformCircumventionConfig, rhs: AutomodPlatformCircumventionConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&
             lhs.rules == rhs.rules

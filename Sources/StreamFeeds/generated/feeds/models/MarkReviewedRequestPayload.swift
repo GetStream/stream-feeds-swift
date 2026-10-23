@@ -14,11 +14,7 @@ public final class MarkReviewedRequestPayload: @unchecked Sendable, Codable, JSO
     /// Skip marking content as reviewed
     public var disableMarkingContentAsReviewed: Bool?
 
-    public init(
-        contentToMarkAsReviewedLimit: Int? = nil,
-        decisionReason: String? = nil,
-        disableMarkingContentAsReviewed: Bool? = nil
-    ) {
+    public init(contentToMarkAsReviewedLimit: Int? = nil, decisionReason: String? = nil, disableMarkingContentAsReviewed: Bool? = nil) {
         self.contentToMarkAsReviewedLimit = contentToMarkAsReviewedLimit
         self.decisionReason = decisionReason
         self.disableMarkingContentAsReviewed = disableMarkingContentAsReviewed

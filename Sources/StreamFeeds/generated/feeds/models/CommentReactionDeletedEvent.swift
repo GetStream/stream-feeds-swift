@@ -18,15 +18,7 @@ public final class CommentReactionDeletedEvent: @unchecked Sendable, Event, Coda
     /// The type of reaction that was removed
     public var type: String = "feeds.comment.reaction.deleted"
 
-    public init(
-        comment: CommentResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        reaction: FeedsReactionResponse,
-        receivedAt: Date? = nil
-    ) {
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil) {
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom

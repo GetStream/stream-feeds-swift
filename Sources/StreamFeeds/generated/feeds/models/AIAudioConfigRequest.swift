@@ -11,11 +11,7 @@ public final class AIAudioConfigRequest: @unchecked Sendable, Codable, JSONEncod
     /// Deprecated pre-split rule list. Still the live config while no engine config exists; once one does it is kept as a fallback for whichever engine has none of its own
     public var rules: [BodyguardRule]?
 
-    public init(
-        aiTextConfig: AITextConfig? = nil,
-        llmConfig: LLMConfig? = nil,
-        rules: [BodyguardRule]? = nil
-    ) {
+    public init(aiTextConfig: AITextConfig? = nil, llmConfig: LLMConfig? = nil, rules: [BodyguardRule]? = nil) {
         self.aiTextConfig = aiTextConfig
         self.llmConfig = llmConfig
         self.rules = rules

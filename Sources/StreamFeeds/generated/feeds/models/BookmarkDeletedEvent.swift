@@ -16,13 +16,7 @@ public final class BookmarkDeletedEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "feeds.bookmark.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(
-        bookmark: BookmarkResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(bookmark: BookmarkResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.bookmark = bookmark
         self.createdAt = createdAt
         self.custom = custom

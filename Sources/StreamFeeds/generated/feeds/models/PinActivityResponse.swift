@@ -15,13 +15,7 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
     /// ID of the user who pinned the activity
     public var userId: String
 
-    public init(
-        activity: ActivityResponse,
-        createdAt: Date,
-        duration: String,
-        feed: String,
-        userId: String
-    ) {
+    public init(activity: ActivityResponse, createdAt: Date, duration: String, feed: String, userId: String) {
         self.activity = activity
         self.createdAt = createdAt
         self.duration = duration

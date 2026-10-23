@@ -16,13 +16,7 @@ public final class ActivityPinResponse: @unchecked Sendable, Codable, JSONEncoda
     /// User response object
     public var user: UserResponse
 
-    public init(
-        activity: ActivityResponse,
-        createdAt: Date,
-        feed: String,
-        updatedAt: Date,
-        user: UserResponse
-    ) {
+    public init(activity: ActivityResponse, createdAt: Date, feed: String, updatedAt: Date, user: UserResponse) {
         self.activity = activity
         self.createdAt = createdAt
         self.feed = feed

@@ -47,11 +47,7 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
     /// Collections to create or update as part of this request, so an activity and the collections it references can be written in one call. Their refs (name:id) are added to collection_refs automatically; you do not need to restate them, and they count toward the same per-activity collection-reference limit, which is the effective cap here. A collection that already exists has its custom data updated. Use collection_refs instead when the collection already exists and you are only referencing it, which requires no collection permissions.
     public var collections: [CollectionRequest]?
     /// Whether to copy custom data to the notification activity (only applies when create_notification_activity is true) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(
-        *,
-        deprecated,
-        message: "use notification_context.trigger.custom and notification_context.target.custom instead"
-    )
+    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
     public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
     private var _copyCustomToNotification: Bool?
     /// Whether to create notification activities for mentioned users
@@ -93,32 +89,7 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
     /// If visibility is 'tag', this is the tag name and is required
     public var visibilityTag: String?
 
-    public init(
-        attachments: [Attachment]? = nil,
-        collectionRefs: [String]? = nil,
-        collections: [CollectionRequest]? = nil,
-        copyCustomToNotification: Bool? = nil,
-        createNotificationActivity: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        enrichOwnFields: Bool? = nil,
-        expiresAt: String? = nil,
-        feeds: [String],
-        filterTags: [String]? = nil,
-        id: String? = nil,
-        interestTags: [String]? = nil,
-        location: Location? = nil,
-        mentionedUserIds: [String]? = nil,
-        parentId: String? = nil,
-        pollId: String? = nil,
-        restrictReplies: AddActivityRequestRestrictReplies? = nil,
-        searchData: [String: RawJSON]? = nil,
-        skipEnrichUrl: Bool? = nil,
-        skipPush: Bool? = nil,
-        text: String? = nil,
-        type: String,
-        visibility: AddActivityRequestVisibility? = nil,
-        visibilityTag: String? = nil
-    ) {
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, collections: [CollectionRequest]? = nil, copyCustomToNotification: Bool? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, enrichOwnFields: Bool? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: AddActivityRequestRestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: AddActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.collectionRefs = collectionRefs
         self.collections = collections
@@ -176,18 +147,9 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
         self.collectionRefs = try container.decodeIfPresent([String].self, forKey: .collectionRefs)
-        self.collections = try container.decodeIfPresent(
-            [CollectionRequest].self,
-            forKey: .collections
-        )
-        self._copyCustomToNotification = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .copyCustomToNotification
-        )
-        self.createNotificationActivity = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .createNotificationActivity
-        )
+        self.collections = try container.decodeIfPresent([CollectionRequest].self, forKey: .collections)
+        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
+        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
         self.expiresAt = try container.decodeIfPresent(String.self, forKey: .expiresAt)
@@ -196,25 +158,16 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.interestTags = try container.decodeIfPresent([String].self, forKey: .interestTags)
         self.location = try container.decodeIfPresent(Location.self, forKey: .location)
-        self.mentionedUserIds = try container.decodeIfPresent(
-            [String].self,
-            forKey: .mentionedUserIds
-        )
+        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
         self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
         self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.restrictReplies = try container.decodeIfPresent(
-            AddActivityRequestRestrictReplies.self,
-            forKey: .restrictReplies
-        )
+        self.restrictReplies = try container.decodeIfPresent(AddActivityRequestRestrictReplies.self, forKey: .restrictReplies)
         self.searchData = try container.decodeIfPresent([String: RawJSON].self, forKey: .searchData)
         self.skipEnrichUrl = try container.decodeIfPresent(Bool.self, forKey: .skipEnrichUrl)
         self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.type = try container.decode(String.self, forKey: .type)
-        self.visibility = try container.decodeIfPresent(
-            AddActivityRequestVisibility.self,
-            forKey: .visibility
-        )
+        self.visibility = try container.decodeIfPresent(AddActivityRequestVisibility.self, forKey: .visibility)
         self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
     }
 
@@ -224,10 +177,7 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         try container.encodeIfPresent(collectionRefs, forKey: .collectionRefs)
         try container.encodeIfPresent(collections, forKey: .collections)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
-        try container.encodeIfPresent(
-            createNotificationActivity,
-            forKey: .createNotificationActivity
-        )
+        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
         try container.encodeIfPresent(expiresAt, forKey: .expiresAt)

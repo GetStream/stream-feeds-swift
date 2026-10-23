@@ -15,16 +15,7 @@ public final class ModerationV2Response: @unchecked Sendable, Codable, JSONEncod
     public var semanticFilterMatched: String?
     public var textHarms: [String]?
 
-    public init(
-        action: String,
-        blocklistMatched: String? = nil,
-        blocklistsMatched: [String]? = nil,
-        imageHarms: [String]? = nil,
-        originalText: String,
-        platformCircumvented: Bool? = nil,
-        semanticFilterMatched: String? = nil,
-        textHarms: [String]? = nil
-    ) {
+    public init(action: String, blocklistMatched: String? = nil, blocklistsMatched: [String]? = nil, imageHarms: [String]? = nil, originalText: String, platformCircumvented: Bool? = nil, semanticFilterMatched: String? = nil, textHarms: [String]? = nil) {
         self.action = action
         self.blocklistMatched = blocklistMatched
         self.blocklistsMatched = blocklistsMatched

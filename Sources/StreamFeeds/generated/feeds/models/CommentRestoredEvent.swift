@@ -18,15 +18,7 @@ public final class CommentRestoredEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "feeds.comment.restored"
     public var user: UserResponseCommonFields?
 
-    public init(
-        comment: CommentResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom

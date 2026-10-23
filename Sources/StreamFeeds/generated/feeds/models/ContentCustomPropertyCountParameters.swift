@@ -11,12 +11,7 @@ public final class ContentCustomPropertyCountParameters: @unchecked Sendable, Co
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(
-        operator: String? = nil,
-        propertyKey: String? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil
-    ) {
+    public init(operator: String? = nil, propertyKey: String? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.operator = `operator`
         self.propertyKey = propertyKey
         self.threshold = threshold
@@ -32,10 +27,7 @@ public final class ContentCustomPropertyCountParameters: @unchecked Sendable, Co
 }
 
 extension ContentCustomPropertyCountParameters: Hashable {
-    public static func == (
-        lhs: ContentCustomPropertyCountParameters,
-        rhs: ContentCustomPropertyCountParameters
-    ) -> Bool {
+    public static func == (lhs: ContentCustomPropertyCountParameters, rhs: ContentCustomPropertyCountParameters) -> Bool {
         lhs.operator == rhs.operator &&
             lhs.propertyKey == rhs.propertyKey &&
             lhs.threshold == rhs.threshold &&

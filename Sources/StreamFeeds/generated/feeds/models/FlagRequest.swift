@@ -16,13 +16,7 @@ public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Optional explanation for why the content is being flagged
     public var reason: String?
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        entityId: String,
-        entityType: String,
-        moderationPayload: ModerationPayload? = nil,
-        reason: String? = nil
-    ) {
+    public init(custom: [String: RawJSON]? = nil, entityId: String, entityType: String, moderationPayload: ModerationPayload? = nil, reason: String? = nil) {
         self.custom = custom
         self.entityId = entityId
         self.entityType = entityType

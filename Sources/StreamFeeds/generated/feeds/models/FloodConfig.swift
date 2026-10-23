@@ -10,11 +10,7 @@ public final class FloodConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var identical: FloodIdenticalConfig?
     public var similar: FloodSimilarConfig?
 
-    public init(
-        allowlist: [String]? = nil,
-        identical: FloodIdenticalConfig? = nil,
-        similar: FloodSimilarConfig? = nil
-    ) {
+    public init(allowlist: [String]? = nil, identical: FloodIdenticalConfig? = nil, similar: FloodSimilarConfig? = nil) {
         self.allowlist = allowlist
         self.identical = identical
         self.similar = similar

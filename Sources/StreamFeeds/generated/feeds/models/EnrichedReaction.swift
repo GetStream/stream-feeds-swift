@@ -20,21 +20,7 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
     public var user: StreamData?
     public var userId: String
 
-    public init(
-        activityId: String,
-        childrenCounts: [String: Int]? = nil,
-        createdAt: String? = nil,
-        data: [String: RawJSON]? = nil,
-        id: String? = nil,
-        kind: String,
-        latestChildren: [String: [EnrichedReaction]]? = nil,
-        ownChildren: [String: [EnrichedReaction]]? = nil,
-        parent: String? = nil,
-        targetFeeds: [String]? = nil,
-        updatedAt: String? = nil,
-        user: StreamData? = nil,
-        userId: String
-    ) {
+    public init(activityId: String, childrenCounts: [String: Int]? = nil, createdAt: String? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, updatedAt: String? = nil, user: StreamData? = nil, userId: String) {
         self.activityId = activityId
         self.childrenCounts = childrenCounts
         self.createdAt = createdAt

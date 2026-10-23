@@ -13,12 +13,7 @@ public final class AIAudioConfigResponse: @unchecked Sendable, Codable, JSONEnco
     /// The active engine's rules, flattened into the pre-split shape for clients that predate the per-engine configs. This is the whole config for a policy that has no per-engine config stored
     public var rules: [BodyguardRule]
 
-    public init(
-        aiTextConfig: AITextConfig? = nil,
-        enabled: Bool,
-        llmConfig: LLMConfig? = nil,
-        rules: [BodyguardRule]
-    ) {
+    public init(aiTextConfig: AITextConfig? = nil, enabled: Bool, llmConfig: LLMConfig? = nil, rules: [BodyguardRule]) {
         self.aiTextConfig = aiTextConfig
         self.enabled = enabled
         self.llmConfig = llmConfig

@@ -33,27 +33,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var updatedAt: Date
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(
-        aiAudioConfig: AIAudioConfigResponse? = nil,
-        aiImageConfig: AIImageConfig? = nil,
-        aiImageLabelDefinitions: [AIImageLabelDefinition]? = nil,
-        aiImageSubclassifications: [String: [String]]? = nil,
-        aiTextConfig: AITextConfig? = nil,
-        aiVideoConfig: AIVideoConfigResponse? = nil,
-        async: Bool,
-        automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil,
-        automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil,
-        automodToxicityConfig: AutomodToxicityConfig? = nil,
-        blockListConfig: BlockListConfig? = nil,
-        createdAt: Date,
-        floodConfig: FloodConfig? = nil,
-        intentConfig: IntentConfigResponse? = nil,
-        key: String,
-        llmConfig: LLMConfig? = nil,
-        team: String,
-        updatedAt: Date,
-        velocityFilterConfig: VelocityFilterConfig? = nil
-    ) {
+    public init(aiAudioConfig: AIAudioConfigResponse? = nil, aiImageConfig: AIImageConfig? = nil, aiImageLabelDefinitions: [AIImageLabelDefinition]? = nil, aiImageSubclassifications: [String: [String]]? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigResponse? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, floodConfig: FloodConfig? = nil, intentConfig: IntentConfigResponse? = nil, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiAudioConfig = aiAudioConfig
         self.aiImageConfig = aiImageConfig
         self.aiImageLabelDefinitions = aiImageLabelDefinitions

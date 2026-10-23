@@ -24,10 +24,7 @@ public final class UserReactionCountRuleParameters: @unchecked Sendable, Codable
 }
 
 extension UserReactionCountRuleParameters: Hashable {
-    public static func == (
-        lhs: UserReactionCountRuleParameters,
-        rhs: UserReactionCountRuleParameters
-    ) -> Bool {
+    public static func == (lhs: UserReactionCountRuleParameters, rhs: UserReactionCountRuleParameters) -> Bool {
         lhs.count == rhs.count &&
             lhs.threshold == rhs.threshold &&
             lhs.timeWindow == rhs.timeWindow

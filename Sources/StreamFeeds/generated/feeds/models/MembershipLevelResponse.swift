@@ -23,16 +23,7 @@ public final class MembershipLevelResponse: @unchecked Sendable, Codable, JSONEn
     /// When the membership level was last updated
     public var updatedAt: Date
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        description: String? = nil,
-        id: String,
-        name: String,
-        priority: Int,
-        tags: [String],
-        updatedAt: Date
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, description: String? = nil, id: String, name: String, priority: Int, tags: [String], updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
         self.description = description

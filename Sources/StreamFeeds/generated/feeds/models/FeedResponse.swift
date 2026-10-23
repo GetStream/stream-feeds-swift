@@ -67,30 +67,7 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     /// Visibility setting for the feed
     public var visibility: FeedResponseVisibility?
 
-    public init(
-        activityCount: Int,
-        createdAt: Date,
-        createdBy: UserResponse,
-        custom: [String: RawJSON]? = nil,
-        deletedAt: Date? = nil,
-        description: String,
-        feed: String,
-        filterTags: [String]? = nil,
-        followerCount: Int,
-        followingCount: Int,
-        groupId: String,
-        id: String,
-        location: Location? = nil,
-        memberCount: Int,
-        name: String,
-        ownCapabilities: [FeedOwnCapability]? = nil,
-        ownFollowings: [FollowResponse]? = nil,
-        ownFollows: [FollowResponse]? = nil,
-        ownMembership: FeedMemberResponse? = nil,
-        pinCount: Int,
-        updatedAt: Date,
-        visibility: FeedResponseVisibility? = nil
-    ) {
+    public init(activityCount: Int, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, location: Location? = nil, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedResponseVisibility? = nil) {
         self.activityCount = activityCount
         self.createdAt = createdAt
         self.createdBy = createdBy

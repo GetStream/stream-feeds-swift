@@ -45,11 +45,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     /// Collections that this activity references
     public var collectionRefs: [String]?
     /// Whether to copy custom data to the notification activity (only applies when handle_mention_notifications creates notifications) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(
-        *,
-        deprecated,
-        message: "use notification_context.trigger.custom and notification_context.target.custom instead"
-    )
+    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
     public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
     private var _copyCustomToNotification: Bool?
     /// Custom data for the activity
@@ -86,28 +82,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     /// If visibility is 'tag', this is the tag name and is required
     public var visibilityTag: String?
 
-    public init(
-        attachments: [Attachment]? = nil,
-        collectionRefs: [String]? = nil,
-        copyCustomToNotification: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        enrichOwnFields: Bool? = nil,
-        expiresAt: Date? = nil,
-        feeds: [String]? = nil,
-        filterTags: [String]? = nil,
-        handleMentionNotifications: Bool? = nil,
-        interestTags: [String]? = nil,
-        location: Location? = nil,
-        mentionedUserIds: [String]? = nil,
-        pollId: String? = nil,
-        restrictReplies: UpdateActivityRequestRestrictReplies? = nil,
-        runActivityProcessors: Bool? = nil,
-        searchData: [String: RawJSON]? = nil,
-        skipEnrichUrl: Bool? = nil,
-        text: String? = nil,
-        visibility: UpdateActivityRequestVisibility? = nil,
-        visibilityTag: String? = nil
-    ) {
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, copyCustomToNotification: Bool? = nil, custom: [String: RawJSON]? = nil, enrichOwnFields: Bool? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, handleMentionNotifications: Bool? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, pollId: String? = nil, restrictReplies: UpdateActivityRequestRestrictReplies? = nil, runActivityProcessors: Bool? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, text: String? = nil, visibility: UpdateActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.collectionRefs = collectionRefs
         self._copyCustomToNotification = copyCustomToNotification
@@ -157,41 +132,23 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
         self.collectionRefs = try container.decodeIfPresent([String].self, forKey: .collectionRefs)
-        self._copyCustomToNotification = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .copyCustomToNotification
-        )
+        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
         self.expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
         self.feeds = try container.decodeIfPresent([String].self, forKey: .feeds)
         self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
-        self.handleMentionNotifications = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .handleMentionNotifications
-        )
+        self.handleMentionNotifications = try container.decodeIfPresent(Bool.self, forKey: .handleMentionNotifications)
         self.interestTags = try container.decodeIfPresent([String].self, forKey: .interestTags)
         self.location = try container.decodeIfPresent(Location.self, forKey: .location)
-        self.mentionedUserIds = try container.decodeIfPresent(
-            [String].self,
-            forKey: .mentionedUserIds
-        )
+        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
         self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.restrictReplies = try container.decodeIfPresent(
-            UpdateActivityRequestRestrictReplies.self,
-            forKey: .restrictReplies
-        )
-        self.runActivityProcessors = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .runActivityProcessors
-        )
+        self.restrictReplies = try container.decodeIfPresent(UpdateActivityRequestRestrictReplies.self, forKey: .restrictReplies)
+        self.runActivityProcessors = try container.decodeIfPresent(Bool.self, forKey: .runActivityProcessors)
         self.searchData = try container.decodeIfPresent([String: RawJSON].self, forKey: .searchData)
         self.skipEnrichUrl = try container.decodeIfPresent(Bool.self, forKey: .skipEnrichUrl)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
-        self.visibility = try container.decodeIfPresent(
-            UpdateActivityRequestVisibility.self,
-            forKey: .visibility
-        )
+        self.visibility = try container.decodeIfPresent(UpdateActivityRequestVisibility.self, forKey: .visibility)
         self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
     }
 
@@ -205,10 +162,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
         try container.encodeIfPresent(feeds, forKey: .feeds)
         try container.encodeIfPresent(filterTags, forKey: .filterTags)
-        try container.encodeIfPresent(
-            handleMentionNotifications,
-            forKey: .handleMentionNotifications
-        )
+        try container.encodeIfPresent(handleMentionNotifications, forKey: .handleMentionNotifications)
         try container.encodeIfPresent(interestTags, forKey: .interestTags)
         try container.encodeIfPresent(location, forKey: .location)
         try container.encodeIfPresent(mentionedUserIds, forKey: .mentionedUserIds)

@@ -20,17 +20,7 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
     public var type: String = "feeds.comment.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activity: ActivityResponse,
-        comment: CommentResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        reaction: FeedsReactionResponse,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.comment = comment
         self.createdAt = createdAt

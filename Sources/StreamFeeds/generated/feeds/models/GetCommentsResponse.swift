@@ -18,15 +18,7 @@ public final class GetCommentsResponse: @unchecked Sendable, Codable, JSONEncoda
     /// Number of comments directly on the object, excluding replies. Independent of depth, replies_limit and id_around, and not adjusted per viewer. Only present when include_top_level_comment_count is set
     public var topLevelCommentCount: Int?
 
-    public init(
-        commentCount: Int,
-        comments: [ThreadedCommentResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: String,
-        topLevelCommentCount: Int? = nil
-    ) {
+    public init(commentCount: Int, comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil, sort: String, topLevelCommentCount: Int? = nil) {
         self.commentCount = commentCount
         self.comments = comments
         self.duration = duration

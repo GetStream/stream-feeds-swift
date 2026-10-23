@@ -12,13 +12,7 @@ public final class FloodSimilarConfig: @unchecked Sendable, Codable, JSONEncodab
     public var threshold: Int
     public var timeWindow: String
 
-    public init(
-        action: String,
-        enabled: Bool,
-        similarityDistance: Int,
-        threshold: Int,
-        timeWindow: String
-    ) {
+    public init(action: String, enabled: Bool, similarityDistance: Int, threshold: Int, timeWindow: String) {
         self.action = action
         self.enabled = enabled
         self.similarityDistance = similarityDistance

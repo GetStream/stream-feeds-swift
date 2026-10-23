@@ -18,13 +18,7 @@ public final class FileUploadConfig: @unchecked Sendable, Codable, JSONEncodable
     /// This value is configurable from Stream's Dashboard App Settings.
     public var sizeLimit: Int
 
-    public init(
-        allowedFileExtensions: [String],
-        allowedMimeTypes: [String],
-        blockedFileExtensions: [String],
-        blockedMimeTypes: [String],
-        sizeLimit: Int
-    ) {
+    public init(allowedFileExtensions: [String], allowedMimeTypes: [String], blockedFileExtensions: [String], blockedMimeTypes: [String], sizeLimit: Int) {
         self.allowedFileExtensions = allowedFileExtensions
         self.allowedMimeTypes = allowedMimeTypes
         self.blockedFileExtensions = blockedFileExtensions

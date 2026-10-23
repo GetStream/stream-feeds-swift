@@ -19,14 +19,7 @@ public final class BanRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Duration of the ban in minutes
     public var timeout: Int?
 
-    public init(
-        deleteReactions: Bool? = nil,
-        ipBan: Bool? = nil,
-        reason: String? = nil,
-        shadow: Bool? = nil,
-        targetUserId: String,
-        timeout: Int? = nil
-    ) {
+    public init(deleteReactions: Bool? = nil, ipBan: Bool? = nil, reason: String? = nil, shadow: Bool? = nil, targetUserId: String, timeout: Int? = nil) {
         self.deleteReactions = deleteReactions
         self.ipBan = ipBan
         self.reason = reason

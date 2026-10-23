@@ -14,14 +14,7 @@ public final class UpdateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
     /// List of words to block
     public var words: [String]?
 
-    public init(
-        isConfusableFoldingEnabled: Bool? = nil,
-        isLeetCheckEnabled: Bool? = nil,
-        isPluralCheckEnabled: Bool? = nil,
-        isSubstringMatchingEnabled: Bool? = nil,
-        team: String? = nil,
-        words: [String]? = nil
-    ) {
+    public init(isConfusableFoldingEnabled: Bool? = nil, isLeetCheckEnabled: Bool? = nil, isPluralCheckEnabled: Bool? = nil, isSubstringMatchingEnabled: Bool? = nil, team: String? = nil, words: [String]? = nil) {
         self.isConfusableFoldingEnabled = isConfusableFoldingEnabled
         self.isLeetCheckEnabled = isLeetCheckEnabled
         self.isPluralCheckEnabled = isPluralCheckEnabled

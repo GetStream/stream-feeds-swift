@@ -16,13 +16,7 @@ public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncod
     /// Cursor for previous page
     public var prev: String?
 
-    public init(
-        duration: String,
-        follows: [FollowResponse],
-        groupCounts: [String: Int]? = nil,
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(duration: String, follows: [FollowResponse], groupCounts: [String: Int]? = nil, next: String? = nil, prev: String? = nil) {
         self.duration = duration
         self.follows = follows
         self.groupCounts = groupCounts

@@ -26,18 +26,7 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     public var type: String = "user.banned"
     public var user: UserResponseCommonFields
 
-    public init(
-        createdAt: Date,
-        createdBy: UserResponseCommonFields? = nil,
-        custom: [String: RawJSON],
-        expiration: Date? = nil,
-        reason: String? = nil,
-        receivedAt: Date? = nil,
-        reviewQueueItemId: String? = nil,
-        shadow: Bool? = nil,
-        team: String? = nil,
-        user: UserResponseCommonFields
-    ) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], expiration: Date? = nil, reason: String? = nil, receivedAt: Date? = nil, reviewQueueItemId: String? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom

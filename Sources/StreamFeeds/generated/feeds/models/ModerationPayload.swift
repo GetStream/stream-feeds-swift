@@ -18,19 +18,7 @@ public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodabl
     public var texts: [String]?
     public var videos: [String]?
 
-    public init(
-        audios: [String]? = nil,
-        countryCode: String? = nil,
-        custom: [String: RawJSON]? = nil,
-        imageIds: [String: String]? = nil,
-        imageOrderedKeys: [String]? = nil,
-        images: [String]? = nil,
-        otherMedia: [String]? = nil,
-        textIds: [String: String]? = nil,
-        textOrderedKeys: [String]? = nil,
-        texts: [String]? = nil,
-        videos: [String]? = nil
-    ) {
+    public init(audios: [String]? = nil, countryCode: String? = nil, custom: [String: RawJSON]? = nil, imageIds: [String: String]? = nil, imageOrderedKeys: [String]? = nil, images: [String]? = nil, otherMedia: [String]? = nil, textIds: [String: String]? = nil, textOrderedKeys: [String]? = nil, texts: [String]? = nil, videos: [String]? = nil) {
         self.audios = audios
         self.countryCode = countryCode
         self.custom = custom

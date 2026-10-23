@@ -43,17 +43,7 @@ public final class FeedRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Visibility setting for the feed. One of: public, visible, followers, members, private
     public var visibility: FeedRequestVisibility?
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        description: String? = nil,
-        feedGroupId: String,
-        feedId: String,
-        filterTags: [String]? = nil,
-        location: Location? = nil,
-        members: [FeedMemberRequest]? = nil,
-        name: String? = nil,
-        visibility: FeedRequestVisibility? = nil
-    ) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, feedGroupId: String, feedId: String, filterTags: [String]? = nil, location: Location? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedRequestVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.feedGroupId = feedGroupId
