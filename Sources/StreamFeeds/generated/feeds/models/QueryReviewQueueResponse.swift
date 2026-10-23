@@ -8,9 +8,7 @@ import StreamCore
 public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONEncodable {
     /// Configuration for moderation actions
     public var actionConfig: [String: [ModerationActionConfigResponse]]
-    public var defaultActionConfig: [String: [ModerationActionConfigResponse]]?
     public var duration: String
-    public var filterConfig: FilterConfigResponse?
     /// List of review queue items
     public var items: [ReviewQueueItemResponse]
     public var next: String?
@@ -18,11 +16,9 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
     /// Statistics about the review queue
     public var stats: [String: RawJSON]
 
-    public init(actionConfig: [String: [ModerationActionConfigResponse]], defaultActionConfig: [String: [ModerationActionConfigResponse]]? = nil, duration: String, filterConfig: FilterConfigResponse? = nil, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
+    public init(actionConfig: [String: [ModerationActionConfigResponse]], duration: String, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
         self.actionConfig = actionConfig
-        self.defaultActionConfig = defaultActionConfig
         self.duration = duration
-        self.filterConfig = filterConfig
         self.items = items
         self.next = next
         self.prev = prev
@@ -31,9 +27,7 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case actionConfig = "action_config"
-        case defaultActionConfig = "default_action_config"
         case duration
-        case filterConfig = "filter_config"
         case items
         case next
         case prev
@@ -44,9 +38,7 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
 extension QueryReviewQueueResponse: Hashable {
     public static func == (lhs: QueryReviewQueueResponse, rhs: QueryReviewQueueResponse) -> Bool {
         lhs.actionConfig == rhs.actionConfig &&
-            lhs.defaultActionConfig == rhs.defaultActionConfig &&
             lhs.duration == rhs.duration &&
-            lhs.filterConfig == rhs.filterConfig &&
             lhs.items == rhs.items &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev &&
@@ -55,9 +47,7 @@ extension QueryReviewQueueResponse: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(actionConfig)
-        hasher.combine(defaultActionConfig)
         hasher.combine(duration)
-        hasher.combine(filterConfig)
         hasher.combine(items)
         hasher.combine(next)
         hasher.combine(prev)

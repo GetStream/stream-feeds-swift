@@ -42,11 +42,10 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// The name of the poll
     public var name: String
     public var options: [PollOptionInput]?
-    public var team: String?
     /// Represents the visibility of votes in a poll.
     public var votingVisibility: CreatePollRequestVotingVisibility?
 
-    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, team: String? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom
@@ -57,7 +56,6 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
         self.maxVotesAllowed = maxVotesAllowed
         self.name = name
         self.options = options
-        self.team = team
         self.votingVisibility = votingVisibility
     }
 
@@ -72,7 +70,6 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
         case maxVotesAllowed = "max_votes_allowed"
         case name
         case options
-        case team
         case votingVisibility = "voting_visibility"
     }
 }
@@ -89,7 +86,6 @@ extension CreatePollRequest: Hashable {
             lhs.maxVotesAllowed == rhs.maxVotesAllowed &&
             lhs.name == rhs.name &&
             lhs.options == rhs.options &&
-            lhs.team == rhs.team &&
             lhs.votingVisibility == rhs.votingVisibility
     }
 
@@ -104,7 +100,6 @@ extension CreatePollRequest: Hashable {
         hasher.combine(maxVotesAllowed)
         hasher.combine(name)
         hasher.combine(options)
-        hasher.combine(team)
         hasher.combine(votingVisibility)
     }
 }

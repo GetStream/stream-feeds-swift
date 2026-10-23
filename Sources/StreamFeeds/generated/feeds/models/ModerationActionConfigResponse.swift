@@ -17,21 +17,16 @@ public final class ModerationActionConfigResponse: @unchecked Sendable, Codable,
     public var entityType: String
     /// Icon for the dashboard
     public var icon: String
-    public var id: String?
     /// Display order (lower numbers shown first)
     public var order: Int
-    /// Queue type this action config belongs to
-    public var queueType: String?
 
-    public init(action: String, custom: [String: RawJSON]? = nil, description: String, entityType: String, icon: String, id: String? = nil, order: Int, queueType: String? = nil) {
+    public init(action: String, custom: [String: RawJSON]? = nil, description: String, entityType: String, icon: String, order: Int) {
         self.action = action
         self.custom = custom
         self.description = description
         self.entityType = entityType
         self.icon = icon
-        self.id = id
         self.order = order
-        self.queueType = queueType
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -40,9 +35,7 @@ public final class ModerationActionConfigResponse: @unchecked Sendable, Codable,
         case description
         case entityType = "entity_type"
         case icon
-        case id
         case order
-        case queueType = "queue_type"
     }
 }
 
@@ -53,9 +46,7 @@ extension ModerationActionConfigResponse: Hashable {
             lhs.description == rhs.description &&
             lhs.entityType == rhs.entityType &&
             lhs.icon == rhs.icon &&
-            lhs.id == rhs.id &&
-            lhs.order == rhs.order &&
-            lhs.queueType == rhs.queueType
+            lhs.order == rhs.order
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -64,8 +55,6 @@ extension ModerationActionConfigResponse: Hashable {
         hasher.combine(description)
         hasher.combine(entityType)
         hasher.combine(icon)
-        hasher.combine(id)
         hasher.combine(order)
-        hasher.combine(queueType)
     }
 }

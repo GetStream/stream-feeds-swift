@@ -6,12 +6,7 @@ import Foundation
 import StreamCore
 
 public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiAudioConfig: AIAudioConfigResponse?
     public var aiImageConfig: AIImageConfig?
-    /// Configurable image moderation label definitions for dashboard rendering
-    public var aiImageLabelDefinitions: [AIImageLabelDefinition]?
-    /// Available L2 subclassifications per L1 image moderation label, based on the active provider
-    public var aiImageSubclassifications: [String: [String]]?
     public var aiTextConfig: AITextConfig?
     public var aiVideoConfig: AIVideoConfigResponse?
     /// Whether moderation should be performed asynchronously
@@ -22,8 +17,6 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var blockListConfig: BlockListConfig?
     /// When the configuration was created
     public var createdAt: Date
-    public var floodConfig: FloodConfig?
-    public var intentConfig: IntentConfigResponse?
     /// Unique identifier for the moderation configuration
     public var key: String
     public var llmConfig: LLMConfig?
@@ -33,11 +26,8 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var updatedAt: Date
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(aiAudioConfig: AIAudioConfigResponse? = nil, aiImageConfig: AIImageConfig? = nil, aiImageLabelDefinitions: [AIImageLabelDefinition]? = nil, aiImageSubclassifications: [String: [String]]? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigResponse? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, floodConfig: FloodConfig? = nil, intentConfig: IntentConfigResponse? = nil, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
-        self.aiAudioConfig = aiAudioConfig
+    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigResponse? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
-        self.aiImageLabelDefinitions = aiImageLabelDefinitions
-        self.aiImageSubclassifications = aiImageSubclassifications
         self.aiTextConfig = aiTextConfig
         self.aiVideoConfig = aiVideoConfig
         self.async = async
@@ -46,8 +36,6 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.automodToxicityConfig = automodToxicityConfig
         self.blockListConfig = blockListConfig
         self.createdAt = createdAt
-        self.floodConfig = floodConfig
-        self.intentConfig = intentConfig
         self.key = key
         self.llmConfig = llmConfig
         self.team = team
@@ -56,10 +44,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiAudioConfig = "ai_audio_config"
         case aiImageConfig = "ai_image_config"
-        case aiImageLabelDefinitions = "ai_image_label_definitions"
-        case aiImageSubclassifications = "ai_image_subclassifications"
         case aiTextConfig = "ai_text_config"
         case aiVideoConfig = "ai_video_config"
         case async
@@ -68,8 +53,6 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
         case automodToxicityConfig = "automod_toxicity_config"
         case blockListConfig = "block_list_config"
         case createdAt = "created_at"
-        case floodConfig = "flood_config"
-        case intentConfig = "intent_config"
         case key
         case llmConfig = "llm_config"
         case team
@@ -80,10 +63,7 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
 
 extension ConfigResponse: Hashable {
     public static func == (lhs: ConfigResponse, rhs: ConfigResponse) -> Bool {
-        lhs.aiAudioConfig == rhs.aiAudioConfig &&
-            lhs.aiImageConfig == rhs.aiImageConfig &&
-            lhs.aiImageLabelDefinitions == rhs.aiImageLabelDefinitions &&
-            lhs.aiImageSubclassifications == rhs.aiImageSubclassifications &&
+        lhs.aiImageConfig == rhs.aiImageConfig &&
             lhs.aiTextConfig == rhs.aiTextConfig &&
             lhs.aiVideoConfig == rhs.aiVideoConfig &&
             lhs.async == rhs.async &&
@@ -92,8 +72,6 @@ extension ConfigResponse: Hashable {
             lhs.automodToxicityConfig == rhs.automodToxicityConfig &&
             lhs.blockListConfig == rhs.blockListConfig &&
             lhs.createdAt == rhs.createdAt &&
-            lhs.floodConfig == rhs.floodConfig &&
-            lhs.intentConfig == rhs.intentConfig &&
             lhs.key == rhs.key &&
             lhs.llmConfig == rhs.llmConfig &&
             lhs.team == rhs.team &&
@@ -102,10 +80,7 @@ extension ConfigResponse: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(aiAudioConfig)
         hasher.combine(aiImageConfig)
-        hasher.combine(aiImageLabelDefinitions)
-        hasher.combine(aiImageSubclassifications)
         hasher.combine(aiTextConfig)
         hasher.combine(aiVideoConfig)
         hasher.combine(async)
@@ -114,8 +89,6 @@ extension ConfigResponse: Hashable {
         hasher.combine(automodToxicityConfig)
         hasher.combine(blockListConfig)
         hasher.combine(createdAt)
-        hasher.combine(floodConfig)
-        hasher.combine(intentConfig)
         hasher.combine(key)
         hasher.combine(llmConfig)
         hasher.combine(team)

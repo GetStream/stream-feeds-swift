@@ -10,14 +10,10 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     /// Date/time of creation
     public var createdAt: Date
     public var createdBy: UserResponseCommonFields?
-    public var custom: [String: RawJSON]
     /// The expiration date of the ban
     public var expiration: Date?
     /// The reason for the ban
     public var reason: String?
-    public var receivedAt: Date?
-    /// ID of the review queue item (flagged message) that triggered the ban, if the ban was applied from the moderation review queue
-    public var reviewQueueItemId: String?
     /// Whether the user was shadow banned
     public var shadow: Bool?
     /// The team of the channel where the target user was banned
@@ -26,14 +22,11 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     public var type: String = "user.banned"
     public var user: UserResponseCommonFields
 
-    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], expiration: Date? = nil, reason: String? = nil, receivedAt: Date? = nil, reviewQueueItemId: String? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, expiration: Date? = nil, reason: String? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
-        self.custom = custom
         self.expiration = expiration
         self.reason = reason
-        self.receivedAt = receivedAt
-        self.reviewQueueItemId = reviewQueueItemId
         self.shadow = shadow
         self.team = team
         self.user = user
@@ -42,11 +35,8 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
         case createdBy = "created_by"
-        case custom
         case expiration
         case reason
-        case receivedAt = "received_at"
-        case reviewQueueItemId = "review_queue_item_id"
         case shadow
         case team
         case type
@@ -58,11 +48,8 @@ extension UserBannedEvent: Hashable {
     public static func == (lhs: UserBannedEvent, rhs: UserBannedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
-            lhs.custom == rhs.custom &&
             lhs.expiration == rhs.expiration &&
             lhs.reason == rhs.reason &&
-            lhs.receivedAt == rhs.receivedAt &&
-            lhs.reviewQueueItemId == rhs.reviewQueueItemId &&
             lhs.shadow == rhs.shadow &&
             lhs.team == rhs.team &&
             lhs.type == rhs.type &&
@@ -72,11 +59,8 @@ extension UserBannedEvent: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(createdBy)
-        hasher.combine(custom)
         hasher.combine(expiration)
         hasher.combine(reason)
-        hasher.combine(receivedAt)
-        hasher.combine(reviewQueueItemId)
         hasher.combine(shadow)
         hasher.combine(team)
         hasher.combine(type)

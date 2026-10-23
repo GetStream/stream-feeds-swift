@@ -7,42 +7,24 @@ import StreamCore
 
 /// Configuration for reaction deletion action
 public final class DeleteReactionRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
-    /// ID of the reaction to delete (alternative to item_id)
-    public var entityId: String?
-    /// Type of the entity
-    public var entityType: String?
     /// Whether to permanently delete the reaction
     public var hardDelete: Bool?
-    /// Reason for deletion
-    public var reason: String?
 
-    public init(entityId: String? = nil, entityType: String? = nil, hardDelete: Bool? = nil, reason: String? = nil) {
-        self.entityId = entityId
-        self.entityType = entityType
+    public init(hardDelete: Bool? = nil) {
         self.hardDelete = hardDelete
-        self.reason = reason
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case entityId = "entity_id"
-        case entityType = "entity_type"
         case hardDelete = "hard_delete"
-        case reason
     }
 }
 
 extension DeleteReactionRequestPayload: Hashable {
     public static func == (lhs: DeleteReactionRequestPayload, rhs: DeleteReactionRequestPayload) -> Bool {
-        lhs.entityId == rhs.entityId &&
-            lhs.entityType == rhs.entityType &&
-            lhs.hardDelete == rhs.hardDelete &&
-            lhs.reason == rhs.reason
+        lhs.hardDelete == rhs.hardDelete
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(entityId)
-        hasher.combine(entityType)
         hasher.combine(hardDelete)
-        hasher.combine(reason)
     }
 }

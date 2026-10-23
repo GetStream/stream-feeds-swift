@@ -25,7 +25,6 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
         }
     }
 
-    public var activityCount: Int
     public var algorithmScores: [String: Float]?
     /// When the feed was created
     public var createdAt: Date
@@ -49,15 +48,12 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
     public var groupId: String
     /// Unique identifier for the feed
     public var id: String
-    public var location: Location?
     /// Number of members in this feed
     public var memberCount: Int
     /// Name of the feed
     public var name: String
     /// Capabilities the current user has for this feed
     public var ownCapabilities: [FeedOwnCapability]?
-    /// Follow relationships where the feed owner’s feeds are following the current user's feeds
-    public var ownFollowings: [FollowResponse]?
     /// Follow relationships where the current user's feeds are following this feed
     public var ownFollows: [FollowResponse]?
     public var ownMembership: FeedMemberResponse?
@@ -70,8 +66,7 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
     /// Visibility setting for the feed
     public var visibility: FeedSuggestionResponseVisibility?
 
-    public init(activityCount: Int, algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, location: Location? = nil, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: FeedSuggestionResponseVisibility? = nil) {
-        self.activityCount = activityCount
+    public init(algorithmScores: [String: Float]? = nil, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, reason: String? = nil, recommendationScore: Float? = nil, updatedAt: Date, visibility: FeedSuggestionResponseVisibility? = nil) {
         self.algorithmScores = algorithmScores
         self.createdAt = createdAt
         self.createdBy = createdBy
@@ -84,11 +79,9 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
         self.followingCount = followingCount
         self.groupId = groupId
         self.id = id
-        self.location = location
         self.memberCount = memberCount
         self.name = name
         self.ownCapabilities = ownCapabilities
-        self.ownFollowings = ownFollowings
         self.ownFollows = ownFollows
         self.ownMembership = ownMembership
         self.pinCount = pinCount
@@ -99,7 +92,6 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityCount = "activity_count"
         case algorithmScores = "algorithm_scores"
         case createdAt = "created_at"
         case createdBy = "created_by"
@@ -112,11 +104,9 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
         case followingCount = "following_count"
         case groupId = "group_id"
         case id
-        case location
         case memberCount = "member_count"
         case name
         case ownCapabilities = "own_capabilities"
-        case ownFollowings = "own_followings"
         case ownFollows = "own_follows"
         case ownMembership = "own_membership"
         case pinCount = "pin_count"
@@ -129,8 +119,7 @@ public final class FeedSuggestionResponse: @unchecked Sendable, Codable, JSONEnc
 
 extension FeedSuggestionResponse: Hashable {
     public static func == (lhs: FeedSuggestionResponse, rhs: FeedSuggestionResponse) -> Bool {
-        lhs.activityCount == rhs.activityCount &&
-            lhs.algorithmScores == rhs.algorithmScores &&
+        lhs.algorithmScores == rhs.algorithmScores &&
             lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
             lhs.custom == rhs.custom &&
@@ -142,11 +131,9 @@ extension FeedSuggestionResponse: Hashable {
             lhs.followingCount == rhs.followingCount &&
             lhs.groupId == rhs.groupId &&
             lhs.id == rhs.id &&
-            lhs.location == rhs.location &&
             lhs.memberCount == rhs.memberCount &&
             lhs.name == rhs.name &&
             lhs.ownCapabilities == rhs.ownCapabilities &&
-            lhs.ownFollowings == rhs.ownFollowings &&
             lhs.ownFollows == rhs.ownFollows &&
             lhs.ownMembership == rhs.ownMembership &&
             lhs.pinCount == rhs.pinCount &&
@@ -157,7 +144,6 @@ extension FeedSuggestionResponse: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activityCount)
         hasher.combine(algorithmScores)
         hasher.combine(createdAt)
         hasher.combine(createdBy)
@@ -170,11 +156,9 @@ extension FeedSuggestionResponse: Hashable {
         hasher.combine(followingCount)
         hasher.combine(groupId)
         hasher.combine(id)
-        hasher.combine(location)
         hasher.combine(memberCount)
         hasher.combine(name)
         hasher.combine(ownCapabilities)
-        hasher.combine(ownFollowings)
         hasher.combine(ownFollows)
         hasher.combine(ownMembership)
         hasher.combine(pinCount)

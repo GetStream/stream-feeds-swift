@@ -10,8 +10,6 @@ public final class SortParamRequest: @unchecked Sendable, Codable, JSONEncodable
     public var direction: Int?
     /// Name of field to sort by
     public var field: String?
-    /// Type of field to sort by. Empty string or omitted means string type (default). One of: number, boolean
-    public var type: String?
 
     public init(direction: Int? = nil, field: String? = nil) {
         self.direction = direction
@@ -21,20 +19,17 @@ public final class SortParamRequest: @unchecked Sendable, Codable, JSONEncodable
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case direction
         case field
-        case type
     }
 }
 
 extension SortParamRequest: Hashable {
     public static func == (lhs: SortParamRequest, rhs: SortParamRequest) -> Bool {
         lhs.direction == rhs.direction &&
-            lhs.field == rhs.field &&
-            lhs.type == rhs.type
+            lhs.field == rhs.field
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(direction)
         hasher.combine(field)
-        hasher.combine(type)
     }
 }

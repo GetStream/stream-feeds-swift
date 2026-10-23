@@ -11,7 +11,6 @@ extension FeedSuggestionResponse {
         feed: String = "user:feed-1"
     ) -> FeedSuggestionResponse {
         FeedSuggestionResponse(
-            activityCount: 0,
             createdAt: .fixed(),
             createdBy: .dummy(),
             description: "Test feed description",

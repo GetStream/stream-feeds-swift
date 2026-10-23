@@ -6,7 +6,6 @@ import Foundation
 import StreamCore
 
 public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var enrichOwnFields: Bool?
     /// Filters to apply to the query. Supports location-based queries with 'near' and 'within_bounds' operators.
     public var filter: [String: RawJSON]?
     public var limit: Int?
@@ -15,8 +14,7 @@ public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEnc
     /// Sorting parameters for the query
     public var sort: [SortParamRequest]?
 
-    public init(enrichOwnFields: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
-        self.enrichOwnFields = enrichOwnFields
+    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -25,7 +23,6 @@ public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEnc
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enrichOwnFields = "enrich_own_fields"
         case filter
         case limit
         case next
@@ -36,8 +33,7 @@ public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEnc
 
 extension QueryActivitiesRequest: Hashable {
     public static func == (lhs: QueryActivitiesRequest, rhs: QueryActivitiesRequest) -> Bool {
-        lhs.enrichOwnFields == rhs.enrichOwnFields &&
-            lhs.filter == rhs.filter &&
+        lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev &&
@@ -45,7 +41,6 @@ extension QueryActivitiesRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(enrichOwnFields)
         hasher.combine(filter)
         hasher.combine(limit)
         hasher.combine(next)

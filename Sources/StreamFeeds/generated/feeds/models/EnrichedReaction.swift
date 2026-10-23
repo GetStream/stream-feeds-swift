@@ -8,7 +8,6 @@ import StreamCore
 public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable {
     public var activityId: String
     public var childrenCounts: [String: Int]?
-    public var createdAt: String?
     public var data: [String: RawJSON]?
     public var id: String?
     public var kind: String
@@ -16,14 +15,12 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
     public var ownChildren: [String: [EnrichedReaction]]?
     public var parent: String?
     public var targetFeeds: [String]?
-    public var updatedAt: String?
     public var user: StreamData?
     public var userId: String
 
-    public init(activityId: String, childrenCounts: [String: Int]? = nil, createdAt: String? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, updatedAt: String? = nil, user: StreamData? = nil, userId: String) {
+    public init(activityId: String, childrenCounts: [String: Int]? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, user: StreamData? = nil, userId: String) {
         self.activityId = activityId
         self.childrenCounts = childrenCounts
-        self.createdAt = createdAt
         self.data = data
         self.id = id
         self.kind = kind
@@ -31,7 +28,6 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
         self.ownChildren = ownChildren
         self.parent = parent
         self.targetFeeds = targetFeeds
-        self.updatedAt = updatedAt
         self.user = user
         self.userId = userId
     }
@@ -39,7 +35,6 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case activityId = "activity_id"
         case childrenCounts = "children_counts"
-        case createdAt = "created_at"
         case data
         case id
         case kind
@@ -47,7 +42,6 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
         case ownChildren = "own_children"
         case parent
         case targetFeeds = "target_feeds"
-        case updatedAt = "updated_at"
         case user
         case userId = "user_id"
     }
@@ -57,7 +51,6 @@ extension EnrichedReaction: Hashable {
     public static func == (lhs: EnrichedReaction, rhs: EnrichedReaction) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.childrenCounts == rhs.childrenCounts &&
-            lhs.createdAt == rhs.createdAt &&
             lhs.data == rhs.data &&
             lhs.id == rhs.id &&
             lhs.kind == rhs.kind &&
@@ -65,7 +58,6 @@ extension EnrichedReaction: Hashable {
             lhs.ownChildren == rhs.ownChildren &&
             lhs.parent == rhs.parent &&
             lhs.targetFeeds == rhs.targetFeeds &&
-            lhs.updatedAt == rhs.updatedAt &&
             lhs.user == rhs.user &&
             lhs.userId == rhs.userId
     }
@@ -73,7 +65,6 @@ extension EnrichedReaction: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activityId)
         hasher.combine(childrenCounts)
-        hasher.combine(createdAt)
         hasher.combine(data)
         hasher.combine(id)
         hasher.combine(kind)
@@ -81,7 +72,6 @@ extension EnrichedReaction: Hashable {
         hasher.combine(ownChildren)
         hasher.combine(parent)
         hasher.combine(targetFeeds)
-        hasher.combine(updatedAt)
         hasher.combine(user)
         hasher.combine(userId)
     }

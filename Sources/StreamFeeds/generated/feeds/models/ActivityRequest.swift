@@ -42,16 +42,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
 
     /// List of attachments for the activity
     public var attachments: [Attachment]?
-    /// Collections that this activity references
-    public var collectionRefs: [String]?
-    /// Collections to create or update as part of this request, so an activity and the collections it references can be written in one call. Their refs (name:id) are added to collection_refs automatically; you do not need to restate them, and they count toward the same per-activity collection-reference limit, which is the effective cap here. A collection that already exists has its custom data updated. Use collection_refs instead when the collection already exists and you are only referencing it, which requires no collection permissions.
-    public var collections: [CollectionRequest]?
-    /// Whether to copy custom data to the notification activity (only applies when create_notification_activity is true) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
-    public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
-    private var _copyCustomToNotification: Bool?
-    /// Whether to create notification activities for mentioned users
-    public var createNotificationActivity: Bool?
     /// Custom data for the activity
     public var custom: [String: RawJSON]?
     /// Expiration time for the activity
@@ -71,14 +61,8 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
     public var parentId: String?
     /// ID of a poll to attach to activity
     public var pollId: String?
-    /// Controls who can add comments/replies to this activity. One of: everyone, people_i_follow, nobody
-    public var restrictReplies: ActivityRequestRestrictReplies?
     /// Additional data for search indexing
     public var searchData: [String: RawJSON]?
-    /// Whether to skip URL enrichment for the activity
-    public var skipEnrichUrl: Bool?
-    /// Whether to skip push notifications
-    public var skipPush: Bool?
     /// Text content of the activity
     public var text: String?
     /// Type of activity
@@ -88,12 +72,8 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
     /// If visibility is 'tag', this is the tag name and is required
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, collections: [CollectionRequest]? = nil, copyCustomToNotification: Bool? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: ActivityRequestRestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, searchData: [String: RawJSON]? = nil, text: String? = nil, type: String, visibility: ActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
-        self.collectionRefs = collectionRefs
-        self.collections = collections
-        self._copyCustomToNotification = copyCustomToNotification
-        self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.expiresAt = expiresAt
         self.feeds = feeds
@@ -104,10 +84,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
         self.mentionedUserIds = mentionedUserIds
         self.parentId = parentId
         self.pollId = pollId
-        self.restrictReplies = restrictReplies
         self.searchData = searchData
-        self.skipEnrichUrl = skipEnrichUrl
-        self.skipPush = skipPush
         self.text = text
         self.type = type
         self.visibility = visibility
@@ -116,10 +93,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case attachments
-        case collectionRefs = "collection_refs"
-        case collections
-        case copyCustomToNotification = "copy_custom_to_notification"
-        case createNotificationActivity = "create_notification_activity"
         case custom
         case expiresAt = "expires_at"
         case feeds
@@ -130,10 +103,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
         case mentionedUserIds = "mentioned_user_ids"
         case parentId = "parent_id"
         case pollId = "poll_id"
-        case restrictReplies = "restrict_replies"
         case searchData = "search_data"
-        case skipEnrichUrl = "skip_enrich_url"
-        case skipPush = "skip_push"
         case text
         case type
         case visibility
@@ -143,10 +113,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
-        self.collectionRefs = try container.decodeIfPresent([String].self, forKey: .collectionRefs)
-        self.collections = try container.decodeIfPresent([CollectionRequest].self, forKey: .collections)
-        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
-        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.expiresAt = try container.decodeIfPresent(String.self, forKey: .expiresAt)
         self.feeds = try container.decode([String].self, forKey: .feeds)
@@ -157,10 +123,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
         self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
         self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
         self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.restrictReplies = try container.decodeIfPresent(ActivityRequestRestrictReplies.self, forKey: .restrictReplies)
         self.searchData = try container.decodeIfPresent([String: RawJSON].self, forKey: .searchData)
-        self.skipEnrichUrl = try container.decodeIfPresent(Bool.self, forKey: .skipEnrichUrl)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.type = try container.decode(String.self, forKey: .type)
         self.visibility = try container.decodeIfPresent(ActivityRequestVisibility.self, forKey: .visibility)
@@ -170,10 +133,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(attachments, forKey: .attachments)
-        try container.encodeIfPresent(collectionRefs, forKey: .collectionRefs)
-        try container.encodeIfPresent(collections, forKey: .collections)
-        try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
-        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
         try container.encode(feeds, forKey: .feeds)
@@ -184,10 +143,7 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
         try container.encodeIfPresent(mentionedUserIds, forKey: .mentionedUserIds)
         try container.encodeIfPresent(parentId, forKey: .parentId)
         try container.encodeIfPresent(pollId, forKey: .pollId)
-        try container.encodeIfPresent(restrictReplies, forKey: .restrictReplies)
         try container.encodeIfPresent(searchData, forKey: .searchData)
-        try container.encodeIfPresent(skipEnrichUrl, forKey: .skipEnrichUrl)
-        try container.encodeIfPresent(skipPush, forKey: .skipPush)
         try container.encodeIfPresent(text, forKey: .text)
         try container.encode(type, forKey: .type)
         try container.encodeIfPresent(visibility, forKey: .visibility)
@@ -198,10 +154,6 @@ public final class ActivityRequest: @unchecked Sendable, Codable, JSONEncodable 
 extension ActivityRequest: Hashable {
     public static func == (lhs: ActivityRequest, rhs: ActivityRequest) -> Bool {
         lhs.attachments == rhs.attachments &&
-            lhs.collectionRefs == rhs.collectionRefs &&
-            lhs.collections == rhs.collections &&
-            lhs._copyCustomToNotification == rhs._copyCustomToNotification &&
-            lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&
             lhs.expiresAt == rhs.expiresAt &&
             lhs.feeds == rhs.feeds &&
@@ -212,10 +164,7 @@ extension ActivityRequest: Hashable {
             lhs.mentionedUserIds == rhs.mentionedUserIds &&
             lhs.parentId == rhs.parentId &&
             lhs.pollId == rhs.pollId &&
-            lhs.restrictReplies == rhs.restrictReplies &&
             lhs.searchData == rhs.searchData &&
-            lhs.skipEnrichUrl == rhs.skipEnrichUrl &&
-            lhs.skipPush == rhs.skipPush &&
             lhs.text == rhs.text &&
             lhs.type == rhs.type &&
             lhs.visibility == rhs.visibility &&
@@ -224,10 +173,6 @@ extension ActivityRequest: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
-        hasher.combine(collectionRefs)
-        hasher.combine(collections)
-        hasher.combine(_copyCustomToNotification)
-        hasher.combine(createNotificationActivity)
         hasher.combine(custom)
         hasher.combine(expiresAt)
         hasher.combine(feeds)
@@ -238,10 +183,7 @@ extension ActivityRequest: Hashable {
         hasher.combine(mentionedUserIds)
         hasher.combine(parentId)
         hasher.combine(pollId)
-        hasher.combine(restrictReplies)
         hasher.combine(searchData)
-        hasher.combine(skipEnrichUrl)
-        hasher.combine(skipPush)
         hasher.combine(text)
         hasher.combine(type)
         hasher.combine(visibility)

@@ -16,16 +16,13 @@ public final class BookmarkFolderResponse: @unchecked Sendable, Codable, JSONEnc
     public var name: String
     /// When the folder was last updated
     public var updatedAt: Date
-    /// User response object
-    public var user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
         self.id = id
         self.name = name
         self.updatedAt = updatedAt
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -34,7 +31,6 @@ public final class BookmarkFolderResponse: @unchecked Sendable, Codable, JSONEnc
         case id
         case name
         case updatedAt = "updated_at"
-        case user
     }
 }
 
@@ -44,8 +40,7 @@ extension BookmarkFolderResponse: Hashable {
             lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&
             lhs.name == rhs.name &&
-            lhs.updatedAt == rhs.updatedAt &&
-            lhs.user == rhs.user
+            lhs.updatedAt == rhs.updatedAt
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -54,6 +49,5 @@ extension BookmarkFolderResponse: Hashable {
         hasher.combine(id)
         hasher.combine(name)
         hasher.combine(updatedAt)
-        hasher.combine(user)
     }
 }
