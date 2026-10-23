@@ -15,12 +15,7 @@ public final class UserUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var type: String = "user.updated"
     public var user: UserResponsePrivacyFields
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        user: UserResponsePrivacyFields
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponsePrivacyFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.receivedAt = receivedAt

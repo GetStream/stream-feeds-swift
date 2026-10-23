@@ -30,28 +30,7 @@ public final class EntityCreatorResponse: @unchecked Sendable, Codable, JSONEnco
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(
-        avgResponseTime: Int? = nil,
-        banCount: Int,
-        banned: Bool,
-        blockedUserIds: [String],
-        createdAt: Date,
-        custom: [String: RawJSON],
-        deactivatedAt: Date? = nil,
-        deletedAt: Date? = nil,
-        deletedContentCount: Int,
-        flaggedCount: Int,
-        id: String,
-        image: String? = nil,
-        language: String,
-        lastActive: Date? = nil,
-        name: String? = nil,
-        online: Bool,
-        role: String,
-        teams: [String],
-        teamsRole: [String: String]? = nil,
-        updatedAt: Date
-    ) {
+    public init(avgResponseTime: Int? = nil, banCount: Int, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, deletedContentCount: Int, flaggedCount: Int, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banCount = banCount
         self.banned = banned

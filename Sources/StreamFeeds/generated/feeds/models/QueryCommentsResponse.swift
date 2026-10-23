@@ -14,12 +14,7 @@ public final class QueryCommentsResponse: @unchecked Sendable, Codable, JSONEnco
     /// Cursor for previous page
     public var prev: String?
 
-    public init(
-        comments: [CommentResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(comments: [CommentResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.comments = comments
         self.duration = duration
         self.next = next

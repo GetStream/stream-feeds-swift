@@ -15,13 +15,7 @@ public final class AppEventResponse: @unchecked Sendable, Codable, JSONEncodable
     /// string
     public var name: String
 
-    public init(
-        asyncUrlEnrichEnabled: Bool? = nil,
-        autoTranslationEnabled: Bool,
-        fileUploadConfig: FileUploadConfig? = nil,
-        imageUploadConfig: FileUploadConfig? = nil,
-        name: String
-    ) {
+    public init(asyncUrlEnrichEnabled: Bool? = nil, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig? = nil, imageUploadConfig: FileUploadConfig? = nil, name: String) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
         self.autoTranslationEnabled = autoTranslationEnabled
         self.fileUploadConfig = fileUploadConfig

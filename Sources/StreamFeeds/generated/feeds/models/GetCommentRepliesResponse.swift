@@ -14,13 +14,7 @@ public final class GetCommentRepliesResponse: @unchecked Sendable, Codable, JSON
     /// Sort order used for the replies (first, last, top, best, controversial)
     public var sort: String
 
-    public init(
-        comments: [ThreadedCommentResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: String
-    ) {
+    public init(comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil, sort: String) {
         self.comments = comments
         self.duration = duration
         self.next = next

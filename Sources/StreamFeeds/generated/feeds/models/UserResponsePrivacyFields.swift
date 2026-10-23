@@ -27,27 +27,7 @@ public final class UserResponsePrivacyFields: @unchecked Sendable, Codable, JSON
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(
-        avgResponseTime: Int? = nil,
-        banned: Bool,
-        blockedUserIds: [String],
-        createdAt: Date,
-        custom: [String: RawJSON],
-        deactivatedAt: Date? = nil,
-        deletedAt: Date? = nil,
-        id: String,
-        image: String? = nil,
-        invisible: Bool? = nil,
-        language: String,
-        lastActive: Date? = nil,
-        name: String? = nil,
-        online: Bool,
-        privacySettings: PrivacySettingsResponse? = nil,
-        role: String,
-        teams: [String],
-        teamsRole: [String: String]? = nil,
-        updatedAt: Date
-    ) {
+    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banned = banned
         self.blockedUserIds = blockedUserIds

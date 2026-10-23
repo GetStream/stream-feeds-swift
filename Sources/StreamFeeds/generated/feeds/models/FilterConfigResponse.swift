@@ -23,16 +23,7 @@ public final class FilterConfigResponse: @unchecked Sendable, Codable, JSONEncod
     /// Names of the app's moderation rules, available as filter values on the `label` field when filtering rule-flagged content. Includes disabled rules, since items flagged before a rule was turned off still carry its name; excludes deleted ones. Scoped to the caller's teams on a multi-tenant app. Capped at 30 names, ordered by name, so an app above that cap is listed partially.
     public var ruleNames: [String]?
 
-    public init(
-        aiImageLabels: [String]? = nil,
-        aiImageOcrLabels: [String]? = nil,
-        aiImageTaxonomy: [String: [String]]? = nil,
-        aiTextLabels: [String]? = nil,
-        configKeys: [String]? = nil,
-        filterableCustomKeys: [String]? = nil,
-        llmLabels: [String],
-        ruleNames: [String]? = nil
-    ) {
+    public init(aiImageLabels: [String]? = nil, aiImageOcrLabels: [String]? = nil, aiImageTaxonomy: [String: [String]]? = nil, aiTextLabels: [String]? = nil, configKeys: [String]? = nil, filterableCustomKeys: [String]? = nil, llmLabels: [String], ruleNames: [String]? = nil) {
         self.aiImageLabels = aiImageLabels
         self.aiImageOcrLabels = aiImageOcrLabels
         self.aiImageTaxonomy = aiImageTaxonomy

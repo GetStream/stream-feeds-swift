@@ -31,12 +31,7 @@ public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodab
     public var minConfidence: Float
     public var subclassifications: [String: RawJSON]?
 
-    public init(
-        action: AWSRekognitionRuleAction,
-        label: String,
-        minConfidence: Float,
-        subclassifications: [String: RawJSON]? = nil
-    ) {
+    public init(action: AWSRekognitionRuleAction, label: String, minConfidence: Float, subclassifications: [String: RawJSON]? = nil) {
         self.action = action
         self.label = label
         self.minConfidence = minConfidence

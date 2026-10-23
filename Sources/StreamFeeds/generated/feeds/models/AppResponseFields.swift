@@ -16,13 +16,7 @@ public final class AppResponseFields: @unchecked Sendable, Codable, JSONEncodabl
     /// The name of the app.
     public var name: String
 
-    public init(
-        asyncUrlEnrichEnabled: Bool,
-        autoTranslationEnabled: Bool,
-        fileUploadConfig: FileUploadConfig,
-        imageUploadConfig: FileUploadConfig,
-        name: String
-    ) {
+    public init(asyncUrlEnrichEnabled: Bool, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig, imageUploadConfig: FileUploadConfig, name: String) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
         self.autoTranslationEnabled = autoTranslationEnabled
         self.fileUploadConfig = fileUploadConfig

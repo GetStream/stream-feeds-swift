@@ -13,12 +13,7 @@ public final class AddActivityResponse: @unchecked Sendable, Codable, JSONEncoda
     /// Contains the activity ID when skip_existing is true and the activity already existed, so it was left unchanged.
     public var skippedExisting: [String]?
 
-    public init(
-        activity: ActivityResponse,
-        duration: String,
-        mentionNotificationsCreated: Int? = nil,
-        skippedExisting: [String]? = nil
-    ) {
+    public init(activity: ActivityResponse, duration: String, mentionNotificationsCreated: Int? = nil, skippedExisting: [String]? = nil) {
         self.activity = activity
         self.duration = duration
         self.mentionNotificationsCreated = mentionNotificationsCreated

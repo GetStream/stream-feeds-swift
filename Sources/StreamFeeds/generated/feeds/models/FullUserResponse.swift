@@ -30,30 +30,7 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(
-        avgResponseTime: Int? = nil,
-        banExpires: Date? = nil,
-        banned: Bool,
-        blockedUserIds: [String],
-        createdAt: Date,
-        custom: [String: RawJSON],
-        deactivatedAt: Date? = nil,
-        deletedAt: Date? = nil,
-        devices: [DeviceResponse],
-        id: String,
-        image: String? = nil,
-        invisible: Bool,
-        language: String,
-        lastActive: Date? = nil,
-        mutes: [UserMuteResponse],
-        name: String? = nil,
-        online: Bool,
-        privacySettings: PrivacySettingsResponse? = nil,
-        role: String,
-        teams: [String],
-        teamsRole: [String: String]? = nil,
-        updatedAt: Date
-    ) {
+    public init(avgResponseTime: Int? = nil, banExpires: Date? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, devices: [DeviceResponse], id: String, image: String? = nil, invisible: Bool, language: String, lastActive: Date? = nil, mutes: [UserMuteResponse], name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banExpires = banExpires
         self.banned = banned
@@ -122,10 +99,7 @@ public final class FullUserResponse: @unchecked Sendable, Codable, JSONEncodable
         self.mutes = try container.decode([UserMuteResponse].self, forKey: .mutes)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
         self.online = try container.decode(Bool.self, forKey: .online)
-        self.privacySettings = try container.decodeIfPresent(
-            PrivacySettingsResponse.self,
-            forKey: .privacySettings
-        )
+        self.privacySettings = try container.decodeIfPresent(PrivacySettingsResponse.self, forKey: .privacySettings)
         self.role = try container.decode(String.self, forKey: .role)
         self.teams = try container.decode([String].self, forKey: .teams)
         self.teamsRole = try container.decodeIfPresent([String: String].self, forKey: .teamsRole)

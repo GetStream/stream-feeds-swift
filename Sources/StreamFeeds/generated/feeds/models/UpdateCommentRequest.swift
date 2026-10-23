@@ -11,11 +11,7 @@ public final class UpdateCommentRequest: @unchecked Sendable, Codable, JSONEncod
     /// Updated text content of the comment
     public var comment: String?
     /// Whether to copy custom data to the notification activity (only applies when handle_mention_notifications creates notifications) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(
-        *,
-        deprecated,
-        message: "use notification_context.trigger.custom and notification_context.target.custom instead"
-    )
+    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
     public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
     private var _copyCustomToNotification: Bool?
     /// Updated custom data for the comment
@@ -28,16 +24,7 @@ public final class UpdateCommentRequest: @unchecked Sendable, Codable, JSONEncod
     public var skipEnrichUrl: Bool?
     public var skipPush: Bool?
 
-    public init(
-        attachments: [Attachment]? = nil,
-        comment: String? = nil,
-        copyCustomToNotification: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        handleMentionNotifications: Bool? = nil,
-        mentionedUserIds: [String]? = nil,
-        skipEnrichUrl: Bool? = nil,
-        skipPush: Bool? = nil
-    ) {
+    public init(attachments: [Attachment]? = nil, comment: String? = nil, copyCustomToNotification: Bool? = nil, custom: [String: RawJSON]? = nil, handleMentionNotifications: Bool? = nil, mentionedUserIds: [String]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil) {
         self.attachments = attachments
         self.comment = comment
         self._copyCustomToNotification = copyCustomToNotification
@@ -63,19 +50,10 @@ public final class UpdateCommentRequest: @unchecked Sendable, Codable, JSONEncod
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
         self.comment = try container.decodeIfPresent(String.self, forKey: .comment)
-        self._copyCustomToNotification = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .copyCustomToNotification
-        )
+        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.handleMentionNotifications = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .handleMentionNotifications
-        )
-        self.mentionedUserIds = try container.decodeIfPresent(
-            [String].self,
-            forKey: .mentionedUserIds
-        )
+        self.handleMentionNotifications = try container.decodeIfPresent(Bool.self, forKey: .handleMentionNotifications)
+        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
         self.skipEnrichUrl = try container.decodeIfPresent(Bool.self, forKey: .skipEnrichUrl)
         self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
     }
@@ -86,10 +64,7 @@ public final class UpdateCommentRequest: @unchecked Sendable, Codable, JSONEncod
         try container.encodeIfPresent(comment, forKey: .comment)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
         try container.encodeIfPresent(custom, forKey: .custom)
-        try container.encodeIfPresent(
-            handleMentionNotifications,
-            forKey: .handleMentionNotifications
-        )
+        try container.encodeIfPresent(handleMentionNotifications, forKey: .handleMentionNotifications)
         try container.encodeIfPresent(mentionedUserIds, forKey: .mentionedUserIds)
         try container.encodeIfPresent(skipEnrichUrl, forKey: .skipEnrichUrl)
         try container.encodeIfPresent(skipPush, forKey: .skipPush)

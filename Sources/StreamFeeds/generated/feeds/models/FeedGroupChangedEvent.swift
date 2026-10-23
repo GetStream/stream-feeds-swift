@@ -17,14 +17,7 @@ public final class FeedGroupChangedEvent: @unchecked Sendable, Event, Codable, J
     public var type: String = "feeds.feed_group.changed"
     public var user: UserResponseCommonFields?
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

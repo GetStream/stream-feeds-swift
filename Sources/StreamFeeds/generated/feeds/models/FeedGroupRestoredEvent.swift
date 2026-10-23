@@ -18,14 +18,7 @@ public final class FeedGroupRestoredEvent: @unchecked Sendable, Event, Codable, 
     /// The type of event: "feeds.feed_group.restored" in this case
     public var type: String = "feeds.feed_group.restored"
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        groupId: String,
-        receivedAt: Date? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, groupId: String, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

@@ -19,15 +19,7 @@ public final class ActivityUnpinnedEvent: @unchecked Sendable, Event, Codable, J
     public var type: String = "feeds.activity.unpinned"
     public var user: UserResponseCommonFields?
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        pinnedActivity: PinActivityResponse,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, pinnedActivity: PinActivityResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

@@ -23,18 +23,7 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
     /// User response object
     public var user: UserResponse
 
-    public init(
-        activity: ActivityResponse,
-        activityId: String? = nil,
-        comment: CommentResponse? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        folder: BookmarkFolderResponse? = nil,
-        objectId: String,
-        objectType: String,
-        updatedAt: Date,
-        user: UserResponse
-    ) {
+    public init(activity: ActivityResponse, activityId: String? = nil, comment: CommentResponse? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse? = nil, objectId: String, objectType: String, updatedAt: Date, user: UserResponse) {
         self.activity = activity
         self.activityId = activityId
         self.comment = comment

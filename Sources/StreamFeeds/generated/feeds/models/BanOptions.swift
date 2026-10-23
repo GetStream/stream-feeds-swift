@@ -11,12 +11,7 @@ public final class BanOptions: @unchecked Sendable, Codable, JSONEncodable {
     public var reason: String?
     public var shadowBan: Bool?
 
-    public init(
-        duration: Int? = nil,
-        ipBan: Bool? = nil,
-        reason: String? = nil,
-        shadowBan: Bool? = nil
-    ) {
+    public init(duration: Int? = nil, ipBan: Bool? = nil, reason: String? = nil, shadowBan: Bool? = nil) {
         self.duration = duration
         self.ipBan = ipBan
         self.reason = reason

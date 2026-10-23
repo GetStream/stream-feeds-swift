@@ -45,19 +45,7 @@ public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Voting visibility
     public var votingVisibility: UpdatePollRequestVotingVisibility?
 
-    public init(
-        allowAnswers: Bool? = nil,
-        allowUserSuggestedOptions: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        description: String? = nil,
-        enforceUniqueVote: Bool? = nil,
-        id: String,
-        isClosed: Bool? = nil,
-        maxVotesAllowed: Int? = nil,
-        name: String,
-        options: [PollOptionRequest]? = nil,
-        votingVisibility: UpdatePollRequestVotingVisibility? = nil
-    ) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: UpdatePollRequestVotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom

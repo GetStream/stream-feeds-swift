@@ -46,20 +46,7 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Represents the visibility of votes in a poll.
     public var votingVisibility: CreatePollRequestVotingVisibility?
 
-    public init(
-        allowAnswers: Bool? = nil,
-        allowUserSuggestedOptions: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        description: String? = nil,
-        enforceUniqueVote: Bool? = nil,
-        id: String? = nil,
-        isClosed: Bool? = nil,
-        maxVotesAllowed: Int? = nil,
-        name: String,
-        options: [PollOptionInput]? = nil,
-        team: String? = nil,
-        votingVisibility: CreatePollRequestVotingVisibility? = nil
-    ) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, team: String? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom

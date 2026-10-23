@@ -14,15 +14,7 @@ public final class Images: @unchecked Sendable, Codable, JSONEncodable {
     public var fixedWidthStill: ImageData
     public var original: ImageData
 
-    public init(
-        fixedHeight: ImageData,
-        fixedHeightDownsampled: ImageData,
-        fixedHeightStill: ImageData,
-        fixedWidth: ImageData,
-        fixedWidthDownsampled: ImageData,
-        fixedWidthStill: ImageData,
-        original: ImageData
-    ) {
+    public init(fixedHeight: ImageData, fixedHeightDownsampled: ImageData, fixedHeightStill: ImageData, fixedWidth: ImageData, fixedWidthDownsampled: ImageData, fixedWidthStill: ImageData, original: ImageData) {
         self.fixedHeight = fixedHeight
         self.fixedHeightDownsampled = fixedHeightDownsampled
         self.fixedHeightStill = fixedHeightStill

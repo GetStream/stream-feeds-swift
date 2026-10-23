@@ -29,27 +29,7 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
     public var team: String?
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(
-        aiAudioConfig: AIAudioConfigRequest? = nil,
-        aiImageConfig: AIImageConfig? = nil,
-        aiTextConfig: AITextConfig? = nil,
-        aiVideoConfig: AIVideoConfigRequest? = nil,
-        async: Bool? = nil,
-        automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil,
-        automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil,
-        automodToxicityConfig: AutomodToxicityConfig? = nil,
-        awsRekognitionConfig: AIImageConfig? = nil,
-        blockListConfig: BlockListConfig? = nil,
-        bodyguardConfig: AITextConfig? = nil,
-        floodConfig: FloodConfig? = nil,
-        googleVisionConfig: GoogleVisionConfig? = nil,
-        intentConfig: IntentConfigRequest? = nil,
-        key: String,
-        llmConfig: LLMConfig? = nil,
-        ruleBuilderConfig: RuleBuilderConfig? = nil,
-        team: String? = nil,
-        velocityFilterConfig: VelocityFilterConfig? = nil
-    ) {
+    public init(aiAudioConfig: AIAudioConfigRequest? = nil, aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigRequest? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, floodConfig: FloodConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, intentConfig: IntentConfigRequest? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiAudioConfig = aiAudioConfig
         self.aiImageConfig = aiImageConfig
         self.aiTextConfig = aiTextConfig

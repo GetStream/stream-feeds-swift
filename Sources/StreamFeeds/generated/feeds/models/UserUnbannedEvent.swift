@@ -20,15 +20,7 @@ public final class UserUnbannedEvent: @unchecked Sendable, Event, Codable, JSONE
     public var type: String = "user.unbanned"
     public var user: UserResponseCommonFields
 
-    public init(
-        createdAt: Date,
-        createdBy: UserResponseCommonFields? = nil,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        shadow: Bool? = nil,
-        team: String? = nil,
-        user: UserResponseCommonFields
-    ) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, custom: [String: RawJSON], receivedAt: Date? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom

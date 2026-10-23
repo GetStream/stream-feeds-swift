@@ -14,13 +14,7 @@ public final class QueryFeedMembersRequest: @unchecked Sendable, Codable, JSONEn
     /// Sort parameters for the query
     public var sort: [SortParamRequest]?
 
-    public init(
-        filter: [String: RawJSON]? = nil,
-        limit: Int? = nil,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: [SortParamRequest]? = nil
-    ) {
+    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
         self.filter = filter
         self.limit = limit
         self.next = next

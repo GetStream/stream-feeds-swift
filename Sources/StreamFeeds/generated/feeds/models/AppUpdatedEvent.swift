@@ -15,12 +15,7 @@ public final class AppUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     /// The type of event: "app.updated" in this case
     public var type: String = "app.updated"
 
-    public init(
-        app: AppEventResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil
-    ) {
+    public init(app: AppEventResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil) {
         self.app = app
         self.createdAt = createdAt
         self.custom = custom

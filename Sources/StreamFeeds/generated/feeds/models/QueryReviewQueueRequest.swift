@@ -23,18 +23,7 @@ public final class QueryReviewQueueRequest: @unchecked Sendable, Codable, JSONEn
     /// Whether to return only statistics
     public var statsOnly: Bool?
 
-    public init(
-        excludeDefaultActionConfig: Bool? = nil,
-        filter: [String: RawJSON]? = nil,
-        limit: Int? = nil,
-        lockCount: Int? = nil,
-        lockDuration: Int? = nil,
-        lockItems: Bool? = nil,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: [SortParamRequest]? = nil,
-        statsOnly: Bool? = nil
-    ) {
+    public init(excludeDefaultActionConfig: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, lockCount: Int? = nil, lockDuration: Int? = nil, lockItems: Bool? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, statsOnly: Bool? = nil) {
         self.excludeDefaultActionConfig = excludeDefaultActionConfig
         self.filter = filter
         self.limit = limit

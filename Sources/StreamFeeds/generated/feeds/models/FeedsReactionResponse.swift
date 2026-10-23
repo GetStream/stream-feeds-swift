@@ -15,15 +15,7 @@ public final class FeedsReactionResponse: @unchecked Sendable, Codable, JSONEnco
     /// User response object
     public var user: UserResponse
 
-    public init(
-        activityId: String,
-        commentId: String? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        type: String,
-        updatedAt: Date,
-        user: UserResponse
-    ) {
+    public init(activityId: String, commentId: String? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, type: String, updatedAt: Date, user: UserResponse) {
         self.activityId = activityId
         self.commentId = commentId
         self.createdAt = createdAt

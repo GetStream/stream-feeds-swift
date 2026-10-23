@@ -80,35 +80,11 @@ public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncoda
     /// Configuration for shadow block action
     public var shadowBlock: ShadowBlockActionRequestPayload?
     /// Deprecated: Use restore instead, which now also reverses a block or shadow block. Configuration for unblock action.
-    @available(
-        *,
-        deprecated,
-        message: "Use restore instead, which now also reverses a block or shadow block."
-    )
+    @available(*, deprecated, message: "Use restore instead, which now also reverses a block or shadow block.")
     public var unblock: UnblockActionRequestPayload? { get { _unblock } set { _unblock = newValue } }
     private var _unblock: UnblockActionRequestPayload?
 
-    public init(
-        actionType: SubmitActionRequestActionType,
-        appealId: String? = nil,
-        block: BlockActionRequestPayload? = nil,
-        bypass: BypassActionRequest? = nil,
-        custom: CustomActionRequestPayload? = nil,
-        deleteActivity: DeleteActivityRequestPayload? = nil,
-        deleteComment: DeleteCommentRequestPayload? = nil,
-        deletePoll: DeletePollRequestPayload? = nil,
-        deletePollAnswer: DeletePollAnswerRequestPayload? = nil,
-        deletePollOption: DeletePollOptionRequestPayload? = nil,
-        deleteReaction: DeleteReactionRequestPayload? = nil,
-        escalate: EscalatePayload? = nil,
-        flag: FlagRequest? = nil,
-        itemId: String? = nil,
-        markReviewed: MarkReviewedRequestPayload? = nil,
-        rejectAppeal: RejectAppealRequestPayload? = nil,
-        restore: RestoreActionRequestPayload? = nil,
-        shadowBlock: ShadowBlockActionRequestPayload? = nil,
-        unblock: UnblockActionRequestPayload? = nil
-    ) {
+    public init(actionType: SubmitActionRequestActionType, appealId: String? = nil, block: BlockActionRequestPayload? = nil, bypass: BypassActionRequest? = nil, custom: CustomActionRequestPayload? = nil, deleteActivity: DeleteActivityRequestPayload? = nil, deleteComment: DeleteCommentRequestPayload? = nil, deletePoll: DeletePollRequestPayload? = nil, deletePollAnswer: DeletePollAnswerRequestPayload? = nil, deletePollOption: DeletePollOptionRequestPayload? = nil, deleteReaction: DeleteReactionRequestPayload? = nil, escalate: EscalatePayload? = nil, flag: FlagRequest? = nil, itemId: String? = nil, markReviewed: MarkReviewedRequestPayload? = nil, rejectAppeal: RejectAppealRequestPayload? = nil, restore: RestoreActionRequestPayload? = nil, shadowBlock: ShadowBlockActionRequestPayload? = nil, unblock: UnblockActionRequestPayload? = nil) {
         self.actionType = actionType
         self.appealId = appealId
         self.block = block
@@ -154,61 +130,25 @@ public final class SubmitActionRequest: @unchecked Sendable, Codable, JSONEncoda
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.actionType = try container.decode(
-            SubmitActionRequestActionType.self,
-            forKey: .actionType
-        )
+        self.actionType = try container.decode(SubmitActionRequestActionType.self, forKey: .actionType)
         self.appealId = try container.decodeIfPresent(String.self, forKey: .appealId)
         self.block = try container.decodeIfPresent(BlockActionRequestPayload.self, forKey: .block)
         self.bypass = try container.decodeIfPresent(BypassActionRequest.self, forKey: .bypass)
         self.custom = try container.decodeIfPresent(CustomActionRequestPayload.self, forKey: .custom)
-        self.deleteActivity = try container.decodeIfPresent(
-            DeleteActivityRequestPayload.self,
-            forKey: .deleteActivity
-        )
-        self.deleteComment = try container.decodeIfPresent(
-            DeleteCommentRequestPayload.self,
-            forKey: .deleteComment
-        )
-        self.deletePoll = try container.decodeIfPresent(
-            DeletePollRequestPayload.self,
-            forKey: .deletePoll
-        )
-        self.deletePollAnswer = try container.decodeIfPresent(
-            DeletePollAnswerRequestPayload.self,
-            forKey: .deletePollAnswer
-        )
-        self.deletePollOption = try container.decodeIfPresent(
-            DeletePollOptionRequestPayload.self,
-            forKey: .deletePollOption
-        )
-        self.deleteReaction = try container.decodeIfPresent(
-            DeleteReactionRequestPayload.self,
-            forKey: .deleteReaction
-        )
+        self.deleteActivity = try container.decodeIfPresent(DeleteActivityRequestPayload.self, forKey: .deleteActivity)
+        self.deleteComment = try container.decodeIfPresent(DeleteCommentRequestPayload.self, forKey: .deleteComment)
+        self.deletePoll = try container.decodeIfPresent(DeletePollRequestPayload.self, forKey: .deletePoll)
+        self.deletePollAnswer = try container.decodeIfPresent(DeletePollAnswerRequestPayload.self, forKey: .deletePollAnswer)
+        self.deletePollOption = try container.decodeIfPresent(DeletePollOptionRequestPayload.self, forKey: .deletePollOption)
+        self.deleteReaction = try container.decodeIfPresent(DeleteReactionRequestPayload.self, forKey: .deleteReaction)
         self.escalate = try container.decodeIfPresent(EscalatePayload.self, forKey: .escalate)
         self.flag = try container.decodeIfPresent(FlagRequest.self, forKey: .flag)
         self.itemId = try container.decodeIfPresent(String.self, forKey: .itemId)
-        self.markReviewed = try container.decodeIfPresent(
-            MarkReviewedRequestPayload.self,
-            forKey: .markReviewed
-        )
-        self.rejectAppeal = try container.decodeIfPresent(
-            RejectAppealRequestPayload.self,
-            forKey: .rejectAppeal
-        )
-        self.restore = try container.decodeIfPresent(
-            RestoreActionRequestPayload.self,
-            forKey: .restore
-        )
-        self.shadowBlock = try container.decodeIfPresent(
-            ShadowBlockActionRequestPayload.self,
-            forKey: .shadowBlock
-        )
-        self._unblock = try container.decodeIfPresent(
-            UnblockActionRequestPayload.self,
-            forKey: .unblock
-        )
+        self.markReviewed = try container.decodeIfPresent(MarkReviewedRequestPayload.self, forKey: .markReviewed)
+        self.rejectAppeal = try container.decodeIfPresent(RejectAppealRequestPayload.self, forKey: .rejectAppeal)
+        self.restore = try container.decodeIfPresent(RestoreActionRequestPayload.self, forKey: .restore)
+        self.shadowBlock = try container.decodeIfPresent(ShadowBlockActionRequestPayload.self, forKey: .shadowBlock)
+        self._unblock = try container.decodeIfPresent(UnblockActionRequestPayload.self, forKey: .unblock)
     }
 
     public func encode(to encoder: Encoder) throws {

@@ -51,32 +51,7 @@ public final class AppealItemResponse: @unchecked Sendable, Codable, JSONEncodab
     /// User response object
     public var user: UserResponse?
 
-    public init(
-        actions: [ActionLogResponse]? = nil,
-        aiTextSeverity: String? = nil,
-        appealReason: String,
-        appealReasonLanguage: String? = nil,
-        attachments: [String]? = nil,
-        configKey: String? = nil,
-        createdAt: Date,
-        decisionReason: String? = nil,
-        entityContent: ModerationPayload? = nil,
-        entityId: String,
-        entityType: String,
-        flagLabels: [String]? = nil,
-        flagTypes: [String]? = nil,
-        flags: [ModerationFlagResponse]? = nil,
-        id: String,
-        languages: [String]? = nil,
-        moderationAction: ActionLogResponse? = nil,
-        originalModerationAction: ActionLogResponse? = nil,
-        recommendedAction: String? = nil,
-        reviewQueueItemId: String? = nil,
-        severity: Int? = nil,
-        status: String,
-        updatedAt: Date,
-        user: UserResponse? = nil
-    ) {
+    public init(actions: [ActionLogResponse]? = nil, aiTextSeverity: String? = nil, appealReason: String, appealReasonLanguage: String? = nil, attachments: [String]? = nil, configKey: String? = nil, createdAt: Date, decisionReason: String? = nil, entityContent: ModerationPayload? = nil, entityId: String, entityType: String, flagLabels: [String]? = nil, flagTypes: [String]? = nil, flags: [ModerationFlagResponse]? = nil, id: String, languages: [String]? = nil, moderationAction: ActionLogResponse? = nil, originalModerationAction: ActionLogResponse? = nil, recommendedAction: String? = nil, reviewQueueItemId: String? = nil, severity: Int? = nil, status: String, updatedAt: Date, user: UserResponse? = nil) {
         self.actions = actions
         self.aiTextSeverity = aiTextSeverity
         self.appealReason = appealReason

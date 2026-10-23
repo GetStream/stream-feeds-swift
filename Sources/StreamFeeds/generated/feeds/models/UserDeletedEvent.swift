@@ -21,15 +21,7 @@ public final class UserDeletedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var type: String = "user.deleted"
     public var user: UserResponseCommonFields
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        deleteConversation: String,
-        deleteUser: String,
-        hardDelete: Bool,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], deleteConversation: String, deleteUser: String, hardDelete: Bool, receivedAt: Date? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.deleteConversation = deleteConversation

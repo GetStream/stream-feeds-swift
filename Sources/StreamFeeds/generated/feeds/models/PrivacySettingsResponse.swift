@@ -14,11 +14,7 @@ public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEn
     /// The settings for typing indicator events.
     public var typingIndicators: TypingIndicatorsResponse?
 
-    public init(
-        deliveryReceipts: DeliveryReceiptsResponse? = nil,
-        readReceipts: ReadReceiptsResponse? = nil,
-        typingIndicators: TypingIndicatorsResponse? = nil
-    ) {
+    public init(deliveryReceipts: DeliveryReceiptsResponse? = nil, readReceipts: ReadReceiptsResponse? = nil, typingIndicators: TypingIndicatorsResponse? = nil) {
         self.deliveryReceipts = deliveryReceipts
         self.readReceipts = readReceipts
         self.typingIndicators = typingIndicators

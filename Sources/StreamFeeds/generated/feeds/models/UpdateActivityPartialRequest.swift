@@ -7,11 +7,7 @@ import StreamCore
 
 public final class UpdateActivityPartialRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Whether to copy custom data to the notification activity (only applies when handle_mention_notifications creates notifications) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(
-        *,
-        deprecated,
-        message: "use notification_context.trigger.custom and notification_context.target.custom instead"
-    )
+    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
     public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
     private var _copyCustomToNotification: Bool?
     /// If true, enriches the activity's current_feed with own_* fields (own_follows, own_followings, own_capabilities, own_membership). Defaults to false for performance.
@@ -25,14 +21,7 @@ public final class UpdateActivityPartialRequest: @unchecked Sendable, Codable, J
     /// List of field names to remove. Supported fields: 'custom', 'visibility_tag', 'location', 'expires_at', 'filter_tags', 'interest_tags', 'attachments', 'poll_id', 'mentioned_user_ids', 'search_data'. Use dot-notation for nested custom fields (e.g., 'custom.field_name')
     public var unset: [String]?
 
-    public init(
-        copyCustomToNotification: Bool? = nil,
-        enrichOwnFields: Bool? = nil,
-        handleMentionNotifications: Bool? = nil,
-        runActivityProcessors: Bool? = nil,
-        set: [String: RawJSON]? = nil,
-        unset: [String]? = nil
-    ) {
+    public init(copyCustomToNotification: Bool? = nil, enrichOwnFields: Bool? = nil, handleMentionNotifications: Bool? = nil, runActivityProcessors: Bool? = nil, set: [String: RawJSON]? = nil, unset: [String]? = nil) {
         self._copyCustomToNotification = copyCustomToNotification
         self.enrichOwnFields = enrichOwnFields
         self.handleMentionNotifications = handleMentionNotifications
@@ -52,19 +41,10 @@ public final class UpdateActivityPartialRequest: @unchecked Sendable, Codable, J
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self._copyCustomToNotification = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .copyCustomToNotification
-        )
+        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
         self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
-        self.handleMentionNotifications = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .handleMentionNotifications
-        )
-        self.runActivityProcessors = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .runActivityProcessors
-        )
+        self.handleMentionNotifications = try container.decodeIfPresent(Bool.self, forKey: .handleMentionNotifications)
+        self.runActivityProcessors = try container.decodeIfPresent(Bool.self, forKey: .runActivityProcessors)
         self.set = try container.decodeIfPresent([String: RawJSON].self, forKey: .set)
         self.unset = try container.decodeIfPresent([String].self, forKey: .unset)
     }
@@ -73,10 +53,7 @@ public final class UpdateActivityPartialRequest: @unchecked Sendable, Codable, J
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
         try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
-        try container.encodeIfPresent(
-            handleMentionNotifications,
-            forKey: .handleMentionNotifications
-        )
+        try container.encodeIfPresent(handleMentionNotifications, forKey: .handleMentionNotifications)
         try container.encodeIfPresent(runActivityProcessors, forKey: .runActivityProcessors)
         try container.encodeIfPresent(set, forKey: .set)
         try container.encodeIfPresent(unset, forKey: .unset)

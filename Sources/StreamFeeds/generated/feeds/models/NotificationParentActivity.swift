@@ -12,12 +12,7 @@ public final class NotificationParentActivity: @unchecked Sendable, Codable, JSO
     public var type: String?
     public var userId: String?
 
-    public init(
-        attachments: [Attachment]? = nil,
-        id: String,
-        text: String? = nil,
-        userId: String? = nil
-    ) {
+    public init(attachments: [Attachment]? = nil, id: String, text: String? = nil, userId: String? = nil) {
         self.attachments = attachments
         self.id = id
         self.text = text

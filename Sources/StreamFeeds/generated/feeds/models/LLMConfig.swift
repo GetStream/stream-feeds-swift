@@ -14,15 +14,7 @@ public final class LLMConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var rules: [LLMRule]
     public var severityDescriptions: [String: String]?
 
-    public init(
-        appContext: String? = nil,
-        async: Bool? = nil,
-        contextCustomKeys: [String]? = nil,
-        customKeysContextDescription: String? = nil,
-        enabled: Bool,
-        rules: [LLMRule],
-        severityDescriptions: [String: String]? = nil
-    ) {
+    public init(appContext: String? = nil, async: Bool? = nil, contextCustomKeys: [String]? = nil, customKeysContextDescription: String? = nil, enabled: Bool, rules: [LLMRule], severityDescriptions: [String: String]? = nil) {
         self.appContext = appContext
         self.async = async
         self.contextCustomKeys = contextCustomKeys

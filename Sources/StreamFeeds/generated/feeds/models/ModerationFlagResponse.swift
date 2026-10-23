@@ -27,25 +27,7 @@ public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEnc
     public var user: UserResponse?
     public var userId: String
 
-    public init(
-        contentPublishedAt: Date? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        entityCreatorId: String? = nil,
-        entityId: String,
-        entityType: String,
-        id: String? = nil,
-        labels: [String]? = nil,
-        moderationPayload: ModerationPayloadResponse? = nil,
-        reason: String? = nil,
-        result: [[String: RawJSON]],
-        reviewQueueItem: ReviewQueueItemResponse? = nil,
-        reviewQueueItemId: String? = nil,
-        type: String,
-        updatedAt: Date,
-        user: UserResponse? = nil,
-        userId: String
-    ) {
+    public init(contentPublishedAt: Date? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, id: String? = nil, labels: [String]? = nil, moderationPayload: ModerationPayloadResponse? = nil, reason: String? = nil, result: [[String: RawJSON]], reviewQueueItem: ReviewQueueItemResponse? = nil, reviewQueueItemId: String? = nil, type: String, updatedAt: Date, user: UserResponse? = nil, userId: String) {
         self.contentPublishedAt = contentPublishedAt
         self.createdAt = createdAt
         self.custom = custom

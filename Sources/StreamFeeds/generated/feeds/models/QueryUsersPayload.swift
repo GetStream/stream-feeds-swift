@@ -19,18 +19,7 @@ public final class QueryUsersPayload: @unchecked Sendable, Codable, JSONEncodabl
     /// Array of sort parameters
     public var sort: [SortParamRequest]?
 
-    public init(
-        filterConditions: [String: RawJSON],
-        idGt: String? = nil,
-        idGte: String? = nil,
-        idLt: String? = nil,
-        idLte: String? = nil,
-        includeDeactivatedUsers: Bool? = nil,
-        limit: Int? = nil,
-        offset: Int? = nil,
-        presence: Bool? = nil,
-        sort: [SortParamRequest]? = nil
-    ) {
+    public init(filterConditions: [String: RawJSON], idGt: String? = nil, idGte: String? = nil, idLt: String? = nil, idLte: String? = nil, includeDeactivatedUsers: Bool? = nil, limit: Int? = nil, offset: Int? = nil, presence: Bool? = nil, sort: [SortParamRequest]? = nil) {
         self.filterConditions = filterConditions
         self.idGt = idGt
         self.idGte = idGte

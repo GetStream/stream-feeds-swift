@@ -14,12 +14,7 @@ public final class UpsertActivitiesResponse: @unchecked Sendable, Codable, JSONE
     /// IDs of activities left unchanged because they already existed. Only set when skip_existing is true.
     public var skippedExisting: [String]?
 
-    public init(
-        activities: [ActivityResponse],
-        duration: String,
-        mentionNotificationsCreated: Int? = nil,
-        skippedExisting: [String]? = nil
-    ) {
+    public init(activities: [ActivityResponse], duration: String, mentionNotificationsCreated: Int? = nil, skippedExisting: [String]? = nil) {
         self.activities = activities
         self.duration = duration
         self.mentionNotificationsCreated = mentionNotificationsCreated

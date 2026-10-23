@@ -25,24 +25,7 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
     public var pinnedActivities: [ActivityPinResponse]
     public var prev: String?
 
-    public init(
-        activities: [ActivityResponse],
-        aggregatedActivities: [AggregatedActivityResponse],
-        created: Bool,
-        degradedSelectors: [String]? = nil,
-        duration: String,
-        feed: FeedResponse,
-        followers: [FollowResponse],
-        followersPagination: PagerResponse? = nil,
-        following: [FollowResponse],
-        followingPagination: PagerResponse? = nil,
-        memberPagination: PagerResponse? = nil,
-        members: [FeedMemberResponse],
-        next: String? = nil,
-        notificationStatus: NotificationStatusResponse? = nil,
-        pinnedActivities: [ActivityPinResponse],
-        prev: String? = nil
-    ) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, degradedSelectors: [String]? = nil, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.created = created

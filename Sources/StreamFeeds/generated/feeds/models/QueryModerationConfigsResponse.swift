@@ -12,12 +12,7 @@ public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable,
     public var next: String?
     public var prev: String?
 
-    public init(
-        configs: [ConfigResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(configs: [ConfigResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.configs = configs
         self.duration = duration
         self.next = next

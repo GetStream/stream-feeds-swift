@@ -18,15 +18,7 @@ public final class ActivityDeletedEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "feeds.activity.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activity: ActivityResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom

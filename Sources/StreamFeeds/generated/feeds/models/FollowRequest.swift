@@ -25,11 +25,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Maximum number of historical activities to copy from the target feed when the follow is first materialized. Not set = unlimited (default). 0 = copy nothing. Range: 0-1000.
     public var activityCopyLimit: Int?
     /// Whether to copy custom data to the notification activity (only applies when create_notification_activity is true) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(
-        *,
-        deprecated,
-        message: "use notification_context.trigger.custom and notification_context.target.custom instead"
-    )
+    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
     public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
     private var _copyCustomToNotification: Bool?
     /// Whether to create a notification activity for this follow
@@ -47,17 +43,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Fully qualified ID of the target feed
     public var target: String
 
-    public init(
-        activityCopyLimit: Int? = nil,
-        copyCustomToNotification: Bool? = nil,
-        createNotificationActivity: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        enrichOwnFields: Bool? = nil,
-        pushPreference: FollowRequestPushPreference? = nil,
-        skipPush: Bool? = nil,
-        source: String,
-        target: String
-    ) {
+    public init(activityCopyLimit: Int? = nil, copyCustomToNotification: Bool? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, enrichOwnFields: Bool? = nil, pushPreference: FollowRequestPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
         self.activityCopyLimit = activityCopyLimit
         self._copyCustomToNotification = copyCustomToNotification
         self.createNotificationActivity = createNotificationActivity
@@ -84,20 +70,11 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.activityCopyLimit = try container.decodeIfPresent(Int.self, forKey: .activityCopyLimit)
-        self._copyCustomToNotification = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .copyCustomToNotification
-        )
-        self.createNotificationActivity = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .createNotificationActivity
-        )
+        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
+        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.enrichOwnFields = try container.decodeIfPresent(Bool.self, forKey: .enrichOwnFields)
-        self.pushPreference = try container.decodeIfPresent(
-            FollowRequestPushPreference.self,
-            forKey: .pushPreference
-        )
+        self.pushPreference = try container.decodeIfPresent(FollowRequestPushPreference.self, forKey: .pushPreference)
         self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
         self.source = try container.decode(String.self, forKey: .source)
         self.target = try container.decode(String.self, forKey: .target)
@@ -107,10 +84,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(activityCopyLimit, forKey: .activityCopyLimit)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
-        try container.encodeIfPresent(
-            createNotificationActivity,
-            forKey: .createNotificationActivity
-        )
+        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
         try container.encodeIfPresent(pushPreference, forKey: .pushPreference)

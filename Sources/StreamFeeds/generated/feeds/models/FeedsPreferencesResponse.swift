@@ -15,16 +15,7 @@ public final class FeedsPreferencesResponse: @unchecked Sendable, Codable, JSONE
     public var mention: String?
     public var reaction: String?
 
-    public init(
-        comment: String? = nil,
-        commentMention: String? = nil,
-        commentReaction: String? = nil,
-        commentReply: String? = nil,
-        customActivityTypes: [String: String]? = nil,
-        follow: String? = nil,
-        mention: String? = nil,
-        reaction: String? = nil
-    ) {
+    public init(comment: String? = nil, commentMention: String? = nil, commentReaction: String? = nil, commentReply: String? = nil, customActivityTypes: [String: String]? = nil, follow: String? = nil, mention: String? = nil, reaction: String? = nil) {
         self.comment = comment
         self.commentMention = commentMention
         self.commentReaction = commentReaction

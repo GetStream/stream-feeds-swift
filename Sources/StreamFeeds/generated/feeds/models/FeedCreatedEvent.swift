@@ -19,16 +19,7 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var type: String = "feeds.feed.created"
     public var user: UserResponseCommonFields
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feed: FeedResponse,
-        feedVisibility: String? = nil,
-        fid: String,
-        members: [FeedMemberResponse],
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed

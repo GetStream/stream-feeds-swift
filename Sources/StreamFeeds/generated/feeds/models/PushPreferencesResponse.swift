@@ -14,12 +14,7 @@ public final class PushPreferencesResponse: @unchecked Sendable, Codable, JSONEn
     /// A recurring quiet-hours schedule: while any quiet window is active, push notifications for the user are suppressed. Suppressed notifications are dropped, not delayed.
     public var schedule: PushScheduleResponse?
 
-    public init(
-        disabledUntil: Date? = nil,
-        feedsLevel: String? = nil,
-        feedsPreferences: FeedsPreferencesResponse? = nil,
-        schedule: PushScheduleResponse? = nil
-    ) {
+    public init(disabledUntil: Date? = nil, feedsLevel: String? = nil, feedsPreferences: FeedsPreferencesResponse? = nil, schedule: PushScheduleResponse? = nil) {
         self.disabledUntil = disabledUntil
         self.feedsLevel = feedsLevel
         self.feedsPreferences = feedsPreferences

@@ -33,15 +33,7 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
     public var name: String?
     public var visibility: FeedInputVisibility?
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        description: String? = nil,
-        filterTags: [String]? = nil,
-        location: Location? = nil,
-        members: [FeedMemberRequest]? = nil,
-        name: String? = nil,
-        visibility: FeedInputVisibility? = nil
-    ) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, location: Location? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.filterTags = filterTags

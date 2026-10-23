@@ -14,12 +14,7 @@ public final class QueryActivitiesResponse: @unchecked Sendable, Codable, JSONEn
     /// Cursor for previous page
     public var prev: String?
 
-    public init(
-        activities: [ActivityResponse],
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(activities: [ActivityResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.activities = activities
         self.duration = duration
         self.next = next

@@ -14,12 +14,7 @@ public final class QueryFeedMembersResponse: @unchecked Sendable, Codable, JSONE
     /// Cursor for previous page
     public var prev: String?
 
-    public init(
-        duration: String,
-        members: [FeedMemberResponse],
-        next: String? = nil,
-        prev: String? = nil
-    ) {
+    public init(duration: String, members: [FeedMemberResponse], next: String? = nil, prev: String? = nil) {
         self.duration = duration
         self.members = members
         self.next = next

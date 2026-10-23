@@ -17,13 +17,7 @@ public final class WSAuthMessage: @unchecked Sendable, Codable, JSONEncodable {
     public var token: String
     public var userDetails: ConnectUserDetailsRequest
 
-    public init(
-        eventProtocol: Int? = nil,
-        memberCustomInclude: [String]? = nil,
-        products: [String]? = nil,
-        token: String,
-        userDetails: ConnectUserDetailsRequest
-    ) {
+    public init(eventProtocol: Int? = nil, memberCustomInclude: [String]? = nil, products: [String]? = nil, token: String, userDetails: ConnectUserDetailsRequest) {
         self.eventProtocol = eventProtocol
         self.memberCustomInclude = memberCustomInclude
         self.products = products

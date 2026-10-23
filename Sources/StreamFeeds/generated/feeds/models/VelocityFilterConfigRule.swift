@@ -57,22 +57,7 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
     public var slowSpamTtl: Int
     public var urlOnly: Bool
 
-    public init(
-        action: VelocityFilterConfigRuleAction,
-        banDuration: Int,
-        cascadingAction: VelocityFilterConfigRuleCascadingAction,
-        cascadingThreshold: Int,
-        checkMessageContext: Bool,
-        fastSpamThreshold: Int,
-        fastSpamTtl: Int,
-        ipBan: Bool,
-        probationPeriod: Int,
-        shadowBan: Bool,
-        slowSpamBanDuration: Int? = nil,
-        slowSpamThreshold: Int,
-        slowSpamTtl: Int,
-        urlOnly: Bool
-    ) {
+    public init(action: VelocityFilterConfigRuleAction, banDuration: Int, cascadingAction: VelocityFilterConfigRuleCascadingAction, cascadingThreshold: Int, checkMessageContext: Bool, fastSpamThreshold: Int, fastSpamTtl: Int, ipBan: Bool, probationPeriod: Int, shadowBan: Bool, slowSpamBanDuration: Int? = nil, slowSpamThreshold: Int, slowSpamTtl: Int, urlOnly: Bool) {
         self.action = action
         self.banDuration = banDuration
         self.cascadingAction = cascadingAction

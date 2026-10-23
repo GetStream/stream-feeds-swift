@@ -40,15 +40,7 @@ public final class CreateBlockListRequest: @unchecked Sendable, Codable, JSONEnc
     /// List of words to block
     public var words: [String]
 
-    public init(
-        isConfusableFoldingEnabled: Bool? = nil,
-        isLeetCheckEnabled: Bool? = nil,
-        isPluralCheckEnabled: Bool? = nil,
-        isSubstringMatchingEnabled: Bool? = nil,
-        name: String,
-        team: String? = nil,
-        words: [String]
-    ) {
+    public init(isConfusableFoldingEnabled: Bool? = nil, isLeetCheckEnabled: Bool? = nil, isPluralCheckEnabled: Bool? = nil, isSubstringMatchingEnabled: Bool? = nil, name: String, team: String? = nil, words: [String]) {
         self.isConfusableFoldingEnabled = isConfusableFoldingEnabled
         self.isLeetCheckEnabled = isLeetCheckEnabled
         self.isPluralCheckEnabled = isPluralCheckEnabled

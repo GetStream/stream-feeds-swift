@@ -16,13 +16,7 @@ public final class CommentFeedbackEvent: @unchecked Sendable, Event, Codable, JS
     public var type: String = "feeds.comment.feedback"
     public var user: UserResponseCommonFields?
 
-    public init(
-        commentFeedback: CommentFeedbackEventPayload,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(commentFeedback: CommentFeedbackEventPayload, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.commentFeedback = commentFeedback
         self.createdAt = createdAt
         self.custom = custom

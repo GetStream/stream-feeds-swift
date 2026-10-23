@@ -9,21 +9,13 @@ public final class UpdateUsersResponse: @unchecked Sendable, Codable, JSONEncoda
     /// Duration of the request in milliseconds
     public var duration: String
     /// Deprecated: Always empty. Removing a user from a team no longer deletes their memberships in that team's channels, so there is no task to poll.
-    @available(
-        *,
-        deprecated,
-        message: "Always empty. Removing a user from a team no longer deletes their memberships in that team's channels, so there is no task to poll."
-    )
+    @available(*, deprecated, message: "Always empty. Removing a user from a team no longer deletes their memberships in that team's channels, so there is no task to poll.")
     public var membershipDeletionTaskId: String { get { _membershipDeletionTaskId } set { _membershipDeletionTaskId = newValue } }
     private var _membershipDeletionTaskId: String
     /// Object containing users
     public var users: [String: FullUserResponse]
 
-    public init(
-        duration: String,
-        membershipDeletionTaskId: String,
-        users: [String: FullUserResponse]
-    ) {
+    public init(duration: String, membershipDeletionTaskId: String, users: [String: FullUserResponse]) {
         self.duration = duration
         self._membershipDeletionTaskId = membershipDeletionTaskId
         self.users = users
@@ -38,10 +30,7 @@ public final class UpdateUsersResponse: @unchecked Sendable, Codable, JSONEncoda
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.duration = try container.decode(String.self, forKey: .duration)
-        self._membershipDeletionTaskId = try container.decode(
-            String.self,
-            forKey: .membershipDeletionTaskId
-        )
+        self._membershipDeletionTaskId = try container.decode(String.self, forKey: .membershipDeletionTaskId)
         self.users = try container.decode([String: FullUserResponse].self, forKey: .users)
     }
 

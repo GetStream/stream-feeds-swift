@@ -19,16 +19,7 @@ public final class CommentAddedEvent: @unchecked Sendable, Event, Codable, JSONE
     public var type: String = "feeds.comment.added"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activity: ActivityResponse,
-        comment: CommentResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.comment = comment
         self.createdAt = createdAt

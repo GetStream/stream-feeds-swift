@@ -25,17 +25,7 @@ public final class APIError: @unchecked Sendable, Codable, JSONEncodable {
     /// Flag that indicates if the error is unrecoverable, requests that return unrecoverable errors should not be retried, this error only applies to the request that caused it
     public var unrecoverable: Bool?
 
-    public init(
-        code: Int,
-        cooldownRemainingMs: Int? = nil,
-        details: [Int],
-        duration: String,
-        exceptionFields: [String: String]? = nil,
-        message: String,
-        moreInfo: String,
-        statusCode: Int,
-        unrecoverable: Bool? = nil
-    ) {
+    public init(code: Int, cooldownRemainingMs: Int? = nil, details: [Int], duration: String, exceptionFields: [String: String]? = nil, message: String, moreInfo: String, statusCode: Int, unrecoverable: Bool? = nil) {
         self.code = code
         self.cooldownRemainingMs = cooldownRemainingMs
         self.details = details

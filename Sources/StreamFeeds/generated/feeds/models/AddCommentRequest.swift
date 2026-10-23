@@ -11,11 +11,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Text content of the comment
     public var comment: String?
     /// Whether to copy custom data to the notification activity (only applies when create_notification_activity is true) Deprecated: use notification_context.trigger.custom and notification_context.target.custom instead
-    @available(
-        *,
-        deprecated,
-        message: "use notification_context.trigger.custom and notification_context.target.custom instead"
-    )
+    @available(*, deprecated, message: "use notification_context.trigger.custom and notification_context.target.custom instead")
     public var copyCustomToNotification: Bool? { get { _copyCustomToNotification } set { _copyCustomToNotification = newValue } }
     private var _copyCustomToNotification: Bool?
     /// Whether to create a notification activity for this comment
@@ -36,20 +32,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
     public var skipEnrichUrl: Bool?
     public var skipPush: Bool?
 
-    public init(
-        attachments: [Attachment]? = nil,
-        comment: String? = nil,
-        copyCustomToNotification: Bool? = nil,
-        createNotificationActivity: Bool? = nil,
-        custom: [String: RawJSON]? = nil,
-        id: String? = nil,
-        mentionedUserIds: [String]? = nil,
-        objectId: String? = nil,
-        objectType: String? = nil,
-        parentId: String? = nil,
-        skipEnrichUrl: Bool? = nil,
-        skipPush: Bool? = nil
-    ) {
+    public init(attachments: [Attachment]? = nil, comment: String? = nil, copyCustomToNotification: Bool? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, id: String? = nil, mentionedUserIds: [String]? = nil, objectId: String? = nil, objectType: String? = nil, parentId: String? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil) {
         self.attachments = attachments
         self.comment = comment
         self._copyCustomToNotification = copyCustomToNotification
@@ -83,20 +66,11 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
         self.comment = try container.decodeIfPresent(String.self, forKey: .comment)
-        self._copyCustomToNotification = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .copyCustomToNotification
-        )
-        self.createNotificationActivity = try container.decodeIfPresent(
-            Bool.self,
-            forKey: .createNotificationActivity
-        )
+        self._copyCustomToNotification = try container.decodeIfPresent(Bool.self, forKey: .copyCustomToNotification)
+        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
-        self.mentionedUserIds = try container.decodeIfPresent(
-            [String].self,
-            forKey: .mentionedUserIds
-        )
+        self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
         self.objectId = try container.decodeIfPresent(String.self, forKey: .objectId)
         self.objectType = try container.decodeIfPresent(String.self, forKey: .objectType)
         self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
@@ -109,10 +83,7 @@ public final class AddCommentRequest: @unchecked Sendable, Codable, JSONEncodabl
         try container.encodeIfPresent(attachments, forKey: .attachments)
         try container.encodeIfPresent(comment, forKey: .comment)
         try container.encodeIfPresent(_copyCustomToNotification, forKey: .copyCustomToNotification)
-        try container.encodeIfPresent(
-            createNotificationActivity,
-            forKey: .createNotificationActivity
-        )
+        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(id, forKey: .id)
         try container.encodeIfPresent(mentionedUserIds, forKey: .mentionedUserIds)

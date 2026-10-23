@@ -11,12 +11,7 @@ public final class VelocityFilterConfig: @unchecked Sendable, Codable, JSONEncod
     public var enabled: Bool
     public var rules: [VelocityFilterConfigRule]
 
-    public init(
-        advancedFilters: Bool,
-        async: Bool? = nil,
-        enabled: Bool,
-        rules: [VelocityFilterConfigRule]
-    ) {
+    public init(advancedFilters: Bool, async: Bool? = nil, enabled: Bool, rules: [VelocityFilterConfigRule]) {
         self.advancedFilters = advancedFilters
         self.async = async
         self.enabled = enabled

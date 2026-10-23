@@ -28,18 +28,7 @@ public final class ModerationPayloadResponse: @unchecked Sendable, Codable, JSON
     /// Video URLs to moderate
     public var videos: [String]?
 
-    public init(
-        audios: [String]? = nil,
-        custom: [String: RawJSON]? = nil,
-        imageIds: [String: String]? = nil,
-        imageOrderedKeys: [String]? = nil,
-        images: [String]? = nil,
-        otherMedia: [String]? = nil,
-        textIds: [String: String]? = nil,
-        textOrderedKeys: [String]? = nil,
-        texts: [String]? = nil,
-        videos: [String]? = nil
-    ) {
+    public init(audios: [String]? = nil, custom: [String: RawJSON]? = nil, imageIds: [String: String]? = nil, imageOrderedKeys: [String]? = nil, images: [String]? = nil, otherMedia: [String]? = nil, textIds: [String: String]? = nil, textOrderedKeys: [String]? = nil, texts: [String]? = nil, videos: [String]? = nil) {
         self.audios = audios
         self.custom = custom
         self.imageIds = imageIds

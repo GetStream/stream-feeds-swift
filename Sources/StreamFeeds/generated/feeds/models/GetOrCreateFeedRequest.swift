@@ -28,26 +28,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var viewerLocation: Location?
     public var watch: Bool?
 
-    public init(
-        data: FeedInput? = nil,
-        discardActors: [String]? = nil,
-        enrichmentOptions: EnrichmentOptions? = nil,
-        externalRanking: [String: RawJSON]? = nil,
-        filter: [String: RawJSON]? = nil,
-        followersPagination: PagerRequest? = nil,
-        followingPagination: PagerRequest? = nil,
-        friendReactionsOptions: FriendReactionsOptions? = nil,
-        idAround: String? = nil,
-        interestWeights: [String: Float]? = nil,
-        limit: Int? = nil,
-        memberPagination: PagerRequest? = nil,
-        next: String? = nil,
-        overwriteInterestWeights: Bool? = nil,
-        prev: String? = nil,
-        view: String? = nil,
-        viewerLocation: Location? = nil,
-        watch: Bool? = nil
-    ) {
+    public init(data: FeedInput? = nil, discardActors: [String]? = nil, enrichmentOptions: EnrichmentOptions? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, friendReactionsOptions: FriendReactionsOptions? = nil, idAround: String? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, overwriteInterestWeights: Bool? = nil, prev: String? = nil, view: String? = nil, viewerLocation: Location? = nil, watch: Bool? = nil) {
         self.data = data
         self.discardActors = discardActors
         self.enrichmentOptions = enrichmentOptions

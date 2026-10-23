@@ -155,13 +155,6 @@ prune_unreachable_models APIError FeedsEvent
 
 swiftformat --config "$REPO_ROOT/.swiftformat" --unexclude "$OUTPUT_DIR_FEEDS" "$OUTPUT_DIR_FEEDS"
 
-swiftformat "$OUTPUT_DIR_FEEDS" \
-  --unexclude "$OUTPUT_DIR_FEEDS" \
-  --rules wrapArguments \
-  --wrapparameters before-first \
-  --wraparguments preserve \
-  --maxwidth 100
-
 echo "Pruned unreachable models: $pruned_model_count"
 echo "Ignored endpoints (${#pruned_endpoints[@]}):"
 printf '  %s\n' ${pruned_endpoints[@]+"${pruned_endpoints[@]}"} | sort

@@ -21,10 +21,7 @@ public final class UserIdenticalContentCountParameters: @unchecked Sendable, Cod
 }
 
 extension UserIdenticalContentCountParameters: Hashable {
-    public static func == (
-        lhs: UserIdenticalContentCountParameters,
-        rhs: UserIdenticalContentCountParameters
-    ) -> Bool {
+    public static func == (lhs: UserIdenticalContentCountParameters, rhs: UserIdenticalContentCountParameters) -> Bool {
         lhs.threshold == rhs.threshold &&
             lhs.timeWindow == rhs.timeWindow
     }

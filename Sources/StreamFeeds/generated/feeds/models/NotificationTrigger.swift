@@ -14,12 +14,7 @@ public final class NotificationTrigger: @unchecked Sendable, Codable, JSONEncoda
     /// The type of notification (mention, reaction, comment, follow, etc.)
     public var type: String
 
-    public init(
-        comment: NotificationComment? = nil,
-        custom: [String: RawJSON]? = nil,
-        text: String,
-        type: String
-    ) {
+    public init(comment: NotificationComment? = nil, custom: [String: RawJSON]? = nil, text: String, type: String) {
         self.comment = comment
         self.custom = custom
         self.text = text

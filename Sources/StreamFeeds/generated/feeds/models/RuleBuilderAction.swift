@@ -43,12 +43,7 @@ public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodabl
     public var skipInbox: Bool?
     public var type: RuleBuilderActionType?
 
-    public init(
-        banOptions: BanOptions? = nil,
-        flagUserOptions: FlagUserOptions? = nil,
-        reason: String? = nil,
-        skipInbox: Bool? = nil
-    ) {
+    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil, reason: String? = nil, skipInbox: Bool? = nil) {
         self.banOptions = banOptions
         self.flagUserOptions = flagUserOptions
         self.reason = reason

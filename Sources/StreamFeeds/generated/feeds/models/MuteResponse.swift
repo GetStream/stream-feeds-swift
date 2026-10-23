@@ -13,12 +13,7 @@ public final class MuteResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var nonExistingUsers: [String]?
     public var ownUser: OwnUserResponse?
 
-    public init(
-        duration: String,
-        mutes: [UserMuteResponse]? = nil,
-        nonExistingUsers: [String]? = nil,
-        ownUser: OwnUserResponse? = nil
-    ) {
+    public init(duration: String, mutes: [UserMuteResponse]? = nil, nonExistingUsers: [String]? = nil, ownUser: OwnUserResponse? = nil) {
         self.duration = duration
         self.mutes = mutes
         self.nonExistingUsers = nonExistingUsers

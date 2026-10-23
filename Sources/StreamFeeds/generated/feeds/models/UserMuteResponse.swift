@@ -14,13 +14,7 @@ public final class UserMuteResponse: @unchecked Sendable, Codable, JSONEncodable
     /// User response object
     public var user: UserResponse?
 
-    public init(
-        createdAt: Date,
-        expires: Date? = nil,
-        target: UserResponse? = nil,
-        updatedAt: Date,
-        user: UserResponse? = nil
-    ) {
+    public init(createdAt: Date, expires: Date? = nil, target: UserResponse? = nil, updatedAt: Date, user: UserResponse? = nil) {
         self.createdAt = createdAt
         self.expires = expires
         self.target = target

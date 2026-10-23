@@ -12,13 +12,7 @@ public final class FloodSimilarRuleParameters: @unchecked Sendable, Codable, JSO
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(
-        allowlist: [String]? = nil,
-        minTextLength: Int? = nil,
-        similarityDistance: Int? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil
-    ) {
+    public init(allowlist: [String]? = nil, minTextLength: Int? = nil, similarityDistance: Int? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.allowlist = allowlist
         self.minTextLength = minTextLength
         self.similarityDistance = similarityDistance

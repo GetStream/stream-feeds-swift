@@ -13,12 +13,7 @@ public final class AddCommentResponse: @unchecked Sendable, Codable, JSONEncodab
     /// Whether a notification activity was successfully created
     public var notificationCreated: Bool?
 
-    public init(
-        comment: CommentResponse,
-        duration: String,
-        mentionNotificationsCreated: Int? = nil,
-        notificationCreated: Bool? = nil
-    ) {
+    public init(comment: CommentResponse, duration: String, mentionNotificationsCreated: Int? = nil, notificationCreated: Bool? = nil) {
         self.comment = comment
         self.duration = duration
         self.mentionNotificationsCreated = mentionNotificationsCreated

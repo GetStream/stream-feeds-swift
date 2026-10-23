@@ -37,15 +37,7 @@ public final class EnrichedCollectionResponse: @unchecked Sendable, Codable, JSO
     /// ID of the user who owns this collection
     public var userId: String?
 
-    public init(
-        createdAt: Date? = nil,
-        custom: [String: RawJSON]? = nil,
-        id: String,
-        name: String,
-        status: EnrichedCollectionResponseStatus,
-        updatedAt: Date? = nil,
-        userId: String? = nil
-    ) {
+    public init(createdAt: Date? = nil, custom: [String: RawJSON]? = nil, id: String, name: String, status: EnrichedCollectionResponseStatus, updatedAt: Date? = nil, userId: String? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.id = id

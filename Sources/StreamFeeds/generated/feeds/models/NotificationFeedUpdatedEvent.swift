@@ -21,16 +21,7 @@ public final class NotificationFeedUpdatedEvent: @unchecked Sendable, Event, Cod
     public var type: String = "feeds.notification_feed.updated"
     public var user: UserResponseCommonFields?
 
-    public init(
-        aggregatedActivities: [AggregatedActivityResponse]? = nil,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        notificationStatus: NotificationStatusResponse? = nil,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, notificationStatus: NotificationStatusResponse? = nil, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.aggregatedActivities = aggregatedActivities
         self.createdAt = createdAt
         self.custom = custom

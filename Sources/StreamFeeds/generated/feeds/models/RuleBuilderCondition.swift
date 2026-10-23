@@ -35,34 +35,7 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
     public var videoContentParams: VideoContentParameters?
     public var videoRuleParams: VideoRuleParameters?
 
-    public init(
-        confidence: Float? = nil,
-        contentCountRuleParams: ContentCountRuleParameters? = nil,
-        contentCountryCodeParams: ContentCountryCodeParameters? = nil,
-        contentCustomPropertyCountParams: ContentCustomPropertyCountParameters? = nil,
-        contentCustomPropertyParams: ContentCustomPropertyParameters? = nil,
-        contentFlagCountRuleParams: FlagCountRuleParameters? = nil,
-        floodIdenticalParams: FloodIdenticalRuleParameters? = nil,
-        floodSimilarParams: FloodSimilarRuleParameters? = nil,
-        imageContentParams: ImageContentParameters? = nil,
-        imageRuleParams: ImageRuleParameters? = nil,
-        intentRuleParams: IntentRuleParameters? = nil,
-        ipContentCountRuleParams: IPContentCountRuleParameters? = nil,
-        ipFlagCountRuleParams: IPFlagCountRuleParameters? = nil,
-        ocrContentParams: OCRContentParameters? = nil,
-        textContentParams: TextContentParameters? = nil,
-        textRuleParams: TextRuleParameters? = nil,
-        userCreatedWithinParams: UserCreatedWithinParameters? = nil,
-        userCustomPropertyParams: UserCustomPropertyParameters? = nil,
-        userFlagCountRuleParams: FlagCountRuleParameters? = nil,
-        userIdenticalContentCountParams: UserIdenticalContentCountParameters? = nil,
-        userIdenticalImageCountParams: UserIdenticalImageCountParameters? = nil,
-        userReactionCountParams: UserReactionCountRuleParameters? = nil,
-        userRoleParams: UserRoleParameters? = nil,
-        userRuleParams: UserRuleParameters? = nil,
-        videoContentParams: VideoContentParameters? = nil,
-        videoRuleParams: VideoRuleParameters? = nil
-    ) {
+    public init(confidence: Float? = nil, contentCountRuleParams: ContentCountRuleParameters? = nil, contentCountryCodeParams: ContentCountryCodeParameters? = nil, contentCustomPropertyCountParams: ContentCustomPropertyCountParameters? = nil, contentCustomPropertyParams: ContentCustomPropertyParameters? = nil, contentFlagCountRuleParams: FlagCountRuleParameters? = nil, floodIdenticalParams: FloodIdenticalRuleParameters? = nil, floodSimilarParams: FloodSimilarRuleParameters? = nil, imageContentParams: ImageContentParameters? = nil, imageRuleParams: ImageRuleParameters? = nil, intentRuleParams: IntentRuleParameters? = nil, ipContentCountRuleParams: IPContentCountRuleParameters? = nil, ipFlagCountRuleParams: IPFlagCountRuleParameters? = nil, ocrContentParams: OCRContentParameters? = nil, textContentParams: TextContentParameters? = nil, textRuleParams: TextRuleParameters? = nil, userCreatedWithinParams: UserCreatedWithinParameters? = nil, userCustomPropertyParams: UserCustomPropertyParameters? = nil, userFlagCountRuleParams: FlagCountRuleParameters? = nil, userIdenticalContentCountParams: UserIdenticalContentCountParameters? = nil, userIdenticalImageCountParams: UserIdenticalImageCountParameters? = nil, userReactionCountParams: UserReactionCountRuleParameters? = nil, userRoleParams: UserRoleParameters? = nil, userRuleParams: UserRuleParameters? = nil, videoContentParams: VideoContentParameters? = nil, videoRuleParams: VideoRuleParameters? = nil) {
         self.confidence = confidence
         self.contentCountRuleParams = contentCountRuleParams
         self.contentCountryCodeParams = contentCountryCodeParams

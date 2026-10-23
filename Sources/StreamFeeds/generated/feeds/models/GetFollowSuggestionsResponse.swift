@@ -11,11 +11,7 @@ public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, J
     /// List of suggested feeds to follow
     public var suggestions: [FeedSuggestionResponse]
 
-    public init(
-        algorithmUsed: String? = nil,
-        duration: String,
-        suggestions: [FeedSuggestionResponse]
-    ) {
+    public init(algorithmUsed: String? = nil, duration: String, suggestions: [FeedSuggestionResponse]) {
         self.algorithmUsed = algorithmUsed
         self.duration = duration
         self.suggestions = suggestions

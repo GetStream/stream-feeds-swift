@@ -135,16 +135,7 @@ public final class FeedsPreferences: @unchecked Sendable, Codable, JSONEncodable
     /// Push notification preference for reactions on user's activities or comments. One of: all, none
     public var reaction: FeedsPreferencesReaction?
 
-    public init(
-        comment: FeedsPreferencesComment? = nil,
-        commentMention: FeedsPreferencesCommentMention? = nil,
-        commentReaction: FeedsPreferencesCommentReaction? = nil,
-        commentReply: FeedsPreferencesCommentReply? = nil,
-        customActivityTypes: [String: String]? = nil,
-        follow: FeedsPreferencesFollow? = nil,
-        mention: FeedsPreferencesMention? = nil,
-        reaction: FeedsPreferencesReaction? = nil
-    ) {
+    public init(comment: FeedsPreferencesComment? = nil, commentMention: FeedsPreferencesCommentMention? = nil, commentReaction: FeedsPreferencesCommentReaction? = nil, commentReply: FeedsPreferencesCommentReply? = nil, customActivityTypes: [String: String]? = nil, follow: FeedsPreferencesFollow? = nil, mention: FeedsPreferencesMention? = nil, reaction: FeedsPreferencesReaction? = nil) {
         self.comment = comment
         self.commentMention = commentMention
         self.commentReaction = commentReaction

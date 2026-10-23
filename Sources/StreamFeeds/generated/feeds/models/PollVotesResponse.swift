@@ -13,12 +13,7 @@ public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodabl
     /// Poll votes
     public var votes: [PollVoteResponseData]
 
-    public init(
-        duration: String,
-        next: String? = nil,
-        prev: String? = nil,
-        votes: [PollVoteResponseData]
-    ) {
+    public init(duration: String, next: String? = nil, prev: String? = nil, votes: [PollVoteResponseData]) {
         self.duration = duration
         self.next = next
         self.prev = prev

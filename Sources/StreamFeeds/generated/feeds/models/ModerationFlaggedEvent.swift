@@ -16,13 +16,7 @@ public final class ModerationFlaggedEvent: @unchecked Sendable, Event, Codable, 
     public var receivedAt: Date?
     public var type: String = "moderation.flagged"
 
-    public init(
-        contentType: String,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        objectId: String,
-        receivedAt: Date? = nil
-    ) {
+    public init(contentType: String, createdAt: Date, custom: [String: RawJSON], objectId: String, receivedAt: Date? = nil) {
         self.contentType = contentType
         self.createdAt = createdAt
         self.custom = custom

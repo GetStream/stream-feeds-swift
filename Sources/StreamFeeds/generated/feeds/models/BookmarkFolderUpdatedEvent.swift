@@ -16,13 +16,7 @@ public final class BookmarkFolderUpdatedEvent: @unchecked Sendable, Event, Codab
     public var type: String = "feeds.bookmark_folder.updated"
     public var user: UserResponseCommonFields?
 
-    public init(
-        bookmarkFolder: BookmarkFolderResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(bookmarkFolder: BookmarkFolderResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.bookmarkFolder = bookmarkFolder
         self.createdAt = createdAt
         self.custom = custom

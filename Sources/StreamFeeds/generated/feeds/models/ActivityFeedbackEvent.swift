@@ -16,13 +16,7 @@ public final class ActivityFeedbackEvent: @unchecked Sendable, Event, Codable, J
     public var type: String = "feeds.activity.feedback"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activityFeedback: ActivityFeedbackEventPayload,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activityFeedback: ActivityFeedbackEventPayload, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activityFeedback = activityFeedback
         self.createdAt = createdAt
         self.custom = custom

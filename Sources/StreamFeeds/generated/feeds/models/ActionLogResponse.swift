@@ -29,20 +29,7 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
     /// ID of the user who performed the action
     public var userId: String
 
-    public init(
-        aiProviders: [String],
-        createdAt: Date,
-        custom: [String: RawJSON],
-        id: String,
-        reason: String,
-        reporterType: String,
-        reviewQueueItem: ReviewQueueItemResponse? = nil,
-        targetUser: UserResponse? = nil,
-        targetUserId: String,
-        type: String,
-        user: UserResponse? = nil,
-        userId: String
-    ) {
+    public init(aiProviders: [String], createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reporterType: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
         self.aiProviders = aiProviders
         self.createdAt = createdAt
         self.custom = custom

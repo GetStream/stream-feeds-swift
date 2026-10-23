@@ -12,11 +12,7 @@ public final class AddBookmarkRequest: @unchecked Sendable, Codable, JSONEncodab
     public var folderId: String?
     public var newFolder: AddFolderRequest?
 
-    public init(
-        custom: [String: RawJSON]? = nil,
-        folderId: String? = nil,
-        newFolder: AddFolderRequest? = nil
-    ) {
+    public init(custom: [String: RawJSON]? = nil, folderId: String? = nil, newFolder: AddFolderRequest? = nil) {
         self.custom = custom
         self.folderId = folderId
         self.newFolder = newFolder

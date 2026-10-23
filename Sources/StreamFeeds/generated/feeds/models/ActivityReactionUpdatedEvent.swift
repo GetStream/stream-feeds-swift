@@ -19,16 +19,7 @@ public final class ActivityReactionUpdatedEvent: @unchecked Sendable, Event, Cod
     public var type: String = "feeds.activity.reaction.updated"
     public var user: UserResponseCommonFields?
 
-    public init(
-        activity: ActivityResponse,
-        createdAt: Date,
-        custom: [String: RawJSON],
-        feedVisibility: String? = nil,
-        fid: String,
-        reaction: FeedsReactionResponse,
-        receivedAt: Date? = nil,
-        user: UserResponseCommonFields? = nil
-    ) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom

@@ -16,12 +16,7 @@ public final class DeleteActivityRequestPayload: @unchecked Sendable, Codable, J
     /// Reason for deletion
     public var reason: String?
 
-    public init(
-        entityId: String? = nil,
-        entityType: String? = nil,
-        hardDelete: Bool? = nil,
-        reason: String? = nil
-    ) {
+    public init(entityId: String? = nil, entityType: String? = nil, hardDelete: Bool? = nil, reason: String? = nil) {
         self.entityId = entityId
         self.entityType = entityType
         self.hardDelete = hardDelete

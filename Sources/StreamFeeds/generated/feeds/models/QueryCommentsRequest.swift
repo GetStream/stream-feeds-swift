@@ -36,14 +36,7 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
     /// Array of sort parameters
     public var sort: QueryCommentsRequestSort?
 
-    public init(
-        filter: [String: RawJSON],
-        idAround: String? = nil,
-        limit: Int? = nil,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: QueryCommentsRequestSort? = nil
-    ) {
+    public init(filter: [String: RawJSON], idAround: String? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: QueryCommentsRequestSort? = nil) {
         self.filter = filter
         self.idAround = idAround
         self.limit = limit

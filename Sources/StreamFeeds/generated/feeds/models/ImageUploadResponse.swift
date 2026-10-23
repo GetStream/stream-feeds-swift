@@ -13,12 +13,7 @@ public final class ImageUploadResponse: @unchecked Sendable, Codable, JSONEncoda
     /// Array of image size configurations
     public var uploadSizes: [ImageSize]?
 
-    public init(
-        duration: String,
-        file: String? = nil,
-        thumbUrl: String? = nil,
-        uploadSizes: [ImageSize]? = nil
-    ) {
+    public init(duration: String, file: String? = nil, thumbUrl: String? = nil, uploadSizes: [ImageSize]? = nil) {
         self.duration = duration
         self.file = file
         self.thumbUrl = thumbUrl

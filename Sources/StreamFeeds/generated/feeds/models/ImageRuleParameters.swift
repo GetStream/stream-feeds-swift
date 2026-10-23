@@ -11,12 +11,7 @@ public final class ImageRuleParameters: @unchecked Sendable, Codable, JSONEncoda
     public var threshold: Int?
     public var timeWindow: String?
 
-    public init(
-        harmLabels: [String]? = nil,
-        minConfidence: Float? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil
-    ) {
+    public init(harmLabels: [String]? = nil, minConfidence: Float? = nil, threshold: Int? = nil, timeWindow: String? = nil) {
         self.harmLabels = harmLabels
         self.minConfidence = minConfidence
         self.threshold = threshold

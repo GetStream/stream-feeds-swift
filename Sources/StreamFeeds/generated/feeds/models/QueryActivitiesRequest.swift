@@ -15,14 +15,7 @@ public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEnc
     /// Sorting parameters for the query
     public var sort: [SortParamRequest]?
 
-    public init(
-        enrichOwnFields: Bool? = nil,
-        filter: [String: RawJSON]? = nil,
-        limit: Int? = nil,
-        next: String? = nil,
-        prev: String? = nil,
-        sort: [SortParamRequest]? = nil
-    ) {
+    public init(enrichOwnFields: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
         self.enrichOwnFields = enrichOwnFields
         self.filter = filter
         self.limit = limit

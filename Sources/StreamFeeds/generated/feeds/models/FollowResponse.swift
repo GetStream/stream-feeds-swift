@@ -58,18 +58,7 @@ public final class FollowResponse: @unchecked Sendable, Codable, JSONEncodable {
     /// When the follow relationship was last updated
     public var updatedAt: Date
 
-    public init(
-        createdAt: Date,
-        custom: [String: RawJSON]? = nil,
-        followerRole: String,
-        pushPreference: FollowResponsePushPreference,
-        requestAcceptedAt: Date? = nil,
-        requestRejectedAt: Date? = nil,
-        sourceFeed: FeedResponse,
-        status: FollowResponseStatus,
-        targetFeed: FeedResponse,
-        updatedAt: Date
-    ) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, followerRole: String, pushPreference: FollowResponsePushPreference, requestAcceptedAt: Date? = nil, requestRejectedAt: Date? = nil, sourceFeed: FeedResponse, status: FollowResponseStatus, targetFeed: FeedResponse, updatedAt: Date) {
         self.createdAt = createdAt
         self.custom = custom
         self.followerRole = followerRole

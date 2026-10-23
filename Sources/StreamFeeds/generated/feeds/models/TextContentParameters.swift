@@ -15,16 +15,7 @@ public final class TextContentParameters: @unchecked Sendable, Codable, JSONEnco
     public var textLength: Int?
     public var textLengthOperator: String?
 
-    public init(
-        blocklistMatch: [String]? = nil,
-        containsUrl: Bool? = nil,
-        harmLabels: [String]? = nil,
-        labelOperator: String? = nil,
-        llmHarmLabels: [String: String]? = nil,
-        severity: String? = nil,
-        textLength: Int? = nil,
-        textLengthOperator: String? = nil
-    ) {
+    public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, labelOperator: String? = nil, llmHarmLabels: [String: String]? = nil, severity: String? = nil, textLength: Int? = nil, textLengthOperator: String? = nil) {
         self.blocklistMatch = blocklistMatch
         self.containsUrl = containsUrl
         self.harmLabels = harmLabels

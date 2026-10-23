@@ -23,16 +23,7 @@ public final class ModerationActionConfigResponse: @unchecked Sendable, Codable,
     /// Queue type this action config belongs to
     public var queueType: String?
 
-    public init(
-        action: String,
-        custom: [String: RawJSON]? = nil,
-        description: String,
-        entityType: String,
-        icon: String,
-        id: String? = nil,
-        order: Int,
-        queueType: String? = nil
-    ) {
+    public init(action: String, custom: [String: RawJSON]? = nil, description: String, entityType: String, icon: String, id: String? = nil, order: Int, queueType: String? = nil) {
         self.action = action
         self.custom = custom
         self.description = description

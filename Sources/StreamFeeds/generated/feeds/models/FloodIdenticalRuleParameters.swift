@@ -12,13 +12,7 @@ public final class FloodIdenticalRuleParameters: @unchecked Sendable, Codable, J
     public var timeWindow: String?
     public var trackAcrossUsers: Bool?
 
-    public init(
-        allowlist: [String]? = nil,
-        minTextLength: Int? = nil,
-        threshold: Int? = nil,
-        timeWindow: String? = nil,
-        trackAcrossUsers: Bool? = nil
-    ) {
+    public init(allowlist: [String]? = nil, minTextLength: Int? = nil, threshold: Int? = nil, timeWindow: String? = nil, trackAcrossUsers: Bool? = nil) {
         self.allowlist = allowlist
         self.minTextLength = minTextLength
         self.threshold = threshold
