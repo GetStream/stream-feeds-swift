@@ -62,7 +62,7 @@ remove_endpoint() {
 # Deletes models which are not reachable from DefaultAPI or the given root models.
 prune_unreachable_models() {
   local models_dir="$OUTPUT_DIR_FEEDS/models"
-  local all reachable previous model
+  local all reachable previous="" model
   all="$(ls "$models_dir" | sed 's/\.swift$//' | sort)"
   reachable="$(printf '%s\n' "$@" | sort -u)"
   until [ "$reachable" = "$previous" ]; do
