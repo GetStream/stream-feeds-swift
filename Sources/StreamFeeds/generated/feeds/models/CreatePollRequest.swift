@@ -7,24 +7,6 @@ import StreamCore
 
 /// Contains all information needed to create a new poll
 public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum CreatePollRequestVotingVisibility: String, Sendable, Codable, CaseIterable {
-        /// Votes are public and can be seen by everyone.
-        case `public`
-        /// Votes are anonymous and cannot be attributed to individual users.
-        case anonymous
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// Indicates whether users can suggest user defined answers
     public var allowAnswers: Bool?
     public var allowUserSuggestedOptions: Bool?
@@ -43,9 +25,9 @@ public final class CreatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     public var name: String
     public var options: [PollOptionInput]?
     /// Represents the visibility of votes in a poll.
-    public var votingVisibility: CreatePollRequestVotingVisibility?
+    public var votingVisibility: VotingVisibility?
 
-    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, votingVisibility: CreatePollRequestVotingVisibility? = nil) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String? = nil, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionInput]? = nil, votingVisibility: VotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom

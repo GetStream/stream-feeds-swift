@@ -10,7 +10,8 @@ public final class FeedMemberRemovedEvent: @unchecked Sendable, Event, Codable, 
     /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var memberId: String
     public var receivedAt: Date?
@@ -18,7 +19,7 @@ public final class FeedMemberRemovedEvent: @unchecked Sendable, Event, Codable, 
     public var type: String = "feeds.feed_member.removed"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, memberId: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, memberId: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

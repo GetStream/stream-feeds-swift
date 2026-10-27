@@ -10,14 +10,15 @@ public final class FeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feed: FeedResponse
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var receivedAt: Date?
     /// The type of event: "feeds.feed.updated" in this case
     public var type: String = "feeds.feed.updated"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: FeedVisibility? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed

@@ -6,40 +6,6 @@ import Foundation
 import StreamCore
 
 public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum AddActivityRequestRestrictReplies: String, Sendable, Codable, CaseIterable {
-        case everyone
-        case nobody
-        case peopleIFollow = "people_i_follow"
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum AddActivityRequestVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case tag
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// List of attachments for the activity
     public var attachments: [Attachment]?
     /// Collections that this activity references
@@ -66,7 +32,7 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
     /// ID of a poll to attach to activity
     public var pollId: String?
     /// Controls who can add comments/replies to this activity. One of: everyone, people_i_follow, nobody
-    public var restrictReplies: AddActivityRequestRestrictReplies?
+    public var restrictReplies: RestrictReplies?
     /// Additional data for search indexing
     public var searchData: [String: RawJSON]?
     /// Whether to skip URL enrichment for the activity
@@ -78,11 +44,11 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
     /// Type of activity
     public var type: String
     /// Visibility setting for the activity. One of: public, private, tag
-    public var visibility: AddActivityRequestVisibility?
+    public var visibility: ActivityVisibility?
     /// If visibility is 'tag', this is the tag name and is required
     public var visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: AddActivityRequestRestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: AddActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: RestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.collectionRefs = collectionRefs
         self.createNotificationActivity = createNotificationActivity
@@ -145,13 +111,13 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         self.mentionedUserIds = try container.decodeIfPresent([String].self, forKey: .mentionedUserIds)
         self.parentId = try container.decodeIfPresent(String.self, forKey: .parentId)
         self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
-        self.restrictReplies = try container.decodeIfPresent(AddActivityRequestRestrictReplies.self, forKey: .restrictReplies)
+        self.restrictReplies = try container.decodeIfPresent(RestrictReplies.self, forKey: .restrictReplies)
         self.searchData = try container.decodeIfPresent([String: RawJSON].self, forKey: .searchData)
         self.skipEnrichUrl = try container.decodeIfPresent(Bool.self, forKey: .skipEnrichUrl)
         self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.type = try container.decode(String.self, forKey: .type)
-        self.visibility = try container.decodeIfPresent(AddActivityRequestVisibility.self, forKey: .visibility)
+        self.visibility = try container.decodeIfPresent(ActivityVisibility.self, forKey: .visibility)
         self.visibilityTag = try container.decodeIfPresent(String.self, forKey: .visibilityTag)
     }
 

@@ -6,25 +6,6 @@ import Foundation
 import StreamCore
 
 public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum CommentResponseStatus: String, Sendable, Codable, CaseIterable {
-        case active
-        case deleted
-        case hidden
-        case removed
-        case shadowBlocked = "shadow_blocked"
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// Attachments associated with the comment
     public var attachments: [Attachment]?
     /// Confidence score of the comment
@@ -63,7 +44,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable 
     /// Score of the comment based on reactions
     public var score: Int
     /// Status of the comment. One of: active, deleted, removed, hidden
-    public var status: CommentResponseStatus
+    public var status: CommentStatus
     /// Text content of the comment
     public var text: String?
     /// When the comment was last updated
@@ -73,7 +54,7 @@ public final class CommentResponse: @unchecked Sendable, Codable, JSONEncodable 
     /// User response object
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore

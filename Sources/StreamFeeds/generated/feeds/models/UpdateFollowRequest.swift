@@ -6,32 +6,16 @@ import Foundation
 import StreamCore
 
 public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum UpdateFollowRequestPushPreference: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// Custom data for the follow relationship
     public var custom: [String: RawJSON]?
     /// Push preference for the follow relationship
-    public var pushPreference: UpdateFollowRequestPushPreference?
+    public var pushPreference: FollowPushPreference?
     /// Fully qualified ID of the source feed
     public var source: String
     /// Fully qualified ID of the target feed
     public var target: String
 
-    public init(custom: [String: RawJSON]? = nil, pushPreference: UpdateFollowRequestPushPreference? = nil, source: String, target: String) {
+    public init(custom: [String: RawJSON]? = nil, pushPreference: FollowPushPreference? = nil, source: String, target: String) {
         self.custom = custom
         self.pushPreference = pushPreference
         self.source = source
@@ -48,7 +32,7 @@ public final class UpdateFollowRequest: @unchecked Sendable, Codable, JSONEncoda
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.pushPreference = try container.decodeIfPresent(UpdateFollowRequestPushPreference.self, forKey: .pushPreference)
+        self.pushPreference = try container.decodeIfPresent(FollowPushPreference.self, forKey: .pushPreference)
         self.source = try container.decode(String.self, forKey: .source)
         self.target = try container.decode(String.self, forKey: .target)
     }

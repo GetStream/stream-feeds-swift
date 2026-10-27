@@ -14,7 +14,8 @@ public final class StoriesFeedUpdatedEvent: @unchecked Sendable, Event, Codable,
     /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     /// The ID of the feed
     public var fid: String
     public var receivedAt: Date?
@@ -22,7 +23,7 @@ public final class StoriesFeedUpdatedEvent: @unchecked Sendable, Event, Codable,
     public var type: String = "feeds.stories_feed.updated"
     public var user: UserResponseCommonFields?
 
-    public init(activities: [ActivityResponse]? = nil, aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activities: [ActivityResponse]? = nil, aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.createdAt = createdAt

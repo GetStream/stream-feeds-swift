@@ -6,30 +6,11 @@ import Foundation
 import StreamCore
 
 public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum OCRRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var action: OCRRuleAction
+    /// What a moderation rule does when it matches.
+    public var action: ModerationAction
     public var label: String
 
-    public init(action: OCRRuleAction, label: String) {
+    public init(action: ModerationAction, label: String) {
         self.action = action
         self.label = label
     }

@@ -6,40 +6,6 @@ import Foundation
 import StreamCore
 
 public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum UpdateActivityRequestRestrictReplies: String, Sendable, Codable, CaseIterable {
-        case everyone
-        case nobody
-        case peopleIFollow = "people_i_follow"
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum UpdateActivityRequestVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case tag
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// List of attachments for the activity
     public var attachments: [Attachment]?
     /// Custom data for the activity
@@ -58,9 +24,9 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
     /// The text content of the activity
     public var text: String?
     /// Visibility setting for the activity
-    public var visibility: UpdateActivityRequestVisibility?
+    public var visibility: ActivityVisibility?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: Location? = nil, pollId: String? = nil, text: String? = nil, visibility: UpdateActivityRequestVisibility? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: Location? = nil, pollId: String? = nil, text: String? = nil, visibility: ActivityVisibility? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -97,7 +63,7 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         self.location = try container.decodeIfPresent(Location.self, forKey: .location)
         self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
-        self.visibility = try container.decodeIfPresent(UpdateActivityRequestVisibility.self, forKey: .visibility)
+        self.visibility = try container.decodeIfPresent(ActivityVisibility.self, forKey: .visibility)
     }
 
     public func encode(to encoder: Encoder) throws {

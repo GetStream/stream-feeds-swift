@@ -6,23 +6,6 @@ import Foundation
 import StreamCore
 
 public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedMemberResponseStatus: String, Sendable, Codable, CaseIterable {
-        case member
-        case pending
-        case rejected
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// When the membership was created
     public var createdAt: Date
     /// Custom data for the membership
@@ -35,13 +18,13 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
     /// Role of the member in the feed
     public var role: String
     /// Status of the membership. One of: member, pending, rejected
-    public var status: FeedMemberResponseStatus
+    public var status: FeedMemberStatus
     /// When the membership was last updated
     public var updatedAt: Date
     /// User response object
     public var user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberStatus, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.inviteAcceptedAt = inviteAcceptedAt

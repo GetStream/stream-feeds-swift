@@ -19,8 +19,6 @@ public struct FeedMemberData: Equatable, Sendable {
     var localFilterData: LocalFilterData?
 }
 
-public typealias FeedMemberStatus = FeedMemberResponse.FeedMemberResponseStatus
-
 extension FeedMemberData: Identifiable {
     public var id: String {
         user.id

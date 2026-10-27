@@ -7,25 +7,6 @@ import StreamCore
 
 /// A comment with an optional, depth‑limited slice of nested replies.
 public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum ThreadedCommentResponseStatus: String, Sendable, Codable, CaseIterable {
-        case active
-        case deleted
-        case hidden
-        case removed
-        case shadowBlocked = "shadow_blocked"
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     public var attachments: [Attachment]?
     public var confidenceScore: Float
     public var controversyScore: Float?
@@ -50,14 +31,14 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var replyCount: Int
     public var score: Int
     /// Status of the comment. One of: active, deleted, removed, hidden
-    public var status: ThreadedCommentResponseStatus
+    public var status: CommentStatus
     public var text: String?
     public var updatedAt: Date
     public var upvoteCount: Int
     /// User response object
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: ThreadedCommentResponseStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: CommentStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore

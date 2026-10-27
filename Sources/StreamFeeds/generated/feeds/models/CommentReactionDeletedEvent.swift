@@ -11,14 +11,15 @@ public final class CommentReactionDeletedEvent: @unchecked Sendable, Event, Coda
     /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
     /// The type of reaction that was removed
     public var type: String = "feeds.comment.reaction.deleted"
 
-    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil) {
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil) {
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom

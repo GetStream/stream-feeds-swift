@@ -47,7 +47,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     fileprivate let _parent: BoxedAny?
 }
 
-public typealias ActivityDataVisibility = ActivityResponse.ActivityResponseVisibility
+public typealias ActivityDataVisibility = ActivityVisibility
 
 // MARK: - Mutating the Data
 

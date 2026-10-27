@@ -6,22 +6,6 @@ import Foundation
 import StreamCore
 
 public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum UpdatePollRequestVotingVisibility: String, Sendable, Codable, CaseIterable {
-        case `public`
-        case anonymous
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// Allow answers
     public var allowAnswers: Bool?
     /// Allow user suggested options
@@ -43,9 +27,9 @@ public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     /// Poll options
     public var options: [PollOptionRequest]?
     /// Voting visibility
-    public var votingVisibility: UpdatePollRequestVotingVisibility?
+    public var votingVisibility: VotingVisibility?
 
-    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: UpdatePollRequestVotingVisibility? = nil) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: VotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom

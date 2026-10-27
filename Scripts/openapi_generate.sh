@@ -29,6 +29,7 @@ ignored_endpoints=(
     deleteQueue
     deleteUserGroup
     deleteUserInterests
+    followBatch # FEEDS-2142 deprecated, server-side only
     getActionConfig # CHA-6290 server-side only
     getAppeal
     getFeedCounts
@@ -192,8 +193,6 @@ remove_property FeedRequest location
 remove_property FeedResponse activityCount location ownFollowings
 remove_property FeedsPreferences commentMention commentReply
 remove_property FeedSuggestionResponse activityCount location ownFollowings
-remove_property FollowBatchRequest enrichOwnFields
-remove_property FollowBatchResponse created
 remove_property FollowRequest activityCopyLimit copyCustomToNotification enrichOwnFields
 remove_property GetCommentRepliesResponse sort
 remove_property GetCommentsResponse commentCount sort topLevelCommentCount

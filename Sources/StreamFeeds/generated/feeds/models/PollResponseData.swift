@@ -6,22 +6,6 @@ import Foundation
 import StreamCore
 
 public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable {
-    public enum PollResponseDataVotingVisibility: String, Sendable, Codable, CaseIterable {
-        case `public`
-        case anonymous
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     public var allowAnswers: Bool
     public var allowUserSuggestedOptions: Bool
     public var answersCount: Int
@@ -44,9 +28,9 @@ public final class PollResponseData: @unchecked Sendable, Codable, JSONEncodable
     public var voteCount: Int
     public var voteCountsByOption: [String: Int]
     /// Voting visibility of the poll
-    public var votingVisibility: PollResponseDataVotingVisibility
+    public var votingVisibility: VotingVisibility
 
-    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: PollResponseDataVotingVisibility) {
+    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: VotingVisibility) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.answersCount = answersCount

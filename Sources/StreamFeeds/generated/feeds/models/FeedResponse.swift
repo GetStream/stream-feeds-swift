@@ -6,25 +6,6 @@ import Foundation
 import StreamCore
 
 public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedResponseVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case followers
-        case members
-        case visible
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// When the feed was created
     public var createdAt: Date
     /// User response object
@@ -61,9 +42,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     /// When the feed was last updated
     public var updatedAt: Date
     /// Visibility setting for the feed
-    public var visibility: FeedResponseVisibility?
+    public var visibility: FeedVisibility?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedResponseVisibility? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedVisibility? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom

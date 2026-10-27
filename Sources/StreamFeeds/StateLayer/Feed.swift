@@ -370,7 +370,7 @@ public final class Feed: Sendable {
         _ targetFid: FeedId,
         createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
-        pushPreference: FollowRequest.FollowRequestPushPreference? = nil
+        pushPreference: FollowPushPreference? = nil
     ) async throws -> FollowData {
         let request = FollowRequest(
             createNotificationActivity: createNotificationActivity,

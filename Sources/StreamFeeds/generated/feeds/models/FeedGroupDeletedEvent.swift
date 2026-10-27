@@ -10,7 +10,8 @@ public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, J
     /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     /// The ID of the feed group that was deleted
     public var groupId: String
@@ -18,7 +19,7 @@ public final class FeedGroupDeletedEvent: @unchecked Sendable, Event, Codable, J
     /// The type of event: "feeds.feed_group.deleted" in this case
     public var type: String = "feeds.feed_group.deleted"
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, groupId: String, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, groupId: String, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility

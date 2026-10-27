@@ -11,7 +11,8 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var feed: FeedResponse
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var members: [FeedMemberResponse]
     public var receivedAt: Date?
@@ -19,7 +20,7 @@ public final class FeedCreatedEvent: @unchecked Sendable, Event, Codable, JSONEn
     public var type: String = "feeds.feed.created"
     public var user: UserResponseCommonFields
 
-    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: String? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, custom: [String: RawJSON], feed: FeedResponse, feedVisibility: FeedVisibility? = nil, fid: String, members: [FeedMemberResponse], receivedAt: Date? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.custom = custom
         self.feed = feed

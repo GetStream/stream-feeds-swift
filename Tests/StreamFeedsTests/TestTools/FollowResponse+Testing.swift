@@ -11,11 +11,11 @@ extension FollowResponse {
         createdAt: Date = .fixed(),
         custom: [String: RawJSON]? = nil,
         followerRole: String = "user",
-        pushPreference: FollowResponsePushPreference = .all,
+        pushPreference: FollowPushPreference = .all,
         requestAcceptedAt: Date? = nil,
         requestRejectedAt: Date? = nil,
         sourceFeed: FeedResponse = .dummy(),
-        status: FollowResponseStatus = .accepted,
+        status: FollowStatus = .accepted,
         targetFeed: FeedResponse = .dummy(),
         updatedAt: Date = .fixed()
     ) -> FollowResponse {

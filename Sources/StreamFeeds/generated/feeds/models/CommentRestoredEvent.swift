@@ -11,14 +11,15 @@ public final class CommentRestoredEvent: @unchecked Sendable, Event, Codable, JS
     /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var receivedAt: Date?
     /// The type of event: "feeds.comment.restored" in this case
     public var type: String = "feeds.comment.restored"
     public var user: UserResponseCommonFields?
 
-    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom

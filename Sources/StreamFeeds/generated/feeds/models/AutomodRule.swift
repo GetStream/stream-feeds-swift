@@ -6,31 +6,12 @@ import Foundation
 import StreamCore
 
 public final class AutomodRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum AutomodRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var action: AutomodRuleAction
+    /// What a moderation rule does when it matches.
+    public var action: ModerationAction
     public var label: String
     public var threshold: Float
 
-    public init(action: AutomodRuleAction, label: String, threshold: Float) {
+    public init(action: ModerationAction, label: String, threshold: Float) {
         self.action = action
         self.label = label
         self.threshold = threshold

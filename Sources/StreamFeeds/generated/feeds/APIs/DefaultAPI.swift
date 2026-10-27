@@ -1146,19 +1146,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func followBatch(followBatchRequest: FollowBatchRequest) async throws -> FollowBatchResponse {
-        let path = "/api/v2/feeds/follows/batch"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: followBatchRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FollowBatchResponse.self, from: $0)
-        }
-    }
-
     open func queryFollows(queryFollowsRequest: QueryFollowsRequest) async throws -> QueryFollowsResponse {
         let path = "/api/v2/feeds/follows/query"
 
@@ -1819,8 +1806,6 @@ protocol DefaultAPIEndpoints {
     func follow(followRequest: FollowRequest) async throws -> SingleFollowResponse
 
     func acceptFollow(acceptFollowRequest: AcceptFollowRequest) async throws -> AcceptFollowResponse
-
-    func followBatch(followBatchRequest: FollowBatchRequest) async throws -> FollowBatchResponse
 
     func queryFollows(queryFollowsRequest: QueryFollowsRequest) async throws -> QueryFollowsResponse
 

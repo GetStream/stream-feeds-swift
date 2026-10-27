@@ -6,33 +6,15 @@ import Foundation
 import StreamCore
 
 public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FeedInputVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case followers
-        case members
-        case visible
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     public var custom: [String: RawJSON]?
     public var description: String?
     public var filterTags: [String]?
     public var members: [FeedMemberRequest]?
     public var name: String?
-    public var visibility: FeedInputVisibility?
+    /// Who can see and follow a feed.
+    public var visibility: FeedVisibility?
 
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.filterTags = filterTags

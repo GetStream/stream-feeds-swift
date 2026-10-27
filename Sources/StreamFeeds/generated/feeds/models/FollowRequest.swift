@@ -6,28 +6,12 @@ import Foundation
 import StreamCore
 
 public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public enum FollowRequestPushPreference: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
     /// Whether to create a notification activity for this follow
     public var createNotificationActivity: Bool?
     /// Custom data for the follow relationship
     public var custom: [String: RawJSON]?
     /// Push preference for the follow relationship
-    public var pushPreference: FollowRequestPushPreference?
+    public var pushPreference: FollowPushPreference?
     /// Whether to skip push for this follow
     public var skipPush: Bool?
     /// Fully qualified ID of the source feed
@@ -35,7 +19,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
     /// Fully qualified ID of the target feed
     public var target: String
 
-    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.pushPreference = pushPreference
@@ -57,7 +41,7 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.pushPreference = try container.decodeIfPresent(FollowRequestPushPreference.self, forKey: .pushPreference)
+        self.pushPreference = try container.decodeIfPresent(FollowPushPreference.self, forKey: .pushPreference)
         self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
         self.source = try container.decode(String.self, forKey: .source)
         self.target = try container.decode(String.self, forKey: .target)
