@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### ✅ Added
 - Add `StreamFeedsLogsUI`, an in-app log viewer for demo apps and debug builds [#80](https://github.com/GetStream/stream-feeds-swift/pull/80)
-- Update generated models to the latest OpenAPI spec, which adds 18 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Update generated models to the latest OpenAPI spec, which adds 17 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 
 ### 🔄 Changed
 - Deprecate the `role` argument of `Feed.acceptFollow(_:role:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)

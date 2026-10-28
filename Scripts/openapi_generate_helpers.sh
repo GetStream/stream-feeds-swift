@@ -87,7 +87,9 @@ prune_unreachable_models() {
     previous="$reachable"
     reachable="$(
       sed "s|.*|$models_dir/&.swift|" <<< "$previous" \
-        | xargs grep -ohE '[A-Za-z_][A-Za-z0-9_]*' "$OUTPUT_DIR_FEEDS/APIs/DefaultAPI.swift" \
+        | xargs cat "$OUTPUT_DIR_FEEDS/APIs/DefaultAPI.swift" \
+        | grep -vE '^[[:space:]]*//' \
+        | grep -oE '[A-Za-z_][A-Za-z0-9_]*' \
         | cat - <(echo "$previous") | sort -u | comm -12 - <(echo "$all")
     )"
   done
