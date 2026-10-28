@@ -46,7 +46,7 @@ extension Activity {
 
 extension Feed {
     /// Accepts a follow request from another feed.
-    @available(*, deprecated, renamed: "acceptFollow(_:)", message: "The API rejects follower roles in client-side requests.")
+    @available(*, deprecated, renamed: "acceptFollow(_:)", message: "The API no longer accepts role.")
     @discardableResult
     public func acceptFollow(_ sourceFid: FeedId, role: String?) async throws -> FollowData {
         try await acceptFollow(sourceFid)

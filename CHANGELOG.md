@@ -9,16 +9,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Update generated models to the latest OpenAPI spec, which adds 20 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 
 ### 🔄 Changed
-- Deprecate `Feed.acceptFollow(_:role:)` in favor of `acceptFollow(_:)`. The backend rejects follower roles from client-side requests [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
-- Deprecate the `userId` argument of `Activity` poll methods: `getPoll()`, `deletePoll()`, `getPollOption(optionId:)`, `deletePollOption(optionId:)`, `deletePollVote(voteId:)` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Deprecate the `role` argument of `Feed.acceptFollow(_:role:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Deprecate the `userId` argument of `Activity.getPoll(userId:)`, `deletePoll(userId:)`, `getPollOption(optionId:userId:)`, `deletePollOption(optionId:userId:)` and `deletePollVote(voteId:userId:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate `PollVotesQuery.userId` and `FeedQuery.activitySelectorOptions`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate `UserData.revokeTokensIssuedBefore` and `ReactionGroupData.sumScores`, which the API no longer returns [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Rename `BanResponse` -> `ModerationBanResponse`, `FlagResponse` -> `FlagItemResponse`, `AIVideoConfig` -> `AIVideoConfigResponse`, `ActivityLocation` -> `Location`, `AddActivityRequest.AddActivityRequestVisibility` -> `ActivityVisibility` and `FollowRequest.FollowRequestPushPreference` -> `FollowPushPreference`. The old names are deprecated [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 
 ### 🚨 Breaking Changes
-- Removed `OwnUser.revokeTokensIssuedBefore` and `OwnUser.pushNotifications`. The backend never returns them for client-side connections [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
-- Generated models no longer include chat, video or server-side-only properties, and some models are renamed, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
-- Generated models use shared enums instead of nested ones, for example `CommentResponse.CommentResponseStatus` -> `CommentStatus`, and feed events' `feedVisibility` is `FeedVisibility?` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Remove `OwnUser.revokeTokensIssuedBefore` and `OwnUser.pushNotifications`, which the API never returns for client-side connections [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Remove chat, video and server-side-only properties from generated models and rename some models, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Replace nested enums in generated models with shared ones, for example `CommentResponse.CommentResponseStatus` -> `CommentStatus`, and change feed events' `feedVisibility` to `FeedVisibility?` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 
 # [0.5.3](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.3)
 _June 11, 2026_
