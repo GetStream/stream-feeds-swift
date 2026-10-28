@@ -146,12 +146,14 @@ public final class Activity: Sendable {
     
     /// Removes a comment from this activity.
     ///
-    /// - Parameter commentId: The unique identifier of the comment to remove
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The data of the deleted comment
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws -> CommentData {
-        let result = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+    public func deleteComment(commentId: String, hardDelete: Bool? = nil, deleteNotificationActivity: Bool = false) async throws -> CommentData {
+        let result = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.commentDeleted(result.comment, result.activityId, feed))
         return result.comment
     }
@@ -186,12 +188,14 @@ public final class Activity: Sendable {
     
     /// Removes a reaction from an activity.
     ///
-    /// - Parameter type: The type of reaction to remove
+    /// - Parameters:
+    ///   - type: The type of reaction to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteReaction(type: String) async throws -> FeedsReactionData {
-        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
+    public func deleteReaction(type: String, deleteNotificationActivity: Bool = false) async throws -> FeedsReactionData {
+        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.activityReactionDeleted(result.reaction, result.activity, feed))
         return result.reaction
     }
@@ -215,11 +219,12 @@ public final class Activity: Sendable {
     /// - Parameters:
     ///   - commentId: The unique identifier of the comment
     ///   - type: The type of reaction to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
-        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
+    public func deleteCommentReaction(commentId: String, type: String, deleteNotificationActivity: Bool = false) async throws -> FeedsReactionData {
+        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.commentReactionDeleted(result.reaction, result.comment, feed))
         return result.reaction
     }
