@@ -6,14 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### ✅ Added
 - Add `StreamFeedsLogsUI`, an in-app log viewer for demo apps and debug builds [#80](https://github.com/GetStream/stream-feeds-swift/pull/80)
-- Update generated models to the latest OpenAPI spec, which adds 20 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Update generated models to the latest OpenAPI spec, which adds 18 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 
 ### 🔄 Changed
 - Deprecate the `role` argument of `Feed.acceptFollow(_:role:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate the `userId` argument of `Activity.getPoll(userId:)`, `deletePoll(userId:)`, `getPollOption(optionId:userId:)`, `deletePollOption(optionId:userId:)` and `deletePollVote(voteId:userId:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate `PollVotesQuery.userId` and `FeedQuery.activitySelectorOptions`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate `UserData.revokeTokensIssuedBefore` and `ReactionGroupData.sumScores`, which the API no longer returns [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
-- Rename `BanResponse` -> `ModerationBanResponse`, `FlagResponse` -> `FlagItemResponse`, `AIVideoConfig` -> `AIVideoConfigResponse`, `ActivityLocation` -> `Location`, `Ban` -> `BanInfoResponse`, `CustomActionRequest` -> `CustomActionRequestPayload`, `DeleteActivityRequest` -> `DeleteActivityRequestPayload`, `DeleteReactionRequest` -> `DeleteReactionRequestPayload`, `MarkReviewedRequest` -> `MarkReviewedRequestPayload`, `ModerationActionConfig` -> `ModerationActionConfigResponse`, `ReactionGroupResponse` -> `FeedsReactionGroupResponse`, `AddActivityRequest.AddActivityRequestVisibility` -> `ActivityVisibility` and `FollowRequest.FollowRequestPushPreference` -> `FollowPushPreference`. The old names are deprecated [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Rename some generated models, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse`. The old names are deprecated [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 
 ### 🚨 Breaking Changes
 - Remove `OwnUser.revokeTokensIssuedBefore` and `OwnUser.pushNotifications`, which the API never returns for client-side connections [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)

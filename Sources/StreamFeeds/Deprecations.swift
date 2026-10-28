@@ -222,6 +222,10 @@ public typealias ModerationActionConfig = ModerationActionConfigResponse
 @available(*, deprecated, renamed: "FeedsReactionGroupResponse")
 public typealias ReactionGroupResponse = FeedsReactionGroupResponse
 
+/// Renamed to ``UserMuteResponse``.
+@available(*, deprecated, renamed: "UserMuteResponse")
+public typealias UserMute = UserMuteResponse
+
 extension AddActivityRequest {
     /// Renamed to ``ActivityVisibility``.
     @available(*, deprecated, renamed: "ActivityVisibility")
