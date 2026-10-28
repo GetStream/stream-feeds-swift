@@ -2,7 +2,6 @@
   "allowedEndpoints": [
     "acceptFeedMemberInvite",
     "acceptFollow",
-    "activityFeedback",
     "addActivity",
     "addActivityReaction",
     "addBookmark",
@@ -12,22 +11,15 @@
     "ban",
     "blockUsers",
     "castPollVote",
-    "createBlockList",
-    "createDevice",
-    "createFeedsBatch",
-    "createGuest",
     "createPoll",
     "createPollOption",
     "deleteActivities",
     "deleteActivity",
     "deleteActivityReaction",
-    "deleteBlockList",
     "deleteBookmark",
-    "deleteBookmarkFolder",
     "deleteComment",
     "deleteCommentReaction",
     "deleteConfig",
-    "deleteDevice",
     "deleteFeed",
     "deleteFile",
     "deleteImage",
@@ -44,12 +36,9 @@
     "getComments",
     "getConfig",
     "getFollowSuggestions",
-    "getOG",
     "getOrCreateFeed",
     "getPoll",
     "getPollOption",
-    "listBlockLists",
-    "listDevices",
     "markActivity",
     "mute",
     "ownBatch",
@@ -67,7 +56,6 @@
     "queryPollVotes",
     "queryPolls",
     "queryReviewQueue",
-    "queryUsers",
     "rejectFeedMemberInvite",
     "rejectFollow",
     "stopWatchingFeed",
@@ -76,32 +64,17 @@
     "unfollow",
     "unpinActivity",
     "updateActivity",
-    "updateActivityPartial",
-    "updateBlockList",
     "updateBookmark",
-    "updateBookmarkFolder",
     "updateComment",
     "updateFeed",
     "updateFeedMembers",
-    "updateFollow",
     "updatePoll",
     "updatePollOption",
     "updatePollPartial",
-    "updatePushNotificationPreferences",
-    "updateUsers",
-    "updateUsersPartial",
-    "uploadFile",
-    "uploadImage",
     "upsertActivities",
     "upsertConfig"
   ],
   "removedProperties": {
-    "AIAudioConfigRequest": [
-      "profile"
-    ],
-    "AIAudioConfigResponse": [
-      "profile"
-    ],
     "AITextConfig": [
       "profile"
     ],
@@ -191,18 +164,6 @@
       "id",
       "placement"
     ],
-    "AppealItemResponse": [
-      "channelCid"
-    ],
-    "AppealRequest": [
-      "channelCid"
-    ],
-    "BanActionRequestPayload": [
-      "banFromFutureChannels",
-      "channelBanOnly",
-      "channelCid",
-      "deleteMessages"
-    ],
     "BanInfoResponse": [
       "channel",
       "channelCid",
@@ -219,13 +180,6 @@
     ],
     "BlockListConfig": [
       "matchSubstring"
-    ],
-    "BlockListResponse": [
-      "isConfusableFoldingEnabled",
-      "isLeetCheckEnabled",
-      "isPluralCheckEnabled",
-      "isSubstringMatchingEnabled",
-      "ownerUserId"
     ],
     "BookmarkFolderResponse": [
       "user"
@@ -252,15 +206,6 @@
       "supportedVideoCallHarmTypes",
       "videoCallRuleConfig"
     ],
-    "CreateBlockListRequest": [
-      "isConfusableFoldingEnabled",
-      "isLeetCheckEnabled",
-      "isPluralCheckEnabled",
-      "isSubstringMatchingEnabled"
-    ],
-    "CreateFeedsBatchRequest": [
-      "enrichOwnFields"
-    ],
     "CreatePollRequest": [
       "team"
     ],
@@ -276,10 +221,6 @@
       "entityId",
       "entityType",
       "reason"
-    ],
-    "DeleteUserRequestPayload": [
-      "deleteConversationChannels",
-      "markMessagesDeleted"
     ],
     "EnrichedActivity": [
       "time"
@@ -298,10 +239,6 @@
       "membershipLevel",
       "role"
     ],
-    "FeedRequest": [
-      "createdById",
-      "location"
-    ],
     "FeedResponse": [
       "activityCount",
       "location",
@@ -312,10 +249,6 @@
       "location",
       "ownFollowings"
     ],
-    "FeedsPreferences": [
-      "commentMention",
-      "commentReply"
-    ],
     "FlagRequest": [
       "entityCreatorId"
     ],
@@ -323,15 +256,6 @@
       "activityCopyLimit",
       "copyCustomToNotification",
       "enrichOwnFields"
-    ],
-    "FullUserResponse": [
-      "channelMutes",
-      "latestHiddenChannels",
-      "shadowBanned",
-      "totalUnreadCount",
-      "unreadChannels",
-      "unreadCount",
-      "unreadThreads"
     ],
     "GetCommentRepliesResponse": [
       "sort"
@@ -369,9 +293,6 @@
     "LLMConfig": [
       "contextCustomKeys",
       "customKeysContextDescription"
-    ],
-    "ListBlockListResponse": [
-      "nextCursor"
     ],
     "MarkReviewedRequestPayload": [
       "decisionReason"
@@ -452,18 +373,6 @@
       "deliveryReceipts",
       "typingIndicators"
     ],
-    "PushPreferenceInput": [
-      "channelCid",
-      "chatLevel",
-      "chatPreferences",
-      "removeSchedule",
-      "schedule"
-    ],
-    "PushPreferencesResponse": [
-      "chatLevel",
-      "chatPreferences",
-      "schedule"
-    ],
     "QueryActivitiesRequest": [
       "enrichOwnFields"
     ],
@@ -488,12 +397,6 @@
     "QueryReviewQueueResponse": [
       "defaultActionConfig",
       "filterConfig"
-    ],
-    "QueryUsersPayload": [
-      "idGt",
-      "idGte",
-      "idLt",
-      "idLte"
     ],
     "ReviewQueueItemResponse": [
       "appeal",
@@ -593,16 +496,6 @@
       "hidden",
       "i18n"
     ],
-    "UnbanActionRequestPayload": [
-      "channelCid",
-      "removeFutureChannelsBan"
-    ],
-    "UpdateActivityPartialRequest": [
-      "copyCustomToNotification",
-      "enrichOwnFields",
-      "handleMentionNotifications",
-      "runActivityProcessors"
-    ],
     "UpdateActivityRequest": [
       "collectionRefs",
       "copyCustomToNotification",
@@ -614,12 +507,6 @@
       "searchData",
       "skipEnrichUrl",
       "visibilityTag"
-    ],
-    "UpdateBlockListRequest": [
-      "isConfusableFoldingEnabled",
-      "isLeetCheckEnabled",
-      "isPluralCheckEnabled",
-      "isSubstringMatchingEnabled"
     ],
     "UpdateCommentRequest": [
       "attachments",
@@ -636,14 +523,6 @@
       "location",
       "name"
     ],
-    "UpdateFollowRequest": [
-      "activityCopyLimit",
-      "copyCustomToNotification",
-      "createNotificationActivity",
-      "enrichOwnFields",
-      "followerRole",
-      "skipPush"
-    ],
     "UpsertActivitiesRequest": [
       "enrichOwnFields"
     ],
@@ -656,9 +535,6 @@
       "floodConfig",
       "intentConfig",
       "videoCallRuleConfig"
-    ],
-    "UpsertPushPreferencesResponse": [
-      "userChannelPreferences"
     ],
     "UserBannedEvent": [
       "channelCustom",
@@ -701,15 +577,6 @@
     ],
     "VideoContentParameters": [
       "labelOperator"
-    ],
-    "WSAuthMessage": [
-      "eventProtocol",
-      "memberCustomInclude"
-    ]
-  },
-  "removedTypes": {
-    "PushPreferenceInput": [
-      "PushPreferenceInputChatLevel"
     ]
   }
 }

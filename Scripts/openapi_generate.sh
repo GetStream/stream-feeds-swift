@@ -31,13 +31,7 @@ mv "$OUTPUT_DIR_FEEDS/models/WSEvent.swift" "$OUTPUT_DIR_FEEDS/models/FeedsEvent
 sed -i '' 's/[[:<:]]WSEvent[[:>:]]/FeedsEvent/g' "$OUTPUT_DIR_FEEDS/models/FeedsEvent.swift"
 
 remove_unused_endpoints
-
-# Chat and video specific parts of the shared models.
-perl -0pi -e 's/, channelCid: String\?\)( async throws -> UnbanResponse)/)$1/g; s/,\n\s*"channel_cid": \(wrappedValue: channelCid\?\.encodeToJSON\(\), isExplode: true\)//' \
-  "$OUTPUT_DIR_FEEDS/APIs/DefaultAPI.swift"
-
 remove_properties
-remove_types
 
 # CHA-6288: Moderation uses duplicate models for feeds data, backend has tests to keep them in sync.
 sed -i '' -E 's/[[:<:]]FeedsV3(Activity|Comment)Response[[:>:]]/\1Response/g' \

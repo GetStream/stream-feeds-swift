@@ -112,117 +112,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func listBlockLists(team: String?, cursor: String?, limit: Int?) async throws -> ListBlockListResponse {
-        let path = "/api/v2/blocklists"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true),
-            "cursor": (wrappedValue: cursor?.encodeToJSON(), isExplode: true),
-            "limit": (wrappedValue: limit?.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(ListBlockListResponse.self, from: $0)
-        }
-    }
-
-    open func createBlockList(createBlockListRequest: CreateBlockListRequest) async throws -> CreateBlockListResponse {
-        let path = "/api/v2/blocklists"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: createBlockListRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(CreateBlockListResponse.self, from: $0)
-        }
-    }
-
-    open func deleteBlockList(name: String, team: String?) async throws -> Response {
-        var path = "/api/v2/blocklists/{name}"
-
-        let namePreEscape = "\(APIHelper.mapValueToPathItem(name))"
-        let namePostEscape = namePreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "name"), with: namePostEscape, options: .literal, range: nil)
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "team": (wrappedValue: team?.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(Response.self, from: $0)
-        }
-    }
-
-    open func updateBlockList(name: String, updateBlockListRequest: UpdateBlockListRequest) async throws -> UpdateBlockListResponse {
-        var path = "/api/v2/blocklists/{name}"
-
-        let namePreEscape = "\(APIHelper.mapValueToPathItem(name))"
-        let namePostEscape = namePreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "name"), with: namePostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PUT",
-            request: updateBlockListRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateBlockListResponse.self, from: $0)
-        }
-    }
-
-    open func deleteDevice(id: String) async throws -> Response {
-        let path = "/api/v2/devices"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "id": (wrappedValue: id.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(Response.self, from: $0)
-        }
-    }
-
-    open func listDevices() async throws -> ListDevicesResponse {
-        let path = "/api/v2/devices"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(ListDevicesResponse.self, from: $0)
-        }
-    }
-
-    open func createDevice(createDeviceRequest: CreateDeviceRequest) async throws -> Response {
-        let path = "/api/v2/devices"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: createDeviceRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(Response.self, from: $0)
-        }
-    }
-
     open func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse {
         let path = "/api/v2/feeds/activities"
 
@@ -332,23 +221,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(AddBookmarkResponse.self, from: $0)
-        }
-    }
-
-    open func activityFeedback(activityId: String, activityFeedbackRequest: ActivityFeedbackRequest) async throws -> ActivityFeedbackResponse {
-        var path = "/api/v2/feeds/activities/{activity_id}/feedback"
-
-        let activityIdPreEscape = "\(APIHelper.mapValueToPathItem(activityId))"
-        let activityIdPostEscape = activityIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "activity_id"), with: activityIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: activityFeedbackRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(ActivityFeedbackResponse.self, from: $0)
         }
     }
 
@@ -497,23 +369,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse {
-        var path = "/api/v2/feeds/activities/{id}"
-
-        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
-        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PATCH",
-            request: updateActivityPartialRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateActivityPartialResponse.self, from: $0)
-        }
-    }
-
     open func updateActivity(id: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse {
         var path = "/api/v2/feeds/activities/{id}"
 
@@ -541,39 +396,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryBookmarkFoldersResponse.self, from: $0)
-        }
-    }
-
-    open func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse {
-        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
-
-        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
-        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "DELETE"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(DeleteBookmarkFolderResponse.self, from: $0)
-        }
-    }
-
-    open func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse {
-        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
-
-        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
-        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
-        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PATCH",
-            request: updateBookmarkFolderRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateBookmarkFolderResponse.self, from: $0)
         }
     }
 
@@ -1068,19 +890,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest) async throws -> CreateFeedsBatchResponse {
-        let path = "/api/v2/feeds/feeds/batch"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: createFeedsBatchRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(CreateFeedsBatchResponse.self, from: $0)
-        }
-    }
-
     open func ownBatch(ownBatchRequest: OwnBatchRequest) async throws -> OwnBatchResponse {
         let path = "/api/v2/feeds/feeds/own/batch"
 
@@ -1104,19 +913,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryFeedsResponse.self, from: $0)
-        }
-    }
-
-    open func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse {
-        let path = "/api/v2/feeds/follows"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PATCH",
-            request: updateFollowRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateFollowResponse.self, from: $0)
         }
     }
 
@@ -1194,19 +990,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(UnfollowResponse.self, from: $0)
-        }
-    }
-
-    open func createGuest(createGuestRequest: CreateGuestRequest) async throws -> CreateGuestResponse {
-        let path = "/api/v2/guest"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: createGuestRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(CreateGuestResponse.self, from: $0)
         }
     }
 
@@ -1338,23 +1121,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(SubmitActionResponse.self, from: $0)
-        }
-    }
-
-    open func getOG(url: String) async throws -> GetOGResponse {
-        let path = "/api/v2/og"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "url": (wrappedValue: url.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(GetOGResponse.self, from: $0)
         }
     }
 
@@ -1535,19 +1301,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func updatePushNotificationPreferences(upsertPushPreferencesRequest: UpsertPushPreferencesRequest) async throws -> UpsertPushPreferencesResponse {
-        let path = "/api/v2/push_preferences"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: upsertPushPreferencesRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpsertPushPreferencesResponse.self, from: $0)
-        }
-    }
-
     open func deleteFile(url: String?) async throws -> Response {
         let path = "/api/v2/uploads/file"
 
@@ -1565,19 +1318,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
-    open func uploadFile(multipartFormData: MultipartFormData) async throws -> FileUploadResponse {
-        let path = "/api/v2/uploads/file"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: multipartFormData
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(FileUploadResponse.self, from: $0)
-        }
-    }
-
     open func deleteImage(url: String?) async throws -> Response {
         let path = "/api/v2/uploads/image"
 
@@ -1592,62 +1332,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(Response.self, from: $0)
-        }
-    }
-
-    open func uploadImage(multipartFormData: MultipartFormData) async throws -> ImageUploadResponse {
-        let path = "/api/v2/uploads/image"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: multipartFormData
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(ImageUploadResponse.self, from: $0)
-        }
-    }
-
-    open func queryUsers(payload: QueryUsersPayload?) async throws -> QueryUsersResponse {
-        let path = "/api/v2/users"
-
-        let queryParams = APIHelper.mapValuesToQueryItems([
-            "payload": (wrappedValue: payload?.encodeToJSON(), isExplode: true)
-        ])
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            queryParams: queryParams ?? [],
-            httpMethod: "GET"
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(QueryUsersResponse.self, from: $0)
-        }
-    }
-
-    open func updateUsersPartial(updateUsersPartialRequest: UpdateUsersPartialRequest) async throws -> UpdateUsersResponse {
-        let path = "/api/v2/users"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "PATCH",
-            request: updateUsersPartialRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateUsersResponse.self, from: $0)
-        }
-    }
-
-    open func updateUsers(updateUsersRequest: UpdateUsersRequest) async throws -> UpdateUsersResponse {
-        let path = "/api/v2/users"
-
-        let urlRequest = try makeRequest(
-            uriPath: path,
-            httpMethod: "POST",
-            request: updateUsersRequest
-        )
-        return try await send(request: urlRequest) {
-            try self.jsonDecoder.decode(UpdateUsersResponse.self, from: $0)
         }
     }
 
@@ -1693,20 +1377,6 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
 protocol DefaultAPIEndpoints {
     func getApp() async throws -> GetApplicationResponse
 
-    func listBlockLists(team: String?, cursor: String?, limit: Int?) async throws -> ListBlockListResponse
-
-    func createBlockList(createBlockListRequest: CreateBlockListRequest) async throws -> CreateBlockListResponse
-
-    func deleteBlockList(name: String, team: String?) async throws -> Response
-
-    func updateBlockList(name: String, updateBlockListRequest: UpdateBlockListRequest) async throws -> UpdateBlockListResponse
-
-    func deleteDevice(id: String) async throws -> Response
-
-    func listDevices() async throws -> ListDevicesResponse
-
-    func createDevice(createDeviceRequest: CreateDeviceRequest) async throws -> Response
-
     func addActivity(addActivityRequest: AddActivityRequest) async throws -> AddActivityResponse
 
     func upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest) async throws -> UpsertActivitiesResponse
@@ -1720,8 +1390,6 @@ protocol DefaultAPIEndpoints {
     func updateBookmark(activityId: String, updateBookmarkRequest: UpdateBookmarkRequest) async throws -> UpdateBookmarkResponse
 
     func addBookmark(activityId: String, addBookmarkRequest: AddBookmarkRequest) async throws -> AddBookmarkResponse
-
-    func activityFeedback(activityId: String, activityFeedbackRequest: ActivityFeedbackRequest) async throws -> ActivityFeedbackResponse
 
     func castPollVote(activityId: String, pollId: String, castPollVoteRequest: CastPollVoteRequest) async throws -> PollVoteResponse
 
@@ -1737,15 +1405,9 @@ protocol DefaultAPIEndpoints {
 
     func getActivity(id: String, commentSort: String?, commentLimit: Int?, skipOwnFollowings: Bool?, language: String?, translateText: Bool?, includeTopLevelCommentCount: Bool?) async throws -> GetActivityResponse
 
-    func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
-
     func updateActivity(id: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse
 
     func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse
-
-    func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse
-
-    func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse
 
     func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
 
@@ -1795,13 +1457,9 @@ protocol DefaultAPIEndpoints {
 
     func getFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> GetFollowSuggestionsResponse
 
-    func createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest) async throws -> CreateFeedsBatchResponse
-
     func ownBatch(ownBatchRequest: OwnBatchRequest) async throws -> OwnBatchResponse
 
     func queryFeeds(queryFeedsRequest: QueryFeedsRequest) async throws -> QueryFeedsResponse
-
-    func updateFollow(updateFollowRequest: UpdateFollowRequest) async throws -> UpdateFollowResponse
 
     func follow(followRequest: FollowRequest) async throws -> SingleFollowResponse
 
@@ -1812,8 +1470,6 @@ protocol DefaultAPIEndpoints {
     func rejectFollow(rejectFollowRequest: RejectFollowRequest) async throws -> RejectFollowResponse
 
     func unfollow(source: String, target: String, deleteNotificationActivity: Bool?, keepHistory: Bool?, enrichOwnFields: Bool?) async throws -> UnfollowResponse
-
-    func createGuest(createGuestRequest: CreateGuestRequest) async throws -> CreateGuestResponse
 
     func ban(banRequest: BanRequest) async throws -> ModerationBanResponse
 
@@ -1832,8 +1488,6 @@ protocol DefaultAPIEndpoints {
     func queryReviewQueue(queryReviewQueueRequest: QueryReviewQueueRequest) async throws -> QueryReviewQueueResponse
 
     func submitAction(submitActionRequest: SubmitActionRequest) async throws -> SubmitActionResponse
-
-    func getOG(url: String) async throws -> GetOGResponse
 
     func createPoll(createPollRequest: CreatePollRequest) async throws -> PollResponse
 
@@ -1857,21 +1511,9 @@ protocol DefaultAPIEndpoints {
 
     func queryPollVotes(pollId: String, queryPollVotesRequest: QueryPollVotesRequest) async throws -> PollVotesResponse
 
-    func updatePushNotificationPreferences(upsertPushPreferencesRequest: UpsertPushPreferencesRequest) async throws -> UpsertPushPreferencesResponse
-
     func deleteFile(url: String?) async throws -> Response
 
-    func uploadFile(multipartFormData: MultipartFormData) async throws -> FileUploadResponse
-
     func deleteImage(url: String?) async throws -> Response
-
-    func uploadImage(multipartFormData: MultipartFormData) async throws -> ImageUploadResponse
-
-    func queryUsers(payload: QueryUsersPayload?) async throws -> QueryUsersResponse
-
-    func updateUsersPartial(updateUsersPartialRequest: UpdateUsersPartialRequest) async throws -> UpdateUsersResponse
-
-    func updateUsers(updateUsersRequest: UpdateUsersRequest) async throws -> UpdateUsersResponse
 
     func getBlockedUsers() async throws -> GetBlockedUsersResponse
 

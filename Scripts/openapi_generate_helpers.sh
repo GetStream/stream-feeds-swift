@@ -37,38 +37,11 @@ remove_property() {
   done
 }
 
-# Drops a nested enum from a generated model.
-remove_type() {
-  local file="$OUTPUT_DIR_FEEDS/models/$1.swift"
-  awk -v e="$2" '
-    $0 ~ "^    public enum " e ": " { skip = 1; next }
-    skip && $0 == "    }"         { skip = 0; next }
-    skip                           { next }
-    { print }
-  ' "$file" > "$file.tmp"
-  if cmp -s "$file" "$file.tmp"; then
-    rm "$file.tmp"
-    echo "Removed type missing: $1.$2" >&2
-    exit 1
-  fi
-  mv "$file.tmp" "$file"
-}
-
 # Drops model properties listed in removedProperties.
 remove_properties() {
   local model
   for model in $(jq -r '.removedProperties | keys[]' "$ALLOWED_FILE"); do
     remove_property "$model" $(jq -r --arg m "$model" '.removedProperties[$m][]' "$ALLOWED_FILE")
-  done
-}
-
-# Drops nested enums listed in removedTypes.
-remove_types() {
-  local model type
-  for model in $(jq -r '.removedTypes | keys[]' "$ALLOWED_FILE"); do
-    for type in $(jq -r --arg m "$model" '.removedTypes[$m][]' "$ALLOWED_FILE"); do
-      remove_type "$model" "$type"
-    done
   done
 }
 
@@ -107,7 +80,7 @@ remove_endpoint() {
 # Deletes models which are not reachable from DefaultAPI or the given root models.
 prune_unreachable_models() {
   local models_dir="$OUTPUT_DIR_FEEDS/models"
-  local all reachable previous="" model
+  local all reachable previous="" model pruned_listed
   all="$(ls "$models_dir" | sed 's/\.swift$//' | sort)"
   reachable="$(printf '%s\n' "$@" | sort -u)"
   until [ "$reachable" = "$previous" ]; do
@@ -123,4 +96,10 @@ prune_unreachable_models() {
     rm "$models_dir/$model.swift"
     pruned_model_count=$((pruned_model_count + 1))
   done <<< "$(comm -23 <(echo "$all") <(echo "$reachable"))"
+  pruned_listed="$(jq -r '.removedProperties | keys[]' "$ALLOWED_FILE" | sort \
+    | comm -23 - <(echo "$reachable"))"
+  if [ -n "$pruned_listed" ]; then
+    echo "Pruned models listed in removedProperties: $pruned_listed" >&2
+    exit 1
+  fi
 }
