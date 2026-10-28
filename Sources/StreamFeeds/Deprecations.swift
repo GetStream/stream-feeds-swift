@@ -186,13 +186,41 @@ public typealias ActivityLocation = Location
 @available(*, deprecated, renamed: "AIVideoConfigResponse")
 public typealias AIVideoConfig = AIVideoConfigResponse
 
+/// Renamed to ``BanInfoResponse``.
+@available(*, deprecated, renamed: "BanInfoResponse")
+public typealias Ban = BanInfoResponse
+
 /// Renamed to ``ModerationBanResponse``.
 @available(*, deprecated, renamed: "ModerationBanResponse")
 public typealias BanResponse = ModerationBanResponse
 
+/// Renamed to ``CustomActionRequestPayload``.
+@available(*, deprecated, renamed: "CustomActionRequestPayload")
+public typealias CustomActionRequest = CustomActionRequestPayload
+
+/// Renamed to ``DeleteActivityRequestPayload``.
+@available(*, deprecated, renamed: "DeleteActivityRequestPayload")
+public typealias DeleteActivityRequest = DeleteActivityRequestPayload
+
+/// Renamed to ``DeleteReactionRequestPayload``.
+@available(*, deprecated, renamed: "DeleteReactionRequestPayload")
+public typealias DeleteReactionRequest = DeleteReactionRequestPayload
+
 /// Renamed to ``FlagItemResponse``.
 @available(*, deprecated, renamed: "FlagItemResponse")
 public typealias FlagResponse = FlagItemResponse
+
+/// Renamed to ``MarkReviewedRequestPayload``.
+@available(*, deprecated, renamed: "MarkReviewedRequestPayload")
+public typealias MarkReviewedRequest = MarkReviewedRequestPayload
+
+/// Renamed to ``ModerationActionConfigResponse``.
+@available(*, deprecated, renamed: "ModerationActionConfigResponse")
+public typealias ModerationActionConfig = ModerationActionConfigResponse
+
+/// Renamed to ``FeedsReactionGroupResponse``.
+@available(*, deprecated, renamed: "FeedsReactionGroupResponse")
+public typealias ReactionGroupResponse = FeedsReactionGroupResponse
 
 extension AddActivityRequest {
     /// Renamed to ``ActivityVisibility``.
