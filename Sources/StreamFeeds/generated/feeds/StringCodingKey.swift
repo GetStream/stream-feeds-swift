@@ -124,6 +124,7 @@ extension StringCodingKey {
     static let deactivatedAt: StringCodingKey = "deactivated_at"
     static let deleteActivity: StringCodingKey = "delete_activity"
     static let deleteConversation: StringCodingKey = "delete_conversation"
+    static let deleteNotificationActivity: StringCodingKey = "delete_notification_activity"
     static let deleteReaction: StringCodingKey = "delete_reaction"
     static let deleteUser: StringCodingKey = "delete_user"
     static let deletedAt: StringCodingKey = "deleted_at"

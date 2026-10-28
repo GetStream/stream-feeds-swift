@@ -498,9 +498,6 @@
     "CreatePollRequest": [
       "team"
     ],
-    "DeleteActivitiesRequest": [
-      "deleteNotificationActivity"
-    ],
     "DeleteActivityRequestPayload": [
       "entityId",
       "entityType",

@@ -29,8 +29,8 @@ final class ActivitiesRepository: Sendable {
         return try await addActivity(request: request.withFeed(feed, uploadedAttachments: uploadedAttachments))
     }
         
-    func deleteActivity(activityId: String, hardDelete: Bool) async throws {
-        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete, deleteNotificationActivity: nil)
+    func deleteActivity(activityId: String, hardDelete: Bool, deleteNotificationActivity: Bool) async throws {
+        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
     }
     
     func getActivity(activityId: String) async throws -> ActivityData {
@@ -131,8 +131,8 @@ final class ActivitiesRepository: Sendable {
         return (response.reaction.toModel(), response.activity.toModel())
     }
     
-    func deleteReaction(activityId: String, type: String) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
-        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type, deleteNotificationActivity: nil)
+    func deleteReaction(activityId: String, type: String, deleteNotificationActivity: Bool) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
+        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         return (response.reaction.toModel(), response.activity.toModel())
     }
     
