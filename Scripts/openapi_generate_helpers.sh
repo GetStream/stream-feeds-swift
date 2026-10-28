@@ -25,7 +25,13 @@ remove_property() {
       codingKeys && s == "}"                    { codingKeys = 0 }
       s ~ /^public init\(/ { sub("\\(" p ": [^,)]*, ", "("); sub(", " p ": [^,)]*", ""); sub("\\(" p ": [^,)]*\\)", "()") }
       { flush(); print }
-    ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+    ' "$file" > "$file.tmp"
+    if cmp -s "$file" "$file.tmp"; then
+      rm "$file.tmp"
+      echo "Removed property missing: $1.$p" >&2
+      exit 1
+    fi
+    mv "$file.tmp" "$file"
     # Drop a trailing `&&` left dangling when the removed field was last in an == chain.
     perl -0777 -pi -e 's/ &&(\n\s*\})/$1/g' "$file"
   done
@@ -39,7 +45,46 @@ remove_type() {
     skip && $0 == "    }"         { skip = 0; next }
     skip                           { next }
     { print }
-  ' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+  ' "$file" > "$file.tmp"
+  if cmp -s "$file" "$file.tmp"; then
+    rm "$file.tmp"
+    echo "Removed type missing: $1.$2" >&2
+    exit 1
+  fi
+  mv "$file.tmp" "$file"
+}
+
+# Drops model properties listed in removedProperties.
+remove_properties() {
+  local model
+  for model in $(jq -r '.removedProperties | keys[]' "$ALLOWED_FILE"); do
+    remove_property "$model" $(jq -r --arg m "$model" '.removedProperties[$m][]' "$ALLOWED_FILE")
+  done
+}
+
+# Drops nested enums listed in removedTypes.
+remove_types() {
+  local model type
+  for model in $(jq -r '.removedTypes | keys[]' "$ALLOWED_FILE"); do
+    for type in $(jq -r --arg m "$model" '.removedTypes[$m][]' "$ALLOWED_FILE"); do
+      remove_type "$model" "$type"
+    done
+  done
+}
+
+# Drops DefaultAPI endpoints which are not in allowedEndpoints.
+remove_unused_endpoints() {
+  local file="$OUTPUT_DIR_FEEDS/APIs/DefaultAPI.swift"
+  local allowed generated missing
+  allowed="$(jq -r '.allowedEndpoints[]' "$ALLOWED_FILE" | sort)"
+  generated="$(sed -n '/^protocol DefaultAPIEndpoints {/,$p' "$file" \
+    | sed -nE 's/^    func ([A-Za-z0-9]+)\(.*/\1/p' | sort)"
+  missing="$(comm -23 <(echo "$allowed") <(echo "$generated"))"
+  if [ -n "$missing" ]; then
+    echo "Allowed endpoints missing from DefaultAPI: $missing" >&2
+    exit 1
+  fi
+  remove_endpoint $(comm -13 <(echo "$allowed") <(echo "$generated"))
 }
 
 # Drops endpoints from DefaultAPI and its protocol.
