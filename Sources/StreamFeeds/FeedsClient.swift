@@ -704,12 +704,20 @@ extension FeedsClient: WSEventsSubscriber {
 
 extension FeedsClient {
     func subscribeToReconnection(in disposableBag: DisposableBag, action: @escaping @Sendable () async throws -> Void) {
+        // A newer reconnection cancels the refetch which is still running, so older data is not applied last
+        let runningTask = AllocatedUnfairLock<Task<Void, Never>?>(nil)
         reconnectionPublisher
-            .asyncSink { _ in
-                do {
-                    try await action()
-                } catch {
-                    log.error("Refetching data after web-socket reconnection failed", error: error)
+            .sink { _ in
+                runningTask.withLock { task in
+                    task?.cancel()
+                    task = Task {
+                        do {
+                            try await action()
+                        } catch {
+                            guard !Task.isCancelled else { return }
+                            log.error("Refetching data after web-socket reconnection failed", error: error)
+                        }
+                    }
                 }
             }
             .store(in: disposableBag)

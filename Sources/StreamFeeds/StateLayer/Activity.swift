@@ -443,6 +443,7 @@ private extension Activity {
     func refetch() async throws {
         guard await state.activity != nil else { return }
         let activityData = try await activitiesRepository.getActivity(activityId: activityId)
+        try Task.checkCancellation()
         await state.setActivity(activityData)
         if let updated = ownCapabilitiesRepository.saveCapabilities(in: activityData.currentFeed) {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))

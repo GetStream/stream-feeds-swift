@@ -113,8 +113,10 @@ extension MemberList: StateRefetching {
 
     func fetchPage(next: String?) async throws -> PaginationResult<FeedMemberData> {
         var pageQuery = query
-        pageQuery.next = next
-        pageQuery.previous = nil
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
         return try await fetchMembers(with: pageQuery)
     }
 

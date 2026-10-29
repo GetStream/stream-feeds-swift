@@ -572,16 +572,18 @@ extension Feed: StateRefetching {
     
     func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
         var query = feedQuery
-        query.activityNext = next
         // Members are refetched by the member list
         query.memberLimit = 0
-        if next != nil {
+        if let next {
+            query.activityNext = next
+            query.activityPrevious = nil
             query.followerLimit = 0
             query.followingLimit = 0
         }
         let result = try await feedsRepository.getOrCreateFeed(with: query)
         // Only the first page contains the rest of the feed data
         if next == nil {
+            try Task.checkCancellation()
             await state.didRefetchFeed(with: result)
             if let updated = ownCapabilitiesRepository.saveCapabilities(result.allOwnCapabilities) {
                 await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))

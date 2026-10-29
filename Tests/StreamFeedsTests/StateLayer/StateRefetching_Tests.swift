@@ -11,7 +11,7 @@ struct StateRefetching_Tests {
         let source = PageSource(loadedCount: 30) { next in
             let cursor = (next.flatMap { Int($0.dropFirst("cursor-".count)) } ?? 0) + 1
             return PaginationResult(
-                models: Array(repeating: 0, count: 10),
+                models: (1...10).map { Item(id: cursor * 10 + $0) },
                 pagination: PaginationData(next: "cursor-\(cursor)", previous: nil)
             )
         }
@@ -23,7 +23,7 @@ struct StateRefetching_Tests {
 
     @Test func refetchesFirstPageWhenLessIsLoaded() async throws {
         let source = PageSource(loadedCount: 3) { _ in
-            PaginationResult(models: Array(repeating: 0, count: 10), pagination: PaginationData(next: "cursor", previous: nil))
+            PaginationResult(models: (1...10).map { Item(id: $0) }, pagination: PaginationData(next: "cursor", previous: nil))
         }
         try await source.refetch()
         #expect(source.requests.value == [nil])
@@ -46,6 +46,26 @@ struct StateRefetching_Tests {
         try await source.refetch()
         #expect(source.requests.value.count == 1)
         #expect(source.refetched.value?.models.isEmpty == true)
+    }
+
+    @Test func keepsOneCopyOfItemsInOverlappingPages() async throws {
+        let source = PageSource(loadedCount: 4) { next in
+            next == nil
+                ? PaginationResult(models: [1, 2], pagination: PaginationData(next: "cursor", previous: nil))
+                : PaginationResult(models: [2, 3], pagination: .empty)
+        }
+        try await source.refetch()
+        #expect(source.refetched.value?.models == [1, 2, 3])
+    }
+
+    @Test func doesNotApplyCancelledRefetch() async throws {
+        let source = PageSource(loadedCount: 1) { _ in
+            withUnsafeCurrentTask { $0?.cancel() }
+            return PaginationResult(models: [1], pagination: .empty)
+        }
+        let refetch = Task { try await source.refetch() }
+        await #expect(throws: CancellationError.self) { try await refetch.value }
+        #expect(source.refetched.value == nil)
     }
 
     @Test func doesNotRefetchWhenNothingIsLoaded() async throws {
@@ -75,11 +95,11 @@ struct StateRefetching_Tests {
 
 private final class PageSource: StateRefetching {
     let loaded: Int?
-    let makePage: @Sendable (String?) -> PaginationResult<Int>
+    let makePage: @Sendable (String?) -> PaginationResult<Item>
     let requests = AllocatedUnfairLock<[String?]>([])
-    let refetched = AllocatedUnfairLock<PaginationResult<Int>?>(nil)
+    let refetched = AllocatedUnfairLock<PaginationResult<Item>?>(nil)
 
-    init(loadedCount: Int?, makePage: @escaping @Sendable (String?) -> PaginationResult<Int>) {
+    init(loadedCount: Int?, makePage: @escaping @Sendable (String?) -> PaginationResult<Item>) {
         loaded = loadedCount
         self.makePage = makePage
     }
@@ -88,12 +108,22 @@ private final class PageSource: StateRefetching {
         loaded
     }
 
-    func fetchPage(next: String?) async throws -> PaginationResult<Int> {
+    func fetchPage(next: String?) async throws -> PaginationResult<Item> {
         requests.withLock { $0.append(next) }
         return makePage(next)
     }
 
-    func didRefetch(_ result: PaginationResult<Int>) async {
+    func didRefetch(_ result: PaginationResult<Item>) async {
         refetched.withLock { $0 = result }
+    }
+}
+
+private struct Item: Identifiable, Equatable, Sendable {
+    let id: Int
+}
+
+extension Item: ExpressibleByIntegerLiteral {
+    init(integerLiteral value: Int) {
+        id = value
     }
 }

@@ -67,8 +67,10 @@ extension BookmarkFolderList: StateRefetching {
 
     func fetchPage(next: String?) async throws -> PaginationResult<BookmarkFolderData> {
         var pageQuery = query
-        pageQuery.next = next
-        pageQuery.previous = nil
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
         return try await bookmarksRepository.queryBookmarkFolders(with: pageQuery)
     }
 

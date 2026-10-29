@@ -151,8 +151,10 @@ extension ActivityReactionList: StateRefetching {
     
     func fetchPage(next: String?) async throws -> PaginationResult<FeedsReactionData> {
         var pageQuery = query
-        pageQuery.next = next
-        pageQuery.previous = nil
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
         return try await activitiesRepository.queryActivityReactions(request: pageQuery.toRequest(), activityId: pageQuery.activityId)
     }
     

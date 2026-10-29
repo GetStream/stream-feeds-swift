@@ -108,8 +108,10 @@ extension ActivityList: StateRefetching {
     
     func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
         var pageQuery = query
-        pageQuery.next = next
-        pageQuery.previous = nil
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
         return try await activitiesRepository.queryActivities(with: pageQuery)
     }
     

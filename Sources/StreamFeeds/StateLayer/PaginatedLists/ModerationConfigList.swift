@@ -169,8 +169,10 @@ extension ModerationConfigList: StateRefetching {
     
     func fetchPage(next: String?) async throws -> PaginationResult<ModerationConfigData> {
         var pageQuery = query
-        pageQuery.next = next
-        pageQuery.previous = nil
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
         return try await moderationRepository.queryModerationConfigs(with: pageQuery)
     }
     

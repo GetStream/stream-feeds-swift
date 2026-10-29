@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 protocol StateRefetching: AnyObject, Sendable {
-    associatedtype Model: Sendable
+    associatedtype Model: Identifiable & Sendable
 
     // Returns nil when nothing is loaded
     func loadedCount() async -> Int?
@@ -30,6 +30,10 @@ extension StateRefetching {
         // Pages use the query's limit and at least the first page is refetched
         while true {
             let page = try await fetchPage(next: pagination.next)
+            try Task.checkCancellation()
+            // Items can move to a later page while refetching
+            let pageIds = Set(page.models.map(\.id))
+            models.removeAll { pageIds.contains($0.id) }
             models.append(contentsOf: page.models)
             pagination = page.pagination
             guard models.count < loadedCount, pagination.next != nil, !page.models.isEmpty else { break }

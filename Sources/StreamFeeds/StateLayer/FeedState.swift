@@ -460,15 +460,16 @@ extension FeedState {
     }
     
     func didQueryFeed(with response: FeedsRepository.GetOrCreateInfo) {
+        activities = response.activities.models
+        activitiesPagination = response.activities.pagination
         didRefetchFeed(with: response)
-        
+
         // Members are managed by the paginatable list
         memberListState.didPaginate(with: response.members, for: .empty)
     }
-    
+
+    // Activities are replaced once all the pages are refetched
     func didRefetchFeed(with response: FeedsRepository.GetOrCreateInfo) {
-        activities = response.activities.models
-        activitiesPagination = response.activities.pagination
         activitiesQueryConfig = response.activitiesQueryConfig
         feedData = response.feed
         followers = response.followers
