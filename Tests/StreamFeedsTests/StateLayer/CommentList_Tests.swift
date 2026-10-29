@@ -25,6 +25,31 @@ struct CommentList_Tests {
         #expect(stateComments.map(\.id) == ["comment-1"])
     }
     
+    @Test func reconnectionRefetchesLoadedComments() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                GetCommentsResponse.dummy(
+                    comments: [.dummy(id: "comment-2", objectId: Self.activityId, objectType: "activity")],
+                    next: nil
+                )
+            ]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity")
+                ])
+            )
+        )
+        try await commentList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { commentList.state.comments.map(\.id) == ["comment-2"] }
+        #expect(await commentList.state.canLoadMore == false)
+    }
+    
     @Test func paginationLoadsMoreComments() async throws {
         // Sort by newest first
         let client = defaultClient(

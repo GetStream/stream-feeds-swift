@@ -22,6 +22,22 @@ struct BookmarkFolderList_Tests {
         await #expect(bookmarkFolderList.state.pagination?.next == "next-cursor")
     }
 
+    @Test func reconnectionRefetchesLoadedFolders() async throws {
+        let client = defaultClientWithBookmarkFolderResponses([
+            QueryBookmarkFoldersResponse.dummy(
+                bookmarkFolders: [.dummy(id: "folder-3", name: "Third Folder")],
+                next: nil
+            )
+        ])
+        let bookmarkFolderList = client.bookmarkFolderList(for: BookmarkFoldersQuery())
+        try await bookmarkFolderList.get()
+
+        client.simulateReconnection()
+
+        try await waitUntil { bookmarkFolderList.state.folders.map(\.id) == ["folder-3"] }
+        #expect(await bookmarkFolderList.state.canLoadMore == false)
+    }
+
     @Test func queryMoreBookmarkFoldersUpdatesState() async throws {
         let client = defaultClientWithBookmarkFolderResponses([
             QueryBookmarkFoldersResponse.dummy(

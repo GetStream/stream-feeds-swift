@@ -11,6 +11,7 @@ import StreamCore
 /// It maintains the current state of the member list and provides methods to load more members
 /// when available.
 public final class MemberList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<MemberListState>
     private let feedsRepository: FeedsRepository
 
@@ -19,6 +20,7 @@ public final class MemberList: Sendable {
         self.query = query
         let eventPublisher = client.stateLayerEventPublisher
         stateBuilder = StateBuilder { MemberListState(query: query, eventPublisher: eventPublisher) }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     /// The query configuration used to fetch members.
@@ -81,7 +83,7 @@ public final class MemberList: Sendable {
 
     // MARK: - Private
 
-    private func queryMembers(with query: MembersQuery) async throws -> [FeedMemberData] {
+    private func fetchMembers(with query: MembersQuery) async throws -> PaginationResult<FeedMemberData> {
         let response = try await feedsRepository.queryFeedMembers(
             feedGroupId: query.feed.group,
             feedId: query.feed.id,
@@ -89,11 +91,37 @@ public final class MemberList: Sendable {
         )
         let members = response.members.map { $0.toModel() }
         let pagination = PaginationData(next: response.next, previous: response.prev)
-        let result = PaginationResult(models: members, pagination: pagination)
+        return PaginationResult(models: members, pagination: pagination)
+    }
+
+    private func queryMembers(with query: MembersQuery) async throws -> [FeedMemberData] {
+        let result = try await fetchMembers(with: query)
         await state.didPaginate(
             with: result,
             for: .init(filter: query.filter, sort: query.sort)
         )
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension MemberList: StateRefetching {
+    var refetchLimit: Int? { query.limit }
+
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.members.count }
+    }
+
+    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<FeedMemberData> {
+        var pageQuery = query
+        pageQuery.limit = limit
+        pageQuery.next = next
+        pageQuery.previous = nil
+        return try await fetchMembers(with: pageQuery)
+    }
+
+    func didRefetch(_ result: PaginationResult<FeedMemberData>) async {
+        await state.didRefetch(with: result)
     }
 }

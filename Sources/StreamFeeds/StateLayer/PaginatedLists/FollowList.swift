@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class FollowList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<FollowListState>
     private let eventPublisher: StateLayerEventPublisher
     private let feedsRepository: FeedsRepository
@@ -23,6 +24,7 @@ public final class FollowList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: FollowsQuery
@@ -65,5 +67,30 @@ public final class FollowList: Sendable {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension FollowList: StateRefetching {
+    var refetchLimit: Int? { query.limit }
+    
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.follows.count }
+    }
+    
+    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<FollowData> {
+        var pageQuery = query
+        pageQuery.limit = limit
+        pageQuery.next = next
+        pageQuery.previous = nil
+        return try await feedsRepository.queryFollows(request: pageQuery.toRequest())
+    }
+    
+    func didRefetch(_ result: PaginationResult<FollowData>) async {
+        await state.didRefetch(with: result)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.map(\.sourceFeed) + result.models.map(\.targetFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
     }
 }

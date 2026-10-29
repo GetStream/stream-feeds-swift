@@ -23,6 +23,28 @@ struct BookmarkList_Tests {
         await #expect(bookmarkList.state.pagination?.next == "next-cursor")
     }
 
+    @Test func reconnectionRefetchesLoadedBookmarks() async throws {
+        let client = defaultClientWithBookmarkResponses([
+            QueryBookmarksResponse.dummy(
+                bookmarks: [
+                    .dummy(
+                        activity: .dummy(id: "activity-3"),
+                        folder: .dummy(id: "folder-1", name: "Test Folder"),
+                        user: .dummy(id: "user-1")
+                    )
+                ],
+                next: nil
+            )
+        ])
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+
+        client.simulateReconnection()
+
+        try await waitUntil { bookmarkList.state.bookmarks.map(\.id) == ["user-1-activity-3"] }
+        #expect(await bookmarkList.state.canLoadMore == false)
+    }
+
     @Test func queryMoreBookmarksUpdatesState() async throws {
         let client = defaultClientWithBookmarkResponses([
             QueryBookmarksResponse.dummy(

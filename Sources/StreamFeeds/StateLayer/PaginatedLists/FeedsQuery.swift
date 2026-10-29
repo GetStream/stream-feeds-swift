@@ -29,15 +29,15 @@ public struct FeedsQuery: Sendable {
     
     /// Maximum number of feeds to return in a single request.
     /// If not specified, the API will use its default limit.
-    public let limit: Int?
+    public var limit: Int?
     
     /// Pagination cursor for fetching the next page of results.
     /// This is typically provided in the response of a previous request.
-    public let next: String?
+    public var next: String?
     
     /// Pagination cursor for fetching the previous page of results.
     /// This is typically provided in the response of a previous request.
-    public let previous: String?
+    public var previous: String?
     
     /// Array of sorting criteria to apply to the feeds.
     /// If not specified, the API will use its default sorting.

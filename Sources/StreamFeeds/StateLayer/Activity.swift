@@ -16,6 +16,7 @@ public final class Activity: Sendable {
     private let commentsRepository: CommentsRepository
     private let ownCapabilitiesRepository: OwnCapabilitiesRepository
     private let pollsRepository: PollsRepository
+    private let disposableBag = DisposableBag()
     private let eventPublisher: StateLayerEventPublisher
     @MainActor private let stateBuilder: StateBuilder<ActivityState>
     
@@ -52,6 +53,9 @@ public final class Activity: Sendable {
                 eventPublisher: eventPublisher,
                 commentListState: commentList.state
             )
+        }
+        if client.feedsConfig.isAutomaticSyncOnReconnectEnabled {
+            client.subscribeToReconnection(in: disposableBag) { [weak self] in try await self?.refetch() }
         }
     }
     
@@ -432,6 +436,16 @@ private extension Activity {
             activity
         } else {
             try await get()
+        }
+    }
+    
+    // Comments are refetched by the comment list
+    func refetch() async throws {
+        guard await state.activity != nil else { return }
+        let activityData = try await activitiesRepository.getActivity(activityId: activityId)
+        await state.setActivity(activityData)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: activityData.currentFeed) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
     }
     

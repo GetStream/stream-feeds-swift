@@ -41,6 +41,7 @@ import StreamCore
 /// This class is thread-safe and conforms to `Sendable`. All state updates are
 /// performed on the main actor to ensure UI consistency.
 public final class ModerationConfigList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<ModerationConfigListState>
     private let moderationRepository: ModerationRepository
     
@@ -52,6 +53,7 @@ public final class ModerationConfigList: Sendable {
                 query: query
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     /// The query configuration used to fetch configurations.
@@ -155,5 +157,27 @@ public final class ModerationConfigList: Sendable {
             for: .init(filter: query.filter, sort: query.sort)
         )
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension ModerationConfigList: StateRefetching {
+    var refetchLimit: Int? { query.limit }
+    
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.configs.count }
+    }
+    
+    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<ModerationConfigData> {
+        var pageQuery = query
+        pageQuery.limit = limit
+        pageQuery.next = next
+        pageQuery.previous = nil
+        return try await moderationRepository.queryModerationConfigs(with: pageQuery)
+    }
+    
+    func didRefetch(_ result: PaginationResult<ModerationConfigData>) async {
+        await state.didRefetch(with: result)
     }
 }

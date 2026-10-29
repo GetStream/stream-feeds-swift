@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class CommentList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<CommentListState>
     private let commentsRepository: CommentsRepository
     
@@ -21,6 +22,7 @@ public final class CommentList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: CommentsQuery
@@ -61,5 +63,27 @@ public final class CommentList: Sendable {
             sort: query.sort
         )
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension CommentList: StateRefetching {
+    var refetchLimit: Int? { query.limit }
+    
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.comments.count }
+    }
+    
+    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<CommentData> {
+        var pageQuery = query
+        pageQuery.limit = limit
+        pageQuery.next = next
+        pageQuery.previous = nil
+        return try await commentsRepository.queryComments(request: pageQuery.toRequest())
+    }
+    
+    func didRefetch(_ result: PaginationResult<CommentData>) async {
+        await state.didRefetch(with: result)
     }
 }

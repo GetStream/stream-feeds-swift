@@ -97,4 +97,9 @@ extension ModerationConfigListState {
         self.queryConfig = queryConfig
         configs = configs.sortedMerge(response.models, sorting: configsSorting)
     }
+    
+    func didRefetch(with response: PaginationResult<ModerationConfigData>) {
+        pagination = response.pagination
+        configs = response.models
+    }
 }

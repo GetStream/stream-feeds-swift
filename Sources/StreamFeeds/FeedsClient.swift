@@ -44,7 +44,7 @@ public final class FeedsClient: Sendable {
     private let _token: AllocatedUnfairLock<UserToken>
     private let _userAuth = AllocatedUnfairLock<UserAuth?>(nil)
     private let disposableBag = DisposableBag()
-    private let feedsConfig: FeedsConfig
+    let feedsConfig: FeedsConfig
     
     public var userAuth: UserAuth? {
         _userAuth.value
@@ -699,5 +699,19 @@ extension FeedsClient: ConnectionStateDelegate {
 extension FeedsClient: WSEventsSubscriber {
     func onEvent(_ event: any Event) async {
         eventSubject.withLock { $0.send(event) }
+    }
+}
+
+extension FeedsClient {
+    func subscribeToReconnection(in disposableBag: DisposableBag, action: @escaping @Sendable () async throws -> Void) {
+        reconnectionPublisher
+            .asyncSink { _ in
+                do {
+                    try await action()
+                } catch {
+                    log.error("Refetching data after web-socket reconnection failed", error: error)
+                }
+            }
+            .store(in: disposableBag)
     }
 }

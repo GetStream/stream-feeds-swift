@@ -84,4 +84,9 @@ extension PollVoteListState {
         self.queryConfig = queryConfig
         votes = votes.sortedMerge(response.models, sorting: pollVotesSorting)
     }
+    
+    func didRefetch(with response: PaginationResult<PollVoteData>) {
+        pagination = response.pagination
+        votes = response.models
+    }
 }

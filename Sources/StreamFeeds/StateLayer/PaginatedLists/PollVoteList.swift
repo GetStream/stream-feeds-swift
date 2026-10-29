@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class PollVoteList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<PollVoteListState>
     private let pollsRepository: PollsRepository
     
@@ -19,6 +20,7 @@ public final class PollVoteList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: PollVotesQuery
@@ -64,5 +66,27 @@ public final class PollVoteList: Sendable {
             for: .init(filter: query.filter, sort: query.sort)
         )
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension PollVoteList: StateRefetching {
+    var refetchLimit: Int? { query.limit }
+    
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.votes.count }
+    }
+    
+    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<PollVoteData> {
+        var pageQuery = query
+        pageQuery.limit = limit
+        pageQuery.next = next
+        pageQuery.previous = nil
+        return try await pollsRepository.queryPollVotes(pollId: pageQuery.pollId, userId: pageQuery.userId, request: pageQuery.toRequest())
+    }
+    
+    func didRefetch(_ result: PaginationResult<PollVoteData>) async {
+        await state.didRefetch(with: result)
     }
 }

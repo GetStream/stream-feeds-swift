@@ -58,9 +58,7 @@ public final class Feed: Sendable {
             )
         }
         // Automatically refetch data on reconnection
-        if feedQuery.watch {
-            subscribeToReconnectionUpdates(client: client)
-        }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
     
     /// The unique identifier for this feed.
@@ -563,19 +561,39 @@ public final class Feed: Sendable {
         await eventPublisher.sendEvent(.activityAdded(activity, feed))
         return activity
     }
+}
+
+// MARK: - Refetching
+
+extension Feed: StateRefetching {
+    var refetchLimit: Int? { feedQuery.activityLimit }
     
-    // MARK: - private
+    func loadedCount() async -> Int? {
+        await state.access { $0.feedData == nil ? nil : $0.activities.count }
+    }
     
-    private func subscribeToReconnectionUpdates(client: FeedsClient) {
-        client.reconnectionPublisher.asyncSink { [weak self] in
-            guard let self else { return }
-            log.debug("Re-watching feed \(feed) after WS reconnection")
-            do {
-                try await getOrCreate()
-            } catch {
-                log.error("Re-watching feed \(feed) failed", error: error)
+    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<ActivityData> {
+        var query = feedQuery
+        query.activityLimit = limit
+        query.activityNext = next
+        // Members are refetched by the member list
+        query.memberLimit = 0
+        if next != nil {
+            query.followerLimit = 0
+            query.followingLimit = 0
+        }
+        let result = try await feedsRepository.getOrCreateFeed(with: query)
+        // Only the first page contains the rest of the feed data
+        if next == nil {
+            await state.didRefetchFeed(with: result)
+            if let updated = ownCapabilitiesRepository.saveCapabilities(result.allOwnCapabilities) {
+                await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
             }
         }
-        .store(in: disposableBag)
+        return result.activities
+    }
+    
+    func didRefetch(_ result: PaginationResult<ActivityData>) async {
+        await state.didRefetchActivities(result)
     }
 }

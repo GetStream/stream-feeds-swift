@@ -24,6 +24,25 @@ struct FeedList_Tests {
         await #expect(feedList.state.pagination?.next == "next-cursor")
     }
 
+    @Test func reconnectionRefetchesLoadedFeeds() async throws {
+        let client = defaultClientWithFeedsResponses([
+            .init(
+                matching: .bodyType(QueryFeedsRequest.self),
+                payload: QueryFeedsResponse.dummy(
+                    feeds: [.dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed())],
+                    next: nil
+                )
+            )
+        ])
+        let feedList = client.feedList(for: FeedsQuery())
+        try await feedList.get()
+
+        client.simulateReconnection()
+
+        try await waitUntil { feedList.state.feeds.map(\.id) == ["feed-3"] }
+        #expect(await feedList.state.canLoadMore == false)
+    }
+
     @Test func queryMoreFeedsUpdatesState() async throws {
         let client = defaultClientWithFeedsResponses([
             .init(

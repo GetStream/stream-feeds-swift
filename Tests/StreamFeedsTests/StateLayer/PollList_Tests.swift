@@ -18,6 +18,26 @@ struct PollList_Tests {
         #expect(statePolls.map(\.id) == ["poll-1"])
     }
     
+    @Test func reconnectionRefetchesLoadedPolls() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                QueryPollsResponse.dummy(
+                    polls: [.dummy(id: "poll-2", name: "Poll 2")],
+                    next: nil
+                )
+            ]
+        )
+        let pollList = client.pollList(
+            for: PollsQuery()
+        )
+        try await pollList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { pollList.state.polls.map(\.id) == ["poll-2"] }
+        #expect(await pollList.state.canLoadMore == false)
+    }
+    
     @Test func paginationLoadsMorePolls() async throws {
         let client = defaultClient(
             additionalPayloads: [

@@ -22,6 +22,28 @@ struct ActivityList_Tests {
         #expect(stateActivities.map(\.id) == ["activity-1"])
     }
     
+    @Test func reconnectionRefetchesLoadedActivities() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                QueryActivitiesResponse.dummy(
+                    activities: [.dummy(id: "activity-2", user: .dummy(id: "current-user-id"))],
+                    next: nil
+                )
+            ]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(
+                filter: .equal(.userId, "current-user-id")
+            )
+        )
+        try await activityList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { activityList.state.activities.map(\.id) == ["activity-2"] }
+        #expect(await activityList.state.canLoadMore == false)
+    }
+    
     @Test func paginationLoadsMoreActivities() async throws {
         let client = defaultClient(
             additionalPayloads: [
