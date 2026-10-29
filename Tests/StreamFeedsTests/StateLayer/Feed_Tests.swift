@@ -48,10 +48,12 @@ struct Feed_Tests {
     @Test func deleteFeedUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            followRequestsResponse(feed: feedId.rawValue),
             DeleteFeedResponse.dummy()
         ])
         let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
+        try await feed.queryFollowRequests()
 
         // Verify initial state has data
         await #expect(!feed.state.activities.isEmpty)
@@ -511,6 +513,7 @@ struct Feed_Tests {
         let feedId = FeedId(group: "user", id: "jane")
         let sourceFeedId = FeedId(group: "user", id: "bob")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            followRequestsResponse(feed: feedId.rawValue),
             AcceptFollowResponse.dummy(
                 follow: .dummy(
                     sourceFeed: .dummy(feed: sourceFeedId.rawValue),
@@ -521,6 +524,7 @@ struct Feed_Tests {
         ])
         let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
+        try await feed.queryFollowRequests()
 
         let initialFollowRequests = await feed.state.followRequests
         let initialFollowers = await feed.state.followers
@@ -543,6 +547,7 @@ struct Feed_Tests {
         let feedId = FeedId(group: "user", id: "jane")
         let sourceFeedId = FeedId(group: "user", id: "bob")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            followRequestsResponse(feed: feedId.rawValue),
             RejectFollowResponse.dummy(
                 follow: .dummy(
                     sourceFeed: .dummy(feed: sourceFeedId.rawValue),
@@ -553,6 +558,7 @@ struct Feed_Tests {
         ])
         let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
+        try await feed.queryFollowRequests()
 
         let initialFollowRequests = await feed.state.followRequests
         #expect(initialFollowRequests.count == 1)
@@ -563,6 +569,46 @@ struct Feed_Tests {
         #expect(finalFollowRequests.isEmpty)
         #expect(rejectData.sourceFeed.feed.rawValue == sourceFeedId.rawValue)
         #expect(rejectData.targetFeed.feed.rawValue == feedId.rawValue)
+    }
+
+    @Test func queryFollowRequestsUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            QueryFollowsResponse.dummy(
+                follows: [
+                    .dummy(
+                        createdAt: .fixed(offset: 1),
+                        sourceFeed: .dummy(feed: "user:alice"),
+                        status: .pending,
+                        targetFeed: .dummy(feed: feedId.rawValue)
+                    )
+                ],
+                next: "next-cursor"
+            ),
+            QueryFollowsResponse.dummy(
+                follows: [
+                    .dummy(
+                        sourceFeed: .dummy(feed: "user:bob"),
+                        status: .pending,
+                        targetFeed: .dummy(feed: feedId.rawValue)
+                    )
+                ]
+            )
+        ])
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await #expect(feed.state.followRequests.isEmpty)
+
+        let followRequests = try await feed.queryFollowRequests()
+
+        #expect(followRequests.map(\.sourceFeed.feed.rawValue) == ["user:alice"])
+        await #expect(feed.state.followRequests.map(\.sourceFeed.feed.rawValue) == ["user:alice"])
+
+        let moreFollowRequests = try await feed.queryMoreFollowRequests()
+
+        #expect(moreFollowRequests.map(\.sourceFeed.feed.rawValue) == ["user:bob"])
+        await #expect(feed.state.followRequests.map(\.sourceFeed.feed.rawValue) == ["user:alice", "user:bob"])
     }
 
     @Test func addReactionUpdatesState() async throws {
@@ -1400,6 +1446,34 @@ struct Feed_Tests {
 
         await #expect(feed.state.followers.count == 2)
         await #expect(feed.state.followers.contains { $0.targetFeed.feed.rawValue == feedId.rawValue })
+
+        // Send pending follow from this feed - should not be added to follow requests
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowAddedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: feedId.rawValue),
+                    status: .pending,
+                    targetFeed: .dummy(feed: "user:alice")
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followRequests.isEmpty)
+
+        // Send pending follow to this feed - should add to follow requests
+        await client.eventsMiddleware.sendEvent(
+            FeedFollowAddedEvent.dummy(
+                follow: .dummy(
+                    sourceFeed: .dummy(feed: "user:carol"),
+                    status: .pending,
+                    targetFeed: .dummy(feed: feedId.rawValue)
+                ),
+                fid: feedId.rawValue
+            )
+        )
+
+        await #expect(feed.state.followRequests.map(\.sourceFeed.feed.rawValue) == ["user:carol"])
     }
 
     @Test func feedFollowDeletedEventUpdatesState() async throws {
@@ -1439,9 +1513,12 @@ struct Feed_Tests {
 
     @Test func feedFollowUpdatedEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
-        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            followRequestsResponse(feed: feedId.rawValue)
+        ])
         let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
+        try await feed.queryFollowRequests()
 
         await #expect(feed.state.followRequests.map(\.status) == [.pending])
 
@@ -1540,9 +1617,12 @@ struct Feed_Tests {
     
     @Test func feedOwnCapabilitiesUpdatedEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
-        let client = defaultClientWithActivities(feed: feedId.rawValue)
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            followRequestsResponse(feed: feedId.rawValue)
+        ])
         let feed = client.feed(for: feedId)
         try await feed.getOrCreate()
+        try await feed.queryFollowRequests()
 
         let initialCapabilities: Set<FeedOwnCapability> = [.readFeed, .addActivity]
         await verifyOwnCapabilities(in: feed, equalTo: initialCapabilities, for: feedId)
@@ -1608,6 +1688,18 @@ struct Feed_Tests {
                     )
                 ] + additionalPayloads
             )
+        )
+    }
+    
+    private func followRequestsResponse(feed: String) -> QueryFollowsResponse {
+        QueryFollowsResponse.dummy(
+            follows: [
+                .dummy(
+                    sourceFeed: .dummy(feed: "user:bob"),
+                    status: .pending,
+                    targetFeed: .dummy(feed: feed, ownCapabilities: [.readFeed, .addActivity])
+                )
+            ]
         )
     }
     

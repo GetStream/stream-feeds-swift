@@ -25,10 +25,6 @@ public struct FollowData: Equatable, Sendable {
         status == .accepted
     }
     
-    var isFollowRequest: Bool {
-        status == .pending
-    }
-    
     func isFollower(of feed: FeedId) -> Bool {
         isFollower && targetFeed.feed == feed
     }

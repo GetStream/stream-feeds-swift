@@ -54,7 +54,6 @@ final class FeedsRepository: Sendable {
             aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
             allOwnCapabilities: allOwnCapabilities,
             feed: response.feed.toModel(),
-            followRequests: rawFollowers.filter(\.isFollowRequest),
             followers: rawFollowers.filter { $0.isFollower(of: feed) },
             following: rawFollowing.filter { $0.isFollowing(feed) },
             members: PaginationResult(
@@ -165,7 +164,6 @@ extension FeedsRepository {
         let aggregatedActivities: [AggregatedActivityData]
         let allOwnCapabilities: [FeedId: Set<FeedOwnCapability>]
         let feed: FeedData
-        let followRequests: [FollowData]
         let followers: [FollowData]
         let following: [FollowData]
         let members: PaginationResult<FeedMemberData>
