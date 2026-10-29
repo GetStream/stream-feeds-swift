@@ -239,4 +239,9 @@ extension ActivityCommentListState {
         pagination = response.pagination
         comments = comments.sortedMerge(response.models, sorting: CommentsSort.areInIncreasingOrder(sortingKey))
     }
+    
+    func didRefetch(with response: PaginationResult<ThreadedCommentData>) {
+        pagination = response.pagination
+        comments = response.models
+    }
 }

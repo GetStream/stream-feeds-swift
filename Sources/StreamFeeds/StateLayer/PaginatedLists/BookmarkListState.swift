@@ -99,4 +99,9 @@ extension BookmarkListState {
         self.queryConfig = queryConfig
         bookmarks = bookmarks.sortedMerge(response.models, sorting: bookmarkFoldersSorting)
     }
+
+    func didRefetch(with response: PaginationResult<BookmarkData>) {
+        pagination = response.pagination
+        bookmarks = response.models
+    }
 }

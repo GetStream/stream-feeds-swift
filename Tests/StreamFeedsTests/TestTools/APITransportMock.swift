@@ -8,8 +8,10 @@ import StreamFeeds
 
 final class APITransportMock: DefaultAPITransport {
     let responseResults = AllocatedUnfairLock<[APIResponse]>([])
-    
+    let requests = AllocatedUnfairLock<[Request]>([])
+
     func execute(request: Request) async throws -> (Data, URLResponse) {
+        requests.withLock { $0.append(request) }
         let response = try consumeResponseResult(for: request)
         switch response {
         case .success(let payload):

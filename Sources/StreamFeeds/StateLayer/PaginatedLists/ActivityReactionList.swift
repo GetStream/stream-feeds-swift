@@ -38,6 +38,7 @@ import StreamCore
 /// The list automatically updates when reactions are added or removed from the activity
 /// through WebSocket events. The state is observable and will notify subscribers of changes.
 public final class ActivityReactionList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<ActivityReactionListState>
     private let activitiesRepository: ActivitiesRepository
     
@@ -51,6 +52,7 @@ public final class ActivityReactionList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     /// The query configuration used to fetch activity reactions.
@@ -137,5 +139,26 @@ public final class ActivityReactionList: Sendable {
             for: .init(filter: query.filter, sort: query.sort)
         )
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension ActivityReactionList: StateRefetching {
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.reactions.count }
+    }
+    
+    func fetchPage(next: String?) async throws -> PaginationResult<FeedsReactionData> {
+        var pageQuery = query
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
+        return try await activitiesRepository.queryActivityReactions(request: pageQuery.toRequest(), activityId: pageQuery.activityId)
+    }
+    
+    func didRefetch(_ result: PaginationResult<FeedsReactionData>) async {
+        await state.didRefetch(with: result)
     }
 }

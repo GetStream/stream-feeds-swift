@@ -22,6 +22,51 @@ struct ActivityList_Tests {
         #expect(stateActivities.map(\.id) == ["activity-1"])
     }
     
+    @Test func reconnectionRefetchesLoadedActivities() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                QueryActivitiesResponse.dummy(
+                    activities: [.dummy(id: "activity-2", user: .dummy(id: "current-user-id"))],
+                    next: nil
+                )
+            ]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(
+                filter: .equal(.userId, "current-user-id")
+            )
+        )
+        try await activityList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { activityList.state.activities.map(\.id) == ["activity-2"] }
+        #expect(await activityList.state.canLoadMore == false)
+    }
+
+    @Test func reconnectionRefetchesFromQueryCursor() async throws {
+        let transport = APITransportMock.withPayloads([
+            QueryActivitiesResponse.dummy(activities: [.dummy(id: "activity-1", user: .dummy(id: "current-user-id"))], next: nil),
+            QueryActivitiesResponse.dummy(activities: [.dummy(id: "activity-2", user: .dummy(id: "current-user-id"))], next: nil)
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        let activityList = client.activityList(
+            for: ActivitiesQuery(
+                filter: .equal(.userId, "current-user-id"),
+                next: "query-cursor"
+            )
+        )
+        try await activityList.get()
+
+        client.simulateReconnection()
+
+        try await waitUntil { activityList.state.activities.map(\.id) == ["activity-2"] }
+        let cursors = try transport.requests.value.map { request in
+            try CodableHelper.jsonDecoder.decode(QueryActivitiesRequest.self, from: #require(request.body)).next
+        }
+        #expect(cursors == ["query-cursor", "query-cursor"])
+    }
+
     @Test func paginationLoadsMoreActivities() async throws {
         let client = defaultClient(
             additionalPayloads: [

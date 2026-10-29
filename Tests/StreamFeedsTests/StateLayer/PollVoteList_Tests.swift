@@ -19,6 +19,26 @@ struct PollVoteList_Tests {
         #expect(votes.map(\.id) == ["vote-1"])
         #expect(stateVotes.map(\.id) == ["vote-1"])
     }
+
+    @Test func reconnectionRefetchesLoadedVotes() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                PollVotesResponse.dummy(
+                    next: nil,
+                    votes: [.dummy(id: "vote-2", pollId: Self.pollId, user: .dummy(id: "user-2"))]
+                )
+            ]
+        )
+        let voteList = client.pollVoteList(
+            for: PollVotesQuery(pollId: Self.pollId)
+        )
+        try await voteList.get()
+
+        client.simulateReconnection()
+
+        try await waitUntil { voteList.state.votes.map(\.id) == ["vote-2"] }
+        #expect(await voteList.state.canLoadMore == false)
+    }
     
     @Test func paginationLoadsMoreVotes() async throws {
         let client = defaultClient(

@@ -48,6 +48,7 @@ import StreamCore
 /// This class is thread-safe and conforms to `Sendable`. All state updates are
 /// performed on the main actor to ensure UI consistency.
 public final class ActivityCommentList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<ActivityCommentListState>
     private let commentsRepository: CommentsRepository
     
@@ -63,6 +64,7 @@ public final class ActivityCommentList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     /// The query configuration used to fetch comments.
@@ -151,5 +153,26 @@ public final class ActivityCommentList: Sendable {
         let result = try await commentsRepository.getComments(with: query)
         await state.didPaginate(with: result)
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension ActivityCommentList: StateRefetching {
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.comments.count }
+    }
+    
+    func fetchPage(next: String?) async throws -> PaginationResult<ThreadedCommentData> {
+        var pageQuery = query
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
+        return try await commentsRepository.getComments(with: pageQuery)
+    }
+    
+    func didRefetch(_ result: PaginationResult<ThreadedCommentData>) async {
+        await state.didRefetch(with: result)
     }
 }

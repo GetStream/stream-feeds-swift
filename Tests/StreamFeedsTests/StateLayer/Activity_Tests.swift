@@ -27,6 +27,35 @@ struct Activity_Tests {
         #expect(statePoll.options.map(\.id) == ["option-1", "option-2"])
     }
     
+    @Test func reconnectionRefetchesActivityAndComments() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses([
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/activities/"),
+                    payload: GetActivityResponse.dummy(activity: .dummy(id: "activity-123", text: "Original"))
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/comments"),
+                    payload: GetCommentsResponse.dummy(comments: [.dummy(id: "comment-1", objectId: "activity-123")])
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/activities/"),
+                    payload: GetActivityResponse.dummy(activity: .dummy(id: "activity-123", text: "Updated"))
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/comments"),
+                    payload: GetCommentsResponse.dummy(comments: [.dummy(id: "comment-2", objectId: "activity-123")])
+                )
+            ])
+        )
+        let activity = client.activity(for: "activity-123", in: .init(group: "user", id: "jane"))
+        try await activity.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { activity.state.activity?.text == "Updated" && activity.state.comments.map(\.id) == ["comment-2"] }
+    }
+    
     @Test func pinUpdatesState() async throws {
         let client = FeedsClient.mock(
             apiTransport: .withPayloads(

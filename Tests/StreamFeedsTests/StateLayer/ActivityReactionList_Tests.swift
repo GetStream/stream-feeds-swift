@@ -20,6 +20,26 @@ struct ActivityReactionList_Tests {
         #expect(stateReactions.map(\.id) == ["current-user-id-like-\(Self.activityId)"])
     }
     
+    @Test func reconnectionRefetchesLoadedReactions() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                QueryActivityReactionsResponse.dummy(
+                    reactions: [.dummy(activityId: Self.activityId, type: "love", user: .dummy(id: "current-user-id"))],
+                    next: nil
+                )
+            ]
+        )
+        let reactionList = client.activityReactionList(
+            for: ActivityReactionsQuery(activityId: Self.activityId)
+        )
+        try await reactionList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { reactionList.state.reactions.map(\.id) == ["current-user-id-love-\(Self.activityId)"] }
+        #expect(await reactionList.state.canLoadMore == false)
+    }
+    
     @Test func paginationLoadsMoreReactions() async throws {
         let client = defaultClient(
             additionalPayloads: [

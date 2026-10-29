@@ -257,4 +257,9 @@ extension ActivityListState {
         self.queryConfig = queryConfig
         activities = activities.sortedMerge(response.models, sorting: activitiesSorting)
     }
+    
+    func didRefetch(with response: PaginationResult<ActivityData>) {
+        pagination = response.pagination
+        activities = response.models
+    }
 }

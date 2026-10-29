@@ -121,4 +121,9 @@ extension MemberListState {
         self.queryConfig = queryConfig
         members = members.sortedMerge(response.models, sorting: membersSorting)
     }
+
+    func didRefetch(with response: PaginationResult<FeedMemberData>) {
+        pagination = response.pagination
+        members = response.models
+    }
 }

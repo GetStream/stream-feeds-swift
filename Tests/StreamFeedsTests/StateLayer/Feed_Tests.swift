@@ -21,6 +21,78 @@ struct Feed_Tests {
         #expect(stateFeedData == feedData)
     }
 
+    @Test func reconnectionRefetchesLoadedFeed() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses([
+                .init(
+                    matching: .pathPrefix(feedPath + "/members"),
+                    payload: QueryFeedMembersResponse.dummy(members: [.dummy(user: .dummy(id: "feed-member-2"))])
+                ),
+                .init(
+                    matching: .pathPrefix(feedPath),
+                    payload: GetOrCreateFeedResponse.dummy(
+                        activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                        feed: .dummy(feed: feedId.rawValue)
+                    )
+                ),
+                .init(
+                    matching: .pathPrefix(feedPath),
+                    payload: GetOrCreateFeedResponse.dummy(
+                        activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
+                        feed: .dummy(feed: feedId.rawValue),
+                        next: nil
+                    )
+                )
+            ])
+        )
+        let feed = client.feed(for: FeedQuery(feed: feedId, watch: false))
+        try await feed.getOrCreate()
+
+        client.simulateReconnection()
+
+        try await waitUntil { feed.state.activities.map(\.id) == ["2"] && feed.state.members.map(\.id) == ["feed-member-2"] }
+        #expect(await feed.state.canLoadMoreActivities == false)
+    }
+
+    @Test func reconnectionKeepsLoadedActivitiesWhenRefetchFails() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
+        let transport = APITransportMock.withMatchedResponses([
+            .init(
+                matching: .pathPrefix(feedPath + "/members"),
+                payload: QueryFeedMembersResponse.dummy(members: [])
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1"),
+                        .dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "3")],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ),
+            .init(matching: .pathPrefix(feedPath), result: .failure(TestError()))
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        let feed = client.feed(for: FeedQuery(feed: feedId, watch: false))
+        try await feed.getOrCreate()
+
+        client.simulateReconnection()
+
+        try await waitUntil { transport.requests.value.filter { $0.url.path == feedPath }.count == 3 }
+        #expect(await feed.state.activities.map(\.id) == ["1", "2"])
+    }
+
     @Test func updateFeedUpdatesState() async throws {
         let customData = ["test": RawJSON.string("value")]
         let feedId = FeedId(group: "user", id: "jane")

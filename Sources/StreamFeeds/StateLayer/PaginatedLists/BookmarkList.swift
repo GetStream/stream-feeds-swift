@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class BookmarkList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<BookmarkListState>
     private let bookmarksRepository: BookmarksRepository
     private let eventPublisher: StateLayerEventPublisher
@@ -18,6 +19,7 @@ public final class BookmarkList: Sendable {
         self.query = query
         let eventPublisher = client.stateLayerEventPublisher
         stateBuilder = StateBuilder { BookmarkListState(query: query, eventPublisher: eventPublisher) }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: BookmarksQuery
@@ -60,5 +62,29 @@ public final class BookmarkList: Sendable {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
         return result.models
+    }
+}
+
+// MARK: - Refetching
+
+extension BookmarkList: StateRefetching {
+    func loadedCount() async -> Int? {
+        await state.access { $0.pagination == nil ? nil : $0.bookmarks.count }
+    }
+
+    func fetchPage(next: String?) async throws -> PaginationResult<BookmarkData> {
+        var pageQuery = query
+        if let next {
+            pageQuery.next = next
+            pageQuery.previous = nil
+        }
+        return try await bookmarksRepository.queryBookmarks(with: pageQuery)
+    }
+
+    func didRefetch(_ result: PaginationResult<BookmarkData>) async {
+        await state.didRefetch(with: result)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.compactMap(\.activity.currentFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
     }
 }

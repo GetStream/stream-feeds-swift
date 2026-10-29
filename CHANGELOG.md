@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### ✅ Added
 - Add `StreamFeedsLogsUI`, an in-app log viewer for demo apps and debug builds [#80](https://github.com/GetStream/stream-feeds-swift/pull/80)
+- Add `FeedsConfig.isAutomaticSyncOnReconnectEnabled` for refetching loaded data in `Feed`, `Activity` and paginated lists after the web-socket reconnects (on by default) [#89](https://github.com/GetStream/stream-feeds-swift/pull/89)
 
 # [0.5.3](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.3)
 _June 11, 2026_

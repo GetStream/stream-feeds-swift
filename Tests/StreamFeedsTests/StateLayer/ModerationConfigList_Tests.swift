@@ -18,6 +18,26 @@ struct ModerationConfigList_Tests {
         #expect(stateConfigs.map(\.id) == ["config-1"])
     }
     
+    @Test func reconnectionRefetchesLoadedConfigs() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                QueryModerationConfigsResponse.dummy(
+                    configs: [.dummy(key: "config-2", team: "Config 2")],
+                    next: nil
+                )
+            ]
+        )
+        let configList = client.moderationConfigList(
+            for: ModerationConfigsQuery()
+        )
+        try await configList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { configList.state.configs.map(\.id) == ["config-2"] }
+        #expect(await configList.state.canLoadMore == false)
+    }
+    
     @Test func paginationLoadsMoreConfigs() async throws {
         let client = defaultClient(
             additionalPayloads: [
