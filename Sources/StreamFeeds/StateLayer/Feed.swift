@@ -431,7 +431,7 @@ public final class Feed: Sendable {
     public func rejectFollow(_ sourceFid: FeedId) async throws -> FollowData {
         let request = RejectFollowRequest(source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.rejectFollow(request: request)
-        await eventPublisher.sendEvent(.feedFollowDeleted(follow, feed))
+        await eventPublisher.sendEvent(.feedFollowUpdated(follow, feed))
         return follow
     }
     
