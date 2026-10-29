@@ -33,6 +33,7 @@ public final class Feed: Sendable {
     private let bookmarksRepository: BookmarksRepository
     private let commentsRepository: CommentsRepository
     private let feedsRepository: FeedsRepository
+    private let followRequestList: FollowList
     private let memberList: MemberList
     private let ownCapabilitiesRepository: OwnCapabilitiesRepository
     private let pollsRepository: PollsRepository
@@ -45,15 +46,24 @@ public final class Feed: Sendable {
         feedQuery = query
         feedsRepository = client.feedsRepository
         eventPublisher = client.stateLayerEventPublisher
+        followRequestList = client.followList(
+            for: FollowsQuery(
+                filter: .and([
+                    .equal(.status, FollowStatus.pending.rawValue),
+                    .equal(.targetFeed, query.feed.rawValue)
+                ])
+            )
+        )
         memberList = client.memberList(for: .init(feed: query.feed))
         ownCapabilitiesRepository = client.ownCapabilitiesRepository
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
-        stateBuilder = StateBuilder { [eventPublisher, memberList] in
+        stateBuilder = StateBuilder { [eventPublisher, followRequestList, memberList] in
             FeedState(
                 feedQuery: query,
                 currentUserId: currentUserId,
                 eventPublisher: eventPublisher,
+                followRequestListState: followRequestList.state,
                 memberListState: memberList.state
             )
         }
@@ -408,7 +418,7 @@ public final class Feed: Sendable {
     public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
         let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
-        await eventPublisher.sendEvent(.feedFollowAdded(follow, feed))
+        await eventPublisher.sendEvent(.feedFollowUpdated(follow, feed))
         return follow
     }
     
@@ -423,6 +433,27 @@ public final class Feed: Sendable {
         let follow = try await feedsRepository.rejectFollow(request: request)
         await eventPublisher.sendEvent(.feedFollowDeleted(follow, feed))
         return follow
+    }
+    
+    /// Fetches the first page of pending follow requests sent to this feed.
+    ///
+    /// The results are stored in ``FeedState/followRequests``.
+    ///
+    /// - Returns: The fetched follow requests.
+    /// - Throws: An error if the network request fails or the response cannot be parsed.
+    @discardableResult
+    public func queryFollowRequests() async throws -> [FollowData] {
+        try await followRequestList.get()
+    }
+    
+    /// Fetches the next page of pending follow requests sent to this feed.
+    ///
+    /// - Parameter limit: The maximum number of follow requests to fetch. If `nil`, the default limit is used.
+    /// - Returns: The fetched follow requests, or an empty array when there are no more pages.
+    /// - Throws: An error if the network request fails or the response cannot be parsed.
+    @discardableResult
+    public func queryMoreFollowRequests(limit: Int? = nil) async throws -> [FollowData] {
+        try await followRequestList.queryMoreFollows(limit: limit)
     }
     
     // MARK: - Members

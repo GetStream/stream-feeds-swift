@@ -13,6 +13,7 @@ import StreamCore
 @MainActor public final class FeedState: ObservableObject, StateAccessing {
     private var cancellables = Set<AnyCancellable>()
     private let currentUserId: String
+    private let followRequestListState: FollowListState
     let memberListState: MemberListState
     private var eventSubscription: StateLayerEventPublisher.Subscription?
     
@@ -20,13 +21,19 @@ import StreamCore
         feedQuery: FeedQuery,
         currentUserId: String,
         eventPublisher: StateLayerEventPublisher,
+        followRequestListState: FollowListState,
         memberListState: MemberListState
     ) {
         self.currentUserId = currentUserId
         feed = feedQuery.feed
         self.feedQuery = feedQuery
+        self.followRequestListState = followRequestListState
         self.memberListState = memberListState
         subscribe(to: eventPublisher)
+        followRequestListState.$follows
+            .removeDuplicates()
+            .assign(to: \.followRequests, onWeak: self)
+            .store(in: &cancellables)
         memberListState.$members
             .assign(to: \.members, onWeak: self)
             .store(in: &cancellables)
@@ -54,7 +61,10 @@ import StreamCore
     @Published public internal(set) var following = [FollowData]()
     
     /// The list of pending follow requests for this feed.
-    @Published public internal(set) var followRequests = [FollowData]()
+    ///
+    /// ``Feed/getOrCreate()`` does not load follow requests. Call ``Feed/queryFollowRequests()`` for the first page
+    /// and ``Feed/queryMoreFollowRequests(limit:)`` for the next ones. WebSocket events keep the list up to date after that.
+    @Published public private(set) var followRequests = [FollowData]()
     
     /// The list of members in this feed.
     @Published public private(set) var members = [FeedMemberData]()
@@ -352,10 +362,6 @@ extension FeedState {
                         where: { capabilitiesMap.contains($0.sourceFeed.feed) || capabilitiesMap.contains($0.targetFeed.feed) },
                         changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
                     )
-                    state.followRequests.updateAll(
-                        where: { capabilitiesMap.contains($0.sourceFeed.feed) || capabilitiesMap.contains($0.targetFeed.feed) },
-                        changes: { $0.mergeFeedOwnCapabilities(from: capabilitiesMap) }
-                    )
                 }
             case .pollDeleted(let pollId, let eventFeedId):
                 guard eventFeedId == feed else { return }
@@ -437,20 +443,16 @@ extension FeedState {
     }
     
     private func addFollow(_ follow: FollowData) {
-        if follow.isFollowRequest {
-            followRequests.insert(byId: follow)
-        } else if follow.isFollowing(feed) {
+        if follow.isFollowing(feed) {
             following.insert(byId: follow)
         } else if follow.isFollower(of: feed) {
             followers.insert(byId: follow)
-            followRequests.remove(byId: follow.id)
         }
     }
     
     private func removeFollow(_ follow: FollowData) {
         following.remove(byId: follow.id)
         followers.remove(byId: follow.id)
-        followRequests.remove(byId: follow.id)
     }
     
     private func updateFollow(_ follow: FollowData) {
@@ -466,7 +468,6 @@ extension FeedState {
         feedData = response.feed
         followers = response.followers
         following = response.following
-        followRequests = response.followRequests
         ownCapabilities = response.ownCapabilities
         pinnedActivities = response.pinnedActivities
         aggregatedActivities = response.aggregatedActivities
