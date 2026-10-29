@@ -28,7 +28,7 @@ public struct ActivitiesQuery: Sendable {
     
     /// Maximum number of activities to return in a single request.
     /// If not specified, the API will use its default limit.
-    public var limit: Int?
+    public let limit: Int?
     
     /// Creates a new activities query with the specified parameters.
     ///

@@ -69,15 +69,12 @@ public final class CommentList: Sendable {
 // MARK: - Refetching
 
 extension CommentList: StateRefetching {
-    var refetchLimit: Int? { query.limit }
-    
     func loadedCount() async -> Int? {
         await state.access { $0.pagination == nil ? nil : $0.comments.count }
     }
     
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<CommentData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<CommentData> {
         var pageQuery = query
-        pageQuery.limit = limit
         pageQuery.next = next
         pageQuery.previous = nil
         return try await commentsRepository.queryComments(request: pageQuery.toRequest())

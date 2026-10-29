@@ -107,15 +107,12 @@ public final class MemberList: Sendable {
 // MARK: - Refetching
 
 extension MemberList: StateRefetching {
-    var refetchLimit: Int? { query.limit }
-
     func loadedCount() async -> Int? {
         await state.access { $0.pagination == nil ? nil : $0.members.count }
     }
 
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<FeedMemberData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<FeedMemberData> {
         var pageQuery = query
-        pageQuery.limit = limit
         pageQuery.next = next
         pageQuery.previous = nil
         return try await fetchMembers(with: pageQuery)

@@ -102,15 +102,12 @@ public final class ActivityList: Sendable {
 // MARK: - Refetching
 
 extension ActivityList: StateRefetching {
-    var refetchLimit: Int? { query.limit }
-    
     func loadedCount() async -> Int? {
         await state.access { $0.pagination == nil ? nil : $0.activities.count }
     }
     
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<ActivityData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
         var pageQuery = query
-        pageQuery.limit = limit
         pageQuery.next = next
         pageQuery.previous = nil
         return try await activitiesRepository.queryActivities(with: pageQuery)

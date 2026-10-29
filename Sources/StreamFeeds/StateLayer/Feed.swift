@@ -566,15 +566,12 @@ public final class Feed: Sendable {
 // MARK: - Refetching
 
 extension Feed: StateRefetching {
-    var refetchLimit: Int? { feedQuery.activityLimit }
-    
     func loadedCount() async -> Int? {
         await state.access { $0.feedData == nil ? nil : $0.activities.count }
     }
     
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<ActivityData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
         var query = feedQuery
-        query.activityLimit = limit
         query.activityNext = next
         // Members are refetched by the member list
         query.memberLimit = 0

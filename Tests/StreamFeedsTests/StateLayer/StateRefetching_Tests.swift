@@ -7,29 +7,31 @@ import StreamCore
 import Testing
 
 struct StateRefetching_Tests {
-    @Test func refetchesLoadedCountInPages() async throws {
-        let source = PageSource(loadedCount: 150, refetchLimit: 10) { limit, next in
-            PaginationResult(
-                models: Array(repeating: 0, count: limit),
-                pagination: PaginationData(next: next == nil ? "cursor-1" : "cursor-2", previous: nil)
+    @Test func refetchesPagesUntilLoadedCountIsCovered() async throws {
+        let source = PageSource(loadedCount: 30) { next in
+            let cursor = (next.flatMap { Int($0.dropFirst("cursor-".count)) } ?? 0) + 1
+            return PaginationResult(
+                models: Array(repeating: 0, count: 10),
+                pagination: PaginationData(next: "cursor-\(cursor)", previous: nil)
             )
         }
         try await source.refetch()
-        #expect(source.requests.value == [.init(limit: 100, next: nil), .init(limit: 50, next: "cursor-1")])
-        #expect(source.refetched.value?.models.count == 150)
-        #expect(source.refetched.value?.pagination.next == "cursor-2")
+        #expect(source.requests.value == [nil, "cursor-1", "cursor-2"])
+        #expect(source.refetched.value?.models.count == 30)
+        #expect(source.refetched.value?.pagination.next == "cursor-3")
     }
 
     @Test func refetchesFirstPageWhenLessIsLoaded() async throws {
-        let source = PageSource(loadedCount: 3, refetchLimit: 10) { _, _ in
-            PaginationResult(models: [], pagination: .empty)
+        let source = PageSource(loadedCount: 3) { _ in
+            PaginationResult(models: Array(repeating: 0, count: 10), pagination: PaginationData(next: "cursor", previous: nil))
         }
         try await source.refetch()
-        #expect(source.requests.value == [.init(limit: 10, next: nil)])
+        #expect(source.requests.value == [nil])
+        #expect(source.refetched.value?.models.count == 10)
     }
 
     @Test func stopsWhenThereAreNoMorePages() async throws {
-        let source = PageSource(loadedCount: 150, refetchLimit: nil) { _, _ in
+        let source = PageSource(loadedCount: 150) { _ in
             PaginationResult(models: [1, 2, 3], pagination: .empty)
         }
         try await source.refetch()
@@ -38,7 +40,7 @@ struct StateRefetching_Tests {
     }
 
     @Test func stopsOnEmptyPage() async throws {
-        let source = PageSource(loadedCount: 150, refetchLimit: nil) { _, _ in
+        let source = PageSource(loadedCount: 150) { _ in
             PaginationResult(models: [], pagination: PaginationData(next: "cursor", previous: nil))
         }
         try await source.refetch()
@@ -47,7 +49,7 @@ struct StateRefetching_Tests {
     }
 
     @Test func doesNotRefetchWhenNothingIsLoaded() async throws {
-        let source = PageSource(loadedCount: nil, refetchLimit: nil) { _, _ in
+        let source = PageSource(loadedCount: nil) { _ in
             PaginationResult(models: [1], pagination: .empty)
         }
         try await source.refetch()
@@ -72,20 +74,13 @@ struct StateRefetching_Tests {
 }
 
 private final class PageSource: StateRefetching {
-    struct Request: Equatable, Sendable {
-        let limit: Int
-        let next: String?
-    }
-
     let loaded: Int?
-    let refetchLimit: Int?
-    let makePage: @Sendable (Int, String?) -> PaginationResult<Int>
-    let requests = AllocatedUnfairLock<[Request]>([])
+    let makePage: @Sendable (String?) -> PaginationResult<Int>
+    let requests = AllocatedUnfairLock<[String?]>([])
     let refetched = AllocatedUnfairLock<PaginationResult<Int>?>(nil)
 
-    init(loadedCount: Int?, refetchLimit: Int?, makePage: @escaping @Sendable (Int, String?) -> PaginationResult<Int>) {
+    init(loadedCount: Int?, makePage: @escaping @Sendable (String?) -> PaginationResult<Int>) {
         loaded = loadedCount
-        self.refetchLimit = refetchLimit
         self.makePage = makePage
     }
 
@@ -93,9 +88,9 @@ private final class PageSource: StateRefetching {
         loaded
     }
 
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<Int> {
-        requests.withLock { $0.append(Request(limit: limit, next: next)) }
-        return makePage(limit, next)
+    func fetchPage(next: String?) async throws -> PaginationResult<Int> {
+        requests.withLock { $0.append(next) }
+        return makePage(next)
     }
 
     func didRefetch(_ result: PaginationResult<Int>) async {

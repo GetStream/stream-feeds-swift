@@ -68,15 +68,12 @@ public final class BookmarkList: Sendable {
 // MARK: - Refetching
 
 extension BookmarkList: StateRefetching {
-    var refetchLimit: Int? { query.limit }
-
     func loadedCount() async -> Int? {
         await state.access { $0.pagination == nil ? nil : $0.bookmarks.count }
     }
 
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<BookmarkData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<BookmarkData> {
         var pageQuery = query
-        pageQuery.limit = limit
         pageQuery.next = next
         pageQuery.previous = nil
         return try await bookmarksRepository.queryBookmarks(with: pageQuery)

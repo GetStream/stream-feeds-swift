@@ -159,15 +159,12 @@ public final class ActivityCommentList: Sendable {
 // MARK: - Refetching
 
 extension ActivityCommentList: StateRefetching {
-    var refetchLimit: Int? { query.limit }
-    
     func loadedCount() async -> Int? {
         await state.access { $0.pagination == nil ? nil : $0.comments.count }
     }
     
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<ThreadedCommentData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<ThreadedCommentData> {
         var pageQuery = query
-        pageQuery.limit = limit
         pageQuery.next = next
         pageQuery.previous = nil
         return try await commentsRepository.getComments(with: pageQuery)

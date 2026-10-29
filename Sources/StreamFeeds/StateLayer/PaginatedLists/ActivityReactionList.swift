@@ -145,15 +145,12 @@ public final class ActivityReactionList: Sendable {
 // MARK: - Refetching
 
 extension ActivityReactionList: StateRefetching {
-    var refetchLimit: Int? { query.limit }
-    
     func loadedCount() async -> Int? {
         await state.access { $0.pagination == nil ? nil : $0.reactions.count }
     }
     
-    func fetchPage(limit: Int, next: String?) async throws -> PaginationResult<FeedsReactionData> {
+    func fetchPage(next: String?) async throws -> PaginationResult<FeedsReactionData> {
         var pageQuery = query
-        pageQuery.limit = limit
         pageQuery.next = next
         pageQuery.previous = nil
         return try await activitiesRepository.queryActivityReactions(request: pageQuery.toRequest(), activityId: pageQuery.activityId)
