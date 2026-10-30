@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### ✅ Added
+- Add `deleteNotificationActivity` to `Feed.unfollow(_:)`, `DeleteActivitiesRequest` and the `Feed` and `Activity` methods that delete activities, comments and reactions [#86](https://github.com/GetStream/stream-feeds-swift/pull/86)
+- Add `keepHistory` to `Feed.unfollow(_:)` [#86](https://github.com/GetStream/stream-feeds-swift/pull/86)
+- Add `purgeUserActivities` to `Feed.deleteFeed(hardDelete:)` [#86](https://github.com/GetStream/stream-feeds-swift/pull/86)
 - Add `StreamFeedsLogsUI`, an in-app log viewer for demo apps and debug builds [#80](https://github.com/GetStream/stream-feeds-swift/pull/80)
 - Update generated models to the latest OpenAPI spec, which adds 17 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 

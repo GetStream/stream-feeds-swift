@@ -507,6 +507,17 @@ struct Feed_Tests {
         #expect(unfollowData.targetFeed.feed.rawValue == targetFeedId.rawValue)
     }
 
+    @Test func unfollowSendsQueryParameters() async throws {
+        let apiTransport = APITransportMock.withPayloads([UnfollowResponse.dummy()])
+        let feed = FeedsClient.mock(apiTransport: apiTransport).feed(group: "user", id: "jane")
+
+        try await feed.unfollow(FeedId(group: "user", id: "bob"), deleteNotificationActivity: true, keepHistory: true)
+
+        let queryParams = apiTransport.requests.value.last?.queryParams ?? []
+        #expect(queryParams.contains(URLQueryItem(name: "delete_notification_activity", value: "true")))
+        #expect(queryParams.contains(URLQueryItem(name: "keep_history", value: "true")))
+    }
+
     @Test func acceptFollowUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let sourceFeedId = FeedId(group: "user", id: "bob")

@@ -57,8 +57,8 @@ final class CommentsRepository: Sendable {
         return response.comments.map { $0.toModel() }
     }
     
-    func deleteComment(commentId: String, hardDelete: Bool?) async throws -> (comment: CommentData, activityId: String) {
-        let response = try await apiClient.deleteComment(id: commentId, hardDelete: hardDelete, deleteNotificationActivity: nil)
+    func deleteComment(commentId: String, hardDelete: Bool?, deleteNotificationActivity: Bool) async throws -> (comment: CommentData, activityId: String) {
+        let response = try await apiClient.deleteComment(id: commentId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
         return (response.comment.toModel(), response.activity.id)
     }
     
@@ -79,8 +79,8 @@ final class CommentsRepository: Sendable {
         return (response.reaction.toModel(), response.comment.toModel())
     }
 
-    func deleteCommentReaction(commentId: String, type: String) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
-        let response = try await apiClient.deleteCommentReaction(id: commentId, type: type, deleteNotificationActivity: nil)
+    func deleteCommentReaction(commentId: String, type: String, deleteNotificationActivity: Bool) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
+        let response = try await apiClient.deleteCommentReaction(id: commentId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         return (response.reaction.toModel(), response.comment.toModel())
     }
     
