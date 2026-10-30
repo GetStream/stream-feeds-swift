@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Replace nested enums in generated models with shared ones, for example `CommentResponse.CommentResponseStatus` -> `CommentStatus`, and change feed events' `feedVisibility` to `FeedVisibility?` [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Make generated models immutable and use `Double` instead of `Float` [#84](https://github.com/GetStream/stream-feeds-swift/pull/84)
 - Replace enums in generated models with `RawRepresentable` types, and use them instead of `String` in `FeedData.visibility`, `CommentData.status`, `ThreadedCommentData.status`, `FollowData.pushPreference` and `PollData.votingVisibility` [#84](https://github.com/GetStream/stream-feeds-swift/pull/84)
+- Nest the embedded model in `EntityCreatorResponse`, `FeedSuggestionResponse`, `ThreadedCommentResponse` and `UserResponsePrivacyFields`, for example `ThreadedCommentResponse.id` -> `ThreadedCommentResponse.comment.id` [#PR](https://github.com/GetStream/stream-feeds-swift/pull/PR)
 
 # [0.5.3](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.5.3)
 _June 11, 2026_

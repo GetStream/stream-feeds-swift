@@ -16,6 +16,7 @@ rm -rf "$OUTPUT_DIR_FEEDS"
 ( cd "$CHAT_DIR" ; make openapi ; make -C tools/openapi build ; \
   ./build/openapi generate-client --language swift \
     --opt immutable_models=true \
+    --opt nested_embedded_models=true \
     --opt raw_representable_over_enum=true \
     --opt string_coding_keys=true \
     --spec ./releases/v2/feeds-clientside-api.yaml --output "$OUTPUT_DIR_FEEDS" )
