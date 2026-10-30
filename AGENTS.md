@@ -7,10 +7,10 @@ This repo hosts Stream’s Swift SDK for Activity Feeds on Apple platforms. It e
 Agents should optimize for API stability, backwards compatibility, and high test coverage.
 
 Tech & toolchain
-  • Language: Swift
+  • Language: Swift 6.0 (`swift-tools-version: 6.0`)
   • Primary distribution: Swift Package Manager (SPM)
-  • Xcode: 15.x or newer (Apple Silicon supported)
-  • Platforms / deployment targets: Use the values set in Package.swift/podspecs; do not lower targets without approval
+  • Xcode: 16.x or newer (Apple Silicon supported); CI defaults to Xcode 26.2
+  • Platforms / deployment targets: Use the values set in Package.swift; do not lower targets without approval
   • CI: GitHub Actions (assume PR validation for build + tests + lint)
   • Linters & docs: SwiftLint and SwiftFormat
 
@@ -19,6 +19,7 @@ Tech & toolchain
 Package.swift
 Sources/
   StreamFeeds/         # Core Feeds client, models, network, utilities
+  StreamFeedsLogsUI/   # In-app log viewer (StreamLogsUI from stream-logs-ui-swift)
 Tests/
   StreamFeedsTests/    # Unit tests for the SDK
 DemoApp/               # The demo app for testing
@@ -31,7 +32,7 @@ Use the closest folder’s conventions when editing. Query actual target/product
 ### Local setup (SPM)
   1.  Clone the repository and open it in Xcode (root contains Package.swift).
   2.  Resolve packages.
-  3.  Choose an iOS Simulator (e.g., iPhone 15) and Build.
+  3.  Choose an iOS Simulator (e.g., iPhone 17 Pro) and Build.
 
 ### Optional: sample/demo app
 
@@ -39,7 +40,7 @@ If a sample app target exists, run it to validate changes. Do not hardcode crede
 
 ### Schemes
 
-Typical scheme names match the SPM product/target (e.g., the primary library target and its …Tests). Always query existing schemes before invoking xcodebuild.
+Shared schemes (under `StreamFeeds.xcodeproj/xcshareddata/xcschemes/`): `StreamFeeds` (builds the library and runs its tests) and `DemoApp`.
 
 ### Build & test commands (CLI)
 
@@ -49,8 +50,9 @@ Build (Debug):
 
 ```
 xcodebuild \
-  -scheme <PrimarySchemeName> \
-  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  -project StreamFeeds.xcodeproj \
+  -scheme StreamFeeds \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   -configuration Debug build
 ```
 
@@ -58,12 +60,13 @@ Run tests:
 
 ```
 xcodebuild \
-  -scheme <PrimarySchemeName> \
-  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  -project StreamFeeds.xcodeproj \
+  -scheme StreamFeeds \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   -configuration Debug test
 ```
 
-If a Makefile or scripts exist (e.g., make build, make test, ./scripts/lint.sh), prefer those to keep parity with CI. Discover with make help and ls scripts/.
+For CI parity, use the Fastlane lanes (`fastlane/Fastfile`): `bundle exec fastlane test` runs the StreamFeeds test plan, and `bundle exec fastlane run_swift_format strict:true` runs SwiftFormat and SwiftLint in strict mode.
 
 ### Linting & formatting
   • SwiftLint (strict) when configured:
@@ -89,11 +92,6 @@ swiftlint --strict
   • Client behaviors (pagination, retries/backoff, rate-limit handling)
   • Error surfaces and edge cases
   • Prefer async/await where available; avoid flaky sleeps—use expectations/mocks/stubs.
-
-### Performance & reliability
-  • Keep heavy work off the main thread.
-  • Be mindful of allocation/retain cycles; audit async capture lists.
-  • Consider caching where appropriate and document invalidation strategies.
 
 ### Documentation & examples
   • Update inline /// docs and any examples when changing public APIs.
