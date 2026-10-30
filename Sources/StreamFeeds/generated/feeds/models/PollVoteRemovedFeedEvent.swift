@@ -5,17 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteRemovedFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+public final class PollVoteRemovedFeedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var poll: PollResponseData
     public var pollVote: PollVoteResponseData
     public var receivedAt: Date?
     public var type: String = "feeds.poll.vote_removed"
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, poll: PollResponseData, pollVote: PollVoteResponseData, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, poll: PollResponseData, pollVote: PollVoteResponseData, receivedAt: Date? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -35,7 +36,9 @@ public final class PollVoteRemovedFeedEvent: @unchecked Sendable, Event, Codable
         case receivedAt = "received_at"
         case type
     }
+}
 
+extension PollVoteRemovedFeedEvent: Hashable {
     public static func == (lhs: PollVoteRemovedFeedEvent, rhs: PollVoteRemovedFeedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

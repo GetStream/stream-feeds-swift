@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AutomodPlatformCircumventionConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AutomodPlatformCircumventionConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var async: Bool?
     public var enabled: Bool
     public var rules: [AutomodRule]
@@ -21,7 +21,9 @@ public final class AutomodPlatformCircumventionConfig: @unchecked Sendable, Coda
         case enabled
         case rules
     }
+}
 
+extension AutomodPlatformCircumventionConfig: Hashable {
     public static func == (lhs: AutomodPlatformCircumventionConfig, rhs: AutomodPlatformCircumventionConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&

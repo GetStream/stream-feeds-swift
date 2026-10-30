@@ -5,6 +5,7 @@
 import Foundation
 import StreamCore
 
+/// Represents a feed capability value and enumerates all possible capability strings.
 public enum FeedOwnCapability: String, Sendable, Codable, CaseIterable {
     case addActivity = "add-activity"
     case addActivityBookmark = "add-activity-bookmark"
@@ -20,13 +21,13 @@ public enum FeedOwnCapability: String, Sendable, Codable, CaseIterable {
     case deleteOwnActivityReaction = "delete-own-activity-reaction"
     case deleteOwnComment = "delete-own-comment"
     case deleteOwnCommentReaction = "delete-own-comment-reaction"
-    case follow = "follow"
+    case follow
     case pinActivity = "pin-activity"
     case queryFeedMembers = "query-feed-members"
     case queryFollows = "query-follows"
     case readActivities = "read-activities"
     case readFeed = "read-feed"
-    case unfollow = "unfollow"
+    case unfollow
     case updateAnyActivity = "update-any-activity"
     case updateAnyComment = "update-any-comment"
     case updateFeed = "update-feed"

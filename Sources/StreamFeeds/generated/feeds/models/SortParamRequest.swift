@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class SortParamRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class SortParamRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Direction of sorting, 1 for Ascending, -1 for Descending, default is 1. One of: -1, 1
     public var direction: Int?
+    /// Name of field to sort by
     public var field: String?
 
     public init(direction: Int? = nil, field: String? = nil) {
@@ -18,7 +20,9 @@ public final class SortParamRequest: @unchecked Sendable, Codable, JSONEncodable
         case direction
         case field
     }
+}
 
+extension SortParamRequest: Hashable {
     public static func == (lhs: SortParamRequest, rhs: SortParamRequest) -> Bool {
         lhs.direction == rhs.direction &&
             lhs.field == rhs.field

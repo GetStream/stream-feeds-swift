@@ -11,7 +11,7 @@ extension FeedCreatedEvent {
         createdAt: Date = .fixed(),
         custom: [String: RawJSON] = [:],
         feed: FeedResponse = .dummy(),
-        feedVisibility: String? = nil,
+        feedVisibility: FeedVisibility? = nil,
         fid: String = "user:test",
         members: [FeedMemberResponse] = [],
         receivedAt: Date? = nil,

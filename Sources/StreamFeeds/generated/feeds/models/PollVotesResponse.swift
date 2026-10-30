@@ -5,10 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
     public var next: String?
     public var prev: String?
+    /// Poll votes
     public var votes: [PollVoteResponseData]
 
     public init(duration: String, next: String? = nil, prev: String? = nil, votes: [PollVoteResponseData]) {
@@ -24,7 +26,9 @@ public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodabl
         case prev
         case votes
     }
+}
 
+extension PollVotesResponse: Hashable {
     public static func == (lhs: PollVotesResponse, rhs: PollVotesResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&

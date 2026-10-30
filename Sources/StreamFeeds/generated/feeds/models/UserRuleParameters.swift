@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UserRuleParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UserRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var maxAge: String?
 
     public init(maxAge: String? = nil) {
@@ -15,7 +15,9 @@ public final class UserRuleParameters: @unchecked Sendable, Codable, JSONEncodab
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case maxAge = "max_age"
     }
+}
 
+extension UserRuleParameters: Hashable {
     public static func == (lhs: UserRuleParameters, rhs: UserRuleParameters) -> Bool {
         lhs.maxAge == rhs.maxAge
     }

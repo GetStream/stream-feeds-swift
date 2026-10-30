@@ -169,10 +169,7 @@ import SwiftUI
         guard let vote = currentUserVote(for: option) else { return }
         Task {
             do {
-                try await activity.deletePollVote(
-                    voteId: vote.id,
-                    userId: feedsClient.user.id
-                )
+                try await activity.deletePollVote(voteId: vote.id)
                 self.isCastingVote = false
             } catch {
                 self.isCastingVote = false

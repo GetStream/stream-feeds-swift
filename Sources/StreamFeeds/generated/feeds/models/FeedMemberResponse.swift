@@ -5,35 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum FeedMemberResponseStatus: String, Sendable, Codable, CaseIterable {
-        case member
-        case pending
-        case rejected
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
+public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// When the membership was created
     public var createdAt: Date
+    /// Custom data for the membership
     public var custom: [String: RawJSON]?
+    /// When the invite was accepted
     public var inviteAcceptedAt: Date?
+    /// When the invite was rejected
     public var inviteRejectedAt: Date?
     public var membershipLevel: MembershipLevelResponse?
+    /// Role of the member in the feed
     public var role: String
-    public var status: FeedMemberResponseStatus
+    /// Status of the membership. One of: member, pending, rejected
+    public var status: FeedMemberStatus
+    /// When the membership was last updated
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberResponseStatus, updatedAt: Date, user: UserResponse) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, inviteAcceptedAt: Date? = nil, inviteRejectedAt: Date? = nil, membershipLevel: MembershipLevelResponse? = nil, role: String, status: FeedMemberStatus, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.inviteAcceptedAt = inviteAcceptedAt
@@ -56,7 +47,9 @@ public final class FeedMemberResponse: @unchecked Sendable, Codable, JSONEncodab
         case updatedAt = "updated_at"
         case user
     }
+}
 
+extension FeedMemberResponse: Hashable {
     public static func == (lhs: FeedMemberResponse, rhs: FeedMemberResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

@@ -5,17 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Additional metadata about the flag
     public var custom: [String: RawJSON]?
-    public var entityCreatorId: String?
+    /// Unique identifier of the entity being flagged
     public var entityId: String
+    /// Type of entity being flagged (e.g., message, user)
     public var entityType: String
     public var moderationPayload: ModerationPayload?
+    /// Optional explanation for why the content is being flagged
     public var reason: String?
 
-    public init(custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, moderationPayload: ModerationPayload? = nil, reason: String? = nil) {
+    public init(custom: [String: RawJSON]? = nil, entityId: String, entityType: String, moderationPayload: ModerationPayload? = nil, reason: String? = nil) {
         self.custom = custom
-        self.entityCreatorId = entityCreatorId
         self.entityId = entityId
         self.entityType = entityType
         self.moderationPayload = moderationPayload
@@ -24,16 +26,16 @@ public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable, Has
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case custom
-        case entityCreatorId = "entity_creator_id"
         case entityId = "entity_id"
         case entityType = "entity_type"
         case moderationPayload = "moderation_payload"
         case reason
     }
+}
 
+extension FlagRequest: Hashable {
     public static func == (lhs: FlagRequest, rhs: FlagRequest) -> Bool {
         lhs.custom == rhs.custom &&
-            lhs.entityCreatorId == rhs.entityCreatorId &&
             lhs.entityId == rhs.entityId &&
             lhs.entityType == rhs.entityType &&
             lhs.moderationPayload == rhs.moderationPayload &&
@@ -42,7 +44,6 @@ public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable, Has
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(custom)
-        hasher.combine(entityCreatorId)
         hasher.combine(entityId)
         hasher.combine(entityType)
         hasher.combine(moderationPayload)

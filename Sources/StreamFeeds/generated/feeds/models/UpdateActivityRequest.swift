@@ -5,19 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// List of attachments for the activity
     public var attachments: [Attachment]?
+    /// Custom data for the activity
     public var custom: [String: RawJSON]?
+    /// Time when the activity will expire
     public var expiresAt: Date?
+    /// List of feeds the activity is present in
     public var feeds: [String]?
+    /// Tags used for filtering the activity
     public var filterTags: [String]?
+    /// Tags indicating interest categories
     public var interestTags: [String]?
-    public var location: ActivityLocation?
+    public var location: Location?
+    /// Poll ID
     public var pollId: String?
+    /// The text content of the activity
     public var text: String?
-    public var visibility: String?
+    /// Visibility setting for the activity
+    public var visibility: ActivityVisibility?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, pollId: String? = nil, text: String? = nil, visibility: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: Location? = nil, pollId: String? = nil, text: String? = nil, visibility: ActivityVisibility? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -43,6 +52,36 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         case visibility
     }
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
+        self.feeds = try container.decodeIfPresent([String].self, forKey: .feeds)
+        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
+        self.interestTags = try container.decodeIfPresent([String].self, forKey: .interestTags)
+        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
+        self.pollId = try container.decodeIfPresent(String.self, forKey: .pollId)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.visibility = try container.decodeIfPresent(ActivityVisibility.self, forKey: .visibility)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
+        try container.encodeIfPresent(feeds, forKey: .feeds)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(interestTags, forKey: .interestTags)
+        try container.encodeIfPresent(location, forKey: .location)
+        try container.encodeIfPresent(pollId, forKey: .pollId)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
+    }
+}
+
+extension UpdateActivityRequest: Hashable {
     public static func == (lhs: UpdateActivityRequest, rhs: UpdateActivityRequest) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.custom == rhs.custom &&

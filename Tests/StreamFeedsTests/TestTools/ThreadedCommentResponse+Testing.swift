@@ -16,7 +16,7 @@ extension ThreadedCommentResponse {
         ownReactions: [FeedsReactionResponse] = [],
         parentId: String? = nil,
         reactionCount: Int = 0,
-        reactionGroups: [String: ReactionGroupResponse?]? = nil,
+        reactionGroups: [String: FeedsReactionGroupResponse]? = nil,
         replies: [ThreadedCommentResponse]? = nil,
         text: String = "Test comment",
         user: UserResponse = .dummy()
@@ -43,7 +43,7 @@ extension ThreadedCommentResponse {
             replies: replies,
             replyCount: replies?.count ?? 0,
             score: 10,
-            status: "active",
+            status: .active,
             text: text,
             updatedAt: Date(),
             upvoteCount: 3,

@@ -5,10 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class QueryFeedMembersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryFeedMembersResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
+    /// List of feed members
     public var members: [FeedMemberResponse]
+    /// Cursor for next page
     public var next: String?
+    /// Cursor for previous page
     public var prev: String?
 
     public init(duration: String, members: [FeedMemberResponse], next: String? = nil, prev: String? = nil) {
@@ -24,7 +27,9 @@ public final class QueryFeedMembersResponse: @unchecked Sendable, Codable, JSONE
         case next
         case prev
     }
+}
 
+extension QueryFeedMembersResponse: Hashable {
     public static func == (lhs: QueryFeedMembersResponse, rhs: QueryFeedMembersResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.members == rhs.members &&

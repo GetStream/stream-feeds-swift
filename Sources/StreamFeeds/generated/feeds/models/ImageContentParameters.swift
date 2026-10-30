@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ImageContentParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ImageContentParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var harmLabels: [String]?
 
     public init(harmLabels: [String]? = nil) {
@@ -15,7 +15,9 @@ public final class ImageContentParameters: @unchecked Sendable, Codable, JSONEnc
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case harmLabels = "harm_labels"
     }
+}
 
+extension ImageContentParameters: Hashable {
     public static func == (lhs: ImageContentParameters, rhs: ImageContentParameters) -> Bool {
         lhs.harmLabels == rhs.harmLabels
     }

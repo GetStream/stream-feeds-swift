@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncodable {
     public enum QueryCommentsRequestSort: String, Sendable, Codable, CaseIterable {
         case best
         case controversial
@@ -25,10 +25,13 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
         }
     }
 
+    /// Filter to apply to the query
     public var filter: [String: RawJSON]
+    /// Maximum number of comments to return
     public var limit: Int?
     public var next: String?
     public var prev: String?
+    /// Array of sort parameters
     public var sort: QueryCommentsRequestSort?
 
     public init(filter: [String: RawJSON], limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: QueryCommentsRequestSort? = nil) {
@@ -46,7 +49,9 @@ public final class QueryCommentsRequest: @unchecked Sendable, Codable, JSONEncod
         case prev
         case sort
     }
+}
 
+extension QueryCommentsRequest: Hashable {
     public static func == (lhs: QueryCommentsRequest, rhs: QueryCommentsRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ModerationV2Response: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ModerationV2Response: @unchecked Sendable, Codable, JSONEncodable {
     public var action: String
     public var blocklistMatched: String?
     public var imageHarms: [String]?
@@ -33,7 +33,9 @@ public final class ModerationV2Response: @unchecked Sendable, Codable, JSONEncod
         case semanticFilterMatched = "semantic_filter_matched"
         case textHarms = "text_harms"
     }
+}
 
+extension ModerationV2Response: Hashable {
     public static func == (lhs: ModerationV2Response, rhs: ModerationV2Response) -> Bool {
         lhs.action == rhs.action &&
             lhs.blocklistMatched == rhs.blocklistMatched &&

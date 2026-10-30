@@ -5,11 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class AppUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when app settings are updated
+public final class AppUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var app: AppEventResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
     public var receivedAt: Date?
+    /// The type of event: "app.updated" in this case
     public var type: String = "app.updated"
 
     public init(app: AppEventResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil) {
@@ -26,7 +29,9 @@ public final class AppUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEnc
         case receivedAt = "received_at"
         case type
     }
+}
 
+extension AppUpdatedEvent: Hashable {
     public static func == (lhs: AppUpdatedEvent, rhs: AppUpdatedEvent) -> Bool {
         lhs.app == rhs.app &&
             lhs.createdAt == rhs.createdAt &&

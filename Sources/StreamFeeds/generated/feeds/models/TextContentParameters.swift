@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class TextContentParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class TextContentParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var blocklistMatch: [String]?
     public var containsUrl: Bool?
     public var harmLabels: [String]?
@@ -27,7 +27,9 @@ public final class TextContentParameters: @unchecked Sendable, Codable, JSONEnco
         case llmHarmLabels = "llm_harm_labels"
         case severity
     }
+}
 
+extension TextContentParameters: Hashable {
     public static func == (lhs: TextContentParameters, rhs: TextContentParameters) -> Bool {
         lhs.blocklistMatch == rhs.blocklistMatch &&
             lhs.containsUrl == rhs.containsUrl &&

@@ -32,9 +32,6 @@ public struct FeedQuery: Sendable {
     /// Pagination cursor for fetching the previous page of activities.
     public var activityPrevious: String?
     
-    /// Custom options for activity selection and processing.
-    public var activitySelectorOptions: [String: RawJSON]?
-    
     /// Additional data to associate with the feed.
     public var data: FeedInput?
     
@@ -69,7 +66,6 @@ public struct FeedQuery: Sendable {
     ///   - id: The unique identifier within the group.
     ///   - activityFilter: Optional filter criteria for activities.
     ///   - activityLimit: Maximum number of activities to retrieve.
-    ///   - activitySelectorOptions: Custom options for activity selection.
     ///   - data: Additional data to associate with the feed.
     ///   - externalRanking: Additional data used for ranking activities.
     ///   - followerLimit: Maximum number of followers to retrieve.
@@ -83,7 +79,6 @@ public struct FeedQuery: Sendable {
         id: String,
         activityFilter: ActivitiesFilter? = nil,
         activityLimit: Int? = nil,
-        activitySelectorOptions: [String: RawJSON]? = nil,
         data: FeedInput? = nil,
         externalRanking: [String: RawJSON]? = nil,
         followerLimit: Int? = nil,
@@ -97,7 +92,6 @@ public struct FeedQuery: Sendable {
             feed: FeedId(group: group, id: id),
             activityFilter: activityFilter,
             activityLimit: activityLimit,
-            activitySelectorOptions: activitySelectorOptions,
             data: data,
             externalRanking: externalRanking,
             followerLimit: followerLimit,
@@ -115,7 +109,6 @@ public struct FeedQuery: Sendable {
     ///   - feed: The feed identifier containing group and ID.
     ///   - activityFilter: Optional filter criteria for activities.
     ///   - activityLimit: Maximum number of activities to retrieve.
-    ///   - activitySelectorOptions: Custom options for activity selection.
     ///   - data: Additional data to associate with the feed.
     ///   - externalRanking: Additional data used for ranking activities.
     ///   - followerLimit: Maximum number of followers to retrieve.
@@ -128,7 +121,6 @@ public struct FeedQuery: Sendable {
         feed: FeedId,
         activityFilter: ActivitiesFilter? = nil,
         activityLimit: Int? = nil,
-        activitySelectorOptions: [String: RawJSON]? = nil,
         data: FeedInput? = nil,
         externalRanking: [String: RawJSON]? = nil,
         followerLimit: Int? = nil,
@@ -140,7 +132,6 @@ public struct FeedQuery: Sendable {
     ) {
         self.activityFilter = activityFilter
         self.activityLimit = activityLimit
-        self.activitySelectorOptions = activitySelectorOptions
         self.data = data
         self.externalRanking = externalRanking
         self.feed = feed
@@ -158,7 +149,6 @@ public struct FeedQuery: Sendable {
 extension FeedQuery {
     func toRequest() -> GetOrCreateFeedRequest {
         GetOrCreateFeedRequest(
-            activitySelectorOptions: activitySelectorOptions,
             data: data,
             externalRanking: externalRanking,
             filter: activityFilter?.toRawJSONDictionary(),

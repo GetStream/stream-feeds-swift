@@ -5,7 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// The privacy settings of the user.
+public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// The settings for the read receipt events.
     public var readReceipts: ReadReceiptsResponse?
 
     public init(readReceipts: ReadReceiptsResponse? = nil) {
@@ -15,7 +17,9 @@ public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEn
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case readReceipts = "read_receipts"
     }
+}
 
+extension PrivacySettingsResponse: Hashable {
     public static func == (lhs: PrivacySettingsResponse, rhs: PrivacySettingsResponse) -> Bool {
         lhs.readReceipts == rhs.readReceipts
     }

@@ -70,7 +70,6 @@ extension UserResponseCommonFields {
             lastActive: lastActive,
             name: name,
             online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
             role: role,
             teams: teams,
             teamsRole: teamsRole,

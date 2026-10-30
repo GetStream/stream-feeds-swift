@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class BlockListConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BlockListConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var async: Bool?
     public var enabled: Bool
     public var rules: [BlockListRule]
@@ -21,7 +21,9 @@ public final class BlockListConfig: @unchecked Sendable, Codable, JSONEncodable,
         case enabled
         case rules
     }
+}
 
+extension BlockListConfig: Hashable {
     public static func == (lhs: BlockListConfig, rhs: BlockListConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&

@@ -5,17 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class CommentUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a comment is updated.
+public final class CommentUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var comment: CommentResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of event: "feeds.comment.updated" in this case
     public var type: String = "feeds.comment.updated"
     public var user: UserResponseCommonFields?
 
-    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.comment = comment
         self.createdAt = createdAt
         self.custom = custom
@@ -35,7 +39,9 @@ public final class CommentUpdatedEvent: @unchecked Sendable, Event, Codable, JSO
         case type
         case user
     }
+}
 
+extension CommentUpdatedEvent: Hashable {
     public static func == (lhs: CommentUpdatedEvent, rhs: CommentUpdatedEvent) -> Bool {
         lhs.comment == rhs.comment &&
             lhs.createdAt == rhs.createdAt &&

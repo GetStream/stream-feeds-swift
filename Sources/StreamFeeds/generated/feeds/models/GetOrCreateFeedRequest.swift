@@ -5,8 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activitySelectorOptions: [String: RawJSON]?
+public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var data: FeedInput?
     public var externalRanking: [String: RawJSON]?
     public var filter: [String: RawJSON]?
@@ -20,8 +19,7 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     public var view: String?
     public var watch: Bool?
 
-    public init(activitySelectorOptions: [String: RawJSON]? = nil, data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
-        self.activitySelectorOptions = activitySelectorOptions
+    public init(data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
         self.data = data
         self.externalRanking = externalRanking
         self.filter = filter
@@ -37,7 +35,6 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activitySelectorOptions = "activity_selector_options"
         case data
         case externalRanking = "external_ranking"
         case filter
@@ -51,10 +48,11 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         case view
         case watch
     }
+}
 
+extension GetOrCreateFeedRequest: Hashable {
     public static func == (lhs: GetOrCreateFeedRequest, rhs: GetOrCreateFeedRequest) -> Bool {
-        lhs.activitySelectorOptions == rhs.activitySelectorOptions &&
-            lhs.data == rhs.data &&
+        lhs.data == rhs.data &&
             lhs.externalRanking == rhs.externalRanking &&
             lhs.filter == rhs.filter &&
             lhs.followersPagination == rhs.followersPagination &&
@@ -69,7 +67,6 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(activitySelectorOptions)
         hasher.combine(data)
         hasher.combine(externalRanking)
         hasher.combine(filter)

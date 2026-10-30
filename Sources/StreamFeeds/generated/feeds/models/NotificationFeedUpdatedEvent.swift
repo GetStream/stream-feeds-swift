@@ -5,18 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class NotificationFeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when notification feed is updated.
+public final class NotificationFeedUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Aggregated activities for notification feeds
     public var aggregatedActivities: [AggregatedActivityResponse]?
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
+    /// The ID of the feed
     public var fid: String
     public var notificationStatus: NotificationStatusResponse?
     public var receivedAt: Date?
+    /// The type of event: "feeds.notification_feed.updated" in this case
     public var type: String = "feeds.notification_feed.updated"
     public var user: UserResponseCommonFields?
 
-    public init(aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, notificationStatus: NotificationStatusResponse? = nil, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, notificationStatus: NotificationStatusResponse? = nil, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.aggregatedActivities = aggregatedActivities
         self.createdAt = createdAt
         self.custom = custom
@@ -38,7 +44,9 @@ public final class NotificationFeedUpdatedEvent: @unchecked Sendable, Event, Cod
         case type
         case user
     }
+}
 
+extension NotificationFeedUpdatedEvent: Hashable {
     public static func == (lhs: NotificationFeedUpdatedEvent, rhs: NotificationFeedUpdatedEvent) -> Bool {
         lhs.aggregatedActivities == rhs.aggregatedActivities &&
             lhs.createdAt == rhs.createdAt &&

@@ -5,32 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum AWSRekognitionRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var action: AWSRekognitionRuleAction
+public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodable {
+    /// What a moderation rule does when it matches.
+    public var action: ModerationAction
     public var label: String
     public var minConfidence: Float
 
-    public init(action: AWSRekognitionRuleAction, label: String, minConfidence: Float) {
+    public init(action: ModerationAction, label: String, minConfidence: Float) {
         self.action = action
         self.label = label
         self.minConfidence = minConfidence
@@ -41,7 +22,9 @@ public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodab
         case label
         case minConfidence = "min_confidence"
     }
+}
 
+extension AWSRekognitionRule: Hashable {
     public static func == (lhs: AWSRekognitionRule, rhs: AWSRekognitionRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.label == rhs.label &&

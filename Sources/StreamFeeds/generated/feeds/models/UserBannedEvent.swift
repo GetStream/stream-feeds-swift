@@ -5,23 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var channelId: String
-    public var channelType: String
-    public var cid: String
+/// This event is sent when a user gets banned. The event contains information about the user that was banned.
+public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
-    public var createdBy: User
+    public var createdBy: UserResponseCommonFields?
+    /// The expiration date of the ban
     public var expiration: Date?
+    /// The reason for the ban
     public var reason: String?
-    public var shadow: Bool
+    /// Whether the user was shadow banned
+    public var shadow: Bool?
+    /// The team of the channel where the target user was banned
     public var team: String?
+    /// The type of event: "user.banned" in this case
     public var type: String = "user.banned"
-    public var user: User?
+    public var user: UserResponseCommonFields
 
-    public init(channelId: String, channelType: String, cid: String, createdAt: Date, createdBy: User, expiration: Date? = nil, reason: String? = nil, shadow: Bool, team: String? = nil, user: User? = nil) {
-        self.channelId = channelId
-        self.channelType = channelType
-        self.cid = cid
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, expiration: Date? = nil, reason: String? = nil, shadow: Bool? = nil, team: String? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.expiration = expiration
@@ -32,9 +33,6 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case channelId = "channel_id"
-        case channelType = "channel_type"
-        case cid
         case createdAt = "created_at"
         case createdBy = "created_by"
         case expiration
@@ -44,12 +42,11 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
         case type
         case user
     }
+}
 
+extension UserBannedEvent: Hashable {
     public static func == (lhs: UserBannedEvent, rhs: UserBannedEvent) -> Bool {
-        lhs.channelId == rhs.channelId &&
-            lhs.channelType == rhs.channelType &&
-            lhs.cid == rhs.cid &&
-            lhs.createdAt == rhs.createdAt &&
+        lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
             lhs.expiration == rhs.expiration &&
             lhs.reason == rhs.reason &&
@@ -60,9 +57,6 @@ public final class UserBannedEvent: @unchecked Sendable, Event, Codable, JSONEnc
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(channelId)
-        hasher.combine(channelType)
-        hasher.combine(cid)
         hasher.combine(createdAt)
         hasher.combine(createdBy)
         hasher.combine(expiration)

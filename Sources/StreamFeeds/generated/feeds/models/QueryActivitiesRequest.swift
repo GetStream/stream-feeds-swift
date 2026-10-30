@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Filters to apply to the query. Supports location-based queries with 'near' and 'within_bounds' operators.
     public var filter: [String: RawJSON]?
     public var limit: Int?
     public var next: String?
     public var prev: String?
+    /// Sorting parameters for the query
     public var sort: [SortParamRequest]?
 
     public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
@@ -27,7 +29,9 @@ public final class QueryActivitiesRequest: @unchecked Sendable, Codable, JSONEnc
         case prev
         case sort
     }
+}
 
+extension QueryActivitiesRequest: Hashable {
     public static func == (lhs: QueryActivitiesRequest, rhs: QueryActivitiesRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

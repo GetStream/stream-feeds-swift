@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class Action: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class Action: @unchecked Sendable, Codable, JSONEncodable {
     public var name: String
     public var style: String?
     public var text: String
@@ -27,7 +27,9 @@ public final class Action: @unchecked Sendable, Codable, JSONEncodable, Hashable
         case type
         case value
     }
+}
 
+extension Action: Hashable {
     public static func == (lhs: Action, rhs: Action) -> Bool {
         lhs.name == rhs.name &&
             lhs.style == rhs.style &&

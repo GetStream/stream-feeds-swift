@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodable {
     public var custom: [String: RawJSON]?
     public var images: [String]?
     public var texts: [String]?
@@ -24,7 +24,9 @@ public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodabl
         case texts
         case videos
     }
+}
 
+extension ModerationPayload: Hashable {
     public static func == (lhs: ModerationPayload, rhs: ModerationPayload) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.images == rhs.images &&

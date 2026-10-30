@@ -5,13 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class UserDeactivatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// This event is sent when a user gets deactivated. The event contains information about the user that was deactivated.
+public final class UserDeactivatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
-    public var createdBy: User
+    public var createdBy: UserResponseCommonFields?
+    /// The type of event: "user.deactivated" in this case
     public var type: String = "user.deactivated"
-    public var user: User?
+    public var user: UserResponseCommonFields
 
-    public init(createdAt: Date, createdBy: User, user: User? = nil) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.user = user
@@ -23,7 +26,9 @@ public final class UserDeactivatedEvent: @unchecked Sendable, Event, Codable, JS
         case type
         case user
     }
+}
 
+extension UserDeactivatedEvent: Hashable {
     public static func == (lhs: UserDeactivatedEvent, rhs: UserDeactivatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&

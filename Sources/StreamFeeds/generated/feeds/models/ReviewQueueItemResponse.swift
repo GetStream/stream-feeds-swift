@@ -5,34 +5,54 @@
 import Foundation
 import StreamCore
 
-public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Moderation actions taken
     public var actions: [ActionLogResponse]
     public var activity: EnrichedActivity?
+    /// AI-determined text severity
     public var aiTextSeverity: String
+    /// User response object
     public var assignedTo: UserResponse?
-    public var bans: [Ban]
+    /// Associated ban records
+    public var bans: [BanInfoResponse]
+    /// When the review was completed
     public var completedAt: Date?
     public var configKey: String?
+    /// When the item was created
     public var createdAt: Date
     public var entityCreator: EntityCreatorResponse?
+    /// ID of who created the entity
     public var entityCreatorId: String?
+    /// ID of the entity being reviewed
     public var entityId: String
+    /// Type of entity being reviewed
     public var entityType: String
     public var feedsV2Activity: EnrichedActivity?
+    /// Associated flag records
     public var flags: [ModerationFlagResponse]
     public var flagsCount: Int
+    /// Unique identifier of the review queue item
     public var id: String
+    /// Detected languages in the content
     public var languages: [String]
-    public var moderationPayload: ModerationPayload?
+    /// Content payload for moderation
+    public var moderationPayload: ModerationPayloadResponse?
+    /// Suggested moderation action
     public var recommendedAction: String
+    /// When the item was reviewed
     public var reviewedAt: Date?
+    /// ID of the moderator who reviewed the item
     public var reviewedBy: String
+    /// Severity level of the content
     public var severity: Int
+    /// Current status of the review
     public var status: String
+    /// Teams associated with this item
     public var teams: [String]?
+    /// When the item was last updated
     public var updatedAt: Date
 
-    public init(actions: [ActionLogResponse], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: UserResponse? = nil, bans: [Ban], completedAt: Date? = nil, configKey: String? = nil, createdAt: Date, entityCreator: EntityCreatorResponse? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flags: [ModerationFlagResponse], flagsCount: Int, id: String, languages: [String], moderationPayload: ModerationPayload? = nil, recommendedAction: String, reviewedAt: Date? = nil, reviewedBy: String, severity: Int, status: String, teams: [String]? = nil, updatedAt: Date) {
+    public init(actions: [ActionLogResponse], activity: EnrichedActivity? = nil, aiTextSeverity: String, assignedTo: UserResponse? = nil, bans: [BanInfoResponse], completedAt: Date? = nil, configKey: String? = nil, createdAt: Date, entityCreator: EntityCreatorResponse? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, feedsV2Activity: EnrichedActivity? = nil, flags: [ModerationFlagResponse], flagsCount: Int, id: String, languages: [String], moderationPayload: ModerationPayloadResponse? = nil, recommendedAction: String, reviewedAt: Date? = nil, reviewedBy: String, severity: Int, status: String, teams: [String]? = nil, updatedAt: Date) {
         self.actions = actions
         self.activity = activity
         self.aiTextSeverity = aiTextSeverity
@@ -87,7 +107,9 @@ public final class ReviewQueueItemResponse: @unchecked Sendable, Codable, JSONEn
         case teams
         case updatedAt = "updated_at"
     }
+}
 
+extension ReviewQueueItemResponse: Hashable {
     public static func == (lhs: ReviewQueueItemResponse, rhs: ReviewQueueItemResponse) -> Bool {
         lhs.actions == rhs.actions &&
             lhs.activity == rhs.activity &&

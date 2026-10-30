@@ -5,23 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var aiImageConfig: AIImageConfig?
     public var aiTextConfig: AITextConfig?
-    public var aiVideoConfig: AIVideoConfig?
+    public var aiVideoConfig: AIVideoConfigResponse?
+    /// Whether moderation should be performed asynchronously
     public var async: Bool
     public var automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
     public var automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
     public var automodToxicityConfig: AutomodToxicityConfig?
     public var blockListConfig: BlockListConfig?
+    /// When the configuration was created
     public var createdAt: Date
+    /// Unique identifier for the moderation configuration
     public var key: String
     public var llmConfig: LLMConfig?
+    /// Team associated with the configuration
     public var team: String
+    /// When the configuration was last updated
     public var updatedAt: Date
     public var velocityFilterConfig: VelocityFilterConfig?
 
-    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfig? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
+    public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigResponse? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
         self.aiTextConfig = aiTextConfig
         self.aiVideoConfig = aiVideoConfig
@@ -54,7 +59,9 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable, 
         case updatedAt = "updated_at"
         case velocityFilterConfig = "velocity_filter_config"
     }
+}
 
+extension ConfigResponse: Hashable {
     public static func == (lhs: ConfigResponse, rhs: ConfigResponse) -> Bool {
         lhs.aiImageConfig == rhs.aiImageConfig &&
             lhs.aiTextConfig == rhs.aiTextConfig &&

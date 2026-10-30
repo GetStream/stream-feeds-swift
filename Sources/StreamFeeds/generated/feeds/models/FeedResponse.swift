@@ -5,28 +5,46 @@
 import Foundation
 import StreamCore
 
-public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// When the feed was created
     public var createdAt: Date
+    /// User response object
     public var createdBy: UserResponse
+    /// Custom data for the feed
     public var custom: [String: RawJSON]?
+    /// When the feed was deleted
     public var deletedAt: Date?
+    /// Description of the feed
     public var description: String
+    /// Fully qualified feed ID (group_id:id)
     public var feed: String
+    /// Tags used for filtering feeds
     public var filterTags: [String]?
+    /// Number of followers of this feed
     public var followerCount: Int
+    /// Number of feeds this feed follows
     public var followingCount: Int
+    /// Group this feed belongs to
     public var groupId: String
+    /// Unique identifier for the feed
     public var id: String
+    /// Number of members in this feed
     public var memberCount: Int
+    /// Name of the feed
     public var name: String
+    /// Capabilities the current user has for this feed
     public var ownCapabilities: [FeedOwnCapability]?
+    /// Follow relationships where the current user's feeds are following this feed
     public var ownFollows: [FollowResponse]?
     public var ownMembership: FeedMemberResponse?
+    /// Number of pinned activities in this feed
     public var pinCount: Int
+    /// When the feed was last updated
     public var updatedAt: Date
-    public var visibility: String?
+    /// Visibility setting for the feed
+    public var visibility: FeedVisibility?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedVisibility? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -69,7 +87,9 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case updatedAt = "updated_at"
         case visibility
     }
+}
 
+extension FeedResponse: Hashable {
     public static func == (lhs: FeedResponse, rhs: FeedResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&

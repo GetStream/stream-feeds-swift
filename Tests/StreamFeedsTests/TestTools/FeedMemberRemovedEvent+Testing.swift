@@ -10,7 +10,7 @@ extension FeedMemberRemovedEvent {
     static func dummy(
         createdAt: Date = .fixed(),
         custom: [String: RawJSON] = [:],
-        feedVisibility: String? = nil,
+        feedVisibility: FeedVisibility? = nil,
         fid: String,
         memberId: String,
         receivedAt: Date? = nil,

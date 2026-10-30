@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GoogleVisionConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GoogleVisionConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var enabled: Bool?
 
     public init(enabled: Bool? = nil) {
@@ -15,7 +15,9 @@ public final class GoogleVisionConfig: @unchecked Sendable, Codable, JSONEncodab
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case enabled
     }
+}
 
+extension GoogleVisionConfig: Hashable {
     public static func == (lhs: GoogleVisionConfig, rhs: GoogleVisionConfig) -> Bool {
         lhs.enabled == rhs.enabled
     }

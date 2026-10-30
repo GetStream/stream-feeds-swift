@@ -5,11 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class AddReactionRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AddReactionRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Whether to create a notification activity for this reaction
     public var createNotificationActivity: Bool?
+    /// Custom data for the reaction
     public var custom: [String: RawJSON]?
+    /// Whether to enforce unique reactions per user (remove other reaction types from the user when adding this one)
     public var enforceUnique: Bool?
     public var skipPush: Bool?
+    /// Type of reaction
     public var type: String
 
     public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, enforceUnique: Bool? = nil, skipPush: Bool? = nil, type: String) {
@@ -28,6 +32,26 @@ public final class AddReactionRequest: @unchecked Sendable, Codable, JSONEncodab
         case type
     }
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.createNotificationActivity = try container.decodeIfPresent(Bool.self, forKey: .createNotificationActivity)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.enforceUnique = try container.decodeIfPresent(Bool.self, forKey: .enforceUnique)
+        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
+        self.type = try container.decode(String.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(enforceUnique, forKey: .enforceUnique)
+        try container.encodeIfPresent(skipPush, forKey: .skipPush)
+        try container.encode(type, forKey: .type)
+    }
+}
+
+extension AddReactionRequest: Hashable {
     public static func == (lhs: AddReactionRequest, rhs: AddReactionRequest) -> Bool {
         lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&

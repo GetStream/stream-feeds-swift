@@ -24,7 +24,7 @@ extension FeedResponse {
         memberCount: Int = 0,
         ownCapabilities: [FeedOwnCapability]? = [.readFeed, .readActivities],
         pinCount: Int = 0,
-        visibility: String? = nil
+        visibility: FeedVisibility? = nil
     ) -> FeedResponse {
         FeedResponse(
             createdAt: createdAt,

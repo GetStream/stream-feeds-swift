@@ -5,19 +5,23 @@
 import Foundation
 import StreamCore
 
-public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a reaction is added to a comment.
+public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var activity: ActivityResponse
     public var comment: CommentResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
+    /// The type of event: "feeds.comment.reaction.added" in this case
     public var type: String = "feeds.comment.reaction.added"
     public var user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, comment: CommentResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.comment = comment
         self.createdAt = createdAt
@@ -41,7 +45,9 @@ public final class CommentReactionAddedEvent: @unchecked Sendable, Event, Codabl
         case type
         case user
     }
+}
 
+extension CommentReactionAddedEvent: Hashable {
     public static func == (lhs: CommentReactionAddedEvent, rhs: CommentReactionAddedEvent) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.comment == rhs.comment &&

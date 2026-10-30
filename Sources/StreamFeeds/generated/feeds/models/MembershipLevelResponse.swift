@@ -5,14 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class MembershipLevelResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class MembershipLevelResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// When the membership level was created
     public var createdAt: Date
+    /// Custom data for the membership level
     public var custom: [String: RawJSON]?
+    /// Description of the membership level
     public var description: String?
+    /// Unique identifier for the membership level
     public var id: String
+    /// Display name for the membership level
     public var name: String
+    /// Priority level
     public var priority: Int
+    /// Activity tags this membership level gives access to
     public var tags: [String]
+    /// When the membership level was last updated
     public var updatedAt: Date
 
     public init(createdAt: Date, custom: [String: RawJSON]? = nil, description: String? = nil, id: String, name: String, priority: Int, tags: [String], updatedAt: Date) {
@@ -36,7 +44,9 @@ public final class MembershipLevelResponse: @unchecked Sendable, Codable, JSONEn
         case tags
         case updatedAt = "updated_at"
     }
+}
 
+extension MembershipLevelResponse: Hashable {
     public static func == (lhs: MembershipLevelResponse, rhs: MembershipLevelResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

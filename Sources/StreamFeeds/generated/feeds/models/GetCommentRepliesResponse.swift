@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class GetCommentRepliesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetCommentRepliesResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Threaded listing of replies to the comment
     public var comments: [ThreadedCommentResponse]
     public var duration: String
     public var next: String?
@@ -24,7 +25,9 @@ public final class GetCommentRepliesResponse: @unchecked Sendable, Codable, JSON
         case next
         case prev
     }
+}
 
+extension GetCommentRepliesResponse: Hashable {
     public static func == (lhs: GetCommentRepliesResponse, rhs: GetCommentRepliesResponse) -> Bool {
         lhs.comments == rhs.comments &&
             lhs.duration == rhs.duration &&
