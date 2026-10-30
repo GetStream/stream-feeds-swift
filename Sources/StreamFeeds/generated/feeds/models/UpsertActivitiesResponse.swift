@@ -5,19 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class UpsertActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpsertActivitiesResponse: Sendable, Decodable {
     /// List of created or updated activities
-    public var activities: [ActivityResponse]
-    public var duration: String
+    public let activities: [ActivityResponse]
+    public let duration: String
 
     public init(activities: [ActivityResponse], duration: String) {
         self.activities = activities
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activities
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activities = try container.decode([ActivityResponse].self, forKey: .activities)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 

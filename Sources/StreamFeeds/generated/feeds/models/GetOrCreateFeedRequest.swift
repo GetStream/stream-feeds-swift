@@ -5,21 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var data: FeedInput?
-    public var externalRanking: [String: RawJSON]?
-    public var filter: [String: RawJSON]?
-    public var followersPagination: PagerRequest?
-    public var followingPagination: PagerRequest?
-    public var interestWeights: [String: Float]?
-    public var limit: Int?
-    public var memberPagination: PagerRequest?
-    public var next: String?
-    public var prev: String?
-    public var view: String?
-    public var watch: Bool?
+public final class GetOrCreateFeedRequest: Sendable, Encodable, JSONEncodable {
+    public let data: FeedInput?
+    public let externalRanking: [String: RawJSON]?
+    public let filter: [String: RawJSON]?
+    public let followersPagination: PagerRequest?
+    public let followingPagination: PagerRequest?
+    public let interestWeights: [String: Double]?
+    public let limit: Int?
+    public let memberPagination: PagerRequest?
+    public let next: String?
+    public let prev: String?
+    public let view: String?
+    public let watch: Bool?
 
-    public init(data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Float]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
+    public init(data: FeedInput? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, interestWeights: [String: Double]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, prev: String? = nil, view: String? = nil, watch: Bool? = nil) {
         self.data = data
         self.externalRanking = externalRanking
         self.filter = filter
@@ -34,19 +34,20 @@ public final class GetOrCreateFeedRequest: @unchecked Sendable, Codable, JSONEnc
         self.watch = watch
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case data
-        case externalRanking = "external_ranking"
-        case filter
-        case followersPagination = "followers_pagination"
-        case followingPagination = "following_pagination"
-        case interestWeights = "interest_weights"
-        case limit
-        case memberPagination = "member_pagination"
-        case next
-        case prev
-        case view
-        case watch
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(data, forKey: .data)
+        try container.encodeIfPresent(externalRanking, forKey: .externalRanking)
+        try container.encodeIfPresent(filter, forKey: .filter)
+        try container.encodeIfPresent(followersPagination, forKey: .followersPagination)
+        try container.encodeIfPresent(followingPagination, forKey: .followingPagination)
+        try container.encodeIfPresent(interestWeights, forKey: .interestWeights)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(memberPagination, forKey: .memberPagination)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encodeIfPresent(view, forKey: .view)
+        try container.encodeIfPresent(watch, forKey: .watch)
     }
 }
 

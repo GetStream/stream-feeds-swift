@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class TextContentParameters: @unchecked Sendable, Codable, JSONEncodable {
-    public var blocklistMatch: [String]?
-    public var containsUrl: Bool?
-    public var harmLabels: [String]?
-    public var llmHarmLabels: [String: String]?
-    public var severity: String?
+public final class TextContentParameters: Sendable, Encodable, JSONEncodable {
+    public let blocklistMatch: [String]?
+    public let containsUrl: Bool?
+    public let harmLabels: [String]?
+    public let llmHarmLabels: [String: String]?
+    public let severity: String?
 
     public init(blocklistMatch: [String]? = nil, containsUrl: Bool? = nil, harmLabels: [String]? = nil, llmHarmLabels: [String: String]? = nil, severity: String? = nil) {
         self.blocklistMatch = blocklistMatch
@@ -20,12 +20,13 @@ public final class TextContentParameters: @unchecked Sendable, Codable, JSONEnco
         self.severity = severity
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blocklistMatch = "blocklist_match"
-        case containsUrl = "contains_url"
-        case harmLabels = "harm_labels"
-        case llmHarmLabels = "llm_harm_labels"
-        case severity
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(blocklistMatch, forKey: .blocklistMatch)
+        try container.encodeIfPresent(containsUrl, forKey: .containsUrl)
+        try container.encodeIfPresent(harmLabels, forKey: .harmLabels)
+        try container.encodeIfPresent(llmHarmLabels, forKey: .llmHarmLabels)
+        try container.encodeIfPresent(severity, forKey: .severity)
     }
 }
 

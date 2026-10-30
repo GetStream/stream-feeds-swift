@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class AutomodPlatformCircumventionConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var async: Bool?
-    public var enabled: Bool
-    public var rules: [AutomodRule]
+public final class AutomodPlatformCircumventionConfig: Sendable, Codable, JSONEncodable {
+    public let async: Bool?
+    public let enabled: Bool
+    public let rules: [AutomodRule]
 
     public init(async: Bool? = nil, enabled: Bool, rules: [AutomodRule]) {
         self.async = async
@@ -16,10 +16,18 @@ public final class AutomodPlatformCircumventionConfig: @unchecked Sendable, Coda
         self.rules = rules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case async
-        case enabled
-        case rules
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
+        self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.rules = try container.decode([AutomodRule].self, forKey: .rules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encode(enabled, forKey: .enabled)
+        try container.encode(rules, forKey: .rules)
     }
 }
 

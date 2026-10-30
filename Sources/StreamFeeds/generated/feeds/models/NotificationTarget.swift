@@ -5,35 +5,37 @@
 import Foundation
 import StreamCore
 
-public final class NotificationTarget: @unchecked Sendable, Codable, JSONEncodable {
+public final class NotificationTarget: Sendable, Decodable {
     /// Attachments on the target activity (for activity targets)
-    public var attachments: [Attachment]?
+    public let attachments: [Attachment]?
     /// The ID of the target (activity ID or user ID)
-    public var id: String
+    public let id: String
     /// The name of the target user (for user targets like follows)
-    public var name: String?
+    public let name: String?
     /// The text content of the target activity (for activity targets)
-    public var text: String?
+    public let text: String?
     /// The type of the target activity (for activity targets)
-    public var type: String?
+    public let type: String?
     /// The ID of the user who created the target activity (for activity targets)
-    public var userId: String?
+    public let userId: String?
 
-    public init(attachments: [Attachment]? = nil, id: String, name: String? = nil, text: String? = nil, userId: String? = nil) {
+    public init(attachments: [Attachment]? = nil, id: String, name: String? = nil, text: String? = nil, type: String? = nil, userId: String? = nil) {
         self.attachments = attachments
         self.id = id
         self.name = name
         self.text = text
+        self.type = type
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case id
-        case name
-        case text
-        case type
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.attachments = try container.decodeIfPresent([Attachment].self, forKey: .attachments)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.text = try container.decodeIfPresent(String.self, forKey: .text)
+        self.type = try container.decodeIfPresent(String.self, forKey: .type)
+        self.userId = try container.decodeIfPresent(String.self, forKey: .userId)
     }
 }
 

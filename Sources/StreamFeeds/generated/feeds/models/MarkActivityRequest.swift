@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class MarkActivityRequest: Sendable, Encodable, JSONEncodable {
     /// Whether to mark all activities as read
-    public var markAllRead: Bool?
+    public let markAllRead: Bool?
     /// Whether to mark all activities as seen
-    public var markAllSeen: Bool?
+    public let markAllSeen: Bool?
     /// List of activity IDs to mark as read
-    public var markRead: [String]?
+    public let markRead: [String]?
     /// List of activity IDs to mark as seen
-    public var markSeen: [String]?
+    public let markSeen: [String]?
     /// List of activity IDs to mark as watched (for stories)
-    public var markWatched: [String]?
+    public let markWatched: [String]?
 
     public init(markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil) {
         self.markAllRead = markAllRead
@@ -25,12 +25,13 @@ public final class MarkActivityRequest: @unchecked Sendable, Codable, JSONEncoda
         self.markWatched = markWatched
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case markAllRead = "mark_all_read"
-        case markAllSeen = "mark_all_seen"
-        case markRead = "mark_read"
-        case markSeen = "mark_seen"
-        case markWatched = "mark_watched"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(markAllRead, forKey: .markAllRead)
+        try container.encodeIfPresent(markAllSeen, forKey: .markAllSeen)
+        try container.encodeIfPresent(markRead, forKey: .markRead)
+        try container.encodeIfPresent(markSeen, forKey: .markSeen)
+        try container.encodeIfPresent(markWatched, forKey: .markWatched)
     }
 }
 

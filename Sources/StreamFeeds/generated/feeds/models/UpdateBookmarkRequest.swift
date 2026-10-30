@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class UpdateBookmarkRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpdateBookmarkRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for the bookmark
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// ID of the folder containing the bookmark
-    public var folderId: String?
-    public var newFolder: AddFolderRequest?
+    public let folderId: String?
+    public let newFolder: AddFolderRequest?
     /// Move the bookmark to this folder (empty string removes the folder)
-    public var newFolderId: String?
+    public let newFolderId: String?
 
     public init(custom: [String: RawJSON]? = nil, folderId: String? = nil, newFolder: AddFolderRequest? = nil, newFolderId: String? = nil) {
         self.custom = custom
@@ -21,11 +21,12 @@ public final class UpdateBookmarkRequest: @unchecked Sendable, Codable, JSONEnco
         self.newFolderId = newFolderId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case folderId = "folder_id"
-        case newFolder = "new_folder"
-        case newFolderId = "new_folder_id"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(folderId, forKey: .folderId)
+        try container.encodeIfPresent(newFolder, forKey: .newFolder)
+        try container.encodeIfPresent(newFolderId, forKey: .newFolderId)
     }
 }
 

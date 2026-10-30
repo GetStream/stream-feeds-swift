@@ -5,15 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activity: ActivityResponse
+public final class PinActivityResponse: Sendable, Decodable {
+    public let activity: ActivityResponse
     /// When the activity was pinned
-    public var createdAt: Date
-    public var duration: String
+    public let createdAt: Date
+    public let duration: String
     /// Fully qualified ID of the feed the activity was pinned to
-    public var feed: String
+    public let feed: String
     /// ID of the user who pinned the activity
-    public var userId: String
+    public let userId: String
 
     public init(activity: ActivityResponse, createdAt: Date, duration: String, feed: String, userId: String) {
         self.activity = activity
@@ -23,12 +23,13 @@ public final class PinActivityResponse: @unchecked Sendable, Codable, JSONEncoda
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case createdAt = "created_at"
-        case duration
-        case feed
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.feed = try container.decode(String.self, forKey: .feed)
+        self.userId = try container.decode(String.self, forKey: .userId)
     }
 }
 

@@ -5,36 +5,31 @@
 import Foundation
 import StreamCore
 
-public final class ActivityFeedbackEventPayload: @unchecked Sendable, Codable, JSONEncodable {
-    public enum ActivityFeedbackEventPayloadAction: String, Sendable, Codable, CaseIterable {
-        case hide
-        case showLess = "show_less"
-        case showMore = "show_more"
-        case unknown = "_unknown"
+public final class ActivityFeedbackEventPayloadAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
+    public static let hide = ActivityFeedbackEventPayloadAction(rawValue: "hide")
+    public static let showLess = ActivityFeedbackEventPayloadAction(rawValue: "show_less")
+    public static let showMore = ActivityFeedbackEventPayloadAction(rawValue: "show_more")
+}
+
+public final class ActivityFeedbackEventPayload: Sendable, Decodable {
     /// The type of feedback action. One of: hide, show_more, show_less
-    public var action: ActivityFeedbackEventPayloadAction
+    public let action: ActivityFeedbackEventPayloadAction
     /// The activity that received feedback
-    public var activityId: String
+    public let activityId: String
     /// When the feedback was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// When the feedback was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
     /// The feedback value (true/false)
-    public var value: String
+    public let value: String
 
     public init(action: ActivityFeedbackEventPayloadAction, activityId: String, createdAt: Date, updatedAt: Date, user: UserResponse, value: String) {
         self.action = action
@@ -45,13 +40,14 @@ public final class ActivityFeedbackEventPayload: @unchecked Sendable, Codable, J
         self.value = value
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case activityId = "activity_id"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-        case user
-        case value
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(ActivityFeedbackEventPayloadAction.self, forKey: .action)
+        self.activityId = try container.decode(String.self, forKey: .activityId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+        self.value = try container.decode(String.self, forKey: .value)
     }
 }
 

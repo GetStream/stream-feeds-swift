@@ -6,17 +6,17 @@ import Foundation
 import StreamCore
 
 /// Ban information
-public final class BanInfoResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class BanInfoResponse: Sendable, Decodable {
     /// When the ban was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// User response object
-    public var createdBy: UserResponse?
+    public let createdBy: UserResponse?
     /// When the ban expires
-    public var expires: Date?
+    public let expires: Date?
     /// Reason for the ban
-    public var reason: String?
+    public let reason: String?
     /// Whether this is a shadow ban
-    public var shadow: Bool?
+    public let shadow: Bool?
 
     public init(createdAt: Date, createdBy: UserResponse? = nil, expires: Date? = nil, reason: String? = nil, shadow: Bool? = nil) {
         self.createdAt = createdAt
@@ -26,12 +26,13 @@ public final class BanInfoResponse: @unchecked Sendable, Codable, JSONEncodable 
         self.shadow = shadow
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case expires
-        case reason
-        case shadow
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decodeIfPresent(UserResponse.self, forKey: .createdBy)
+        self.expires = try container.decodeIfPresent(Date.self, forKey: .expires)
+        self.reason = try container.decodeIfPresent(String.self, forKey: .reason)
+        self.shadow = try container.decodeIfPresent(Bool.self, forKey: .shadow)
     }
 }
 

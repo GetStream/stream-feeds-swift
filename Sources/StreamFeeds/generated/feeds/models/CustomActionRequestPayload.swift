@@ -6,20 +6,21 @@ import Foundation
 import StreamCore
 
 /// Configuration for custom moderation action
-public final class CustomActionRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class CustomActionRequestPayload: Sendable, Encodable, JSONEncodable {
     /// Custom action identifier
-    public var id: String?
+    public let id: String?
     /// Custom action options
-    public var options: [String: RawJSON]?
+    public let options: [String: RawJSON]?
 
     public init(id: String? = nil, options: [String: RawJSON]? = nil) {
         self.id = id
         self.options = options
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case id
-        case options
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encodeIfPresent(options, forKey: .options)
     }
 }
 

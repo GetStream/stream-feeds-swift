@@ -9,7 +9,7 @@ private class WSEventMapping: Decodable {
     let type: String
 }
 
-public enum FeedsEvent: Codable, Hashable {
+public enum FeedsEvent: Decodable, Hashable {
     case typeAppUpdatedEvent(AppUpdatedEvent)
     case typeConnectionErrorEvent(ConnectionErrorEvent)
     case typeConnectedEvent(ConnectedEvent)
@@ -308,128 +308,6 @@ public enum FeedsEvent: Codable, Hashable {
             return value
         case .typeUserUpdatedEvent(let value):
             return value
-        }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .typeAppUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeConnectionErrorEvent(let value):
-            try container.encode(value)
-        case .typeConnectedEvent(let value):
-            try container.encode(value)
-        case .typeActivityAddedEvent(let value):
-            try container.encode(value)
-        case .typeActivityDeletedEvent(let value):
-            try container.encode(value)
-        case .typeActivityFeedbackEvent(let value):
-            try container.encode(value)
-        case .typeActivityMarkEvent(let value):
-            try container.encode(value)
-        case .typeActivityPinnedEvent(let value):
-            try container.encode(value)
-        case .typeActivityReactionAddedEvent(let value):
-            try container.encode(value)
-        case .typeActivityReactionDeletedEvent(let value):
-            try container.encode(value)
-        case .typeActivityReactionUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeActivityRemovedFromFeedEvent(let value):
-            try container.encode(value)
-        case .typeActivityRestoredEvent(let value):
-            try container.encode(value)
-        case .typeActivityUnpinnedEvent(let value):
-            try container.encode(value)
-        case .typeActivityUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeBookmarkAddedEvent(let value):
-            try container.encode(value)
-        case .typeBookmarkDeletedEvent(let value):
-            try container.encode(value)
-        case .typeBookmarkUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeBookmarkFolderDeletedEvent(let value):
-            try container.encode(value)
-        case .typeBookmarkFolderUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeCommentAddedEvent(let value):
-            try container.encode(value)
-        case .typeCommentDeletedEvent(let value):
-            try container.encode(value)
-        case .typeCommentFeedbackEvent(let value):
-            try container.encode(value)
-        case .typeCommentReactionAddedEvent(let value):
-            try container.encode(value)
-        case .typeCommentReactionDeletedEvent(let value):
-            try container.encode(value)
-        case .typeCommentReactionUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeCommentRestoredEvent(let value):
-            try container.encode(value)
-        case .typeCommentUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeFeedCreatedEvent(let value):
-            try container.encode(value)
-        case .typeFeedDeletedEvent(let value):
-            try container.encode(value)
-        case .typeFeedUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeFeedGroupChangedEvent(let value):
-            try container.encode(value)
-        case .typeFeedGroupDeletedEvent(let value):
-            try container.encode(value)
-        case .typeFeedGroupRestoredEvent(let value):
-            try container.encode(value)
-        case .typeFeedMemberAddedEvent(let value):
-            try container.encode(value)
-        case .typeFeedMemberRemovedEvent(let value):
-            try container.encode(value)
-        case .typeFeedMemberUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeFollowCreatedEvent(let value):
-            try container.encode(value)
-        case .typeFollowDeletedEvent(let value):
-            try container.encode(value)
-        case .typeFollowUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeNotificationFeedUpdatedEvent(let value):
-            try container.encode(value)
-        case .typePollClosedFeedEvent(let value):
-            try container.encode(value)
-        case .typePollDeletedFeedEvent(let value):
-            try container.encode(value)
-        case .typePollUpdatedFeedEvent(let value):
-            try container.encode(value)
-        case .typePollVoteCastedFeedEvent(let value):
-            try container.encode(value)
-        case .typePollVoteChangedFeedEvent(let value):
-            try container.encode(value)
-        case .typePollVoteRemovedFeedEvent(let value):
-            try container.encode(value)
-        case .typeStoriesFeedUpdatedEvent(let value):
-            try container.encode(value)
-        case .typeHealthCheckEvent(let value):
-            try container.encode(value)
-        case .typeModerationCustomActionEvent(let value):
-            try container.encode(value)
-        case .typeModerationFlaggedEvent(let value):
-            try container.encode(value)
-        case .typeModerationMarkReviewedEvent(let value):
-            try container.encode(value)
-        case .typeUserBannedEvent(let value):
-            try container.encode(value)
-        case .typeUserDeactivatedEvent(let value):
-            try container.encode(value)
-        case .typeUserDeletedEvent(let value):
-            try container.encode(value)
-        case .typeUserReactivatedEvent(let value):
-            try container.encode(value)
-        case .typeUserUnbannedEvent(let value):
-            try container.encode(value)
-        case .typeUserUpdatedEvent(let value):
-            try container.encode(value)
         }
     }
 

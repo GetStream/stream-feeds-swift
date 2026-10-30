@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var comment: CommentResponse
+public final class AddCommentReactionResponse: Sendable, Decodable {
+    public let comment: CommentResponse
     /// Duration of the request
-    public var duration: String
-    public var reaction: FeedsReactionResponse
+    public let duration: String
+    public let reaction: FeedsReactionResponse
 
     public init(comment: CommentResponse, duration: String, reaction: FeedsReactionResponse) {
         self.comment = comment
@@ -17,24 +17,11 @@ public final class AddCommentReactionResponse: @unchecked Sendable, Codable, JSO
         self.reaction = reaction
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case duration
-        case reaction
-    }
-
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.comment = try container.decode(CommentResponse.self, forKey: .comment)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(comment, forKey: .comment)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(reaction, forKey: .reaction)
     }
 }
 

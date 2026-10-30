@@ -5,13 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class MuteResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
+public final class MuteResponse: Sendable, Decodable {
+    public let duration: String
     /// Object with mutes (if multiple users were muted)
-    public var mutes: [UserMuteResponse]?
+    public let mutes: [UserMuteResponse]?
     /// A list of users that can't be found. Common cause for this is deleted users
-    public var nonExistingUsers: [String]?
-    public var ownUser: OwnUserResponse?
+    public let nonExistingUsers: [String]?
+    public let ownUser: OwnUserResponse?
 
     public init(duration: String, mutes: [UserMuteResponse]? = nil, nonExistingUsers: [String]? = nil, ownUser: OwnUserResponse? = nil) {
         self.duration = duration
@@ -20,11 +20,12 @@ public final class MuteResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.ownUser = ownUser
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case mutes
-        case nonExistingUsers = "non_existing_users"
-        case ownUser = "own_user"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.mutes = try container.decodeIfPresent([UserMuteResponse].self, forKey: .mutes)
+        self.nonExistingUsers = try container.decodeIfPresent([String].self, forKey: .nonExistingUsers)
+        self.ownUser = try container.decodeIfPresent(OwnUserResponse.self, forKey: .ownUser)
     }
 }
 

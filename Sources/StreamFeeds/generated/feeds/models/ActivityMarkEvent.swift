@@ -6,29 +6,29 @@ import Foundation
 import StreamCore
 
 /// Emitted when activities are marked as read, seen, or watched.
-public final class ActivityMarkEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class ActivityMarkEvent: Sendable, Event, Decodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
     /// Who can see and follow a feed.
-    public var feedVisibility: FeedVisibility?
-    public var fid: String
+    public let feedVisibility: FeedVisibility?
+    public let fid: String
     /// Whether all activities were marked as read
-    public var markAllRead: Bool?
+    public let markAllRead: Bool?
     /// Whether all activities were marked as seen
-    public var markAllSeen: Bool?
+    public let markAllSeen: Bool?
     /// The IDs of activities marked as read
-    public var markRead: [String]?
+    public let markRead: [String]?
     /// The IDs of activities marked as seen
-    public var markSeen: [String]?
+    public let markSeen: [String]?
     /// The IDs of activities marked as watched
-    public var markWatched: [String]?
-    public var receivedAt: Date?
+    public let markWatched: [String]?
+    public let receivedAt: Date?
     /// The type of event: "feeds.activity.marked" in this case
-    public var type: String = "feeds.activity.marked"
-    public var user: UserResponseCommonFields?
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, markAllRead: Bool? = nil, markAllSeen: Bool? = nil, markRead: [String]? = nil, markSeen: [String]? = nil, markWatched: [String]? = nil, receivedAt: Date? = nil, type: String = "feeds.activity.marked", user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -39,22 +39,24 @@ public final class ActivityMarkEvent: @unchecked Sendable, Event, Codable, JSONE
         self.markSeen = markSeen
         self.markWatched = markWatched
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case markAllRead = "mark_all_read"
-        case markAllSeen = "mark_all_seen"
-        case markRead = "mark_read"
-        case markSeen = "mark_seen"
-        case markWatched = "mark_watched"
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(FeedVisibility.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.markAllRead = try container.decodeIfPresent(Bool.self, forKey: .markAllRead)
+        self.markAllSeen = try container.decodeIfPresent(Bool.self, forKey: .markAllSeen)
+        self.markRead = try container.decodeIfPresent([String].self, forKey: .markRead)
+        self.markSeen = try container.decodeIfPresent([String].self, forKey: .markSeen)
+        self.markWatched = try container.decodeIfPresent([String].self, forKey: .markWatched)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

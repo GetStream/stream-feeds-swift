@@ -6,19 +6,19 @@ import Foundation
 import StreamCore
 
 /// Configuration for a moderation action
-public final class ModerationActionConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class ModerationActionConfigResponse: Sendable, Decodable {
     /// The action to take
-    public var action: String
+    public let action: String
     /// Custom data for the action
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Description of what this action does
-    public var description: String
+    public let description: String
     /// Type of entity this action applies to
-    public var entityType: String
+    public let entityType: String
     /// Icon for the dashboard
-    public var icon: String
+    public let icon: String
     /// Display order (lower numbers shown first)
-    public var order: Int
+    public let order: Int
 
     public init(action: String, custom: [String: RawJSON]? = nil, description: String, entityType: String, icon: String, order: Int) {
         self.action = action
@@ -29,13 +29,14 @@ public final class ModerationActionConfigResponse: @unchecked Sendable, Codable,
         self.order = order
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case custom
-        case description
-        case entityType = "entity_type"
-        case icon
-        case order
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(String.self, forKey: .action)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.entityType = try container.decode(String.self, forKey: .entityType)
+        self.icon = try container.decode(String.self, forKey: .icon)
+        self.order = try container.decode(Int.self, forKey: .order)
     }
 }
 

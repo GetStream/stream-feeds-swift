@@ -5,15 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class GoogleVisionConfig: @unchecked Sendable, Codable, JSONEncodable {
-    public var enabled: Bool?
+public final class GoogleVisionConfig: Sendable, Encodable, JSONEncodable {
+    public let enabled: Bool?
 
     public init(enabled: Bool? = nil) {
         self.enabled = enabled
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case enabled
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(enabled, forKey: .enabled)
     }
 }
 

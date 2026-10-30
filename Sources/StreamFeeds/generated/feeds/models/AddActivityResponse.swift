@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class AddActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activity: ActivityResponse
-    public var duration: String
+public final class AddActivityResponse: Sendable, Decodable {
+    public let activity: ActivityResponse
+    public let duration: String
     /// Number of mention notification activities created for mentioned users
-    public var mentionNotificationsCreated: Int?
+    public let mentionNotificationsCreated: Int?
 
     public init(activity: ActivityResponse, duration: String, mentionNotificationsCreated: Int? = nil) {
         self.activity = activity
@@ -17,10 +17,11 @@ public final class AddActivityResponse: @unchecked Sendable, Codable, JSONEncoda
         self.mentionNotificationsCreated = mentionNotificationsCreated
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case duration
-        case mentionNotificationsCreated = "mention_notifications_created"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.mentionNotificationsCreated = try container.decodeIfPresent(Int.self, forKey: .mentionNotificationsCreated)
     }
 }
 

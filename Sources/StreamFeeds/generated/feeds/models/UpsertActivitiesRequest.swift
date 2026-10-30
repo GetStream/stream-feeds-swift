@@ -5,16 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class UpsertActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpsertActivitiesRequest: Sendable, Encodable, JSONEncodable {
     /// List of activities to create or update
-    public var activities: [ActivityRequest]
+    public let activities: [ActivityRequest]
 
     public init(activities: [ActivityRequest]) {
         self.activities = activities
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activities
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(activities, forKey: .activities)
     }
 }
 
