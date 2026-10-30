@@ -5,18 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable {
-    public var activityId: String
-    public var childrenCounts: [String: Int]?
-    public var data: [String: RawJSON]?
-    public var id: String?
-    public var kind: String
-    public var latestChildren: [String: [EnrichedReaction]]?
-    public var ownChildren: [String: [EnrichedReaction]]?
-    public var parent: String?
-    public var targetFeeds: [String]?
-    public var user: StreamData?
-    public var userId: String
+public final class EnrichedReaction: Sendable, Decodable {
+    public let activityId: String
+    public let childrenCounts: [String: Int]?
+    public let data: [String: RawJSON]?
+    public let id: String?
+    public let kind: String
+    public let latestChildren: [String: [EnrichedReaction]]?
+    public let ownChildren: [String: [EnrichedReaction]]?
+    public let parent: String?
+    public let targetFeeds: [String]?
+    public let user: StreamData?
+    public let userId: String
 
     public init(activityId: String, childrenCounts: [String: Int]? = nil, data: [String: RawJSON]? = nil, id: String? = nil, kind: String, latestChildren: [String: [EnrichedReaction]]? = nil, ownChildren: [String: [EnrichedReaction]]? = nil, parent: String? = nil, targetFeeds: [String]? = nil, user: StreamData? = nil, userId: String) {
         self.activityId = activityId
@@ -32,18 +32,19 @@ public final class EnrichedReaction: @unchecked Sendable, Codable, JSONEncodable
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityId = "activity_id"
-        case childrenCounts = "children_counts"
-        case data
-        case id
-        case kind
-        case latestChildren = "latest_children"
-        case ownChildren = "own_children"
-        case parent
-        case targetFeeds = "target_feeds"
-        case user
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activityId = try container.decode(String.self, forKey: .activityId)
+        self.childrenCounts = try container.decodeIfPresent([String: Int].self, forKey: .childrenCounts)
+        self.data = try container.decodeIfPresent([String: RawJSON].self, forKey: .data)
+        self.id = try container.decodeIfPresent(String.self, forKey: .id)
+        self.kind = try container.decode(String.self, forKey: .kind)
+        self.latestChildren = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .latestChildren)
+        self.ownChildren = try container.decodeIfPresent([String: [EnrichedReaction]].self, forKey: .ownChildren)
+        self.parent = try container.decodeIfPresent(String.self, forKey: .parent)
+        self.targetFeeds = try container.decodeIfPresent([String].self, forKey: .targetFeeds)
+        self.user = try container.decodeIfPresent(StreamData.self, forKey: .user)
+        self.userId = try container.decode(String.self, forKey: .userId)
     }
 }
 

@@ -113,7 +113,7 @@ extension CommentsFilterField {
     /// Filter by the status of the comment (e.g., "active", "deleted", "moderated").
     ///
     /// **Supported operators:** `.equal`, `.in`
-    public static let status = Self("status", localValue: \.status)
+    public static let status = Self("status", localValue: \.status.rawValue)
     
     /// Filter by the number of upvotes the comment has received.
     ///
@@ -212,12 +212,12 @@ public struct CommentsFilter: Filter {
 // MARK: - Sorting
 
 /// Represents sorting options for comments queries.
-public typealias CommentsSort = QueryCommentsRequest.QueryCommentsRequestSort
+public typealias CommentsSort = QueryCommentsRequestSort
 
 protocol CommentsSortDataFields {
     var createdAt: Date { get }
-    var confidenceScore: Float { get }
-    var controversyScore: Float? { get }
+    var confidenceScore: Double { get }
+    var controversyScore: Double? { get }
     var score: Int { get }
 }
 
@@ -246,7 +246,7 @@ extension CommentsSort {
                 return lhs.createdAt < rhs.createdAt
             case .last:
                 return lhs.createdAt > rhs.createdAt
-            case .unknown:
+            default:
                 return lhs.createdAt > rhs.createdAt
             }
         }

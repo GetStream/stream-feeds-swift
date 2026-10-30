@@ -167,7 +167,7 @@ struct PollVoteList_Tests {
     
     private func defaultClient(
         votes: [PollVoteResponseData] = [.dummy(id: "vote-1", pollId: Self.pollId, user: .dummy(id: "user-1"))],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

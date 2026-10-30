@@ -6,18 +6,13 @@ import Foundation
 import StreamCore
 
 /// Whether a follow sends push notifications.
-public enum FollowPushPreference: String, Sendable, Codable, CaseIterable {
-    case all
-    case none
-    case unknown = "_unknown"
+public final class FollowPushPreference: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = FollowPushPreference(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let all = FollowPushPreference(rawValue: "all")
+    public static let none = FollowPushPreference(rawValue: "none")
 }

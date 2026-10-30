@@ -5,20 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class AcceptFollowRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class AcceptFollowRequest: Sendable, Encodable, JSONEncodable {
     /// Fully qualified ID of the source feed
-    public var source: String
+    public let source: String
     /// Fully qualified ID of the target feed
-    public var target: String
+    public let target: String
 
     public init(source: String, target: String) {
         self.source = source
         self.target = target
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case source
-        case target
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(source, forKey: .source)
+        try container.encode(target, forKey: .target)
     }
 }
 

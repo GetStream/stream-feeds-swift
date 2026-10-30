@@ -6,20 +6,15 @@ import Foundation
 import StreamCore
 
 /// Whether poll votes are attributed to the voter.
-public enum VotingVisibility: String, Sendable, Codable, CaseIterable {
-    /// Votes are public and can be seen by everyone.
-    case `public`
-    /// Votes are anonymous and cannot be attributed to individual users.
-    case anonymous
-    case unknown = "_unknown"
+public final class VotingVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = VotingVisibility(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    /// Votes are public and can be seen by everyone.
+    public static let `public` = VotingVisibility(rawValue: "public")
+    /// Votes are anonymous and cannot be attributed to individual users.
+    public static let anonymous = VotingVisibility(rawValue: "anonymous")
 }

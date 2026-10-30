@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class GetCommentsResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class GetCommentsResponse: Sendable, Decodable {
     /// Threaded listing for the activity
-    public var comments: [ThreadedCommentResponse]
-    public var duration: String
-    public var next: String?
-    public var prev: String?
+    public let comments: [ThreadedCommentResponse]
+    public let duration: String
+    public let next: String?
+    public let prev: String?
 
     public init(comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.comments = comments
@@ -19,11 +19,12 @@ public final class GetCommentsResponse: @unchecked Sendable, Codable, JSONEncoda
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comments
-        case duration
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comments = try container.decode([ThreadedCommentResponse].self, forKey: .comments)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
 }
 

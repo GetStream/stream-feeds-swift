@@ -5,15 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class StreamData: @unchecked Sendable, Codable, JSONEncodable {
-    public var id: String
+public final class StreamData: Sendable, Decodable {
+    public let id: String
 
     public init(id: String) {
         self.id = id
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case id
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.id = try container.decode(String.self, forKey: .id)
     }
 }
 

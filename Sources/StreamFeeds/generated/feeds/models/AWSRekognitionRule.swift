@@ -5,22 +5,30 @@
 import Foundation
 import StreamCore
 
-public final class AWSRekognitionRule: @unchecked Sendable, Codable, JSONEncodable {
+public final class AWSRekognitionRule: Sendable, Codable, JSONEncodable {
     /// What a moderation rule does when it matches.
-    public var action: ModerationAction
-    public var label: String
-    public var minConfidence: Float
+    public let action: ModerationAction
+    public let label: String
+    public let minConfidence: Double
 
-    public init(action: ModerationAction, label: String, minConfidence: Float) {
+    public init(action: ModerationAction, label: String, minConfidence: Double) {
         self.action = action
         self.label = label
         self.minConfidence = minConfidence
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case label
-        case minConfidence = "min_confidence"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(ModerationAction.self, forKey: .action)
+        self.label = try container.decode(String.self, forKey: .label)
+        self.minConfidence = try container.decode(Double.self, forKey: .minConfidence)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(label, forKey: .label)
+        try container.encode(minConfidence, forKey: .minConfidence)
     }
 }
 

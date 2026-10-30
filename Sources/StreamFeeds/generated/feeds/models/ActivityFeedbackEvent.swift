@@ -6,31 +6,33 @@ import Foundation
 import StreamCore
 
 /// Emitted when activity feedback is provided.
-public final class ActivityFeedbackEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var activityFeedback: ActivityFeedbackEventPayload
+public final class ActivityFeedbackEvent: Sendable, Event, Decodable {
+    public let activityFeedback: ActivityFeedbackEventPayload
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let receivedAt: Date?
     /// The type of event: "feeds.activity.feedback" in this case
-    public var type: String = "feeds.activity.feedback"
-    public var user: UserResponseCommonFields?
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(activityFeedback: ActivityFeedbackEventPayload, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activityFeedback: ActivityFeedbackEventPayload, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, type: String = "feeds.activity.feedback", user: UserResponseCommonFields? = nil) {
         self.activityFeedback = activityFeedback
         self.createdAt = createdAt
         self.custom = custom
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityFeedback = "activity_feedback"
-        case createdAt = "created_at"
-        case custom
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activityFeedback = try container.decode(ActivityFeedbackEventPayload.self, forKey: .activityFeedback)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

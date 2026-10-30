@@ -78,6 +78,7 @@ swiftlint --strict
   • Scripts/openapi-allowed.json lists the exposed endpoints in allowedEndpoints; the script drops the rest. To expose one, add it and rerun; its models come back automatically. Models that DefaultAPI and FeedsEvent no longer reach are deleted.
   • Strip chat, video, and server-side-only properties in removedProperties. The script fails when a listed endpoint or property is missing from the generated code, or when a listed model is pruned.
   • New properties on existing models are held back in removedProperties until reviewed. To expose one, remove it and rerun.
+  • Every generated model must be in exactly one of encodableOnlyModels (requests), decodableOnlyModels (responses and events) or codableModels (both) in Scripts/openapi-allowed.json; the script fails otherwise.
   • Do not build while the script runs; it deletes and recreates the generated folder. Do not commit project.pbxproj changes that only reorder entries.
   • After regenerating: a second run must produce identical output, the build and tests must pass, and public API changes go to the CHANGELOG.
 

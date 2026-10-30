@@ -48,7 +48,7 @@ public struct FeedQuery: Sendable {
     public var followingLimit: Int?
     
     /// Weights for different interests to influence activity ranking.
-    public var interestWeights: [String: Float]?
+    public var interestWeights: [String: Double]?
     
     /// Maximum number of feed members to retrieve.
     public var memberLimit: Int?
@@ -83,7 +83,7 @@ public struct FeedQuery: Sendable {
         externalRanking: [String: RawJSON]? = nil,
         followerLimit: Int? = nil,
         followingLimit: Int? = nil,
-        interestWeights: [String: Float]? = nil,
+        interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         view: String? = nil,
         watch: Bool = true
@@ -125,7 +125,7 @@ public struct FeedQuery: Sendable {
         externalRanking: [String: RawJSON]? = nil,
         followerLimit: Int? = nil,
         followingLimit: Int? = nil,
-        interestWeights: [String: Float]? = nil,
+        interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         view: String? = nil,
         watch: Bool = true

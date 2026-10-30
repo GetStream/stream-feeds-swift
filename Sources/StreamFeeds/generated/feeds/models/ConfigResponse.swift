@@ -5,26 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiImageConfig: AIImageConfig?
-    public var aiTextConfig: AITextConfig?
-    public var aiVideoConfig: AIVideoConfigResponse?
+public final class ConfigResponse: Sendable, Decodable {
+    public let aiImageConfig: AIImageConfig?
+    public let aiTextConfig: AITextConfig?
+    public let aiVideoConfig: AIVideoConfigResponse?
     /// Whether moderation should be performed asynchronously
-    public var async: Bool
-    public var automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
-    public var automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
-    public var automodToxicityConfig: AutomodToxicityConfig?
-    public var blockListConfig: BlockListConfig?
+    public let async: Bool
+    public let automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
+    public let automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
+    public let automodToxicityConfig: AutomodToxicityConfig?
+    public let blockListConfig: BlockListConfig?
     /// When the configuration was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Unique identifier for the moderation configuration
-    public var key: String
-    public var llmConfig: LLMConfig?
+    public let key: String
+    public let llmConfig: LLMConfig?
     /// Team associated with the configuration
-    public var team: String
+    public let team: String
     /// When the configuration was last updated
-    public var updatedAt: Date
-    public var velocityFilterConfig: VelocityFilterConfig?
+    public let updatedAt: Date
+    public let velocityFilterConfig: VelocityFilterConfig?
 
     public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigResponse? = nil, async: Bool, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, blockListConfig: BlockListConfig? = nil, createdAt: Date, key: String, llmConfig: LLMConfig? = nil, team: String, updatedAt: Date, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
@@ -43,21 +43,22 @@ public final class ConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
         self.velocityFilterConfig = velocityFilterConfig
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiImageConfig = "ai_image_config"
-        case aiTextConfig = "ai_text_config"
-        case aiVideoConfig = "ai_video_config"
-        case async
-        case automodPlatformCircumventionConfig = "automod_platform_circumvention_config"
-        case automodSemanticFiltersConfig = "automod_semantic_filters_config"
-        case automodToxicityConfig = "automod_toxicity_config"
-        case blockListConfig = "block_list_config"
-        case createdAt = "created_at"
-        case key
-        case llmConfig = "llm_config"
-        case team
-        case updatedAt = "updated_at"
-        case velocityFilterConfig = "velocity_filter_config"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiImageConfig = try container.decodeIfPresent(AIImageConfig.self, forKey: .aiImageConfig)
+        self.aiTextConfig = try container.decodeIfPresent(AITextConfig.self, forKey: .aiTextConfig)
+        self.aiVideoConfig = try container.decodeIfPresent(AIVideoConfigResponse.self, forKey: .aiVideoConfig)
+        self.async = try container.decode(Bool.self, forKey: .async)
+        self.automodPlatformCircumventionConfig = try container.decodeIfPresent(AutomodPlatformCircumventionConfig.self, forKey: .automodPlatformCircumventionConfig)
+        self.automodSemanticFiltersConfig = try container.decodeIfPresent(AutomodSemanticFiltersConfig.self, forKey: .automodSemanticFiltersConfig)
+        self.automodToxicityConfig = try container.decodeIfPresent(AutomodToxicityConfig.self, forKey: .automodToxicityConfig)
+        self.blockListConfig = try container.decodeIfPresent(BlockListConfig.self, forKey: .blockListConfig)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.key = try container.decode(String.self, forKey: .key)
+        self.llmConfig = try container.decodeIfPresent(LLMConfig.self, forKey: .llmConfig)
+        self.team = try container.decode(String.self, forKey: .team)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.velocityFilterConfig = try container.decodeIfPresent(VelocityFilterConfig.self, forKey: .velocityFilterConfig)
     }
 }
 

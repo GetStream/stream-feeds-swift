@@ -227,7 +227,7 @@ struct FollowList_Tests {
     
     private func defaultClient(
         follows: [FollowResponse] = [.dummy(sourceFeed: .dummy(feed: "user:current-user-id"), targetFeed: .dummy(feed: "user:user-1"))],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

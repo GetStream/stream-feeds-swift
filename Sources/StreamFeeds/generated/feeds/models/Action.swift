@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class Action: @unchecked Sendable, Codable, JSONEncodable {
-    public var name: String
-    public var style: String?
-    public var text: String
-    public var type: String
-    public var value: String?
+public final class Action: Sendable, Codable, JSONEncodable {
+    public let name: String
+    public let style: String?
+    public let text: String
+    public let type: String
+    public let value: String?
 
     public init(name: String, style: String? = nil, text: String, type: String, value: String? = nil) {
         self.name = name
@@ -20,12 +20,22 @@ public final class Action: @unchecked Sendable, Codable, JSONEncodable {
         self.value = value
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case name
-        case style
-        case text
-        case type
-        case value
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.style = try container.decodeIfPresent(String.self, forKey: .style)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.value = try container.decodeIfPresent(String.self, forKey: .value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(style, forKey: .style)
+        try container.encode(text, forKey: .text)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(value, forKey: .value)
     }
 }
 

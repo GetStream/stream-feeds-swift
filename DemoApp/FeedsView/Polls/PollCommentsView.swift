@@ -40,7 +40,7 @@ struct PollCommentsView: View {
                                 Text(answer)
                                     .bold()
                                 HStack {
-                                    if viewModel.poll?.votingVisibility != "anonymous" {
+                                    if viewModel.poll?.votingVisibility != .anonymous {
                                         UserAvatar(url: comment.user?.imageURL)
                                     }
                                     Text(authorTitle(for: comment))
@@ -111,7 +111,7 @@ struct PollCommentsView: View {
     }
     
     private func authorTitle(for comment: PollVoteData) -> String {
-        if viewModel.poll?.votingVisibility == "anonymous" {
+        if viewModel.poll?.votingVisibility == .anonymous {
             return "anonymous"
         }
         return comment.user?.name ?? "anonymous"

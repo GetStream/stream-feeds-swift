@@ -6,19 +6,14 @@ import Foundation
 import StreamCore
 
 /// Membership status of a feed member.
-public enum FeedMemberStatus: String, Sendable, Codable, CaseIterable {
-    case member
-    case pending
-    case rejected
-    case unknown = "_unknown"
+public final class FeedMemberStatus: RawRepresentable, Decodable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = FeedMemberStatus(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let member = FeedMemberStatus(rawValue: "member")
+    public static let pending = FeedMemberStatus(rawValue: "pending")
+    public static let rejected = FeedMemberStatus(rawValue: "rejected")
 }

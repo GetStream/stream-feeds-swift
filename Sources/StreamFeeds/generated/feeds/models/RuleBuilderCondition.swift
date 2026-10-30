@@ -5,27 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncodable {
-    public var confidence: Float?
-    public var contentCountRuleParams: ContentCountRuleParameters?
-    public var imageContentParams: ImageContentParameters?
-    public var imageRuleParams: ImageRuleParameters?
-    public var textContentParams: TextContentParameters?
-    public var textRuleParams: TextRuleParameters?
-    public var type: String?
-    public var userCreatedWithinParams: UserCreatedWithinParameters?
-    public var userCustomPropertyParams: UserCustomPropertyParameters?
-    public var userRuleParams: UserRuleParameters?
-    public var videoContentParams: VideoContentParameters?
-    public var videoRuleParams: VideoRuleParameters?
+public final class RuleBuilderCondition: Sendable, Encodable, JSONEncodable {
+    public let confidence: Double?
+    public let contentCountRuleParams: ContentCountRuleParameters?
+    public let imageContentParams: ImageContentParameters?
+    public let imageRuleParams: ImageRuleParameters?
+    public let textContentParams: TextContentParameters?
+    public let textRuleParams: TextRuleParameters?
+    public let type: String?
+    public let userCreatedWithinParams: UserCreatedWithinParameters?
+    public let userCustomPropertyParams: UserCustomPropertyParameters?
+    public let userRuleParams: UserRuleParameters?
+    public let videoContentParams: VideoContentParameters?
+    public let videoRuleParams: VideoRuleParameters?
 
-    public init(confidence: Float? = nil, contentCountRuleParams: ContentCountRuleParameters? = nil, imageContentParams: ImageContentParameters? = nil, imageRuleParams: ImageRuleParameters? = nil, textContentParams: TextContentParameters? = nil, textRuleParams: TextRuleParameters? = nil, userCreatedWithinParams: UserCreatedWithinParameters? = nil, userCustomPropertyParams: UserCustomPropertyParameters? = nil, userRuleParams: UserRuleParameters? = nil, videoContentParams: VideoContentParameters? = nil, videoRuleParams: VideoRuleParameters? = nil) {
+    public init(confidence: Double? = nil, contentCountRuleParams: ContentCountRuleParameters? = nil, imageContentParams: ImageContentParameters? = nil, imageRuleParams: ImageRuleParameters? = nil, textContentParams: TextContentParameters? = nil, textRuleParams: TextRuleParameters? = nil, type: String? = nil, userCreatedWithinParams: UserCreatedWithinParameters? = nil, userCustomPropertyParams: UserCustomPropertyParameters? = nil, userRuleParams: UserRuleParameters? = nil, videoContentParams: VideoContentParameters? = nil, videoRuleParams: VideoRuleParameters? = nil) {
         self.confidence = confidence
         self.contentCountRuleParams = contentCountRuleParams
         self.imageContentParams = imageContentParams
         self.imageRuleParams = imageRuleParams
         self.textContentParams = textContentParams
         self.textRuleParams = textRuleParams
+        self.type = type
         self.userCreatedWithinParams = userCreatedWithinParams
         self.userCustomPropertyParams = userCustomPropertyParams
         self.userRuleParams = userRuleParams
@@ -33,19 +34,20 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
         self.videoRuleParams = videoRuleParams
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case confidence
-        case contentCountRuleParams = "content_count_rule_params"
-        case imageContentParams = "image_content_params"
-        case imageRuleParams = "image_rule_params"
-        case textContentParams = "text_content_params"
-        case textRuleParams = "text_rule_params"
-        case type
-        case userCreatedWithinParams = "user_created_within_params"
-        case userCustomPropertyParams = "user_custom_property_params"
-        case userRuleParams = "user_rule_params"
-        case videoContentParams = "video_content_params"
-        case videoRuleParams = "video_rule_params"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(confidence, forKey: .confidence)
+        try container.encodeIfPresent(contentCountRuleParams, forKey: .contentCountRuleParams)
+        try container.encodeIfPresent(imageContentParams, forKey: .imageContentParams)
+        try container.encodeIfPresent(imageRuleParams, forKey: .imageRuleParams)
+        try container.encodeIfPresent(textContentParams, forKey: .textContentParams)
+        try container.encodeIfPresent(textRuleParams, forKey: .textRuleParams)
+        try container.encodeIfPresent(type, forKey: .type)
+        try container.encodeIfPresent(userCreatedWithinParams, forKey: .userCreatedWithinParams)
+        try container.encodeIfPresent(userCustomPropertyParams, forKey: .userCustomPropertyParams)
+        try container.encodeIfPresent(userRuleParams, forKey: .userRuleParams)
+        try container.encodeIfPresent(videoContentParams, forKey: .videoContentParams)
+        try container.encodeIfPresent(videoRuleParams, forKey: .videoRuleParams)
     }
 }
 

@@ -7,26 +7,28 @@ import StreamCore
 import StreamFeeds
 
 final class APITransportMock: DefaultAPITransport {
+    let decoder = PassthroughJSONDecoder()
     let responseResults = AllocatedUnfairLock<[APIResponse]>([])
-    
+
     func execute(request: Request) async throws -> (Data, URLResponse) {
         let response = try consumeResponseResult(for: request)
         switch response {
         case .success(let payload):
-            let data = try CodableHelper.jsonEncoder.encode(payload)
+            let id = UUID()
+            decoder.payloads.withLock { $0[id] = payload }
             let response = HTTPURLResponse(
                 url: request.url,
                 statusCode: 200,
                 httpVersion: nil,
                 headerFields: nil
             )!
-            return (data, response)
+            return (Data(id.uuidString.utf8), response)
         case .failure(let failure):
             throw failure
         }
     }
-    
-    func consumeResponseResult(for request: Request) throws -> Result<any Encodable, Error> {
+
+    func consumeResponseResult(for request: Request) throws -> Result<any Sendable, Error> {
         try responseResults.withLock { responseResults in
             let matchingIndex = responseResults.firstIndex { response in
                 switch response.matching {
@@ -34,9 +36,6 @@ final class APITransportMock: DefaultAPITransport {
                     return true
                 case .pathPrefix(let prefix):
                     return request.url.path.hasPrefix(prefix)
-                case .bodyType(let bodyType):
-                    guard let body = request.body else { return false }
-                    return (try? CodableHelper.jsonDecoder.decode(bodyType, from: body)) != nil
                 }
             }
             guard let matchingIndex else {
@@ -53,22 +52,18 @@ extension APITransportMock {
         case any
         /// Response is used only if path has the specified prefix.
         case pathPrefix(String)
-        /// Response is used only if ``Request\body`` has data matching with the specified type.
-        ///
-        /// Example: `QueryFeedsRequest` should be matched when response is `QueryFeedsResponse`
-        case bodyType(Decodable.Type)
     }
-    
+
     struct APIResponse {
         let matching: RequestMatching
-        let result: Result<any Encodable, Error>
-        
-        init(matching: RequestMatching, result: Result<any Encodable, Error>) {
+        let result: Result<any Sendable, Error>
+
+        init(matching: RequestMatching, result: Result<any Sendable, Error>) {
             self.matching = matching
             self.result = result
         }
-        
-        init(matching: RequestMatching, payload: any Encodable) {
+
+        init(matching: RequestMatching, payload: any Sendable) {
             self.matching = matching
             self.result = .success(payload)
         }
@@ -81,10 +76,24 @@ extension APITransportMock {
         transport.responseResults.value = responses
         return transport
     }
-    
-    static func withPayloads(_ payloads: [any Encodable]) -> APITransportMock {
+
+    static func withPayloads(_ payloads: [any Sendable]) -> APITransportMock {
         let transport = APITransportMock()
         transport.responseResults.value = payloads.map { APIResponse(matching: .any, result: .success($0)) }
         return transport
+    }
+}
+
+// Generated responses are Decodable only, so mocked responses are passed by an ID instead of JSON.
+final class PassthroughJSONDecoder: JSONDecoder, @unchecked Sendable {
+    let payloads = AllocatedUnfairLock<[UUID: any Sendable]>([:])
+
+    override func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        let payload = UUID(uuidString: String(decoding: data, as: UTF8.self))
+            .flatMap { id in payloads.withLock { $0.removeValue(forKey: id) } }
+        guard let payload = payload as? T else {
+            throw ClientError.Unexpected("Mocked payload \(String(describing: payload)) is not \(T.self)")
+        }
+        return payload
     }
 }

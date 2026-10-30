@@ -5,20 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class GetBlockedUsersResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class GetBlockedUsersResponse: Sendable, Decodable {
     /// Array of blocked user object
-    public var blocks: [BlockedUserResponse]
+    public let blocks: [BlockedUserResponse]
     /// Duration of the request in milliseconds
-    public var duration: String
+    public let duration: String
 
     public init(blocks: [BlockedUserResponse], duration: String) {
         self.blocks = blocks
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blocks
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.blocks = try container.decode([BlockedUserResponse].self, forKey: .blocks)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 

@@ -5,16 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class BlockedUserResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class BlockedUserResponse: Sendable, Decodable {
     /// User response object
-    public var blockedUser: UserResponse
+    public let blockedUser: UserResponse
     /// ID of the user who got blocked
-    public var blockedUserId: String
-    public var createdAt: Date
+    public let blockedUserId: String
+    public let createdAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
     /// ID of the user who blocked another user
-    public var userId: String
+    public let userId: String
 
     public init(blockedUser: UserResponse, blockedUserId: String, createdAt: Date, user: UserResponse, userId: String) {
         self.blockedUser = blockedUser
@@ -24,12 +24,13 @@ public final class BlockedUserResponse: @unchecked Sendable, Codable, JSONEncoda
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blockedUser = "blocked_user"
-        case blockedUserId = "blocked_user_id"
-        case createdAt = "created_at"
-        case user
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.blockedUser = try container.decode(UserResponse.self, forKey: .blockedUser)
+        self.blockedUserId = try container.decode(String.self, forKey: .blockedUserId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
+        self.userId = try container.decode(String.self, forKey: .userId)
     }
 }
 
