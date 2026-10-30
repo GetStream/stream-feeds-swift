@@ -125,7 +125,7 @@ struct BookmarkListState_Tests {
     // MARK: - Helper Methods
 
     private func defaultClientWithBookmarkResponses(
-        _ additionalPayloads: [any Encodable] = []
+        _ additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

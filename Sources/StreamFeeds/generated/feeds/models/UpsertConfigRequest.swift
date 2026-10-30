@@ -5,26 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncodable {
-    public var aiImageConfig: AIImageConfig?
-    public var aiTextConfig: AITextConfig?
-    public var aiVideoConfig: AIVideoConfigRequest?
+public final class UpsertConfigRequest: Sendable, Encodable, JSONEncodable {
+    public let aiImageConfig: AIImageConfig?
+    public let aiTextConfig: AITextConfig?
+    public let aiVideoConfig: AIVideoConfigRequest?
     /// Whether moderation should be performed asynchronously
-    public var async: Bool?
-    public var automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
-    public var automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
-    public var automodToxicityConfig: AutomodToxicityConfig?
-    public var awsRekognitionConfig: AIImageConfig?
-    public var blockListConfig: BlockListConfig?
-    public var bodyguardConfig: AITextConfig?
-    public var googleVisionConfig: GoogleVisionConfig?
+    public let async: Bool?
+    public let automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?
+    public let automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?
+    public let automodToxicityConfig: AutomodToxicityConfig?
+    public let awsRekognitionConfig: AIImageConfig?
+    public let blockListConfig: BlockListConfig?
+    public let bodyguardConfig: AITextConfig?
+    public let googleVisionConfig: GoogleVisionConfig?
     /// Unique identifier for the moderation configuration
-    public var key: String
-    public var llmConfig: LLMConfig?
-    public var ruleBuilderConfig: RuleBuilderConfig?
+    public let key: String
+    public let llmConfig: LLMConfig?
+    public let ruleBuilderConfig: RuleBuilderConfig?
     /// Team associated with the configuration
-    public var team: String?
-    public var velocityFilterConfig: VelocityFilterConfig?
+    public let team: String?
+    public let velocityFilterConfig: VelocityFilterConfig?
 
     public init(aiImageConfig: AIImageConfig? = nil, aiTextConfig: AITextConfig? = nil, aiVideoConfig: AIVideoConfigRequest? = nil, async: Bool? = nil, automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig? = nil, automodSemanticFiltersConfig: AutomodSemanticFiltersConfig? = nil, automodToxicityConfig: AutomodToxicityConfig? = nil, awsRekognitionConfig: AIImageConfig? = nil, blockListConfig: BlockListConfig? = nil, bodyguardConfig: AITextConfig? = nil, googleVisionConfig: GoogleVisionConfig? = nil, key: String, llmConfig: LLMConfig? = nil, ruleBuilderConfig: RuleBuilderConfig? = nil, team: String? = nil, velocityFilterConfig: VelocityFilterConfig? = nil) {
         self.aiImageConfig = aiImageConfig
@@ -45,23 +45,24 @@ public final class UpsertConfigRequest: @unchecked Sendable, Codable, JSONEncoda
         self.velocityFilterConfig = velocityFilterConfig
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiImageConfig = "ai_image_config"
-        case aiTextConfig = "ai_text_config"
-        case aiVideoConfig = "ai_video_config"
-        case async
-        case automodPlatformCircumventionConfig = "automod_platform_circumvention_config"
-        case automodSemanticFiltersConfig = "automod_semantic_filters_config"
-        case automodToxicityConfig = "automod_toxicity_config"
-        case awsRekognitionConfig = "aws_rekognition_config"
-        case blockListConfig = "block_list_config"
-        case bodyguardConfig = "bodyguard_config"
-        case googleVisionConfig = "google_vision_config"
-        case key
-        case llmConfig = "llm_config"
-        case ruleBuilderConfig = "rule_builder_config"
-        case team
-        case velocityFilterConfig = "velocity_filter_config"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(aiImageConfig, forKey: .aiImageConfig)
+        try container.encodeIfPresent(aiTextConfig, forKey: .aiTextConfig)
+        try container.encodeIfPresent(aiVideoConfig, forKey: .aiVideoConfig)
+        try container.encodeIfPresent(async, forKey: .async)
+        try container.encodeIfPresent(automodPlatformCircumventionConfig, forKey: .automodPlatformCircumventionConfig)
+        try container.encodeIfPresent(automodSemanticFiltersConfig, forKey: .automodSemanticFiltersConfig)
+        try container.encodeIfPresent(automodToxicityConfig, forKey: .automodToxicityConfig)
+        try container.encodeIfPresent(awsRekognitionConfig, forKey: .awsRekognitionConfig)
+        try container.encodeIfPresent(blockListConfig, forKey: .blockListConfig)
+        try container.encodeIfPresent(bodyguardConfig, forKey: .bodyguardConfig)
+        try container.encodeIfPresent(googleVisionConfig, forKey: .googleVisionConfig)
+        try container.encode(key, forKey: .key)
+        try container.encodeIfPresent(llmConfig, forKey: .llmConfig)
+        try container.encodeIfPresent(ruleBuilderConfig, forKey: .ruleBuilderConfig)
+        try container.encodeIfPresent(team, forKey: .team)
+        try container.encodeIfPresent(velocityFilterConfig, forKey: .velocityFilterConfig)
     }
 }
 

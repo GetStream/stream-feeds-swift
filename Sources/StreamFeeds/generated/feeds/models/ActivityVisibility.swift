@@ -6,19 +6,14 @@ import Foundation
 import StreamCore
 
 /// Who can see an activity.
-public enum ActivityVisibility: String, Sendable, Codable, CaseIterable {
-    case `private`
-    case `public`
-    case tag
-    case unknown = "_unknown"
+public final class ActivityVisibility: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = ActivityVisibility(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let `private` = ActivityVisibility(rawValue: "private")
+    public static let `public` = ActivityVisibility(rawValue: "public")
+    public static let tag = ActivityVisibility(rawValue: "tag")
 }

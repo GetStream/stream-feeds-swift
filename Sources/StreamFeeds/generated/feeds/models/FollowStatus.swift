@@ -6,19 +6,14 @@ import Foundation
 import StreamCore
 
 /// Status of a follow request.
-public enum FollowStatus: String, Sendable, Codable, CaseIterable {
-    case accepted
-    case pending
-    case rejected
-    case unknown = "_unknown"
+public final class FollowStatus: RawRepresentable, Decodable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = FollowStatus(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let accepted = FollowStatus(rawValue: "accepted")
+    public static let pending = FollowStatus(rawValue: "pending")
+    public static let rejected = FollowStatus(rawValue: "rejected")
 }

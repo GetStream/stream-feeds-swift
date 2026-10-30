@@ -30,7 +30,7 @@ struct CommentList_Tests {
         let client = defaultClient(
             additionalPayloads:
             [
-                GetCommentsResponse.dummy(
+                QueryCommentsResponse.dummy(
                     comments: [
                         .dummy(
                             createdAt: .fixed(offset: -1),
@@ -429,13 +429,13 @@ struct CommentList_Tests {
     // MARK: -
     
     private func defaultClient(
-        comments: [ThreadedCommentResponse] = [.dummy(id: "comment-1", objectId: Self.activityId, objectType: "activity")],
-        additionalPayloads: [any Encodable] = []
+        comments: [CommentResponse] = [.dummy(id: "comment-1", objectId: Self.activityId, objectType: "activity")],
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(
                 [
-                    GetCommentsResponse.dummy(
+                    QueryCommentsResponse.dummy(
                         comments: comments,
                         next: "next-cursor"
                     )

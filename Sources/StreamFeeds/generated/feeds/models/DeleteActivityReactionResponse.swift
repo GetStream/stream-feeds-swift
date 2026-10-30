@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivityReactionResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activity: ActivityResponse
-    public var duration: String
-    public var reaction: FeedsReactionResponse
+public final class DeleteActivityReactionResponse: Sendable, Decodable {
+    public let activity: ActivityResponse
+    public let duration: String
+    public let reaction: FeedsReactionResponse
 
     public init(activity: ActivityResponse, duration: String, reaction: FeedsReactionResponse) {
         self.activity = activity
@@ -16,10 +16,11 @@ public final class DeleteActivityReactionResponse: @unchecked Sendable, Codable,
         self.reaction = reaction
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case duration
-        case reaction
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
     }
 }
 

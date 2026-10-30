@@ -5,11 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodable {
-    public var custom: [String: RawJSON]?
-    public var images: [String]?
-    public var texts: [String]?
-    public var videos: [String]?
+public final class ModerationPayload: Sendable, Encodable, JSONEncodable {
+    public let custom: [String: RawJSON]?
+    public let images: [String]?
+    public let texts: [String]?
+    public let videos: [String]?
 
     public init(custom: [String: RawJSON]? = nil, images: [String]? = nil, texts: [String]? = nil, videos: [String]? = nil) {
         self.custom = custom
@@ -18,11 +18,12 @@ public final class ModerationPayload: @unchecked Sendable, Codable, JSONEncodabl
         self.videos = videos
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case images
-        case texts
-        case videos
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(images, forKey: .images)
+        try container.encodeIfPresent(texts, forKey: .texts)
+        try container.encodeIfPresent(videos, forKey: .videos)
     }
 }
 

@@ -5,17 +5,17 @@
 import Foundation
 import StreamCore
 
-public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var activity: ActivityResponse
+public final class BookmarkResponse: Sendable, Decodable {
+    public let activity: ActivityResponse
     /// When the bookmark was created
-    public var createdAt: Date
+    public let createdAt: Date
     /// Custom data for the bookmark
-    public var custom: [String: RawJSON]?
-    public var folder: BookmarkFolderResponse?
+    public let custom: [String: RawJSON]?
+    public let folder: BookmarkFolderResponse?
     /// When the bookmark was last updated
-    public var updatedAt: Date
+    public let updatedAt: Date
     /// User response object
-    public var user: UserResponse
+    public let user: UserResponse
 
     public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON]? = nil, folder: BookmarkFolderResponse? = nil, updatedAt: Date, user: UserResponse) {
         self.activity = activity
@@ -26,13 +26,14 @@ public final class BookmarkResponse: @unchecked Sendable, Codable, JSONEncodable
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case createdAt = "created_at"
-        case custom
-        case folder
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.folder = try container.decodeIfPresent(BookmarkFolderResponse.self, forKey: .folder)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
     }
 }
 

@@ -10,7 +10,7 @@ public struct AggregatedActivityData: Identifiable, Equatable, Sendable {
     public var activityCount: Int
     public var createdAt: Date
     public var group: String
-    public var score: Float
+    public var score: Double
     public var updatedAt: Date
     public var userCount: Int
     public var userCountTruncated: Bool

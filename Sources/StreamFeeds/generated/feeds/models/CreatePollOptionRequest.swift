@@ -5,20 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class CreatePollOptionRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class CreatePollOptionRequest: Sendable, Encodable, JSONEncodable {
     /// Custom data for this object
-    public var custom: [String: RawJSON]?
+    public let custom: [String: RawJSON]?
     /// Option text
-    public var text: String
+    public let text: String
 
     public init(custom: [String: RawJSON]? = nil, text: String) {
         self.custom = custom
         self.text = text
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case text
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(text, forKey: .text)
     }
 }
 

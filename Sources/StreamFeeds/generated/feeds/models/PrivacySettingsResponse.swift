@@ -6,16 +6,22 @@ import Foundation
 import StreamCore
 
 /// The privacy settings of the user.
-public final class PrivacySettingsResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class PrivacySettingsResponse: Sendable, Codable, JSONEncodable {
     /// The settings for the read receipt events.
-    public var readReceipts: ReadReceiptsResponse?
+    public let readReceipts: ReadReceiptsResponse?
 
     public init(readReceipts: ReadReceiptsResponse? = nil) {
         self.readReceipts = readReceipts
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case readReceipts = "read_receipts"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.readReceipts = try container.decodeIfPresent(ReadReceiptsResponse.self, forKey: .readReceipts)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(readReceipts, forKey: .readReceipts)
     }
 }
 

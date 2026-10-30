@@ -5,32 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum LLMRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case keep
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class LLMRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: LLMRuleAction
-    public var description: String
-    public var label: String
-    public var severityRules: [BodyguardSeverityRule]
+    public static let bounce = LLMRuleAction(rawValue: "bounce")
+    public static let bounceFlag = LLMRuleAction(rawValue: "bounce_flag")
+    public static let bounceRemove = LLMRuleAction(rawValue: "bounce_remove")
+    public static let flag = LLMRuleAction(rawValue: "flag")
+    public static let keep = LLMRuleAction(rawValue: "keep")
+    public static let remove = LLMRuleAction(rawValue: "remove")
+    public static let shadow = LLMRuleAction(rawValue: "shadow")
+}
+
+public final class LLMRule: Sendable, Codable, JSONEncodable {
+    public let action: LLMRuleAction
+    public let description: String
+    public let label: String
+    public let severityRules: [BodyguardSeverityRule]
 
     public init(action: LLMRuleAction, description: String, label: String, severityRules: [BodyguardSeverityRule]) {
         self.action = action
@@ -39,11 +34,20 @@ public final class LLMRule: @unchecked Sendable, Codable, JSONEncodable {
         self.severityRules = severityRules
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case description
-        case label
-        case severityRules = "severity_rules"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(LLMRuleAction.self, forKey: .action)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.label = try container.decode(String.self, forKey: .label)
+        self.severityRules = try container.decode([BodyguardSeverityRule].self, forKey: .severityRules)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(description, forKey: .description)
+        try container.encode(label, forKey: .label)
+        try container.encode(severityRules, forKey: .severityRules)
     }
 }
 

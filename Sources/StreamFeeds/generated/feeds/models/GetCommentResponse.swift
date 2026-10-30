@@ -5,18 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class GetCommentResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var comment: CommentResponse
-    public var duration: String
+public final class GetCommentResponse: Sendable, Decodable {
+    public let comment: CommentResponse
+    public let duration: String
 
     public init(comment: CommentResponse, duration: String) {
         self.comment = comment
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comment = try container.decode(CommentResponse.self, forKey: .comment)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 

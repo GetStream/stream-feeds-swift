@@ -6,22 +6,24 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets reactivated. The event contains information about the user that was reactivated.
-public final class UserReactivatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class UserReactivatedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
-    public var createdAt: Date
+    public let createdAt: Date
     /// The type of event: "user.reactivated" in this case
-    public var type: String = "user.reactivated"
-    public var user: UserResponseCommonFields
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, user: UserResponseCommonFields) {
+    public init(createdAt: Date, type: String = "user.reactivated", user: UserResponseCommonFields) {
         self.createdAt = createdAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

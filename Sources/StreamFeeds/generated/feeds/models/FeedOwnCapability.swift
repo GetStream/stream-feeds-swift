@@ -6,45 +6,40 @@ import Foundation
 import StreamCore
 
 /// Represents a feed capability value and enumerates all possible capability strings.
-public enum FeedOwnCapability: String, Sendable, Codable, CaseIterable {
-    case addActivity = "add-activity"
-    case addActivityBookmark = "add-activity-bookmark"
-    case addActivityReaction = "add-activity-reaction"
-    case addComment = "add-comment"
-    case addCommentReaction = "add-comment-reaction"
-    case createFeed = "create-feed"
-    case deleteAnyActivity = "delete-any-activity"
-    case deleteAnyComment = "delete-any-comment"
-    case deleteFeed = "delete-feed"
-    case deleteOwnActivity = "delete-own-activity"
-    case deleteOwnActivityBookmark = "delete-own-activity-bookmark"
-    case deleteOwnActivityReaction = "delete-own-activity-reaction"
-    case deleteOwnComment = "delete-own-comment"
-    case deleteOwnCommentReaction = "delete-own-comment-reaction"
-    case follow
-    case pinActivity = "pin-activity"
-    case queryFeedMembers = "query-feed-members"
-    case queryFollows = "query-follows"
-    case readActivities = "read-activities"
-    case readFeed = "read-feed"
-    case unfollow
-    case updateAnyActivity = "update-any-activity"
-    case updateAnyComment = "update-any-comment"
-    case updateFeed = "update-feed"
-    case updateFeedFollowers = "update-feed-followers"
-    case updateFeedMembers = "update-feed-members"
-    case updateOwnActivity = "update-own-activity"
-    case updateOwnActivityBookmark = "update-own-activity-bookmark"
-    case updateOwnComment = "update-own-comment"
-    case unknown = "_unknown"
+public final class FeedOwnCapability: RawRepresentable, Decodable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = FeedOwnCapability(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let addActivity = FeedOwnCapability(rawValue: "add-activity")
+    public static let addActivityBookmark = FeedOwnCapability(rawValue: "add-activity-bookmark")
+    public static let addActivityReaction = FeedOwnCapability(rawValue: "add-activity-reaction")
+    public static let addComment = FeedOwnCapability(rawValue: "add-comment")
+    public static let addCommentReaction = FeedOwnCapability(rawValue: "add-comment-reaction")
+    public static let createFeed = FeedOwnCapability(rawValue: "create-feed")
+    public static let deleteAnyActivity = FeedOwnCapability(rawValue: "delete-any-activity")
+    public static let deleteAnyComment = FeedOwnCapability(rawValue: "delete-any-comment")
+    public static let deleteFeed = FeedOwnCapability(rawValue: "delete-feed")
+    public static let deleteOwnActivity = FeedOwnCapability(rawValue: "delete-own-activity")
+    public static let deleteOwnActivityBookmark = FeedOwnCapability(rawValue: "delete-own-activity-bookmark")
+    public static let deleteOwnActivityReaction = FeedOwnCapability(rawValue: "delete-own-activity-reaction")
+    public static let deleteOwnComment = FeedOwnCapability(rawValue: "delete-own-comment")
+    public static let deleteOwnCommentReaction = FeedOwnCapability(rawValue: "delete-own-comment-reaction")
+    public static let follow = FeedOwnCapability(rawValue: "follow")
+    public static let pinActivity = FeedOwnCapability(rawValue: "pin-activity")
+    public static let queryFeedMembers = FeedOwnCapability(rawValue: "query-feed-members")
+    public static let queryFollows = FeedOwnCapability(rawValue: "query-follows")
+    public static let readActivities = FeedOwnCapability(rawValue: "read-activities")
+    public static let readFeed = FeedOwnCapability(rawValue: "read-feed")
+    public static let unfollow = FeedOwnCapability(rawValue: "unfollow")
+    public static let updateAnyActivity = FeedOwnCapability(rawValue: "update-any-activity")
+    public static let updateAnyComment = FeedOwnCapability(rawValue: "update-any-comment")
+    public static let updateFeed = FeedOwnCapability(rawValue: "update-feed")
+    public static let updateFeedFollowers = FeedOwnCapability(rawValue: "update-feed-followers")
+    public static let updateFeedMembers = FeedOwnCapability(rawValue: "update-feed-members")
+    public static let updateOwnActivity = FeedOwnCapability(rawValue: "update-own-activity")
+    public static let updateOwnActivityBookmark = FeedOwnCapability(rawValue: "update-own-activity-bookmark")
+    public static let updateOwnComment = FeedOwnCapability(rawValue: "update-own-comment")
 }

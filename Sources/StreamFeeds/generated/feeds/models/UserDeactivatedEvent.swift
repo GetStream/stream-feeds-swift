@@ -6,25 +6,27 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a user gets deactivated. The event contains information about the user that was deactivated.
-public final class UserDeactivatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class UserDeactivatedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var createdBy: UserResponseCommonFields?
+    public let createdAt: Date
+    public let createdBy: UserResponseCommonFields?
     /// The type of event: "user.deactivated" in this case
-    public var type: String = "user.deactivated"
-    public var user: UserResponseCommonFields
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, user: UserResponseCommonFields) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, type: String = "user.deactivated", user: UserResponseCommonFields) {
         self.createdAt = createdAt
         self.createdBy = createdBy
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .createdBy)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

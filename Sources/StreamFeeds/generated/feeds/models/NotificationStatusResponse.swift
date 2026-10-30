@@ -5,19 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSONEncodable {
+public final class NotificationStatusResponse: Sendable, Decodable {
     /// When notifications were last read
-    public var lastReadAt: Date?
+    public let lastReadAt: Date?
     /// When notifications were last seen
-    public var lastSeenAt: Date?
+    public let lastSeenAt: Date?
     /// Deprecated: use is_read on each activity/group instead. IDs of activities that have been read. Capped at ~101 entries for aggregated feeds.
-    public var readActivities: [String]?
+    public let readActivities: [String]?
     /// Deprecated: use is_seen on each activity/group instead. IDs of activities that have been seen. Capped at ~101 entries for aggregated feeds.
-    public var seenActivities: [String]?
+    public let seenActivities: [String]?
     /// Number of unread notifications
-    public var unread: Int
+    public let unread: Int
     /// Number of unseen notifications
-    public var unseen: Int
+    public let unseen: Int
 
     public init(lastReadAt: Date? = nil, lastSeenAt: Date? = nil, readActivities: [String]? = nil, seenActivities: [String]? = nil, unread: Int, unseen: Int) {
         self.lastReadAt = lastReadAt
@@ -28,13 +28,14 @@ public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSO
         self.unseen = unseen
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case lastReadAt = "last_read_at"
-        case lastSeenAt = "last_seen_at"
-        case readActivities = "read_activities"
-        case seenActivities = "seen_activities"
-        case unread
-        case unseen
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.lastReadAt = try container.decodeIfPresent(Date.self, forKey: .lastReadAt)
+        self.lastSeenAt = try container.decodeIfPresent(Date.self, forKey: .lastSeenAt)
+        self.readActivities = try container.decodeIfPresent([String].self, forKey: .readActivities)
+        self.seenActivities = try container.decodeIfPresent([String].self, forKey: .seenActivities)
+        self.unread = try container.decode(Int.self, forKey: .unread)
+        self.unseen = try container.decode(Int.self, forKey: .unseen)
     }
 }
 

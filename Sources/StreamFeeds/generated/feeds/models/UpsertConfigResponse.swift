@@ -5,18 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class UpsertConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var config: ConfigResponse?
-    public var duration: String
+public final class UpsertConfigResponse: Sendable, Decodable {
+    public let config: ConfigResponse?
+    public let duration: String
 
     public init(config: ConfigResponse? = nil, duration: String) {
         self.config = config
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case config
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.config = try container.decodeIfPresent(ConfigResponse.self, forKey: .config)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 

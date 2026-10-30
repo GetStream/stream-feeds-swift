@@ -6,28 +6,30 @@ import Foundation
 import StreamCore
 
 /// Emitted when app settings are updated
-public final class AppUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var app: AppEventResponse
+public final class AppUpdatedEvent: Sendable, Event, Decodable {
+    public let app: AppEventResponse
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var receivedAt: Date?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let receivedAt: Date?
     /// The type of event: "app.updated" in this case
-    public var type: String = "app.updated"
+    public let type: String
 
-    public init(app: AppEventResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil) {
+    public init(app: AppEventResponse, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, type: String = "app.updated") {
         self.app = app
         self.createdAt = createdAt
         self.custom = custom
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case app
-        case createdAt = "created_at"
-        case custom
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.app = try container.decode(AppEventResponse.self, forKey: .app)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
     }
 }
 

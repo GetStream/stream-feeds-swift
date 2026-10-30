@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class Images: @unchecked Sendable, Codable, JSONEncodable {
-    public var fixedHeight: ImageData
-    public var fixedHeightDownsampled: ImageData
-    public var fixedHeightStill: ImageData
-    public var fixedWidth: ImageData
-    public var fixedWidthDownsampled: ImageData
-    public var fixedWidthStill: ImageData
-    public var original: ImageData
+public final class Images: Sendable, Codable, JSONEncodable {
+    public let fixedHeight: ImageData
+    public let fixedHeightDownsampled: ImageData
+    public let fixedHeightStill: ImageData
+    public let fixedWidth: ImageData
+    public let fixedWidthDownsampled: ImageData
+    public let fixedWidthStill: ImageData
+    public let original: ImageData
 
     public init(fixedHeight: ImageData, fixedHeightDownsampled: ImageData, fixedHeightStill: ImageData, fixedWidth: ImageData, fixedWidthDownsampled: ImageData, fixedWidthStill: ImageData, original: ImageData) {
         self.fixedHeight = fixedHeight
@@ -24,14 +24,26 @@ public final class Images: @unchecked Sendable, Codable, JSONEncodable {
         self.original = original
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case fixedHeight = "fixed_height"
-        case fixedHeightDownsampled = "fixed_height_downsampled"
-        case fixedHeightStill = "fixed_height_still"
-        case fixedWidth = "fixed_width"
-        case fixedWidthDownsampled = "fixed_width_downsampled"
-        case fixedWidthStill = "fixed_width_still"
-        case original
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.fixedHeight = try container.decode(ImageData.self, forKey: .fixedHeight)
+        self.fixedHeightDownsampled = try container.decode(ImageData.self, forKey: .fixedHeightDownsampled)
+        self.fixedHeightStill = try container.decode(ImageData.self, forKey: .fixedHeightStill)
+        self.fixedWidth = try container.decode(ImageData.self, forKey: .fixedWidth)
+        self.fixedWidthDownsampled = try container.decode(ImageData.self, forKey: .fixedWidthDownsampled)
+        self.fixedWidthStill = try container.decode(ImageData.self, forKey: .fixedWidthStill)
+        self.original = try container.decode(ImageData.self, forKey: .original)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(fixedHeight, forKey: .fixedHeight)
+        try container.encode(fixedHeightDownsampled, forKey: .fixedHeightDownsampled)
+        try container.encode(fixedHeightStill, forKey: .fixedHeightStill)
+        try container.encode(fixedWidth, forKey: .fixedWidth)
+        try container.encode(fixedWidthDownsampled, forKey: .fixedWidthDownsampled)
+        try container.encode(fixedWidthStill, forKey: .fixedWidthStill)
+        try container.encode(original, forKey: .original)
     }
 }
 
