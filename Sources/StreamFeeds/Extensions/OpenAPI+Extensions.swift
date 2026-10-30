@@ -6,3 +6,4 @@ import Foundation
 import StreamCore
 
 public typealias OwnUser = OwnUserResponse
+public typealias UserResponseCommonFields = UserResponse

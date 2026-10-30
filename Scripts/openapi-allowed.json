@@ -276,7 +276,6 @@
     "UserMuteResponse",
     "UserReactivatedEvent",
     "UserResponse",
-    "UserResponseCommonFields",
     "UserResponsePrivacyFields",
     "UserUnbannedEvent",
     "UserUpdatedEvent"
