@@ -59,7 +59,7 @@ extension UserResponse {
 extension UserResponseCommonFields {
     func toModel() -> UserData {
         UserData(
-            avgResponseTime: nil, // UserResponseCommonFields doesn't have avgResponseTime
+            avgResponseTime: avgResponseTime,
             banned: banned,
             blockedUserIds: blockedUserIds,
             createdAt: createdAt,
@@ -82,24 +82,6 @@ extension UserResponseCommonFields {
 
 extension UserResponsePrivacyFields {
     func toModel() -> UserData {
-        UserData(
-            avgResponseTime: nil, // UserResponsePrivacyFields doesn't have avgResponseTime
-            banned: banned,
-            blockedUserIds: blockedUserIds,
-            createdAt: createdAt,
-            custom: custom,
-            deactivatedAt: deactivatedAt,
-            deletedAt: deletedAt,
-            id: id,
-            image: image,
-            language: language,
-            lastActive: lastActive,
-            name: name,
-            online: online,
-            role: role,
-            teams: teams,
-            teamsRole: teamsRole,
-            updatedAt: updatedAt
-        )
+        user.toModel()
     }
 }

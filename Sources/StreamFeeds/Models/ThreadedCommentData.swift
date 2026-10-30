@@ -158,7 +158,7 @@ extension ThreadedCommentData {
     /// preserving all the comment data while adding support for threaded replies.
     ///
     /// - Parameter comment: The `CommentData` to convert
-    init(from comment: CommentData) {
+    init(from comment: CommentData, meta: RepliesMeta? = nil, replies: [ThreadedCommentData]? = nil) {
         self.init(
             attachments: comment.attachments,
             confidenceScore: comment.confidenceScore,
@@ -170,7 +170,7 @@ extension ThreadedCommentData {
             id: comment.id,
             latestReactions: comment.latestReactions,
             mentionedUsers: comment.mentionedUsers,
-            meta: nil,
+            meta: meta,
             moderation: comment.moderation,
             objectId: comment.objectId,
             objectType: comment.objectType,
@@ -178,7 +178,7 @@ extension ThreadedCommentData {
             parentId: comment.parentId,
             reactionCount: comment.reactionCount,
             reactionGroups: comment.reactionGroups,
-            replies: nil,
+            replies: replies,
             replyCount: comment.replyCount,
             score: comment.score,
             status: comment.status,
@@ -286,33 +286,6 @@ extension ThreadedCommentData: CommentsSortDataFields {}
 
 extension ThreadedCommentResponse {
     func toModel() -> ThreadedCommentData {
-        ThreadedCommentData(
-            attachments: attachments,
-            confidenceScore: confidenceScore,
-            controversyScore: controversyScore,
-            createdAt: createdAt,
-            custom: custom,
-            deletedAt: deletedAt,
-            downvoteCount: downvoteCount,
-            id: id,
-            latestReactions: latestReactions?.map { $0.toModel() } ?? [],
-            mentionedUsers: mentionedUsers.map { $0.toModel() },
-            meta: meta,
-            moderation: moderation,
-            objectId: objectId,
-            objectType: objectType,
-            ownReactions: ownReactions.map { $0.toModel() },
-            parentId: parentId,
-            reactionCount: reactionCount,
-            reactionGroups: reactionGroups?.mapValues { $0.toModel() } ?? [:],
-            replies: replies?.map { $0.toModel() },
-            replyCount: replyCount,
-            score: score,
-            status: CommentStatus(rawValue: status.rawValue),
-            text: text,
-            updatedAt: updatedAt,
-            upvoteCount: upvoteCount,
-            user: user.toModel()
-        )
+        ThreadedCommentData(from: comment.toModel(), meta: meta, replies: replies?.map { $0.toModel() })
     }
 }

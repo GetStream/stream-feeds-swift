@@ -12,25 +12,27 @@ extension UserResponsePrivacyFields {
         name: String? = "Test User"
     ) -> UserResponsePrivacyFields {
         UserResponsePrivacyFields(
-            avgResponseTime: 100,
-            banned: false,
-            blockedUserIds: [],
-            createdAt: Date(),
-            custom: [:],
-            deactivatedAt: nil,
-            deletedAt: nil,
-            id: id,
-            image: "https://example.com/avatar.jpg",
+            user: UserResponse(
+                avgResponseTime: 100,
+                banned: false,
+                blockedUserIds: [],
+                createdAt: Date(),
+                custom: [:],
+                deactivatedAt: nil,
+                deletedAt: nil,
+                id: id,
+                image: "https://example.com/avatar.jpg",
+                language: "en",
+                lastActive: Date(),
+                name: name,
+                online: true,
+                role: "user",
+                teams: ["team1"],
+                teamsRole: ["team1": "member"],
+                updatedAt: Date()
+            ),
             invisible: false,
-            language: "en",
-            lastActive: Date(),
-            name: name,
-            online: true,
-            privacySettings: nil,
-            role: "user",
-            teams: ["team1"],
-            teamsRole: ["team1": "member"],
-            updatedAt: Date()
+            privacySettings: nil
         )
     }
 }
