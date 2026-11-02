@@ -5,36 +5,31 @@
 import Foundation
 import StreamCore
 
-public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum UpdatePollRequestVotingVisibility: String, Sendable, Codable, CaseIterable {
-        case `public`
-        case anonymous
-        case unknown = "_unknown"
+public final class UpdatePollRequest: Sendable, Encodable, JSONEncodable {
+    /// Allow answers
+    public let allowAnswers: Bool?
+    /// Allow user suggested options
+    public let allowUserSuggestedOptions: Bool?
+    /// Custom data for this object
+    public let custom: [String: RawJSON]?
+    /// Poll description
+    public let description: String?
+    /// Enforce unique vote
+    public let enforceUniqueVote: Bool?
+    /// Poll ID
+    public let id: String
+    /// Is closed
+    public let isClosed: Bool?
+    /// Max votes allowed
+    public let maxVotesAllowed: Int?
+    /// Poll name
+    public let name: String
+    /// Poll options
+    public let options: [PollOptionRequest]?
+    /// Voting visibility
+    public let votingVisibility: VotingVisibility?
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var allowAnswers: Bool?
-    public var allowUserSuggestedOptions: Bool?
-    public var custom: [String: RawJSON]?
-    public var description: String?
-    public var enforceUniqueVote: Bool?
-    public var id: String
-    public var isClosed: Bool?
-    public var maxVotesAllowed: Int?
-    public var name: String
-    public var options: [PollOptionRequest]?
-    public var votingVisibility: UpdatePollRequestVotingVisibility?
-
-    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: UpdatePollRequestVotingVisibility? = nil) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: VotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom
@@ -48,20 +43,23 @@ public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
         self.votingVisibility = votingVisibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case allowAnswers = "allow_answers"
-        case allowUserSuggestedOptions = "allow_user_suggested_options"
-        case custom = "Custom"
-        case description
-        case enforceUniqueVote = "enforce_unique_vote"
-        case id
-        case isClosed = "is_closed"
-        case maxVotesAllowed = "max_votes_allowed"
-        case name
-        case options
-        case votingVisibility = "voting_visibility"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(allowAnswers, forKey: .allowAnswers)
+        try container.encodeIfPresent(allowUserSuggestedOptions, forKey: .allowUserSuggestedOptions)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(description, forKey: .description)
+        try container.encodeIfPresent(enforceUniqueVote, forKey: .enforceUniqueVote)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(isClosed, forKey: .isClosed)
+        try container.encodeIfPresent(maxVotesAllowed, forKey: .maxVotesAllowed)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(options, forKey: .options)
+        try container.encodeIfPresent(votingVisibility, forKey: .votingVisibility)
     }
+}
 
+extension UpdatePollRequest: Hashable {
     public static func == (lhs: UpdatePollRequest, rhs: UpdatePollRequest) -> Bool {
         lhs.allowAnswers == rhs.allowAnswers &&
             lhs.allowUserSuggestedOptions == rhs.allowUserSuggestedOptions &&

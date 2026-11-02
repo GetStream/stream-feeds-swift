@@ -5,17 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class UserCreatedWithinParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var maxAge: String?
+public final class UserCreatedWithinParameters: Sendable, Encodable, JSONEncodable {
+    public let maxAge: String?
 
     public init(maxAge: String? = nil) {
         self.maxAge = maxAge
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case maxAge = "max_age"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(maxAge, forKey: .maxAge)
     }
+}
 
+extension UserCreatedWithinParameters: Hashable {
     public static func == (lhs: UserCreatedWithinParameters, rhs: UserCreatedWithinParameters) -> Bool {
         lhs.maxAge == rhs.maxAge
     }

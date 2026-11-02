@@ -5,14 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class FeedsReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activityId: String
-    public var commentId: String?
-    public var createdAt: Date
-    public var custom: [String: RawJSON]?
-    public var type: String
-    public var updatedAt: Date
-    public var user: UserResponse
+public final class FeedsReactionResponse: Sendable, Decodable {
+    public let activityId: String
+    public let commentId: String?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]?
+    public let type: String
+    public let updatedAt: Date
+    /// User response object
+    public let user: UserResponse
 
     public init(activityId: String, commentId: String? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, type: String, updatedAt: Date, user: UserResponse) {
         self.activityId = activityId
@@ -24,16 +25,19 @@ public final class FeedsReactionResponse: @unchecked Sendable, Codable, JSONEnco
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activityId = "activity_id"
-        case commentId = "comment_id"
-        case createdAt = "created_at"
-        case custom
-        case type
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activityId = try container.decode(String.self, forKey: .activityId)
+        self.commentId = try container.decodeIfPresent(String.self, forKey: .commentId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
     }
+}
 
+extension FeedsReactionResponse: Hashable {
     public static func == (lhs: FeedsReactionResponse, rhs: FeedsReactionResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.commentId == rhs.commentId &&

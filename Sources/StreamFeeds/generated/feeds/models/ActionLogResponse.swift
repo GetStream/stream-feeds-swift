@@ -5,18 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var aiProviders: [String]
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var id: String
-    public var reason: String
-    public var reviewQueueItem: ReviewQueueItemResponse?
-    public var targetUser: UserResponse?
-    public var targetUserId: String
-    public var type: String
-    public var user: UserResponse?
-    public var userId: String
+public final class ActionLogResponse: Sendable, Decodable {
+    public let aiProviders: [String]
+    /// Timestamp when the action was taken
+    public let createdAt: Date
+    /// Additional metadata about the action
+    public let custom: [String: RawJSON]
+    /// Unique identifier of the action log
+    public let id: String
+    /// Reason for the moderation action
+    public let reason: String
+    public let reviewQueueItem: ReviewQueueItemResponse?
+    /// User response object
+    public let targetUser: UserResponse?
+    /// ID of the user who was the target of the action
+    public let targetUserId: String
+    /// Type of moderation action
+    public let type: String
+    /// User response object
+    public let user: UserResponse?
+    /// ID of the user who performed the action
+    public let userId: String
 
     public init(aiProviders: [String], createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
         self.aiProviders = aiProviders
@@ -32,20 +41,23 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case aiProviders = "ai_providers"
-        case createdAt = "created_at"
-        case custom
-        case id
-        case reason
-        case reviewQueueItem = "review_queue_item"
-        case targetUser = "target_user"
-        case targetUserId = "target_user_id"
-        case type
-        case user
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.aiProviders = try container.decode([String].self, forKey: .aiProviders)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.reason = try container.decode(String.self, forKey: .reason)
+        self.reviewQueueItem = try container.decodeIfPresent(ReviewQueueItemResponse.self, forKey: .reviewQueueItem)
+        self.targetUser = try container.decodeIfPresent(UserResponse.self, forKey: .targetUser)
+        self.targetUserId = try container.decode(String.self, forKey: .targetUserId)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
+        self.userId = try container.decode(String.self, forKey: .userId)
     }
+}
 
+extension ActionLogResponse: Hashable {
     public static func == (lhs: ActionLogResponse, rhs: ActionLogResponse) -> Bool {
         lhs.aiProviders == rhs.aiProviders &&
             lhs.createdAt == rhs.createdAt &&

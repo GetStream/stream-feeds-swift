@@ -5,13 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var filter: [String: RawJSON]?
-    public var limit: Int?
-    public var next: String?
-    public var prev: String?
-    public var sort: [SortParamRequest]?
-    public var watch: Bool?
+public final class QueryFeedsRequest: Sendable, Encodable, JSONEncodable {
+    /// Filters to apply to the query
+    public let filter: [String: RawJSON]?
+    public let limit: Int?
+    public let next: String?
+    public let prev: String?
+    /// Sorting parameters for the query
+    public let sort: [SortParamRequest]?
+    /// Whether to subscribe to realtime updates
+    public let watch: Bool?
 
     public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil, watch: Bool? = nil) {
         self.filter = filter
@@ -22,15 +25,18 @@ public final class QueryFeedsRequest: @unchecked Sendable, Codable, JSONEncodabl
         self.watch = watch
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case filter
-        case limit
-        case next
-        case prev
-        case sort
-        case watch
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(filter, forKey: .filter)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encodeIfPresent(sort, forKey: .sort)
+        try container.encodeIfPresent(watch, forKey: .watch)
     }
+}
 
+extension QueryFeedsRequest: Hashable {
     public static func == (lhs: QueryFeedsRequest, rhs: QueryFeedsRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

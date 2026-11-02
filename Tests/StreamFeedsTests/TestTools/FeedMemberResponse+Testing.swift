@@ -15,7 +15,7 @@ extension FeedMemberResponse {
         inviteAcceptedAt: Date? = nil,
         inviteRejectedAt: Date? = nil,
         role: String = "member",
-        status: FeedMemberResponseStatus = .member
+        status: FeedMemberStatus = .member
     ) -> FeedMemberResponse {
         FeedMemberResponse(
             createdAt: createdAt,

@@ -5,10 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class AddBookmarkRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var custom: [String: RawJSON]?
-    public var folderId: String?
-    public var newFolder: AddFolderRequest?
+public final class AddBookmarkRequest: Sendable, Encodable, JSONEncodable {
+    /// Custom data for the bookmark
+    public let custom: [String: RawJSON]?
+    /// ID of the folder to add the bookmark to
+    public let folderId: String?
+    public let newFolder: AddFolderRequest?
 
     public init(custom: [String: RawJSON]? = nil, folderId: String? = nil, newFolder: AddFolderRequest? = nil) {
         self.custom = custom
@@ -16,12 +18,15 @@ public final class AddBookmarkRequest: @unchecked Sendable, Codable, JSONEncodab
         self.newFolder = newFolder
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case folderId = "folder_id"
-        case newFolder = "new_folder"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(folderId, forKey: .folderId)
+        try container.encodeIfPresent(newFolder, forKey: .newFolder)
     }
+}
 
+extension AddBookmarkRequest: Hashable {
     public static func == (lhs: AddBookmarkRequest, rhs: AddBookmarkRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.folderId == rhs.folderId &&

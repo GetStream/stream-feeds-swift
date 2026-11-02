@@ -5,31 +5,31 @@
 import Foundation
 import StreamCore
 
-public final class AcceptFollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var followerRole: String?
-    public var source: String
-    public var target: String
+public final class AcceptFollowRequest: Sendable, Encodable, JSONEncodable {
+    /// Fully qualified ID of the source feed
+    public let source: String
+    /// Fully qualified ID of the target feed
+    public let target: String
 
-    public init(followerRole: String? = nil, source: String, target: String) {
-        self.followerRole = followerRole
+    public init(source: String, target: String) {
         self.source = source
         self.target = target
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case followerRole = "follower_role"
-        case source
-        case target
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(source, forKey: .source)
+        try container.encode(target, forKey: .target)
     }
+}
 
+extension AcceptFollowRequest: Hashable {
     public static func == (lhs: AcceptFollowRequest, rhs: AcceptFollowRequest) -> Bool {
-        lhs.followerRole == rhs.followerRole &&
-            lhs.source == rhs.source &&
+        lhs.source == rhs.source &&
             lhs.target == rhs.target
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(followerRole)
         hasher.combine(source)
         hasher.combine(target)
     }

@@ -5,41 +5,37 @@
 import Foundation
 import StreamCore
 
-public final class ModerationFlaggedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var createdAt: Date
-    public var item: String?
-    public var objectId: String?
-    public var type: String = "moderation.flagged"
-    public var user: User?
+/// This event is sent when content is flagged for moderation
+public final class ModerationFlaggedEvent: Sendable, Event, Decodable {
+    public let createdAt: Date
+    /// The ID of the flagged content
+    public let objectId: String
+    public let type: String
 
-    public init(createdAt: Date, item: String? = nil, objectId: String? = nil, user: User? = nil) {
+    public init(createdAt: Date, objectId: String, type: String = "moderation.flagged") {
         self.createdAt = createdAt
-        self.item = item
         self.objectId = objectId
-        self.user = user
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case item
-        case objectId = "object_id"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.objectId = try container.decode(String.self, forKey: .objectId)
+        self.type = try container.decode(String.self, forKey: .type)
     }
+}
 
+extension ModerationFlaggedEvent: Hashable {
     public static func == (lhs: ModerationFlaggedEvent, rhs: ModerationFlaggedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
-            lhs.item == rhs.item &&
             lhs.objectId == rhs.objectId &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
-        hasher.combine(item)
         hasher.combine(objectId)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

@@ -129,10 +129,12 @@ public final class Feed: Sendable {
     
     /// Deletes the feed.
     ///
-    /// - Parameter hardDelete: If `true`, the feed will be permanently deleted. If `false`, it will be soft deleted.
+    /// - Parameters:
+    ///   - hardDelete: If `true`, the feed will be permanently deleted. If `false`, it will be soft deleted.
+    ///   - purgeUserActivities: If `true`, also deletes the feed owner's activities from every feed they were added to. Requires `hardDelete`. Defaults to `false`.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteFeed(hardDelete: Bool = false) async throws {
-        try await feedsRepository.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete)
+    public func deleteFeed(hardDelete: Bool = false, purgeUserActivities: Bool = false) async throws {
+        try await feedsRepository.deleteFeed(feedGroupId: group, feedId: id, hardDelete: hardDelete, purgeUserActivities: purgeUserActivities)
         await eventPublisher.sendEvent(.feedDeleted(feed))
     }
     
@@ -155,9 +157,10 @@ public final class Feed: Sendable {
     /// - Parameters:
     ///   - id: The unique identifier of the activity to delete
     ///   - hardDelete: If `true`, the activity will be permanently deleted. If `false`, it will be soft deleted.
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteActivity(id: String, hardDelete: Bool = false) async throws {
-        try await activitiesRepository.deleteActivity(activityId: id, hardDelete: hardDelete)
+    public func deleteActivity(id: String, hardDelete: Bool = false, deleteNotificationActivity: Bool = false) async throws {
+        try await activitiesRepository.deleteActivity(activityId: id, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.activityDeleted(id, feed))
     }
     
@@ -217,7 +220,6 @@ public final class Feed: Sendable {
                 feed: feedQuery.feed,
                 activityFilter: state.activitiesQueryConfig?.filter,
                 activityLimit: limit ?? feedQuery.activityLimit,
-                activitySelectorOptions: nil,
                 data: nil,
                 externalRanking: nil,
                 followerLimit: 0,
@@ -332,10 +334,12 @@ public final class Feed: Sendable {
     
     /// Removes a comment for id.
     ///
-    /// - Parameter commentId: The unique identifier of the comment to remove
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deleteComment(commentId: String, hardDelete: Bool? = false) async throws {
-        let response = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+    public func deleteComment(commentId: String, hardDelete: Bool? = false, deleteNotificationActivity: Bool = false) async throws {
+        let response = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.commentDeleted(response.comment, response.activityId, feed))
     }
     
@@ -381,7 +385,7 @@ public final class Feed: Sendable {
         _ targetFid: FeedId,
         createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
-        pushPreference: FollowRequest.FollowRequestPushPreference? = nil
+        pushPreference: FollowPushPreference? = nil
     ) async throws -> FollowData {
         let request = FollowRequest(
             createNotificationActivity: createNotificationActivity,
@@ -399,24 +403,33 @@ public final class Feed: Sendable {
     ///
     /// - Parameters:
     ///   - targetFeed: The target feed identifier to unfollow
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
+    ///   - keepHistory: If `true`, activities from the unfollowed feed stay in this feed's timeline. Defaults to `false`.
     /// - Returns: The data of the follow.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    @discardableResult public func unfollow(_ targetFeed: FeedId) async throws -> FollowData {
-        let follow = try await feedsRepository.unfollow(source: feed, target: targetFeed)
+    @discardableResult public func unfollow(
+        _ targetFeed: FeedId,
+        deleteNotificationActivity: Bool = false,
+        keepHistory: Bool = false
+    ) async throws -> FollowData {
+        let follow = try await feedsRepository.unfollow(
+            source: feed,
+            target: targetFeed,
+            deleteNotificationActivity: deleteNotificationActivity,
+            keepHistory: keepHistory
+        )
         await eventPublisher.sendEvent(.feedFollowDeleted(follow, feed))
         return follow
     }
     
     /// Accepts a follow request from another feed.
     ///
-    /// - Parameters:
-    ///   - sourceFid: The feed if of the requested feed.
-    ///   - role: The role for the requesting feed.
+    /// - Parameter sourceFid: The feed if of the requested feed.
     /// - Returns: The updated follow data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func acceptFollow(_ sourceFid: FeedId, role: String? = nil) async throws -> FollowData {
-        let request = AcceptFollowRequest(followerRole: role, source: sourceFid.rawValue, target: feed.rawValue)
+    public func acceptFollow(_ sourceFid: FeedId) async throws -> FollowData {
+        let request = AcceptFollowRequest(source: sourceFid.rawValue, target: feed.rawValue)
         let follow = try await feedsRepository.acceptFollow(request: request)
         await eventPublisher.sendEvent(.feedFollowUpdated(follow, feed))
         return follow
@@ -539,11 +552,12 @@ public final class Feed: Sendable {
     /// - Parameters:
     ///   - activityId: The unique identifier of the activity
     ///   - type: The type of reaction to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteReaction(activityId: String, type: String) async throws -> FeedsReactionData {
-        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
+    public func deleteReaction(activityId: String, type: String, deleteNotificationActivity: Bool = false) async throws -> FeedsReactionData {
+        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.activityReactionDeleted(result.reaction, result.activity, feed))
         return result.reaction
     }
@@ -567,11 +581,12 @@ public final class Feed: Sendable {
     /// - Parameters:
     ///   - commentId: The unique identifier of the comment
     ///   - type: The type of reaction to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
-        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
+    public func deleteCommentReaction(commentId: String, type: String, deleteNotificationActivity: Bool = false) async throws -> FeedsReactionData {
+        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.commentReactionDeleted(result.reaction, result.comment, feed))
         return result.reaction
     }

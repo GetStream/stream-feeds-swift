@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class PollOptionResponseData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var custom: [String: RawJSON]
-    public var id: String
-    public var text: String
+public final class PollOptionResponseData: Sendable, Decodable {
+    public let custom: [String: RawJSON]
+    public let id: String
+    public let text: String
 
     public init(custom: [String: RawJSON], id: String, text: String) {
         self.custom = custom
@@ -16,12 +16,15 @@ public final class PollOptionResponseData: @unchecked Sendable, Codable, JSONEnc
         self.text = text
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case id
-        case text
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.text = try container.decode(String.self, forKey: .text)
     }
+}
 
+extension PollOptionResponseData: Hashable {
     public static func == (lhs: PollOptionResponseData, rhs: PollOptionResponseData) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&

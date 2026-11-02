@@ -5,11 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var configs: [ConfigResponse]
-    public var duration: String
-    public var next: String?
-    public var prev: String?
+public final class QueryModerationConfigsResponse: Sendable, Decodable {
+    /// List of moderation configurations
+    public let configs: [ConfigResponse]
+    public let duration: String
+    public let next: String?
+    public let prev: String?
 
     public init(configs: [ConfigResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.configs = configs
@@ -18,13 +19,16 @@ public final class QueryModerationConfigsResponse: @unchecked Sendable, Codable,
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case configs
-        case duration
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.configs = try container.decode([ConfigResponse].self, forKey: .configs)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
+}
 
+extension QueryModerationConfigsResponse: Hashable {
     public static func == (lhs: QueryModerationConfigsResponse, rhs: QueryModerationConfigsResponse) -> Bool {
         lhs.configs == rhs.configs &&
             lhs.duration == rhs.duration &&

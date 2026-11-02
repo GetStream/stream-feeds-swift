@@ -146,12 +146,14 @@ public final class Activity: Sendable {
     
     /// Removes a comment from this activity.
     ///
-    /// - Parameter commentId: The unique identifier of the comment to remove
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The data of the deleted comment
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteComment(commentId: String, hardDelete: Bool? = nil) async throws -> CommentData {
-        let result = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete)
+    public func deleteComment(commentId: String, hardDelete: Bool? = nil, deleteNotificationActivity: Bool = false) async throws -> CommentData {
+        let result = try await commentsRepository.deleteComment(commentId: commentId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.commentDeleted(result.comment, result.activityId, feed))
         return result.comment
     }
@@ -186,12 +188,14 @@ public final class Activity: Sendable {
     
     /// Removes a reaction from an activity.
     ///
-    /// - Parameter type: The type of reaction to remove
+    /// - Parameters:
+    ///   - type: The type of reaction to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteReaction(type: String) async throws -> FeedsReactionData {
-        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type)
+    public func deleteReaction(type: String, deleteNotificationActivity: Bool = false) async throws -> FeedsReactionData {
+        let result = try await activitiesRepository.deleteReaction(activityId: activityId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.activityReactionDeleted(result.reaction, result.activity, feed))
         return result.reaction
     }
@@ -215,11 +219,12 @@ public final class Activity: Sendable {
     /// - Parameters:
     ///   - commentId: The unique identifier of the comment
     ///   - type: The type of reaction to remove
+    ///   - deleteNotificationActivity: Whether to delete the corresponding notification activity. Defaults to `false`.
     /// - Returns: The removed reaction data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deleteCommentReaction(commentId: String, type: String) async throws -> FeedsReactionData {
-        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type)
+    public func deleteCommentReaction(commentId: String, type: String, deleteNotificationActivity: Bool = false) async throws -> FeedsReactionData {
+        let result = try await commentsRepository.deleteCommentReaction(commentId: commentId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         await eventPublisher.sendEvent(.commentReactionDeleted(result.reaction, result.comment, feed))
         return result.reaction
     }
@@ -259,24 +264,20 @@ public final class Activity: Sendable {
     
     /// Deletes a poll.
     ///
-    /// - Parameters:
-    ///   - userId: Optional user identifier for authorization
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deletePoll(userId: String? = nil) async throws {
+    public func deletePoll() async throws {
         let pollId = try await pollId()
-        try await pollsRepository.deletePoll(pollId: pollId, userId: userId)
+        try await pollsRepository.deletePoll(pollId: pollId)
         await eventPublisher.sendEvent(.pollDeleted(pollId, feed))
     }
 
     /// Gets a specific poll by its identifier.
     ///
-    /// - Parameters:
-    ///   - userId: Optional user identifier for user-specific poll data
     /// - Returns: The poll data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func getPoll(userId: String? = nil) async throws -> PollData {
-        let poll = try await pollsRepository.getPoll(pollId: pollId(), userId: userId)
+    public func getPoll() async throws -> PollData {
+        let poll = try await pollsRepository.getPoll(pollId: pollId())
         await eventPublisher.sendEvent(.pollUpdated(poll, feed))
         return poll
     }
@@ -330,13 +331,9 @@ public final class Activity: Sendable {
     ///
     /// - Parameters:
     ///   - optionId: The unique identifier of the option to remove
-    ///   - userId: Optional user identifier for authorization
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func deletePollOption(
-        optionId: String,
-        userId: String? = nil
-    ) async throws {
-        try await pollsRepository.deletePollOption(pollId: pollId(), optionId: optionId, userId: userId)
+    public func deletePollOption(optionId: String) async throws {
+        try await pollsRepository.deletePollOption(pollId: pollId(), optionId: optionId)
         if var poll = await state.poll {
             poll.removeOption(withId: optionId)
             await eventPublisher.sendEvent(.pollUpdated(poll, feed))
@@ -347,15 +344,11 @@ public final class Activity: Sendable {
     ///
     /// - Parameters:
     ///   - optionId: The unique identifier of the option to retrieve
-    ///   - userId: Optional user identifier for user-specific option data
     /// - Returns: The poll option data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func getPollOption(
-        optionId: String,
-        userId: String?
-    ) async throws -> PollOptionData {
-        let option = try await pollsRepository.getPollOption(pollId: pollId(), optionId: optionId, userId: userId)
+    public func getPollOption(optionId: String) async throws -> PollOptionData {
+        let option = try await pollsRepository.getPollOption(pollId: pollId(), optionId: optionId)
         if var poll = await state.poll {
             poll.updateOption(option)
             await eventPublisher.sendEvent(.pollUpdated(poll, feed))
@@ -403,19 +396,14 @@ public final class Activity: Sendable {
     ///
     /// - Parameters:
     ///   - voteId: The unique identifier of the vote to remove
-    ///   - userId: Optional user identifier for authorization
     /// - Returns: The removed vote data, or `nil` if the vote was not found
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
-    public func deletePollVote(
-        voteId: String,
-        userId: String? = nil
-    ) async throws -> PollVoteData? {
+    public func deletePollVote(voteId: String) async throws -> PollVoteData? {
         let vote = try await pollsRepository.deletePollVote(
             activityId: activityId,
             pollId: pollId(),
-            voteId: voteId,
-            userId: userId
+            voteId: voteId
         )
         if let vote, let poll = await state.poll {
             await eventPublisher.sendEvent(.pollVoteDeleted(vote, poll, feed))

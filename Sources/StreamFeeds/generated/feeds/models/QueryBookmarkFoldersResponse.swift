@@ -5,11 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryBookmarkFoldersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var bookmarkFolders: [BookmarkFolderResponse]
-    public var duration: String
-    public var next: String?
-    public var prev: String?
+public final class QueryBookmarkFoldersResponse: Sendable, Decodable {
+    /// List of bookmark folders matching the query
+    public let bookmarkFolders: [BookmarkFolderResponse]
+    public let duration: String
+    /// Cursor for next page
+    public let next: String?
+    /// Cursor for previous page
+    public let prev: String?
 
     public init(bookmarkFolders: [BookmarkFolderResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.bookmarkFolders = bookmarkFolders
@@ -18,13 +21,16 @@ public final class QueryBookmarkFoldersResponse: @unchecked Sendable, Codable, J
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case bookmarkFolders = "bookmark_folders"
-        case duration
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.bookmarkFolders = try container.decode([BookmarkFolderResponse].self, forKey: .bookmarkFolders)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
+}
 
+extension QueryBookmarkFoldersResponse: Hashable {
     public static func == (lhs: QueryBookmarkFoldersResponse, rhs: QueryBookmarkFoldersResponse) -> Bool {
         lhs.bookmarkFolders == rhs.bookmarkFolders &&
             lhs.duration == rhs.duration &&

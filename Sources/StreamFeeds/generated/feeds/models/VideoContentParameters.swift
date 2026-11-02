@@ -5,17 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class VideoContentParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var harmLabels: [String]?
+public final class VideoContentParameters: Sendable, Encodable, JSONEncodable {
+    public let harmLabels: [String]?
 
     public init(harmLabels: [String]? = nil) {
         self.harmLabels = harmLabels
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case harmLabels = "harm_labels"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(harmLabels, forKey: .harmLabels)
     }
+}
 
+extension VideoContentParameters: Hashable {
     public static func == (lhs: VideoContentParameters, rhs: VideoContentParameters) -> Bool {
         lhs.harmLabels == rhs.harmLabels
     }

@@ -583,7 +583,7 @@ struct ActivityList_Tests {
     
     private func defaultClient(
         activities: [ActivityResponse] = [.dummy(id: "activity-1", user: .dummy(id: "current-user-id"))],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

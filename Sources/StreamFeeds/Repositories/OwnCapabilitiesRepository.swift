@@ -36,8 +36,8 @@ final class OwnCapabilitiesRepository: Sendable {
     }
     
     func getCapabilities(for feeds: Set<FeedId>) async throws -> [FeedId: Set<FeedOwnCapability>] {
-        let response = try await apiClient.ownCapabilitiesBatch(ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest(feeds: feeds.map(\.rawValue)))
-        return Dictionary(uniqueKeysWithValues: response.capabilities.map { (FeedId(rawValue: $0), Set($1)) })
+        let response = try await apiClient.ownBatch(ownBatchRequest: OwnBatchRequest(feeds: feeds.map(\.rawValue), fields: ["own_capabilities"]))
+        return Dictionary(uniqueKeysWithValues: response.data.map { (FeedId(rawValue: $0), Set($1.ownCapabilities ?? [])) })
     }
     
     // MARK: - Saving Capabilities

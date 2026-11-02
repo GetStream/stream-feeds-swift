@@ -24,7 +24,6 @@ extension UserResponse {
             lastActive: .fixed(),
             name: name,
             online: true,
-            revokeTokensIssuedBefore: nil,
             role: "user",
             teams: ["team1"],
             teamsRole: nil,

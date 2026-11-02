@@ -5,11 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var blockedByUserId: String
-    public var blockedUserId: String
-    public var createdAt: Date
-    public var duration: String
+public final class BlockUsersResponse: Sendable, Decodable {
+    /// User id who blocked another user
+    public let blockedByUserId: String
+    /// User id who got blocked
+    public let blockedUserId: String
+    /// Timestamp when the user was blocked
+    public let createdAt: Date
+    /// Duration of the request in milliseconds
+    public let duration: String
 
     public init(blockedByUserId: String, blockedUserId: String, createdAt: Date, duration: String) {
         self.blockedByUserId = blockedByUserId
@@ -18,13 +22,16 @@ public final class BlockUsersResponse: @unchecked Sendable, Codable, JSONEncodab
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blockedByUserId = "blocked_by_user_id"
-        case blockedUserId = "blocked_user_id"
-        case createdAt = "created_at"
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.blockedByUserId = try container.decode(String.self, forKey: .blockedByUserId)
+        self.blockedUserId = try container.decode(String.self, forKey: .blockedUserId)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
+}
 
+extension BlockUsersResponse: Hashable {
     public static func == (lhs: BlockUsersResponse, rhs: BlockUsersResponse) -> Bool {
         lhs.blockedByUserId == rhs.blockedByUserId &&
             lhs.blockedUserId == rhs.blockedUserId &&

@@ -5,11 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryFeedsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
-    public var feeds: [FeedResponse]
-    public var next: String?
-    public var prev: String?
+public final class QueryFeedsResponse: Sendable, Decodable {
+    public let duration: String
+    /// List of feeds matching the query
+    public let feeds: [FeedResponse]
+    /// Cursor for next page
+    public let next: String?
+    /// Cursor for previous page
+    public let prev: String?
 
     public init(duration: String, feeds: [FeedResponse], next: String? = nil, prev: String? = nil) {
         self.duration = duration
@@ -18,13 +21,16 @@ public final class QueryFeedsResponse: @unchecked Sendable, Codable, JSONEncodab
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case feeds
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.feeds = try container.decode([FeedResponse].self, forKey: .feeds)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
+}
 
+extension QueryFeedsResponse: Hashable {
     public static func == (lhs: QueryFeedsResponse, rhs: QueryFeedsResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.feeds == rhs.feeds &&

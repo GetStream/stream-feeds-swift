@@ -5,40 +5,30 @@
 import Foundation
 import StreamCore
 
-public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum OCRRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class OCRRule: Sendable, Codable, JSONEncodable {
+    /// What a moderation rule does when it matches.
+    public let action: ModerationAction
+    public let label: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var action: OCRRuleAction
-    public var label: String
-
-    public init(action: OCRRuleAction, label: String) {
+    public init(action: ModerationAction, label: String) {
         self.action = action
         self.label = label
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case label
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(ModerationAction.self, forKey: .action)
+        self.label = try container.decode(String.self, forKey: .label)
     }
 
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(label, forKey: .label)
+    }
+}
+
+extension OCRRule: Hashable {
     public static func == (lhs: OCRRule, rhs: OCRRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.label == rhs.label

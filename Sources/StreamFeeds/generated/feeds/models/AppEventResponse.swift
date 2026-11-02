@@ -5,12 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class AppEventResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var asyncUrlEnrichEnabled: Bool?
-    public var autoTranslationEnabled: Bool
-    public var fileUploadConfig: FileUploadConfig?
-    public var imageUploadConfig: FileUploadConfig?
-    public var name: String
+public final class AppEventResponse: Sendable, Decodable {
+    /// boolean
+    public let asyncUrlEnrichEnabled: Bool?
+    /// boolean
+    public let autoTranslationEnabled: Bool
+    public let fileUploadConfig: FileUploadConfig?
+    public let imageUploadConfig: FileUploadConfig?
+    /// string
+    public let name: String
 
     public init(asyncUrlEnrichEnabled: Bool? = nil, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig? = nil, imageUploadConfig: FileUploadConfig? = nil, name: String) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
@@ -20,14 +23,17 @@ public final class AppEventResponse: @unchecked Sendable, Codable, JSONEncodable
         self.name = name
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case asyncUrlEnrichEnabled = "async_url_enrich_enabled"
-        case autoTranslationEnabled = "auto_translation_enabled"
-        case fileUploadConfig = "file_upload_config"
-        case imageUploadConfig = "image_upload_config"
-        case name
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.asyncUrlEnrichEnabled = try container.decodeIfPresent(Bool.self, forKey: .asyncUrlEnrichEnabled)
+        self.autoTranslationEnabled = try container.decode(Bool.self, forKey: .autoTranslationEnabled)
+        self.fileUploadConfig = try container.decodeIfPresent(FileUploadConfig.self, forKey: .fileUploadConfig)
+        self.imageUploadConfig = try container.decodeIfPresent(FileUploadConfig.self, forKey: .imageUploadConfig)
+        self.name = try container.decode(String.self, forKey: .name)
     }
+}
 
+extension AppEventResponse: Hashable {
     public static func == (lhs: AppEventResponse, rhs: AppEventResponse) -> Bool {
         lhs.asyncUrlEnrichEnabled == rhs.asyncUrlEnrichEnabled &&
             lhs.autoTranslationEnabled == rhs.autoTranslationEnabled &&
