@@ -26,8 +26,10 @@ public struct PollData: Identifiable, Equatable, Sendable {
     public let updatedAt: Date
     public private(set) var voteCount: Int
     public private(set) var voteCountsByOption: [String: Int]
-    public let votingVisibility: String
+    public let votingVisibility: PollVotingVisibility
 }
+
+public typealias PollVotingVisibility = VotingVisibility
 
 // MARK: - Mutating the Data
 
@@ -101,7 +103,7 @@ extension PollResponseData {
             updatedAt: updatedAt,
             voteCount: voteCount,
             voteCountsByOption: voteCountsByOption,
-            votingVisibility: votingVisibility.rawValue
+            votingVisibility: votingVisibility
         )
     }
 }

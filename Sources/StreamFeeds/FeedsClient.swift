@@ -88,7 +88,8 @@ public final class FeedsClient: Sendable {
         user: User,
         token: UserToken,
         feedsConfig: FeedsConfig,
-        apiTransport: DefaultAPITransport
+        apiTransport: DefaultAPITransport,
+        jsonDecoder: JSONDecoder = .default
     ) {
         self.apiKey = apiKey
         self.apiTransport = apiTransport
@@ -103,7 +104,8 @@ public final class FeedsClient: Sendable {
         apiClient = DefaultAPI(
             basePath: basePath,
             transport: apiTransport,
-            middlewares: [defaultParams]
+            middlewares: [defaultParams],
+            jsonDecoder: jsonDecoder
         )
         devicesClient = DevicesAPI(
             basePath: basePath,

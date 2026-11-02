@@ -6,16 +6,17 @@ import Foundation
 import StreamCore
 
 /// Configuration for activity deletion action
-public final class DeleteActivityRequestPayload: @unchecked Sendable, Codable, JSONEncodable {
+public final class DeleteActivityRequestPayload: Sendable, Encodable, JSONEncodable {
     /// Whether to permanently delete the activity
-    public var hardDelete: Bool?
+    public let hardDelete: Bool?
 
     public init(hardDelete: Bool? = nil) {
         self.hardDelete = hardDelete
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case hardDelete = "hard_delete"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(hardDelete, forKey: .hardDelete)
     }
 }
 

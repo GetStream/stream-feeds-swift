@@ -5,12 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class UpdateCommentRequest: @unchecked Sendable, Codable, JSONEncodable {
+public final class UpdateCommentRequest: Sendable, Encodable, JSONEncodable {
     /// Updated text content of the comment
-    public var comment: String?
+    public let comment: String?
     /// Updated custom data for the comment
-    public var custom: [String: RawJSON]?
-    public var skipPush: Bool?
+    public let custom: [String: RawJSON]?
+    public let skipPush: Bool?
 
     public init(comment: String? = nil, custom: [String: RawJSON]? = nil, skipPush: Bool? = nil) {
         self.comment = comment
@@ -18,21 +18,8 @@ public final class UpdateCommentRequest: @unchecked Sendable, Codable, JSONEncod
         self.skipPush = skipPush
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comment
-        case custom
-        case skipPush = "skip_push"
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.comment = try container.decodeIfPresent(String.self, forKey: .comment)
-        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
-        self.skipPush = try container.decodeIfPresent(Bool.self, forKey: .skipPush)
-    }
-
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(comment, forKey: .comment)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(skipPush, forKey: .skipPush)

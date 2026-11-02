@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable {
-    public var action: RuleBuilderAction?
-    public var conditions: [RuleBuilderCondition]?
-    public var cooldownPeriod: String?
-    public var groups: [RuleBuilderConditionGroup]?
-    public var id: String?
-    public var logic: String?
-    public var ruleType: String
+public final class RuleBuilderRule: Sendable, Encodable, JSONEncodable {
+    public let action: RuleBuilderAction?
+    public let conditions: [RuleBuilderCondition]?
+    public let cooldownPeriod: String?
+    public let groups: [RuleBuilderConditionGroup]?
+    public let id: String?
+    public let logic: String?
+    public let ruleType: String
 
     public init(action: RuleBuilderAction? = nil, conditions: [RuleBuilderCondition]? = nil, cooldownPeriod: String? = nil, groups: [RuleBuilderConditionGroup]? = nil, id: String? = nil, logic: String? = nil, ruleType: String) {
         self.action = action
@@ -24,14 +24,15 @@ public final class RuleBuilderRule: @unchecked Sendable, Codable, JSONEncodable 
         self.ruleType = ruleType
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case conditions
-        case cooldownPeriod = "cooldown_period"
-        case groups
-        case id
-        case logic
-        case ruleType = "rule_type"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(action, forKey: .action)
+        try container.encodeIfPresent(conditions, forKey: .conditions)
+        try container.encodeIfPresent(cooldownPeriod, forKey: .cooldownPeriod)
+        try container.encodeIfPresent(groups, forKey: .groups)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encodeIfPresent(logic, forKey: .logic)
+        try container.encode(ruleType, forKey: .ruleType)
     }
 }
 

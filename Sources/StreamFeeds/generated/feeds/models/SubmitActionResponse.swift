@@ -5,18 +5,19 @@
 import Foundation
 import StreamCore
 
-public final class SubmitActionResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
-    public var item: ReviewQueueItemResponse?
+public final class SubmitActionResponse: Sendable, Decodable {
+    public let duration: String
+    public let item: ReviewQueueItemResponse?
 
     public init(duration: String, item: ReviewQueueItemResponse? = nil) {
         self.duration = duration
         self.item = item
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case item
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.item = try container.decodeIfPresent(ReviewQueueItemResponse.self, forKey: .item)
     }
 }
 

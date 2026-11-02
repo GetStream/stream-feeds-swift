@@ -6,21 +6,21 @@ import Foundation
 import StreamCore
 
 /// Emitted when a reaction is added to an activity.
-public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var activity: ActivityResponse
+public final class ActivityReactionAddedEvent: Sendable, Event, Decodable {
+    public let activity: ActivityResponse
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
     /// Who can see and follow a feed.
-    public var feedVisibility: FeedVisibility?
-    public var fid: String
-    public var reaction: FeedsReactionResponse
-    public var receivedAt: Date?
+    public let feedVisibility: FeedVisibility?
+    public let fid: String
+    public let reaction: FeedsReactionResponse
+    public let receivedAt: Date?
     /// The type of event: "feeds.activity.reaction.added" in this case
-    public var type: String = "feeds.activity.reaction.added"
-    public var user: UserResponseCommonFields?
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, type: String = "feeds.activity.reaction.added", user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
@@ -28,19 +28,21 @@ public final class ActivityReactionAddedEvent: @unchecked Sendable, Event, Codab
         self.fid = fid
         self.reaction = reaction
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case reaction
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(FeedVisibility.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.reaction = try container.decode(FeedsReactionResponse.self, forKey: .reaction)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
     }
 }
 

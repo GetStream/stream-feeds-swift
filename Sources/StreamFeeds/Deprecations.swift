@@ -75,7 +75,7 @@ extension FeedQuery {
         externalRanking: [String: RawJSON]? = nil,
         followerLimit: Int? = nil,
         followingLimit: Int? = nil,
-        interestWeights: [String: Float]? = nil,
+        interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         view: String? = nil,
         watch: Bool = true
@@ -107,7 +107,7 @@ extension FeedQuery {
         externalRanking: [String: RawJSON]? = nil,
         followerLimit: Int? = nil,
         followingLimit: Int? = nil,
-        interestWeights: [String: Float]? = nil,
+        interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         view: String? = nil,
         watch: Bool = true

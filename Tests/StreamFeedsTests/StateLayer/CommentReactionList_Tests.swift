@@ -191,7 +191,7 @@ struct CommentReactionList_Tests {
     
     private func defaultClient(
         reactions: [FeedsReactionResponse] = [.dummy(commentId: Self.commentId, type: "like", user: .dummy(id: "current-user-id"))],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

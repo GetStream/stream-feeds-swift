@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
-    public var custom: [String: RawJSON]?
-    public var description: String?
-    public var filterTags: [String]?
-    public var members: [FeedMemberRequest]?
-    public var name: String?
+public final class FeedInput: Sendable, Encodable, JSONEncodable {
+    public let custom: [String: RawJSON]?
+    public let description: String?
+    public let filterTags: [String]?
+    public let members: [FeedMemberRequest]?
+    public let name: String?
     /// Who can see and follow a feed.
-    public var visibility: FeedVisibility?
+    public let visibility: FeedVisibility?
 
     public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
@@ -23,13 +23,14 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable {
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case description
-        case filterTags = "filter_tags"
-        case members
-        case name
-        case visibility
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(description, forKey: .description)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(members, forKey: .members)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
     }
 }
 

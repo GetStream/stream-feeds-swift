@@ -5,14 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncodable {
-    public var duration: String
+public final class QueryFollowsResponse: Sendable, Decodable {
+    public let duration: String
     /// List of follow relationships matching the query
-    public var follows: [FollowResponse]
+    public let follows: [FollowResponse]
     /// Cursor for next page
-    public var next: String?
+    public let next: String?
     /// Cursor for previous page
-    public var prev: String?
+    public let prev: String?
 
     public init(duration: String, follows: [FollowResponse], next: String? = nil, prev: String? = nil) {
         self.duration = duration
@@ -21,11 +21,12 @@ public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncod
         self.prev = prev
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case follows
-        case next
-        case prev
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.follows = try container.decode([FollowResponse].self, forKey: .follows)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
 }
 

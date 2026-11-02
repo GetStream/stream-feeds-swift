@@ -6,35 +6,37 @@ import Foundation
 import StreamCore
 
 /// Emitted when a feed unfollows another feed.
-public final class FollowDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+public final class FollowDeletedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
     /// Who can see and follow a feed.
-    public var feedVisibility: FeedVisibility?
-    public var fid: String
-    public var follow: FollowResponse
-    public var receivedAt: Date?
+    public let feedVisibility: FeedVisibility?
+    public let fid: String
+    public let follow: FollowResponse
+    public let receivedAt: Date?
     /// The type of event: "feeds.follow.deleted" in this case
-    public var type: String = "feeds.follow.deleted"
+    public let type: String
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, follow: FollowResponse, receivedAt: Date? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, follow: FollowResponse, receivedAt: Date? = nil, type: String = "feeds.follow.deleted") {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
         self.fid = fid
         self.follow = follow
         self.receivedAt = receivedAt
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case follow
-        case receivedAt = "received_at"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(FeedVisibility.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.follow = try container.decode(FollowResponse.self, forKey: .follow)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
     }
 }
 

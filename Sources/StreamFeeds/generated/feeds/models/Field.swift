@@ -5,10 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class Field: @unchecked Sendable, Codable, JSONEncodable {
-    public var short: Bool
-    public var title: String
-    public var value: String
+public final class Field: Sendable, Codable, JSONEncodable {
+    public let short: Bool
+    public let title: String
+    public let value: String
 
     public init(short: Bool, title: String, value: String) {
         self.short = short
@@ -16,10 +16,18 @@ public final class Field: @unchecked Sendable, Codable, JSONEncodable {
         self.value = value
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case short
-        case title
-        case value
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.short = try container.decode(Bool.self, forKey: .short)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.value = try container.decode(String.self, forKey: .value)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(short, forKey: .short)
+        try container.encode(title, forKey: .title)
+        try container.encode(value, forKey: .value)
     }
 }
 

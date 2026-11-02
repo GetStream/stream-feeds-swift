@@ -5,20 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class NotificationTrigger: @unchecked Sendable, Codable, JSONEncodable {
+public final class NotificationTrigger: Sendable, Decodable {
     /// Human-readable text describing the notification
-    public var text: String
+    public let text: String
     /// The type of notification (mention, reaction, comment, follow, etc.)
-    public var type: String
+    public let type: String
 
     public init(text: String, type: String) {
         self.text = text
         self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case text
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.type = try container.decode(String.self, forKey: .type)
     }
 }
 

@@ -15,7 +15,9 @@ command -v jq > /dev/null || { echo "jq not found (brew install jq)" >&2; exit 1
 rm -rf "$OUTPUT_DIR_FEEDS"
 ( cd "$CHAT_DIR" ; make openapi ; make -C tools/openapi build ; \
   ./build/openapi generate-client --language swift \
-    --opt number_as_float=true \
+    --opt immutable_models=true \
+    --opt raw_representable_over_enum=true \
+    --opt string_coding_keys=true \
     --spec ./releases/v2/feeds-clientside-api.yaml --output "$OUTPUT_DIR_FEEDS" )
 
 # Unused: the SDK calls DefaultAPI and decodes FeedsEvent.
@@ -38,6 +40,8 @@ sed -i '' -E 's/[[:<:]]FeedsV3(Activity|Comment)Response[[:>:]]/\1Response/g' \
   "$OUTPUT_DIR_FEEDS/models/ReviewQueueItemResponse.swift"
 
 prune_unreachable_models FeedsEvent
+apply_directional_coding_conformances
+prune_unused_string_coding_keys
 
 swiftformat --config "$REPO_ROOT/.swiftformat" --unexclude "$OUTPUT_DIR_FEEDS" "$OUTPUT_DIR_FEEDS"
 

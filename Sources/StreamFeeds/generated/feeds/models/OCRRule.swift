@@ -5,19 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class OCRRule: @unchecked Sendable, Codable, JSONEncodable {
+public final class OCRRule: Sendable, Codable, JSONEncodable {
     /// What a moderation rule does when it matches.
-    public var action: ModerationAction
-    public var label: String
+    public let action: ModerationAction
+    public let label: String
 
     public init(action: ModerationAction, label: String) {
         self.action = action
         self.label = label
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case label
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(ModerationAction.self, forKey: .action)
+        self.label = try container.decode(String.self, forKey: .label)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(label, forKey: .label)
     }
 }
 

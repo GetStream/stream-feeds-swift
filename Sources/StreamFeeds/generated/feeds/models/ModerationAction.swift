@@ -6,22 +6,17 @@ import Foundation
 import StreamCore
 
 /// What a moderation rule does when it matches.
-public enum ModerationAction: String, Sendable, Codable, CaseIterable {
-    case bounce
-    case bounceFlag = "bounce_flag"
-    case bounceRemove = "bounce_remove"
-    case flag
-    case remove
-    case shadow
-    case unknown = "_unknown"
+public final class ModerationAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = ModerationAction(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let bounce = ModerationAction(rawValue: "bounce")
+    public static let bounceFlag = ModerationAction(rawValue: "bounce_flag")
+    public static let bounceRemove = ModerationAction(rawValue: "bounce_remove")
+    public static let flag = ModerationAction(rawValue: "flag")
+    public static let remove = ModerationAction(rawValue: "remove")
+    public static let shadow = ModerationAction(rawValue: "shadow")
 }

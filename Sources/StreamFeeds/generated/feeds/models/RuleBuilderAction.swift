@@ -5,51 +5,48 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderAction: @unchecked Sendable, Codable, JSONEncodable {
-    public enum RuleBuilderActionType: String, Sendable, Codable, CaseIterable {
-        case banUser = "ban_user"
-        case blockContent = "block_content"
-        case blur
-        case bounceContent = "bounce_content"
-        case bounceFlagContent = "bounce_flag_content"
-        case bounceRemoveContent = "bounce_remove_content"
-        case callBlur = "call_blur"
-        case callWarning = "call_warning"
-        case endCall = "end_call"
-        case flagContent = "flag_content"
-        case flagUser = "flag_user"
-        case kickUser = "kick_user"
-        case muteAudio = "mute_audio"
-        case muteVideo = "mute_video"
-        case shadowContent = "shadow_content"
-        case warning
-        case webhookOnly = "webhook_only"
-        case unknown = "_unknown"
+public final class RuleBuilderActionType: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var banOptions: BanOptions?
-    public var flagUserOptions: FlagUserOptions?
-    public var type: RuleBuilderActionType?
+    public static let banUser = RuleBuilderActionType(rawValue: "ban_user")
+    public static let blockContent = RuleBuilderActionType(rawValue: "block_content")
+    public static let blur = RuleBuilderActionType(rawValue: "blur")
+    public static let bounceContent = RuleBuilderActionType(rawValue: "bounce_content")
+    public static let bounceFlagContent = RuleBuilderActionType(rawValue: "bounce_flag_content")
+    public static let bounceRemoveContent = RuleBuilderActionType(rawValue: "bounce_remove_content")
+    public static let callBlur = RuleBuilderActionType(rawValue: "call_blur")
+    public static let callWarning = RuleBuilderActionType(rawValue: "call_warning")
+    public static let endCall = RuleBuilderActionType(rawValue: "end_call")
+    public static let flagContent = RuleBuilderActionType(rawValue: "flag_content")
+    public static let flagUser = RuleBuilderActionType(rawValue: "flag_user")
+    public static let kickUser = RuleBuilderActionType(rawValue: "kick_user")
+    public static let muteAudio = RuleBuilderActionType(rawValue: "mute_audio")
+    public static let muteVideo = RuleBuilderActionType(rawValue: "mute_video")
+    public static let shadowContent = RuleBuilderActionType(rawValue: "shadow_content")
+    public static let warning = RuleBuilderActionType(rawValue: "warning")
+    public static let webhookOnly = RuleBuilderActionType(rawValue: "webhook_only")
+}
 
-    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil) {
+public final class RuleBuilderAction: Sendable, Encodable, JSONEncodable {
+    public let banOptions: BanOptions?
+    public let flagUserOptions: FlagUserOptions?
+    public let type: RuleBuilderActionType?
+
+    public init(banOptions: BanOptions? = nil, flagUserOptions: FlagUserOptions? = nil, type: RuleBuilderActionType? = nil) {
         self.banOptions = banOptions
         self.flagUserOptions = flagUserOptions
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case banOptions = "ban_options"
-        case flagUserOptions = "flag_user_options"
-        case type
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(banOptions, forKey: .banOptions)
+        try container.encodeIfPresent(flagUserOptions, forKey: .flagUserOptions)
+        try container.encodeIfPresent(type, forKey: .type)
     }
 }
 

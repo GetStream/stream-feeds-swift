@@ -6,20 +6,22 @@ import Foundation
 import StreamCore
 
 /// This event is sent when a moderation item is marked as reviewed
-public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
-    public var createdAt: Date
-    public var item: ReviewQueueItemResponse
-    public var type: String = "moderation.mark_reviewed"
+public final class ModerationMarkReviewedEvent: Sendable, Event, Decodable {
+    public let createdAt: Date
+    public let item: ReviewQueueItemResponse
+    public let type: String
 
-    public init(createdAt: Date, item: ReviewQueueItemResponse) {
+    public init(createdAt: Date, item: ReviewQueueItemResponse, type: String = "moderation.mark_reviewed") {
         self.createdAt = createdAt
         self.item = item
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case item
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.item = try container.decode(ReviewQueueItemResponse.self, forKey: .item)
+        self.type = try container.decode(String.self, forKey: .type)
     }
 }
 

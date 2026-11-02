@@ -5,32 +5,27 @@
 import Foundation
 import StreamCore
 
-public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable {
-    public enum BlockListRuleAction: String, Sendable, Codable, CaseIterable {
-        case bounce
-        case bounceFlag = "bounce_flag"
-        case bounceRemove = "bounce_remove"
-        case flag
-        case mask
-        case maskFlag = "mask_flag"
-        case remove
-        case shadow
-        case unknown = "_unknown"
+public final class BlockListRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+    public let rawValue: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
 
-    public var action: BlockListRuleAction
-    public var name: String
-    public var team: String
+    public static let bounce = BlockListRuleAction(rawValue: "bounce")
+    public static let bounceFlag = BlockListRuleAction(rawValue: "bounce_flag")
+    public static let bounceRemove = BlockListRuleAction(rawValue: "bounce_remove")
+    public static let flag = BlockListRuleAction(rawValue: "flag")
+    public static let mask = BlockListRuleAction(rawValue: "mask")
+    public static let maskFlag = BlockListRuleAction(rawValue: "mask_flag")
+    public static let remove = BlockListRuleAction(rawValue: "remove")
+    public static let shadow = BlockListRuleAction(rawValue: "shadow")
+}
+
+public final class BlockListRule: Sendable, Codable, JSONEncodable {
+    public let action: BlockListRuleAction
+    public let name: String
+    public let team: String
 
     public init(action: BlockListRuleAction, name: String, team: String) {
         self.action = action
@@ -38,10 +33,18 @@ public final class BlockListRule: @unchecked Sendable, Codable, JSONEncodable {
         self.team = team
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case action
-        case name
-        case team
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.action = try container.decode(BlockListRuleAction.self, forKey: .action)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.team = try container.decode(String.self, forKey: .team)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(action, forKey: .action)
+        try container.encode(name, forKey: .name)
+        try container.encode(team, forKey: .team)
     }
 }
 

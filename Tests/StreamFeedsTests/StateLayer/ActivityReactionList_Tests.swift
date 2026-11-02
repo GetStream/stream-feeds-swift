@@ -197,7 +197,7 @@ struct ActivityReactionList_Tests {
     
     private func defaultClient(
         reactions: [FeedsReactionResponse] = [.dummy(activityId: Self.activityId, type: "like", user: .dummy(id: "current-user-id"))],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

@@ -6,19 +6,14 @@ import Foundation
 import StreamCore
 
 /// Who is allowed to reply to an activity.
-public enum RestrictReplies: String, Sendable, Codable, CaseIterable {
-    case everyone
-    case nobody
-    case peopleIFollow = "people_i_follow"
-    case unknown = "_unknown"
+public final class RestrictReplies: RawRepresentable, Encodable, Hashable, Sendable {
+    public let rawValue: String
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let decodedValue = try? container.decode(String.self),
-           let value = RestrictReplies(rawValue: decodedValue) {
-            self = value
-        } else {
-            self = .unknown
-        }
+    public init(rawValue: String) {
+        self.rawValue = rawValue
     }
+
+    public static let everyone = RestrictReplies(rawValue: "everyone")
+    public static let nobody = RestrictReplies(rawValue: "nobody")
+    public static let peopleIFollow = RestrictReplies(rawValue: "people_i_follow")
 }
