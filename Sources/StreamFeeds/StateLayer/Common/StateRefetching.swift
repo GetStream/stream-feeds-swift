@@ -7,12 +7,8 @@ import StreamCore
 
 protocol StateRefetching: AnyObject, Sendable {
     associatedtype Model: Identifiable & Sendable
-
-    // Returns nil when nothing is loaded
     func loadedCount() async -> Int?
-
     func fetchPage(next: String?) async throws -> PaginationResult<Model>
-
     func didRefetch(_ result: PaginationResult<Model>) async
 }
 
