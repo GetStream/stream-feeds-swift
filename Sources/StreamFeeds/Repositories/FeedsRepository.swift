@@ -78,12 +78,12 @@ final class FeedsRepository: Sendable {
     
     // MARK: - Managing the Feed
     
-    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool) async throws {
+    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool, purgeUserActivities: Bool) async throws {
         _ = try await apiClient.deleteFeed(
             feedGroupId: feedGroupId,
             feedId: feedId,
             hardDelete: hardDelete,
-            purgeUserActivities: nil
+            purgeUserActivities: purgeUserActivities
         )
     }
     
@@ -120,12 +120,12 @@ final class FeedsRepository: Sendable {
         return response.follow.toModel()
     }
     
-    func unfollow(source: FeedId, target: FeedId) async throws -> FollowData {
+    func unfollow(source: FeedId, target: FeedId, deleteNotificationActivity: Bool, keepHistory: Bool) async throws -> FollowData {
         let response = try await apiClient.unfollow(
             source: source.rawValue,
             target: target.rawValue,
-            deleteNotificationActivity: nil,
-            keepHistory: nil,
+            deleteNotificationActivity: deleteNotificationActivity,
+            keepHistory: keepHistory,
             enrichOwnFields: nil
         )
         return response.follow.toModel()

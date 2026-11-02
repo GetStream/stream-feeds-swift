@@ -6,18 +6,22 @@ import Foundation
 import StreamCore
 
 public final class DeleteActivitiesRequest: Sendable, Encodable, JSONEncodable {
+    /// Whether to also delete any notification activities created from mentions in these activities
+    public let deleteNotificationActivity: Bool?
     /// Whether to permanently delete the activities
     public let hardDelete: Bool?
     /// List of activity IDs to delete
     public let ids: [String]
 
-    public init(hardDelete: Bool? = nil, ids: [String]) {
+    public init(deleteNotificationActivity: Bool? = nil, hardDelete: Bool? = nil, ids: [String]) {
+        self.deleteNotificationActivity = deleteNotificationActivity
         self.hardDelete = hardDelete
         self.ids = ids
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(deleteNotificationActivity, forKey: .deleteNotificationActivity)
         try container.encodeIfPresent(hardDelete, forKey: .hardDelete)
         try container.encode(ids, forKey: .ids)
     }
@@ -25,11 +29,13 @@ public final class DeleteActivitiesRequest: Sendable, Encodable, JSONEncodable {
 
 extension DeleteActivitiesRequest: Hashable {
     public static func == (lhs: DeleteActivitiesRequest, rhs: DeleteActivitiesRequest) -> Bool {
-        lhs.hardDelete == rhs.hardDelete &&
+        lhs.deleteNotificationActivity == rhs.deleteNotificationActivity &&
+            lhs.hardDelete == rhs.hardDelete &&
             lhs.ids == rhs.ids
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(deleteNotificationActivity)
         hasher.combine(hardDelete)
         hasher.combine(ids)
     }
