@@ -24,8 +24,13 @@ rm -rf "$OUTPUT_DIR_FEEDS"
 # Unused: the SDK calls DefaultAPI and decodes FeedsEvent.
 rm -f "$OUTPUT_DIR_FEEDS/APIs/DefaultEndpoints.swift" "$OUTPUT_DIR_FEEDS/models/WSClientEvent.swift"
 
+# UserResponse embeds UserResponseCommonFields in Go and adds only server-side fields.
+diff <(grep '^    public let ' "$OUTPUT_DIR_FEEDS/models/UserResponseCommonFields.swift") \
+  <(grep '^    public let ' "$OUTPUT_DIR_FEEDS/models/UserResponse.swift") > /dev/null \
+  || { echo "UserResponseCommonFields no longer matches UserResponse" >&2; exit 1; }
+
 # Already defined by StreamCore or Sources/StreamFeeds.
-for model in APIError ConnectUserDetailsRequest CreateDeviceRequest DeviceResponse ListDevicesResponse User; do
+for model in APIError ConnectUserDetailsRequest CreateDeviceRequest DeviceResponse ListDevicesResponse User UserResponseCommonFields; do
   rm -f "$OUTPUT_DIR_FEEDS/models/$model.swift"
 done
 
