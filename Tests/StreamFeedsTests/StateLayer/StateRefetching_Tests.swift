@@ -77,19 +77,27 @@ struct StateRefetching_Tests {
         #expect(source.refetched.value == nil)
     }
 
-    @Test func doesNotRefetchWhenAutomaticSyncIsDisabled() async throws {
-        let transport = APITransportMock.withPayloads([
-            QueryFollowsResponse.dummy(follows: [.dummy(targetFeed: .dummy(feed: "user:user-1"))]),
-            QueryFollowsResponse.dummy(follows: [.dummy(targetFeed: .dummy(feed: "user:user-2"))])
-        ])
-        let client = FeedsClient.mock(apiTransport: transport, feedsConfig: FeedsConfig(isAutomaticSyncOnReconnectEnabled: false))
-        let followList = client.followList(for: FollowsQuery())
-        try await followList.get()
+    @Test func stopsOnRepeatedPage() async throws {
+        let source = PageSource(loadedCount: 150) { _ in
+            PaginationResult(models: [1, 2], pagination: PaginationData(next: "cursor", previous: nil))
+        }
+        try await source.refetch()
+        #expect(source.requests.value == [nil, "cursor"])
+        #expect(source.refetched.value?.models == [1, 2])
+    }
 
-        client.simulateReconnection()
-        try await Task.sleep(nanoseconds: 100_000_000)
-
-        #expect(transport.responseResults.value.count == 1)
+    @Test(arguments: [true, false])
+    func subscribesToReconnectionOnlyWhenAutomaticSyncIsEnabled(isEnabled: Bool) async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([]),
+            feedsConfig: FeedsConfig(isAutomaticSyncOnReconnectEnabled: isEnabled)
+        )
+        let disposableBag = DisposableBag()
+        let source = PageSource(loadedCount: nil) { _ in
+            PaginationResult(models: [], pagination: .empty)
+        }
+        source.subscribeToReconnectionRefresh(of: client, in: disposableBag)
+        #expect(disposableBag.isEmpty == !isEnabled)
     }
 }
 

@@ -34,7 +34,8 @@ struct Feed_Tests {
                     matching: .pathPrefix(feedPath),
                     payload: GetOrCreateFeedResponse.dummy(
                         activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
-                        feed: .dummy(feed: feedId.rawValue)
+                        feed: .dummy(feed: feedId.rawValue),
+                        memberPagination: .dummy()
                     )
                 ),
                 .init(
@@ -54,6 +55,74 @@ struct Feed_Tests {
 
         try await waitUntil { feed.state.activities.map(\.id) == ["2"] && feed.state.members.map(\.id) == ["feed-member-2"] }
         #expect(await feed.state.canLoadMoreActivities == false)
+    }
+
+    @Test func reconnectionRefetchesMembersWithConfiguredLimit() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
+        let transport = APITransportMock.withMatchedResponses([
+            .init(
+                matching: .pathPrefix(feedPath + "/members"),
+                payload: QueryFeedMembersResponse.dummy(members: [.dummy(user: .dummy(id: "feed-member-2"))])
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                    feed: .dummy(feed: feedId.rawValue),
+                    memberPagination: .dummy()
+                )
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            )
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        let feed = client.feed(for: FeedQuery(feed: feedId, memberLimit: 5, watch: false))
+        try await feed.getOrCreate()
+
+        client.simulateReconnection()
+
+        try await waitUntil { feed.state.members.map(\.id) == ["feed-member-2"] }
+        let membersRequest = try #require(transport.requests.value.first { $0.url.path.hasPrefix(feedPath + "/members") })
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(membersRequest.body))
+        #expect(body["limit"] == .number(5))
+    }
+
+    @Test func reconnectionDoesNotRefetchExcludedMembers() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
+        let transport = APITransportMock.withMatchedResponses([
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                    feed: .dummy(feed: feedId.rawValue),
+                    members: []
+                )
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
+                    feed: .dummy(feed: feedId.rawValue),
+                    members: []
+                )
+            )
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        let feed = client.feed(for: FeedQuery(feed: feedId, memberLimit: 0, watch: false))
+        try await feed.getOrCreate()
+
+        client.simulateReconnection()
+
+        try await waitUntil { feed.state.activities.map(\.id) == ["2"] }
+        #expect(transport.requests.value.map(\.url.path) == [feedPath, feedPath])
+        #expect(await feed.state.members.isEmpty)
     }
 
     @Test func reconnectionKeepsLoadedActivitiesWhenRefetchFails() async throws {
@@ -1588,6 +1657,7 @@ struct Feed_Tests {
                                 targetFeed: .dummy(feed: "user:melissa", ownCapabilities: [.readFeed, .addCommentReaction])
                             )
                         ],
+                        memberPagination: .dummy(),
                         members: [.dummy(user: .dummy(id: "feed-member-1"))],
                         pinnedActivities: [
                             .dummy(
@@ -1679,6 +1749,7 @@ struct Feed_Tests {
                                 targetFeed: .dummy(feed: "user:bob")
                             )
                         ],
+                        memberPagination: .dummy(),
                         members: [.dummy(user: .dummy(id: "feed-member-1"))],
                         pinnedActivities: [
                             .dummy(

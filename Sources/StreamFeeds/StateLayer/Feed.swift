@@ -45,7 +45,7 @@ public final class Feed: Sendable {
         feedQuery = query
         feedsRepository = client.feedsRepository
         eventPublisher = client.stateLayerEventPublisher
-        memberList = client.memberList(for: .init(feed: query.feed))
+        memberList = client.memberList(for: .init(feed: query.feed, limit: query.memberLimit))
         ownCapabilitiesRepository = client.ownCapabilitiesRepository
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id

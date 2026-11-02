@@ -465,7 +465,9 @@ extension FeedState {
         didRefetchFeed(with: response)
 
         // Members are managed by the paginatable list
-        memberListState.didPaginate(with: response.members, for: .empty)
+        if let members = response.members {
+            memberListState.didPaginate(with: members, for: .empty)
+        }
     }
 
     // Activities are replaced once all the pages are refetched

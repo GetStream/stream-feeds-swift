@@ -33,10 +33,11 @@ extension StateRefetching {
             try Task.checkCancellation()
             // Items can move to a later page while refetching
             let pageIds = Set(page.models.map(\.id))
+            let addsNewModels = !pageIds.isSubset(of: models.map(\.id))
             models.removeAll { pageIds.contains($0.id) }
             models.append(contentsOf: page.models)
             pagination = page.pagination
-            guard models.count < loadedCount, pagination.next != nil, !page.models.isEmpty else { break }
+            guard addsNewModels, models.count < loadedCount, pagination.next != nil else { break }
         }
         await didRefetch(PaginationResult(models: models, pagination: pagination))
     }
