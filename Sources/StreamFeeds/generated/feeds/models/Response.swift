@@ -5,17 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class Response: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
+/// Basic response information
+public final class Response: Sendable, Decodable {
+    /// Duration of the request in milliseconds
+    public let duration: String
 
     public init(duration: String) {
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
+}
 
+extension Response: Hashable {
     public static func == (lhs: Response, rhs: Response) -> Bool {
         lhs.duration == rhs.duration
     }

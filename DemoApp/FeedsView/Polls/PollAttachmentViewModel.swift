@@ -89,7 +89,7 @@ import SwiftUI
     /// If true, add comment button is visible under votes, otherwise hidden.
     public var showAddCommentButton: Bool {
         let addCommentAvailable = poll.isClosed != true && poll.allowAnswers
-        if poll.votingVisibility == "anonymous" {
+        if poll.votingVisibility == .anonymous {
             return addCommentAvailable
         }
         return addCommentAvailable
@@ -105,7 +105,7 @@ import SwiftUI
     ///
     /// The default is to hide avatars when the poll is anonymous.
     public var showVoterAvatars: Bool {
-        poll.votingVisibility != "anonymous"
+        poll.votingVisibility != .anonymous
     }
     
     public init(feedsClient: FeedsClient, feed: Feed, pollData: PollData, activityData: ActivityData) {
@@ -169,10 +169,7 @@ import SwiftUI
         guard let vote = currentUserVote(for: option) else { return }
         Task {
             do {
-                try await activity.deletePollVote(
-                    voteId: vote.id,
-                    userId: feedsClient.user.id
-                )
+                try await activity.deletePollVote(voteId: vote.id)
                 self.isCastingVote = false
             } catch {
                 self.isCastingVote = false

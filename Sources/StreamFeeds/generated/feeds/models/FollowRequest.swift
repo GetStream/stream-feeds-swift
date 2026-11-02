@@ -5,31 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum FollowRequestPushPreference: String, Sendable, Codable, CaseIterable {
-        case all
-        case none
-        case unknown = "_unknown"
+public final class FollowRequest: Sendable, Encodable, JSONEncodable {
+    /// Whether to create a notification activity for this follow
+    public let createNotificationActivity: Bool?
+    /// Custom data for the follow relationship
+    public let custom: [String: RawJSON]?
+    /// Push preference for the follow relationship
+    public let pushPreference: FollowPushPreference?
+    /// Whether to skip push for this follow
+    public let skipPush: Bool?
+    /// Fully qualified ID of the source feed
+    public let source: String
+    /// Fully qualified ID of the target feed
+    public let target: String
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var createNotificationActivity: Bool?
-    public var custom: [String: RawJSON]?
-    public var pushPreference: FollowRequestPushPreference?
-    public var skipPush: Bool?
-    public var source: String
-    public var target: String
-
-    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowRequestPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
+    public init(createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, pushPreference: FollowPushPreference? = nil, skipPush: Bool? = nil, source: String, target: String) {
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.pushPreference = pushPreference
@@ -38,15 +28,18 @@ public final class FollowRequest: @unchecked Sendable, Codable, JSONEncodable, H
         self.target = target
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createNotificationActivity = "create_notification_activity"
-        case custom
-        case pushPreference = "push_preference"
-        case skipPush = "skip_push"
-        case source
-        case target
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(pushPreference, forKey: .pushPreference)
+        try container.encodeIfPresent(skipPush, forKey: .skipPush)
+        try container.encode(source, forKey: .source)
+        try container.encode(target, forKey: .target)
     }
+}
 
+extension FollowRequest: Hashable {
     public static func == (lhs: FollowRequest, rhs: FollowRequest) -> Bool {
         lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&

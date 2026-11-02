@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
-    public var next: String?
-    public var prev: String?
-    public var reactions: [FeedsReactionResponse]
+/// Basic response information
+public final class QueryCommentReactionsResponse: Sendable, Decodable {
+    /// Duration of the request in milliseconds
+    public let duration: String
+    public let next: String?
+    public let prev: String?
+    public let reactions: [FeedsReactionResponse]
 
     public init(duration: String, next: String? = nil, prev: String? = nil, reactions: [FeedsReactionResponse]) {
         self.duration = duration
@@ -18,13 +20,16 @@ public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, 
         self.reactions = reactions
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case next
-        case prev
-        case reactions
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.reactions = try container.decode([FeedsReactionResponse].self, forKey: .reactions)
     }
+}
 
+extension QueryCommentReactionsResponse: Hashable {
     public static func == (lhs: QueryCommentReactionsResponse, rhs: QueryCommentReactionsResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&

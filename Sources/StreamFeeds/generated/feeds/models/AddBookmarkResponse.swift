@@ -5,20 +5,23 @@
 import Foundation
 import StreamCore
 
-public final class AddBookmarkResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var bookmark: BookmarkResponse
-    public var duration: String
+public final class AddBookmarkResponse: Sendable, Decodable {
+    public let bookmark: BookmarkResponse
+    public let duration: String
 
     public init(bookmark: BookmarkResponse, duration: String) {
         self.bookmark = bookmark
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case bookmark
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.bookmark = try container.decode(BookmarkResponse.self, forKey: .bookmark)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
+}
 
+extension AddBookmarkResponse: Hashable {
     public static func == (lhs: AddBookmarkResponse, rhs: AddBookmarkResponse) -> Bool {
         lhs.bookmark == rhs.bookmark &&
             lhs.duration == rhs.duration

@@ -5,22 +5,29 @@
 import Foundation
 import StreamCore
 
-public final class UserReactivatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var createdAt: Date
-    public var type: String = "user.reactivated"
-    public var user: User?
+/// This event is sent when a user gets reactivated. The event contains information about the user that was reactivated.
+public final class UserReactivatedEvent: Sendable, Event, Decodable {
+    /// Date/time of creation
+    public let createdAt: Date
+    /// The type of event: "user.reactivated" in this case
+    public let type: String
+    public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, user: User? = nil) {
+    public init(createdAt: Date, type: String = "user.reactivated", user: UserResponseCommonFields) {
         self.createdAt = createdAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
     }
+}
 
+extension UserReactivatedEvent: Hashable {
     public static func == (lhs: UserReactivatedEvent, rhs: UserReactivatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.type == rhs.type &&

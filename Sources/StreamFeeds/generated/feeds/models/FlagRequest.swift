@@ -5,35 +5,38 @@
 import Foundation
 import StreamCore
 
-public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var custom: [String: RawJSON]?
-    public var entityCreatorId: String?
-    public var entityId: String
-    public var entityType: String
-    public var moderationPayload: ModerationPayload?
-    public var reason: String?
+public final class FlagRequest: Sendable, Encodable, JSONEncodable {
+    /// Additional metadata about the flag
+    public let custom: [String: RawJSON]?
+    /// Unique identifier of the entity being flagged
+    public let entityId: String
+    /// Type of entity being flagged (e.g., message, user)
+    public let entityType: String
+    public let moderationPayload: ModerationPayload?
+    /// Optional explanation for why the content is being flagged
+    public let reason: String?
 
-    public init(custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, moderationPayload: ModerationPayload? = nil, reason: String? = nil) {
+    public init(custom: [String: RawJSON]? = nil, entityId: String, entityType: String, moderationPayload: ModerationPayload? = nil, reason: String? = nil) {
         self.custom = custom
-        self.entityCreatorId = entityCreatorId
         self.entityId = entityId
         self.entityType = entityType
         self.moderationPayload = moderationPayload
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case entityCreatorId = "entity_creator_id"
-        case entityId = "entity_id"
-        case entityType = "entity_type"
-        case moderationPayload = "moderation_payload"
-        case reason
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(entityId, forKey: .entityId)
+        try container.encode(entityType, forKey: .entityType)
+        try container.encodeIfPresent(moderationPayload, forKey: .moderationPayload)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
+}
 
+extension FlagRequest: Hashable {
     public static func == (lhs: FlagRequest, rhs: FlagRequest) -> Bool {
         lhs.custom == rhs.custom &&
-            lhs.entityCreatorId == rhs.entityCreatorId &&
             lhs.entityId == rhs.entityId &&
             lhs.entityType == rhs.entityType &&
             lhs.moderationPayload == rhs.moderationPayload &&
@@ -42,7 +45,6 @@ public final class FlagRequest: @unchecked Sendable, Codable, JSONEncodable, Has
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(custom)
-        hasher.combine(entityCreatorId)
         hasher.combine(entityId)
         hasher.combine(entityType)
         hasher.combine(moderationPayload)

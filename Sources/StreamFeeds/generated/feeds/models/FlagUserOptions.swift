@@ -5,17 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class FlagUserOptions: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var reason: String?
+public final class FlagUserOptions: Sendable, Encodable, JSONEncodable {
+    public let reason: String?
 
     public init(reason: String? = nil) {
         self.reason = reason
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case reason
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(reason, forKey: .reason)
     }
+}
 
+extension FlagUserOptions: Hashable {
     public static func == (lhs: FlagUserOptions, rhs: FlagUserOptions) -> Bool {
         lhs.reason == rhs.reason
     }

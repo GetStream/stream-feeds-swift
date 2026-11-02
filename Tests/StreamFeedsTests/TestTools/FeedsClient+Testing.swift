@@ -13,7 +13,8 @@ extension FeedsClient {
             user: User.dummy(id: "current-user-id"),
             token: "UnitTestingToken",
             feedsConfig: feedsConfig,
-            apiTransport: apiTransport
+            apiTransport: apiTransport,
+            jsonDecoder: apiTransport.decoder
         )
     }
 

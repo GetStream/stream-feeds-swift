@@ -5,20 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class PollVoteResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
-    public var vote: PollVoteResponseData?
+public final class PollVoteResponse: Sendable, Decodable {
+    /// Duration of the request in milliseconds
+    public let duration: String
+    public let vote: PollVoteResponseData?
 
     public init(duration: String, vote: PollVoteResponseData? = nil) {
         self.duration = duration
         self.vote = vote
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case vote
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.vote = try container.decodeIfPresent(PollVoteResponseData.self, forKey: .vote)
     }
+}
 
+extension PollVoteResponse: Hashable {
     public static func == (lhs: PollVoteResponse, rhs: PollVoteResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.vote == rhs.vote

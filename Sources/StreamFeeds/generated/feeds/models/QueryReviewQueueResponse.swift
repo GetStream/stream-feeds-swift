@@ -5,15 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var actionConfig: [String: [ModerationActionConfig]]
-    public var duration: String
-    public var items: [ReviewQueueItemResponse]
-    public var next: String?
-    public var prev: String?
-    public var stats: [String: RawJSON]
+public final class QueryReviewQueueResponse: Sendable, Decodable {
+    /// Configuration for moderation actions
+    public let actionConfig: [String: [ModerationActionConfigResponse]]
+    public let duration: String
+    /// List of review queue items
+    public let items: [ReviewQueueItemResponse]
+    public let next: String?
+    public let prev: String?
+    /// Statistics about the review queue
+    public let stats: [String: RawJSON]
 
-    public init(actionConfig: [String: [ModerationActionConfig]], duration: String, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
+    public init(actionConfig: [String: [ModerationActionConfigResponse]], duration: String, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
         self.actionConfig = actionConfig
         self.duration = duration
         self.items = items
@@ -22,15 +25,18 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
         self.stats = stats
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actionConfig = "action_config"
-        case duration
-        case items
-        case next
-        case prev
-        case stats
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actionConfig = try container.decode([String: [ModerationActionConfigResponse]].self, forKey: .actionConfig)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.items = try container.decode([ReviewQueueItemResponse].self, forKey: .items)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.stats = try container.decode([String: RawJSON].self, forKey: .stats)
     }
+}
 
+extension QueryReviewQueueResponse: Hashable {
     public static func == (lhs: QueryReviewQueueResponse, rhs: QueryReviewQueueResponse) -> Bool {
         lhs.actionConfig == rhs.actionConfig &&
             lhs.duration == rhs.duration &&

@@ -5,20 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class UpdatePollPartialRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var set: [String: RawJSON]?
-    public var unset: [String]?
+public final class UpdatePollPartialRequest: Sendable, Encodable, JSONEncodable {
+    /// Sets new field values
+    public let set: [String: RawJSON]?
+    /// Array of field names to unset
+    public let unset: [String]?
 
     public init(set: [String: RawJSON]? = nil, unset: [String]? = nil) {
         self.set = set
         self.unset = unset
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case set
-        case unset
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(set, forKey: .set)
+        try container.encodeIfPresent(unset, forKey: .unset)
     }
+}
 
+extension UpdatePollPartialRequest: Hashable {
     public static func == (lhs: UpdatePollPartialRequest, rhs: UpdatePollPartialRequest) -> Bool {
         lhs.set == rhs.set &&
             lhs.unset == rhs.unset

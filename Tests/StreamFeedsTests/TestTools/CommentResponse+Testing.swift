@@ -16,7 +16,7 @@ extension CommentResponse {
         ownReactions: [FeedsReactionResponse] = [],
         parentId: String? = nil,
         reactionCount: Int = 0,
-        reactionGroups: [String: ReactionGroupResponse?]? = nil,
+        reactionGroups: [String: FeedsReactionGroupResponse]? = nil,
         text: String = "Test comment",
         user: UserResponse = .dummy(id: "current-user-id")
     ) -> CommentResponse {
@@ -40,7 +40,7 @@ extension CommentResponse {
             reactionGroups: reactionGroups,
             replyCount: 2,
             score: 10,
-            status: "active",
+            status: .active,
             text: text,
             updatedAt: Date(),
             upvoteCount: 3,

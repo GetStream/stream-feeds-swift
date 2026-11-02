@@ -18,10 +18,6 @@ final class ActivitiesRepository: Sendable {
     
     func addActivity(request: AddActivityRequest) async throws -> ActivityData {
         let response = try await apiClient.addActivity(addActivityRequest: request)
-        // Remove after FEEDS-546
-        if response.activity.createdAt < Date(timeIntervalSinceReferenceDate: 0) {
-            response.activity.createdAt = Date()
-        }
         return response.activity.toModel()
     }
     
@@ -33,12 +29,20 @@ final class ActivitiesRepository: Sendable {
         return try await addActivity(request: request.withFeed(feed, uploadedAttachments: uploadedAttachments))
     }
         
-    func deleteActivity(activityId: String, hardDelete: Bool) async throws {
-        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete)
+    func deleteActivity(activityId: String, hardDelete: Bool, deleteNotificationActivity: Bool) async throws {
+        _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
     }
     
     func getActivity(activityId: String) async throws -> ActivityData {
-        let response = try await apiClient.getActivity(id: activityId)
+        let response = try await apiClient.getActivity(
+            id: activityId,
+            commentSort: nil,
+            commentLimit: nil,
+            skipOwnFollowings: nil,
+            language: nil,
+            translateText: nil,
+            includeTopLevelCommentCount: nil
+        )
         return response.activity.toModel()
     }
 
@@ -97,10 +101,10 @@ final class ActivitiesRepository: Sendable {
     
     func pin(_ flag: Bool, activityId: String, in feed: FeedId) async throws -> ActivityData {
         if flag {
-            let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
+            let response = try await apiClient.pinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId, pinActivityRequest: PinActivityRequest())
             return response.activity.toModel()
         } else {
-            let response = try await apiClient.unpinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId)
+            let response = try await apiClient.unpinActivity(feedGroupId: feed.group, feedId: feed.id, activityId: activityId, enrichOwnFields: nil)
             return response.activity.toModel()
         }
     }
@@ -113,7 +117,7 @@ final class ActivitiesRepository: Sendable {
     // MARK: - Activity Pagination
     
     func queryActivities(with query: ActivitiesQuery) async throws -> PaginationResult<ActivityData> {
-        let response = try await apiClient.queryActivities(queryActivitiesRequest: query.toRequest())
+        let response = try await apiClient.queryActivities(language: nil, translateText: nil, queryActivitiesRequest: query.toRequest())
         return PaginationResult(
             models: response.activities.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -127,8 +131,8 @@ final class ActivitiesRepository: Sendable {
         return (response.reaction.toModel(), response.activity.toModel())
     }
     
-    func deleteReaction(activityId: String, type: String) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
-        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type)
+    func deleteReaction(activityId: String, type: String, deleteNotificationActivity: Bool) async throws -> (reaction: FeedsReactionData, activity: ActivityData) {
+        let response = try await apiClient.deleteActivityReaction(activityId: activityId, type: type, deleteNotificationActivity: deleteNotificationActivity)
         return (response.reaction.toModel(), response.activity.toModel())
     }
     

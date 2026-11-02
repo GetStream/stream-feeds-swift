@@ -70,10 +70,7 @@ import StreamFeeds
         print(followRequest.status) // .pending
         
         // Sara accepting
-        try await saraFeed.acceptFollow(
-            adamTimeline.feed, // timeline:adam
-            role: "feed_member" // optional
-        )
+        try await saraFeed.acceptFollow(adamTimeline.feed) // timeline:adam
         // or rejecting the request
         try await saraFeed.rejectFollow(adamTimeline.feed) // timeline:adam
     }

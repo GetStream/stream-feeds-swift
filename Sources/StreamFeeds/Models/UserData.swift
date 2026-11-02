@@ -19,7 +19,6 @@ public struct UserData: Identifiable, Equatable, Sendable, Hashable {
     public let lastActive: Date?
     public let name: String?
     public let online: Bool
-    public let revokeTokensIssuedBefore: Date?
     public let role: String
     public let teams: [String]
     public let teamsRole: [String: String]?
@@ -49,32 +48,6 @@ extension UserResponse {
             lastActive: lastActive,
             name: name,
             online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
-            role: role,
-            teams: teams,
-            teamsRole: teamsRole,
-            updatedAt: updatedAt
-        )
-    }
-}
-
-extension UserResponseCommonFields {
-    func toModel() -> UserData {
-        UserData(
-            avgResponseTime: nil, // UserResponseCommonFields doesn't have avgResponseTime
-            banned: banned,
-            blockedUserIds: blockedUserIds,
-            createdAt: createdAt,
-            custom: custom,
-            deactivatedAt: deactivatedAt,
-            deletedAt: deletedAt,
-            id: id,
-            image: image,
-            language: language,
-            lastActive: lastActive,
-            name: name,
-            online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
             role: role,
             teams: teams,
             teamsRole: teamsRole,
@@ -85,25 +58,6 @@ extension UserResponseCommonFields {
 
 extension UserResponsePrivacyFields {
     func toModel() -> UserData {
-        UserData(
-            avgResponseTime: nil, // UserResponsePrivacyFields doesn't have avgResponseTime
-            banned: banned,
-            blockedUserIds: blockedUserIds,
-            createdAt: createdAt,
-            custom: custom,
-            deactivatedAt: deactivatedAt,
-            deletedAt: deletedAt,
-            id: id,
-            image: image,
-            language: language,
-            lastActive: lastActive,
-            name: name,
-            online: online,
-            revokeTokensIssuedBefore: revokeTokensIssuedBefore,
-            role: role,
-            teams: teams,
-            teamsRole: teamsRole,
-            updatedAt: updatedAt
-        )
+        user.toModel()
     }
 }

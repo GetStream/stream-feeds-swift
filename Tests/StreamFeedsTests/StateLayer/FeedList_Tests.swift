@@ -27,7 +27,7 @@ struct FeedList_Tests {
     @Test func reconnectionRefetchesLoadedFeeds() async throws {
         let client = defaultClientWithFeedsResponses([
             .init(
-                matching: .bodyType(QueryFeedsRequest.self),
+                matching: .pathPrefix("/api/v2/feeds/feeds/query"),
                 payload: QueryFeedsResponse.dummy(
                     feeds: [.dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed())],
                     next: nil
@@ -46,7 +46,7 @@ struct FeedList_Tests {
     @Test func queryMoreFeedsUpdatesState() async throws {
         let client = defaultClientWithFeedsResponses([
             .init(
-                matching: .bodyType(QueryFeedsRequest.self),
+                matching: .pathPrefix("/api/v2/feeds/feeds/query"),
                 payload: QueryFeedsResponse.dummy(
                     feeds: [
                         .dummy(id: "feed-3", name: "Third Feed", createdAt: Date.fixed()),
@@ -211,7 +211,7 @@ struct FeedList_Tests {
             [
                 // Additional response for the refetch
                 .init(
-                    matching: .bodyType(QueryFeedsRequest.self),
+                    matching: .pathPrefix("/api/v2/feeds/feeds/query"),
                     payload:
                     QueryFeedsResponse.dummy(
                         feeds: [
@@ -326,7 +326,7 @@ struct FeedList_Tests {
             apiTransport: .withMatchedResponses(
                 [
                     .init(
-                        matching: .bodyType(QueryFeedsRequest.self),
+                        matching: .pathPrefix("/api/v2/feeds/feeds/query"),
                         payload:
                         QueryFeedsResponse.dummy(
                             feeds: [
@@ -385,7 +385,7 @@ struct FeedList_Tests {
             apiTransport: .withMatchedResponses(
                 [
                     .init(
-                        matching: .bodyType(QueryFeedsRequest.self),
+                        matching: .pathPrefix("/api/v2/feeds/feeds/query"),
                         payload: QueryFeedsResponse.dummy(
                             feeds: [
                                 .dummy(id: "feed-1", name: "First Feed", createdAt: Date.fixed()),

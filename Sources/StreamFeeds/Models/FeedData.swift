@@ -24,7 +24,7 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public private(set) var ownMembership: FeedMemberData?
     public let pinCount: Int
     public let updatedAt: Date
-    public let visibility: String?
+    public let visibility: FeedVisibility?
 }
 
 // MARK: - Mutating the Data
@@ -81,5 +81,11 @@ extension FeedResponse {
             updatedAt: updatedAt,
             visibility: visibility
         )
+    }
+}
+
+extension FeedSuggestionResponse {
+    func toModel() -> FeedData {
+        feed.toModel()
     }
 }

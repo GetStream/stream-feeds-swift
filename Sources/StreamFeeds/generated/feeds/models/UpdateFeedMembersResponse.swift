@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class UpdateFeedMembersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var added: [FeedMemberResponse]
-    public var duration: String
-    public var removedIds: [String]
-    public var updated: [FeedMemberResponse]
+/// Basic response information
+public final class UpdateFeedMembersResponse: Sendable, Decodable {
+    public let added: [FeedMemberResponse]
+    /// Duration of the request in milliseconds
+    public let duration: String
+    public let removedIds: [String]
+    public let updated: [FeedMemberResponse]
 
     public init(added: [FeedMemberResponse], duration: String, removedIds: [String], updated: [FeedMemberResponse]) {
         self.added = added
@@ -18,13 +20,16 @@ public final class UpdateFeedMembersResponse: @unchecked Sendable, Codable, JSON
         self.updated = updated
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case added
-        case duration
-        case removedIds = "removed_ids"
-        case updated
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.added = try container.decode([FeedMemberResponse].self, forKey: .added)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.removedIds = try container.decode([String].self, forKey: .removedIds)
+        self.updated = try container.decode([FeedMemberResponse].self, forKey: .updated)
     }
+}
 
+extension UpdateFeedMembersResponse: Hashable {
     public static func == (lhs: UpdateFeedMembersResponse, rhs: UpdateFeedMembersResponse) -> Bool {
         lhs.added == rhs.added &&
             lhs.duration == rhs.duration &&

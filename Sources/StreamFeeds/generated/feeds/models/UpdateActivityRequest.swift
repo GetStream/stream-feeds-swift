@@ -5,19 +5,28 @@
 import Foundation
 import StreamCore
 
-public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var attachments: [Attachment]?
-    public var custom: [String: RawJSON]?
-    public var expiresAt: Date?
-    public var feeds: [String]?
-    public var filterTags: [String]?
-    public var interestTags: [String]?
-    public var location: ActivityLocation?
-    public var pollId: String?
-    public var text: String?
-    public var visibility: String?
+public final class UpdateActivityRequest: Sendable, Encodable, JSONEncodable {
+    /// List of attachments for the activity
+    public let attachments: [Attachment]?
+    /// Custom data for the activity
+    public let custom: [String: RawJSON]?
+    /// Time when the activity will expire
+    public let expiresAt: Date?
+    /// List of feeds the activity is present in
+    public let feeds: [String]?
+    /// Tags used for filtering the activity
+    public let filterTags: [String]?
+    /// Tags indicating interest categories
+    public let interestTags: [String]?
+    public let location: Location?
+    /// Poll ID
+    public let pollId: String?
+    /// The text content of the activity
+    public let text: String?
+    /// Visibility setting for the activity
+    public let visibility: ActivityVisibility?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, pollId: String? = nil, text: String? = nil, visibility: String? = nil) {
+    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: Location? = nil, pollId: String? = nil, text: String? = nil, visibility: ActivityVisibility? = nil) {
         self.attachments = attachments
         self.custom = custom
         self.expiresAt = expiresAt
@@ -30,19 +39,22 @@ public final class UpdateActivityRequest: @unchecked Sendable, Codable, JSONEnco
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case custom
-        case expiresAt = "expires_at"
-        case feeds
-        case filterTags = "filter_tags"
-        case interestTags = "interest_tags"
-        case location
-        case pollId = "poll_id"
-        case text
-        case visibility
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
+        try container.encodeIfPresent(feeds, forKey: .feeds)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(interestTags, forKey: .interestTags)
+        try container.encodeIfPresent(location, forKey: .location)
+        try container.encodeIfPresent(pollId, forKey: .pollId)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
     }
+}
 
+extension UpdateActivityRequest: Hashable {
     public static func == (lhs: UpdateActivityRequest, rhs: UpdateActivityRequest) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.custom == rhs.custom &&

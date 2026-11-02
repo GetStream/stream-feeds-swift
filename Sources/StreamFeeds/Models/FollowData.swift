@@ -9,7 +9,7 @@ public struct FollowData: Equatable, Sendable {
     public let createdAt: Date
     public let custom: [String: RawJSON]?
     public let followerRole: String
-    public let pushPreference: String
+    public let pushPreference: FollowPushPreference
     public let requestAcceptedAt: Date?
     public let requestRejectedAt: Date?
     public private(set) var sourceFeed: FeedData
@@ -37,8 +37,6 @@ public struct FollowData: Equatable, Sendable {
         isFollowing && sourceFeed.feed == feed
     }
 }
-
-public typealias FollowStatus = FollowResponse.FollowResponseStatus
 
 extension FollowData: Identifiable {
     public var id: String {
@@ -75,7 +73,7 @@ extension FollowResponse {
             createdAt: createdAt,
             custom: custom,
             followerRole: followerRole,
-            pushPreference: pushPreference.rawValue,
+            pushPreference: pushPreference,
             requestAcceptedAt: requestAcceptedAt,
             requestRejectedAt: requestRejectedAt,
             sourceFeed: sourceFeed.toModel(),

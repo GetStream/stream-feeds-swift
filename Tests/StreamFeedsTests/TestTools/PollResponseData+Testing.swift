@@ -31,7 +31,7 @@ extension PollResponseData {
         updatedAt: Date = Date.fixed(),
         voteCount: Int = 0,
         voteCountsByOption: [String: Int] = [:],
-        votingVisibility: String = "public"
+        votingVisibility: VotingVisibility = .public
     ) -> PollResponseData {
         PollResponseData(
             allowAnswers: allowAnswers,

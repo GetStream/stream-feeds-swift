@@ -62,9 +62,9 @@ struct ActivityList_Tests {
 
         try await waitUntil { activityList.state.activities.map(\.id) == ["activity-2"] }
         let cursors = try transport.requests.value.map { request in
-            try CodableHelper.jsonDecoder.decode(QueryActivitiesRequest.self, from: #require(request.body)).next
+            try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(request.body))["next"]
         }
-        #expect(cursors == ["query-cursor", "query-cursor"])
+        #expect(cursors == [.string("query-cursor"), .string("query-cursor")])
     }
 
     @Test func paginationLoadsMoreActivities() async throws {
@@ -628,7 +628,7 @@ struct ActivityList_Tests {
     
     private func defaultClient(
         activities: [ActivityResponse] = [.dummy(id: "activity-1", user: .dummy(id: "current-user-id"))],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

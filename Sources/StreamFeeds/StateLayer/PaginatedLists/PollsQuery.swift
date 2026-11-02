@@ -119,7 +119,7 @@ extension PollsFilterField {
     /// Filter by the voting visibility setting of the poll.
     ///
     /// **Supported operators:** `.equal`
-    public static let votingVisibility = Self("voting_visibility", localValue: \.votingVisibility)
+    public static let votingVisibility = Self("voting_visibility", localValue: \.votingVisibility.rawValue)
 }
 
 /// A filter that can be applied to polls queries.

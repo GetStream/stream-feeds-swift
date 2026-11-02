@@ -5,28 +5,46 @@
 import Foundation
 import StreamCore
 
-public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var createdAt: Date
-    public var createdBy: UserResponse
-    public var custom: [String: RawJSON]?
-    public var deletedAt: Date?
-    public var description: String
-    public var feed: String
-    public var filterTags: [String]?
-    public var followerCount: Int
-    public var followingCount: Int
-    public var groupId: String
-    public var id: String
-    public var memberCount: Int
-    public var name: String
-    public var ownCapabilities: [FeedOwnCapability]?
-    public var ownFollows: [FollowResponse]?
-    public var ownMembership: FeedMemberResponse?
-    public var pinCount: Int
-    public var updatedAt: Date
-    public var visibility: String?
+public final class FeedResponse: Sendable, Decodable {
+    /// When the feed was created
+    public let createdAt: Date
+    /// User response object
+    public let createdBy: UserResponse
+    /// Custom data for the feed
+    public let custom: [String: RawJSON]?
+    /// When the feed was deleted
+    public let deletedAt: Date?
+    /// Description of the feed
+    public let description: String
+    /// Fully qualified feed ID (group_id:id)
+    public let feed: String
+    /// Tags used for filtering feeds
+    public let filterTags: [String]?
+    /// Number of followers of this feed
+    public let followerCount: Int
+    /// Number of feeds this feed follows
+    public let followingCount: Int
+    /// Group this feed belongs to
+    public let groupId: String
+    /// Unique identifier for the feed
+    public let id: String
+    /// Number of members in this feed
+    public let memberCount: Int
+    /// Name of the feed
+    public let name: String
+    /// Capabilities the current user has for this feed
+    public let ownCapabilities: [FeedOwnCapability]?
+    /// Follow relationships where the current user's feeds are following this feed
+    public let ownFollows: [FollowResponse]?
+    public let ownMembership: FeedMemberResponse?
+    /// Number of pinned activities in this feed
+    public let pinCount: Int
+    /// When the feed was last updated
+    public let updatedAt: Date
+    /// Visibility setting for the feed
+    public let visibility: FeedVisibility?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: String? = nil) {
+    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedVisibility? = nil) {
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -48,28 +66,31 @@ public final class FeedResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case createdBy = "created_by"
-        case custom
-        case deletedAt = "deleted_at"
-        case description
-        case feed
-        case filterTags = "filter_tags"
-        case followerCount = "follower_count"
-        case followingCount = "following_count"
-        case groupId = "group_id"
-        case id
-        case memberCount = "member_count"
-        case name
-        case ownCapabilities = "own_capabilities"
-        case ownFollows = "own_follows"
-        case ownMembership = "own_membership"
-        case pinCount = "pin_count"
-        case updatedAt = "updated_at"
-        case visibility
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decode(UserResponse.self, forKey: .createdBy)
+        self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
+        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.feed = try container.decode(String.self, forKey: .feed)
+        self.filterTags = try container.decodeIfPresent([String].self, forKey: .filterTags)
+        self.followerCount = try container.decode(Int.self, forKey: .followerCount)
+        self.followingCount = try container.decode(Int.self, forKey: .followingCount)
+        self.groupId = try container.decode(String.self, forKey: .groupId)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.memberCount = try container.decode(Int.self, forKey: .memberCount)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.ownCapabilities = try container.decodeIfPresent([FeedOwnCapability].self, forKey: .ownCapabilities)
+        self.ownFollows = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollows)
+        self.ownMembership = try container.decodeIfPresent(FeedMemberResponse.self, forKey: .ownMembership)
+        self.pinCount = try container.decode(Int.self, forKey: .pinCount)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.visibility = try container.decodeIfPresent(FeedVisibility.self, forKey: .visibility)
     }
+}
 
+extension FeedResponse: Hashable {
     public static func == (lhs: FeedResponse, rhs: FeedResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
