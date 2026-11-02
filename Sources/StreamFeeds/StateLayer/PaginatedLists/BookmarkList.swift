@@ -67,18 +67,9 @@ public final class BookmarkList: Sendable {
 
 // MARK: - Refetching
 
-extension BookmarkList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.bookmarks.count }
-    }
-
-    func fetchPage(next: String?) async throws -> PaginationResult<BookmarkData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await bookmarksRepository.queryBookmarks(with: pageQuery)
+extension BookmarkList: PaginatedListRefetching {
+    func fetchPage(with query: BookmarksQuery) async throws -> PaginationResult<BookmarkData> {
+        try await bookmarksRepository.queryBookmarks(with: query)
     }
 
     func didRefetch(_ result: PaginationResult<BookmarkData>) async {
@@ -87,4 +78,10 @@ extension BookmarkList: StateRefetching {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
     }
+}
+
+extension BookmarksQuery: CursorPaginatedQuery {}
+
+extension BookmarkListState: PaginatedListState {
+    var models: [BookmarkData] { bookmarks }
 }

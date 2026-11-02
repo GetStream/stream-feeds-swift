@@ -114,18 +114,9 @@ public final class FeedList: Sendable {
 
 // MARK: - Refetching
 
-extension FeedList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.feeds.count }
-    }
-
-    func fetchPage(next: String?) async throws -> PaginationResult<FeedData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await feedsRepository.queryFeeds(with: pageQuery)
+extension FeedList: PaginatedListRefetching {
+    func fetchPage(with query: FeedsQuery) async throws -> PaginationResult<FeedData> {
+        try await feedsRepository.queryFeeds(with: query)
     }
 
     func didRefetch(_ result: PaginationResult<FeedData>) async {
@@ -134,4 +125,10 @@ extension FeedList: StateRefetching {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
     }
+}
+
+extension FeedsQuery: CursorPaginatedQuery {}
+
+extension FeedListState: PaginatedListState {
+    var models: [FeedData] { feeds }
 }

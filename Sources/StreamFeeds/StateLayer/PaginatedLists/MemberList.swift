@@ -106,21 +106,14 @@ public final class MemberList: Sendable {
 
 // MARK: - Refetching
 
-extension MemberList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.members.count }
+extension MemberList: PaginatedListRefetching {
+    func fetchPage(with query: MembersQuery) async throws -> PaginationResult<FeedMemberData> {
+        try await fetchMembers(with: query)
     }
+}
 
-    func fetchPage(next: String?) async throws -> PaginationResult<FeedMemberData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await fetchMembers(with: pageQuery)
-    }
+extension MembersQuery: CursorPaginatedQuery {}
 
-    func didRefetch(_ result: PaginationResult<FeedMemberData>) async {
-        await state.didRefetch(with: result)
-    }
+extension MemberListState: PaginatedListState {
+    var models: [FeedMemberData] { members }
 }

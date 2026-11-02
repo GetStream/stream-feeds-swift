@@ -173,21 +173,14 @@ public final class CommentReplyList: Sendable {
 
 // MARK: - Refetching
 
-extension CommentReplyList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.replies.count }
+extension CommentReplyList: PaginatedListRefetching {
+    func fetchPage(with query: CommentRepliesQuery) async throws -> PaginationResult<ThreadedCommentData> {
+        try await commentsRepository.getCommentReplies(with: query)
     }
-    
-    func fetchPage(next: String?) async throws -> PaginationResult<ThreadedCommentData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await commentsRepository.getCommentReplies(with: pageQuery)
-    }
-    
-    func didRefetch(_ result: PaginationResult<ThreadedCommentData>) async {
-        await state.didRefetch(with: result)
-    }
+}
+
+extension CommentRepliesQuery: CursorPaginatedQuery {}
+
+extension CommentReplyListState: PaginatedListState {
+    var models: [ThreadedCommentData] { replies }
 }

@@ -144,21 +144,14 @@ public final class ActivityReactionList: Sendable {
 
 // MARK: - Refetching
 
-extension ActivityReactionList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.reactions.count }
+extension ActivityReactionList: PaginatedListRefetching {
+    func fetchPage(with query: ActivityReactionsQuery) async throws -> PaginationResult<FeedsReactionData> {
+        try await activitiesRepository.queryActivityReactions(request: query.toRequest(), activityId: query.activityId)
     }
-    
-    func fetchPage(next: String?) async throws -> PaginationResult<FeedsReactionData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await activitiesRepository.queryActivityReactions(request: pageQuery.toRequest(), activityId: pageQuery.activityId)
-    }
-    
-    func didRefetch(_ result: PaginationResult<FeedsReactionData>) async {
-        await state.didRefetch(with: result)
-    }
+}
+
+extension ActivityReactionsQuery: CursorPaginatedQuery {}
+
+extension ActivityReactionListState: PaginatedListState {
+    var models: [FeedsReactionData] { reactions }
 }

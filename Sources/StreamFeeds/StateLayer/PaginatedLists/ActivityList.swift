@@ -101,18 +101,9 @@ public final class ActivityList: Sendable {
 
 // MARK: - Refetching
 
-extension ActivityList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.activities.count }
-    }
-    
-    func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await activitiesRepository.queryActivities(with: pageQuery)
+extension ActivityList: PaginatedListRefetching {
+    func fetchPage(with query: ActivitiesQuery) async throws -> PaginationResult<ActivityData> {
+        try await activitiesRepository.queryActivities(with: query)
     }
     
     func didRefetch(_ result: PaginationResult<ActivityData>) async {
@@ -121,4 +112,10 @@ extension ActivityList: StateRefetching {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
     }
+}
+
+extension ActivitiesQuery: CursorPaginatedQuery {}
+
+extension ActivityListState: PaginatedListState {
+    var models: [ActivityData] { activities }
 }

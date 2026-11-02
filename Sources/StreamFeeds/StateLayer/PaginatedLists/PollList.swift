@@ -86,21 +86,14 @@ public final class PollList: Sendable {
 
 // MARK: - Refetching
 
-extension PollList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.polls.count }
+extension PollList: PaginatedListRefetching {
+    func fetchPage(with query: PollsQuery) async throws -> PaginationResult<PollData> {
+        try await pollsRepository.queryPolls(with: query)
     }
-    
-    func fetchPage(next: String?) async throws -> PaginationResult<PollData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await pollsRepository.queryPolls(with: pageQuery)
-    }
-    
-    func didRefetch(_ result: PaginationResult<PollData>) async {
-        await state.didRefetch(with: result)
-    }
+}
+
+extension PollsQuery: CursorPaginatedQuery {}
+
+extension PollListState: PaginatedListState {
+    var models: [PollData] { polls }
 }

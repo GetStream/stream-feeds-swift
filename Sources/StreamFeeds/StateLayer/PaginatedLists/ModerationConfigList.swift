@@ -162,21 +162,14 @@ public final class ModerationConfigList: Sendable {
 
 // MARK: - Refetching
 
-extension ModerationConfigList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.configs.count }
+extension ModerationConfigList: PaginatedListRefetching {
+    func fetchPage(with query: ModerationConfigsQuery) async throws -> PaginationResult<ModerationConfigData> {
+        try await moderationRepository.queryModerationConfigs(with: query)
     }
-    
-    func fetchPage(next: String?) async throws -> PaginationResult<ModerationConfigData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await moderationRepository.queryModerationConfigs(with: pageQuery)
-    }
-    
-    func didRefetch(_ result: PaginationResult<ModerationConfigData>) async {
-        await state.didRefetch(with: result)
-    }
+}
+
+extension ModerationConfigsQuery: CursorPaginatedQuery {}
+
+extension ModerationConfigListState: PaginatedListState {
+    var models: [ModerationConfigData] { configs }
 }

@@ -72,18 +72,9 @@ public final class FollowList: Sendable {
 
 // MARK: - Refetching
 
-extension FollowList: StateRefetching {
-    func loadedCount() async -> Int? {
-        await state.access { $0.pagination == nil ? nil : $0.follows.count }
-    }
-    
-    func fetchPage(next: String?) async throws -> PaginationResult<FollowData> {
-        var pageQuery = query
-        if let next {
-            pageQuery.next = next
-            pageQuery.previous = nil
-        }
-        return try await feedsRepository.queryFollows(request: pageQuery.toRequest())
+extension FollowList: PaginatedListRefetching {
+    func fetchPage(with query: FollowsQuery) async throws -> PaginationResult<FollowData> {
+        try await feedsRepository.queryFollows(request: query.toRequest())
     }
     
     func didRefetch(_ result: PaginationResult<FollowData>) async {
@@ -92,4 +83,10 @@ extension FollowList: StateRefetching {
             await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
         }
     }
+}
+
+extension FollowsQuery: CursorPaginatedQuery {}
+
+extension FollowListState: PaginatedListState {
+    var models: [FollowData] { follows }
 }

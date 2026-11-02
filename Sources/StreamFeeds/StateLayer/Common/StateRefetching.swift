@@ -41,3 +41,47 @@ extension StateRefetching {
         await didRefetch(PaginationResult(models: models, pagination: pagination))
     }
 }
+
+protocol CursorPaginatedQuery: Sendable {
+    var next: String? { get set }
+    var previous: String? { get set }
+}
+
+extension CursorPaginatedQuery {
+    func page(next: String?) -> Self {
+        guard let next else { return self }
+        var query = self
+        query.next = next
+        query.previous = nil
+        return query
+    }
+}
+
+@MainActor protocol PaginatedListState {
+    associatedtype Model: Identifiable & Sendable
+    var pagination: PaginationData? { get }
+    var models: [Model] { get }
+    func didRefetch(with response: PaginationResult<Model>)
+}
+
+protocol PaginatedListRefetching: StateRefetching {
+    associatedtype Query: CursorPaginatedQuery
+    associatedtype State: PaginatedListState where State.Model == Model
+    var query: Query { get }
+    @MainActor var state: State { get }
+    func fetchPage(with query: Query) async throws -> PaginationResult<Model>
+}
+
+extension PaginatedListRefetching {
+    @MainActor func loadedCount() async -> Int? {
+        state.pagination == nil ? nil : state.models.count
+    }
+
+    func fetchPage(next: String?) async throws -> PaginationResult<Model> {
+        try await fetchPage(with: query.page(next: next))
+    }
+
+    @MainActor func didRefetch(_ result: PaginationResult<Model>) async {
+        state.didRefetch(with: result)
+    }
+}
