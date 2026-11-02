@@ -6,115 +6,35 @@ import Foundation
 import StreamCore
 
 public final class UserResponsePrivacyFields: Sendable, Decodable {
-    public let avgResponseTime: Int?
-    public let banned: Bool
-    public let blockedUserIds: [String]
-    public let createdAt: Date
-    public let custom: [String: RawJSON]
-    public let deactivatedAt: Date?
-    public let deletedAt: Date?
-    public let id: String
-    public let image: String?
+    public let user: UserResponse
     public let invisible: Bool?
-    public let language: String
-    public let lastActive: Date?
-    public let name: String?
-    public let online: Bool
     /// The privacy settings of the user.
     public let privacySettings: PrivacySettingsResponse?
-    public let role: String
-    public let teams: [String]
-    public let teamsRole: [String: String]?
-    public let updatedAt: Date
 
-    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, invisible: Bool? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, privacySettings: PrivacySettingsResponse? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
-        self.avgResponseTime = avgResponseTime
-        self.banned = banned
-        self.blockedUserIds = blockedUserIds
-        self.createdAt = createdAt
-        self.custom = custom
-        self.deactivatedAt = deactivatedAt
-        self.deletedAt = deletedAt
-        self.id = id
-        self.image = image
+    public init(user: UserResponse, invisible: Bool? = nil, privacySettings: PrivacySettingsResponse? = nil) {
+        self.user = user
         self.invisible = invisible
-        self.language = language
-        self.lastActive = lastActive
-        self.name = name
-        self.online = online
         self.privacySettings = privacySettings
-        self.role = role
-        self.teams = teams
-        self.teamsRole = teamsRole
-        self.updatedAt = updatedAt
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.avgResponseTime = try container.decodeIfPresent(Int.self, forKey: .avgResponseTime)
-        self.banned = try container.decode(Bool.self, forKey: .banned)
-        self.blockedUserIds = try container.decode([String].self, forKey: .blockedUserIds)
-        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
-        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
-        self.deactivatedAt = try container.decodeIfPresent(Date.self, forKey: .deactivatedAt)
-        self.deletedAt = try container.decodeIfPresent(Date.self, forKey: .deletedAt)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.image = try container.decodeIfPresent(String.self, forKey: .image)
+        self.user = try UserResponse(from: decoder)
         self.invisible = try container.decodeIfPresent(Bool.self, forKey: .invisible)
-        self.language = try container.decode(String.self, forKey: .language)
-        self.lastActive = try container.decodeIfPresent(Date.self, forKey: .lastActive)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
-        self.online = try container.decode(Bool.self, forKey: .online)
         self.privacySettings = try container.decodeIfPresent(PrivacySettingsResponse.self, forKey: .privacySettings)
-        self.role = try container.decode(String.self, forKey: .role)
-        self.teams = try container.decode([String].self, forKey: .teams)
-        self.teamsRole = try container.decodeIfPresent([String: String].self, forKey: .teamsRole)
-        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
     }
 }
 
 extension UserResponsePrivacyFields: Hashable {
     public static func == (lhs: UserResponsePrivacyFields, rhs: UserResponsePrivacyFields) -> Bool {
-        lhs.avgResponseTime == rhs.avgResponseTime &&
-            lhs.banned == rhs.banned &&
-            lhs.blockedUserIds == rhs.blockedUserIds &&
-            lhs.createdAt == rhs.createdAt &&
-            lhs.custom == rhs.custom &&
-            lhs.deactivatedAt == rhs.deactivatedAt &&
-            lhs.deletedAt == rhs.deletedAt &&
-            lhs.id == rhs.id &&
-            lhs.image == rhs.image &&
+        lhs.user == rhs.user &&
             lhs.invisible == rhs.invisible &&
-            lhs.language == rhs.language &&
-            lhs.lastActive == rhs.lastActive &&
-            lhs.name == rhs.name &&
-            lhs.online == rhs.online &&
-            lhs.privacySettings == rhs.privacySettings &&
-            lhs.role == rhs.role &&
-            lhs.teams == rhs.teams &&
-            lhs.teamsRole == rhs.teamsRole &&
-            lhs.updatedAt == rhs.updatedAt
+            lhs.privacySettings == rhs.privacySettings
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(avgResponseTime)
-        hasher.combine(banned)
-        hasher.combine(blockedUserIds)
-        hasher.combine(createdAt)
-        hasher.combine(custom)
-        hasher.combine(deactivatedAt)
-        hasher.combine(deletedAt)
-        hasher.combine(id)
-        hasher.combine(image)
+        hasher.combine(user)
         hasher.combine(invisible)
-        hasher.combine(language)
-        hasher.combine(lastActive)
-        hasher.combine(name)
-        hasher.combine(online)
         hasher.combine(privacySettings)
-        hasher.combine(role)
-        hasher.combine(teams)
-        hasher.combine(teamsRole)
-        hasher.combine(updatedAt)
     }
 }
