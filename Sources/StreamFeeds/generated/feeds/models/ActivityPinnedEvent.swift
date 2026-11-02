@@ -5,17 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when an activity is pinned.
+public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
+    /// The ID of the feed
     public var fid: String
     public var pinnedActivity: PinActivityResponse
     public var receivedAt: Date?
+    /// The type of event: "feeds.activity.pinned" in this case
     public var type: String = "feeds.activity.pinned"
     public var user: UserResponseCommonFields?
 
-    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, pinnedActivity: PinActivityResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, pinnedActivity: PinActivityResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.createdAt = createdAt
         self.custom = custom
         self.feedVisibility = feedVisibility
@@ -35,7 +40,9 @@ public final class ActivityPinnedEvent: @unchecked Sendable, Event, Codable, JSO
         case type
         case user
     }
+}
 
+extension ActivityPinnedEvent: Hashable {
     public static func == (lhs: ActivityPinnedEvent, rhs: ActivityPinnedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

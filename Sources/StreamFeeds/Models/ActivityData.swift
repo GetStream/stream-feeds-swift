@@ -47,7 +47,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     fileprivate let _parent: BoxedAny?
 }
 
-public typealias ActivityDataVisibility = ActivityResponse.ActivityResponseVisibility
+public typealias ActivityDataVisibility = ActivityVisibility
 
 // MARK: - Mutating the Data
 
@@ -175,7 +175,7 @@ extension ActivityResponse {
             expiresAt: expiresAt,
             feeds: feeds,
             filterTags: filterTags,
-            hidden: hidden ?? false,
+            hidden: hidden,
             id: id,
             interestTags: interestTags,
             latestReactions: latestReactions.map { $0.toModel() },
@@ -188,7 +188,7 @@ extension ActivityResponse {
             poll: poll?.toModel(),
             popularity: popularity,
             reactionCount: reactionCount,
-            reactionGroups: reactionGroups.compactMapValues { $0?.toModel() },
+            reactionGroups: reactionGroups.mapValues { $0.toModel() },
             score: score,
             searchData: searchData,
             shareCount: shareCount,

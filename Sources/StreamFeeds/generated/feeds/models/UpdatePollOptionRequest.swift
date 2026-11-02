@@ -5,9 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class UpdatePollOptionRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdatePollOptionRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Custom data for this object
     public var custom: [String: RawJSON]?
+    /// Option ID
     public var id: String
+    /// Option text
     public var text: String
 
     public init(custom: [String: RawJSON]? = nil, id: String, text: String) {
@@ -17,11 +20,13 @@ public final class UpdatePollOptionRequest: @unchecked Sendable, Codable, JSONEn
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom = "Custom"
+        case custom
         case id
         case text
     }
+}
 
+extension UpdatePollOptionRequest: Hashable {
     public static func == (lhs: UpdatePollOptionRequest, rhs: UpdatePollOptionRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&

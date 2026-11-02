@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// A comment with an optional, depth‑limited slice of nested replies.
+public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var attachments: [Attachment]?
     public var confidenceScore: Float
     public var controversyScore: Float?
@@ -16,6 +17,7 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var id: String
     public var latestReactions: [FeedsReactionResponse]?
     public var mentionedUsers: [UserResponse]
+    /// Cursor & depth information for a comment's direct replies. Mirrors Reddit's 'load more replies' semantics.
     public var meta: RepliesMeta?
     public var moderation: ModerationV2Response?
     public var objectId: String
@@ -23,17 +25,20 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
     public var ownReactions: [FeedsReactionResponse]
     public var parentId: String?
     public var reactionCount: Int
-    public var reactionGroups: [String: ReactionGroupResponse?]?
+    public var reactionGroups: [String: FeedsReactionGroupResponse]?
+    /// Slice of nested comments (may be empty).
     public var replies: [ThreadedCommentResponse]?
     public var replyCount: Int
     public var score: Int
-    public var status: String
+    /// Status of the comment. One of: active, deleted, removed, hidden
+    public var status: CommentStatus
     public var text: String?
     public var updatedAt: Date
     public var upvoteCount: Int
+    /// User response object
     public var user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: ReactionGroupResponse?]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: String, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, confidenceScore: Float, controversyScore: Float? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], meta: RepliesMeta? = nil, moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replies: [ThreadedCommentResponse]? = nil, replyCount: Int, score: Int, status: CommentStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.confidenceScore = confidenceScore
         self.controversyScore = controversyScore
@@ -90,7 +95,9 @@ public final class ThreadedCommentResponse: @unchecked Sendable, Codable, JSONEn
         case upvoteCount = "upvote_count"
         case user
     }
+}
 
+extension ThreadedCommentResponse: Hashable {
     public static func == (lhs: ThreadedCommentResponse, rhs: ThreadedCommentResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.confidenceScore == rhs.confidenceScore &&

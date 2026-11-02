@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class SubmitActionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class SubmitActionResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
     public var item: ReviewQueueItemResponse?
 
@@ -18,7 +18,9 @@ public final class SubmitActionResponse: @unchecked Sendable, Codable, JSONEncod
         case duration
         case item
     }
+}
 
+extension SubmitActionResponse: Hashable {
     public static func == (lhs: SubmitActionResponse, rhs: SubmitActionResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.item == rhs.item

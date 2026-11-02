@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderConditionGroup: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class RuleBuilderConditionGroup: @unchecked Sendable, Codable, JSONEncodable {
     public var conditions: [RuleBuilderCondition]?
     public var logic: String?
 
@@ -18,7 +18,9 @@ public final class RuleBuilderConditionGroup: @unchecked Sendable, Codable, JSON
         case conditions
         case logic
     }
+}
 
+extension RuleBuilderConditionGroup: Hashable {
     public static func == (lhs: RuleBuilderConditionGroup, rhs: RuleBuilderConditionGroup) -> Bool {
         lhs.conditions == rhs.conditions &&
             lhs.logic == rhs.logic

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class CastPollVoteRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class CastPollVoteRequest: @unchecked Sendable, Codable, JSONEncodable {
     public var vote: VoteData?
 
     public init(vote: VoteData? = nil) {
@@ -15,7 +15,9 @@ public final class CastPollVoteRequest: @unchecked Sendable, Codable, JSONEncoda
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case vote
     }
+}
 
+extension CastPollVoteRequest: Hashable {
     public static func == (lhs: CastPollVoteRequest, rhs: CastPollVoteRequest) -> Bool {
         lhs.vote == rhs.vote
     }

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class DeleteCommentReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteCommentReactionResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var comment: CommentResponse
     public var duration: String
     public var reaction: FeedsReactionResponse
@@ -21,7 +21,9 @@ public final class DeleteCommentReactionResponse: @unchecked Sendable, Codable, 
         case duration
         case reaction
     }
+}
 
+extension DeleteCommentReactionResponse: Hashable {
     public static func == (lhs: DeleteCommentReactionResponse, rhs: DeleteCommentReactionResponse) -> Bool {
         lhs.comment == rhs.comment &&
             lhs.duration == rhs.duration &&

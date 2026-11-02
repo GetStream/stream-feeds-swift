@@ -5,10 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class RepliesMeta: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Cursor & depth information for a comment's direct replies. Mirrors Reddit's 'load more replies' semantics.
+public final class RepliesMeta: @unchecked Sendable, Codable, JSONEncodable {
+    /// True if the subtree was cut because the requested depth was reached.
     public var depthTruncated: Bool
+    /// True if more siblings exist in the database.
     public var hasMore: Bool
+    /// Opaque cursor to request the next page of siblings.
     public var nextCursor: String?
+    /// Number of unread siblings that match current filters.
     public var remaining: Int
 
     public init(depthTruncated: Bool, hasMore: Bool, nextCursor: String? = nil, remaining: Int) {
@@ -24,7 +29,9 @@ public final class RepliesMeta: @unchecked Sendable, Codable, JSONEncodable, Has
         case nextCursor = "next_cursor"
         case remaining
     }
+}
 
+extension RepliesMeta: Hashable {
     public static func == (lhs: RepliesMeta, rhs: RepliesMeta) -> Bool {
         lhs.depthTruncated == rhs.depthTruncated &&
             lhs.hasMore == rhs.hasMore &&

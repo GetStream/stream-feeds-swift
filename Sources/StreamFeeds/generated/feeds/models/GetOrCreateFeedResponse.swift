@@ -5,10 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activities: [ActivityResponse]
     public var aggregatedActivities: [AggregatedActivityResponse]
     public var created: Bool
+    /// Duration of the request in milliseconds
     public var duration: String
     public var feed: FeedResponse
     public var followers: [FollowResponse]
@@ -57,7 +58,9 @@ public final class GetOrCreateFeedResponse: @unchecked Sendable, Codable, JSONEn
         case pinnedActivities = "pinned_activities"
         case prev
     }
+}
 
+extension GetOrCreateFeedResponse: Hashable {
     public static func == (lhs: GetOrCreateFeedResponse, rhs: GetOrCreateFeedResponse) -> Bool {
         lhs.activities == rhs.activities &&
             lhs.aggregatedActivities == rhs.aggregatedActivities &&

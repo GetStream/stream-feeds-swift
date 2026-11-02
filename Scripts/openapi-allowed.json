@@ -1,0 +1,582 @@
+{
+  "allowedEndpoints": [
+    "acceptFeedMemberInvite",
+    "acceptFollow",
+    "addActivity",
+    "addActivityReaction",
+    "addBookmark",
+    "addComment",
+    "addCommentReaction",
+    "addCommentsBatch",
+    "ban",
+    "blockUsers",
+    "castPollVote",
+    "createPoll",
+    "createPollOption",
+    "deleteActivities",
+    "deleteActivity",
+    "deleteActivityReaction",
+    "deleteBookmark",
+    "deleteComment",
+    "deleteCommentReaction",
+    "deleteConfig",
+    "deleteFeed",
+    "deleteFile",
+    "deleteImage",
+    "deletePoll",
+    "deletePollOption",
+    "deletePollVote",
+    "flag",
+    "follow",
+    "getActivity",
+    "getApp",
+    "getBlockedUsers",
+    "getComment",
+    "getCommentReplies",
+    "getComments",
+    "getConfig",
+    "getFollowSuggestions",
+    "getOrCreateFeed",
+    "getPoll",
+    "getPollOption",
+    "markActivity",
+    "mute",
+    "ownBatch",
+    "pinActivity",
+    "queryActivities",
+    "queryActivityReactions",
+    "queryBookmarkFolders",
+    "queryBookmarks",
+    "queryCommentReactions",
+    "queryComments",
+    "queryFeedMembers",
+    "queryFeeds",
+    "queryFollows",
+    "queryModerationConfigs",
+    "queryPollVotes",
+    "queryPolls",
+    "queryReviewQueue",
+    "rejectFeedMemberInvite",
+    "rejectFollow",
+    "stopWatchingFeed",
+    "submitAction",
+    "unblockUsers",
+    "unfollow",
+    "unpinActivity",
+    "updateActivity",
+    "updateBookmark",
+    "updateComment",
+    "updateFeed",
+    "updateFeedMembers",
+    "updatePoll",
+    "updatePollOption",
+    "updatePollPartial",
+    "upsertActivities",
+    "upsertConfig"
+  ],
+  "removedProperties": {
+    "AITextConfig": [
+      "profile"
+    ],
+    "AWSRekognitionRule": [
+      "subclassifications"
+    ],
+    "AcceptFollowRequest": [
+      "followerRole"
+    ],
+    "ActionLogResponse": [
+      "reporterType"
+    ],
+    "ActivityRequest": [
+      "collectionRefs",
+      "collections",
+      "copyCustomToNotification",
+      "createNotificationActivity",
+      "restrictReplies",
+      "skipEnrichUrl",
+      "skipPush"
+    ],
+    "ActivityResponse": [
+      "collections",
+      "friendReactionCount",
+      "friendReactions",
+      "i18n",
+      "isRead",
+      "isSeen",
+      "isWatched",
+      "latestShares",
+      "metrics",
+      "moderationAction",
+      "preview",
+      "restrictReplies",
+      "scoreVars",
+      "selectorSource",
+      "topLevelCommentCount"
+    ],
+    "AddActivityRequest": [
+      "collections",
+      "copyCustomToNotification",
+      "enrichOwnFields"
+    ],
+    "AddActivityResponse": [
+      "skippedExisting"
+    ],
+    "AddCommentReactionRequest": [
+      "copyCustomToNotification",
+      "targetFeeds"
+    ],
+    "AddCommentReactionResponse": [
+      "counterDelta",
+      "notificationAccepted",
+      "notificationCreated",
+      "notificationTaskId",
+      "outcome",
+      "previousReactionType",
+      "referenceActivity"
+    ],
+    "AddCommentRequest": [
+      "copyCustomToNotification",
+      "id",
+      "skipEnrichUrl"
+    ],
+    "AddCommentResponse": [
+      "mentionNotificationsCreated",
+      "notificationCreated"
+    ],
+    "AddReactionRequest": [
+      "copyCustomToNotification",
+      "targetFeeds"
+    ],
+    "AddReactionResponse": [
+      "counterDelta",
+      "notificationAccepted",
+      "notificationCreated",
+      "notificationTaskId",
+      "outcome",
+      "previousReactionType",
+      "referenceActivity"
+    ],
+    "AggregatedActivityResponse": [
+      "isRead",
+      "isSeen"
+    ],
+    "AppResponseFields": [
+      "id",
+      "placement"
+    ],
+    "BanInfoResponse": [
+      "channel",
+      "channelCid",
+      "user"
+    ],
+    "BanOptions": [
+      "deleteMessages"
+    ],
+    "BanRequest": [
+      "banFromFutureChannels",
+      "channelCid",
+      "deleteMessages",
+      "deleteReactions"
+    ],
+    "BlockListConfig": [
+      "matchSubstring"
+    ],
+    "BookmarkFolderResponse": [
+      "user"
+    ],
+    "BookmarkResponse": [
+      "activityId",
+      "comment",
+      "objectId",
+      "objectType"
+    ],
+    "CommentResponse": [
+      "bookmarkCount",
+      "editedAt",
+      "hidden",
+      "i18n"
+    ],
+    "ConfigResponse": [
+      "aiAudioConfig",
+      "aiImageLabelDefinitions",
+      "aiImageSubclassifications",
+      "availableBodyguardProfiles",
+      "floodConfig",
+      "intentConfig",
+      "supportedVideoCallHarmTypes",
+      "videoCallRuleConfig"
+    ],
+    "CreatePollRequest": [
+      "team"
+    ],
+    "DeleteActivitiesRequest": [
+      "deleteNotificationActivity"
+    ],
+    "DeleteActivityRequestPayload": [
+      "entityId",
+      "entityType",
+      "reason"
+    ],
+    "DeleteReactionRequestPayload": [
+      "entityId",
+      "entityType",
+      "reason"
+    ],
+    "EnrichedActivity": [
+      "time"
+    ],
+    "EnrichedReaction": [
+      "createdAt",
+      "updatedAt"
+    ],
+    "FeedGroupChangedEvent": [
+      "feedGroup"
+    ],
+    "FeedInput": [
+      "location"
+    ],
+    "FeedMemberRequest": [
+      "membershipLevel",
+      "role"
+    ],
+    "FeedResponse": [
+      "activityCount",
+      "location",
+      "ownFollowings"
+    ],
+    "FeedSuggestionResponse": [
+      "activityCount",
+      "location",
+      "ownFollowings"
+    ],
+    "FlagRequest": [
+      "entityCreatorId"
+    ],
+    "FollowRequest": [
+      "activityCopyLimit",
+      "copyCustomToNotification",
+      "enrichOwnFields"
+    ],
+    "GetCommentRepliesResponse": [
+      "sort"
+    ],
+    "GetCommentsResponse": [
+      "commentCount",
+      "sort",
+      "topLevelCommentCount"
+    ],
+    "GetFollowSuggestionsResponse": [
+      "algorithmUsed"
+    ],
+    "GetOrCreateFeedRequest": [
+      "discardActors",
+      "enrichmentOptions",
+      "friendReactionsOptions",
+      "idAround",
+      "overwriteInterestWeights",
+      "viewerLocation"
+    ],
+    "GetOrCreateFeedResponse": [
+      "degradedSelectors"
+    ],
+    "HealthCheckEvent": [
+      "custom",
+      "me"
+    ],
+    "ImageContentParameters": [
+      "labelOperator",
+      "minConfidence"
+    ],
+    "ImageRuleParameters": [
+      "minConfidence"
+    ],
+    "LLMConfig": [
+      "contextCustomKeys",
+      "customKeysContextDescription"
+    ],
+    "MarkReviewedRequestPayload": [
+      "decisionReason"
+    ],
+    "ModerationActionConfigResponse": [
+      "id",
+      "queueType"
+    ],
+    "ModerationCustomActionEvent": [
+      "message"
+    ],
+    "ModerationFlagResponse": [
+      "contentPublishedAt",
+      "id"
+    ],
+    "ModerationFlaggedEvent": [
+      "contentType",
+      "custom",
+      "receivedAt"
+    ],
+    "ModerationMarkReviewedEvent": [
+      "custom",
+      "message",
+      "receivedAt"
+    ],
+    "ModerationPayload": [
+      "audios",
+      "countryCode",
+      "imageIds",
+      "imageOrderedKeys",
+      "otherMedia",
+      "textIds",
+      "textOrderedKeys"
+    ],
+    "ModerationV2Response": [
+      "blocklistsMatched"
+    ],
+    "NotificationTarget": [
+      "comment",
+      "custom",
+      "parentActivity"
+    ],
+    "NotificationTrigger": [
+      "comment",
+      "custom"
+    ],
+    "OwnUserResponse": [
+      "avgResponseTime",
+      "banned",
+      "channelMutes",
+      "invisible",
+      "latestHiddenChannels",
+      "mutes",
+      "online",
+      "privacySettings",
+      "pushPreferences",
+      "teamsRole",
+      "totalUnreadCount",
+      "totalUnreadCountByTeam",
+      "unreadChannels",
+      "unreadCount",
+      "unreadThreads"
+    ],
+    "PollOptionResponseData": [
+      "textI18n"
+    ],
+    "PollResponseData": [
+      "descriptionI18n",
+      "nameI18n"
+    ],
+    "PollVoteResponse": [
+      "poll"
+    ],
+    "PollVoteResponseData": [
+      "answerTextI18n"
+    ],
+    "PrivacySettingsResponse": [
+      "deliveryReceipts",
+      "typingIndicators"
+    ],
+    "QueryActivitiesRequest": [
+      "enrichOwnFields"
+    ],
+    "QueryBookmarksRequest": [
+      "enrichOwnFields"
+    ],
+    "QueryCommentsRequest": [
+      "idAround"
+    ],
+    "QueryFeedsRequest": [
+      "enrichOwnFields"
+    ],
+    "QueryFollowsRequest": [
+      "includeGroupCounts"
+    ],
+    "QueryFollowsResponse": [
+      "groupCounts"
+    ],
+    "QueryReviewQueueRequest": [
+      "excludeDefaultActionConfig"
+    ],
+    "QueryReviewQueueResponse": [
+      "defaultActionConfig",
+      "filterConfig"
+    ],
+    "ReviewQueueItemResponse": [
+      "appeal",
+      "call",
+      "confidenceScore",
+      "countryCode",
+      "escalated",
+      "escalatedAt",
+      "escalatedBy",
+      "escalationMetadata",
+      "falsePositiveFlags",
+      "feedsV2Reaction",
+      "feedsV3Activity",
+      "feedsV3Comment",
+      "latestModeratorAction",
+      "mediaDisplay",
+      "message",
+      "poll",
+      "reaction"
+    ],
+    "RuleBuilderAction": [
+      "callOptions",
+      "reason",
+      "skipInbox"
+    ],
+    "RuleBuilderCondition": [
+      "callCustomPropertyParams",
+      "callTypeRuleParams",
+      "callViolationCountParams",
+      "channelMessageCountRuleParams",
+      "closedCaptionRuleParams",
+      "contentCountryCodeParams",
+      "contentCustomPropertyCountParams",
+      "contentCustomPropertyParams",
+      "contentFlagCountRuleParams",
+      "floodIdenticalParams",
+      "floodSimilarParams",
+      "intentRuleParams",
+      "ipContentCountRuleParams",
+      "ipFlagCountRuleParams",
+      "keyframeOcrRuleParams",
+      "keyframeRuleParams",
+      "ocrContentParams",
+      "userChannelBanCountParams",
+      "userChannelCountParams",
+      "userFlagCountRuleParams",
+      "userIdenticalContentCountParams",
+      "userIdenticalImageCountParams",
+      "userReactionCountParams",
+      "userRoleParams"
+    ],
+    "RuleBuilderRule": [
+      "actionSequences"
+    ],
+    "SingleFollowResponse": [
+      "notificationCreated"
+    ],
+    "SortParamRequest": [
+      "type"
+    ],
+    "SubmitActionRequest": [
+      "appealId",
+      "ban",
+      "block",
+      "bypass",
+      "deleteComment",
+      "deleteMessage",
+      "deletePoll",
+      "deletePollAnswer",
+      "deletePollOption",
+      "deleteUser",
+      "deleteUserMessages",
+      "escalate",
+      "flag",
+      "rejectAppeal",
+      "restore",
+      "shadowBlock",
+      "unban",
+      "unblock"
+    ],
+    "SubmitActionResponse": [
+      "appealItem",
+      "autoRestoreWarning"
+    ],
+    "TextContentParameters": [
+      "labelOperator",
+      "textLength",
+      "textLengthOperator"
+    ],
+    "TextRuleParameters": [
+      "semanticFilterMinThreshold",
+      "semanticFilterNames"
+    ],
+    "ThreadedCommentResponse": [
+      "bookmarkCount",
+      "editedAt",
+      "hidden",
+      "i18n"
+    ],
+    "UpdateActivityRequest": [
+      "collectionRefs",
+      "copyCustomToNotification",
+      "enrichOwnFields",
+      "handleMentionNotifications",
+      "mentionedUserIds",
+      "restrictReplies",
+      "runActivityProcessors",
+      "searchData",
+      "skipEnrichUrl",
+      "visibilityTag"
+    ],
+    "UpdateCommentRequest": [
+      "attachments",
+      "copyCustomToNotification",
+      "handleMentionNotifications",
+      "mentionedUserIds",
+      "skipEnrichUrl"
+    ],
+    "UpdateFeedRequest": [
+      "clearLocation",
+      "description",
+      "enrichOwnFields",
+      "filterTags",
+      "location",
+      "name"
+    ],
+    "UpsertActivitiesRequest": [
+      "enrichOwnFields"
+    ],
+    "UpsertActivitiesResponse": [
+      "mentionNotificationsCreated",
+      "skippedExisting"
+    ],
+    "UpsertConfigRequest": [
+      "aiAudioConfig",
+      "floodConfig",
+      "intentConfig",
+      "videoCallRuleConfig"
+    ],
+    "UserBannedEvent": [
+      "channelCustom",
+      "channelId",
+      "channelMemberCount",
+      "channelMessageCount",
+      "channelType",
+      "cid",
+      "custom",
+      "receivedAt",
+      "reviewQueueItemId",
+      "totalBans"
+    ],
+    "UserDeactivatedEvent": [
+      "custom",
+      "receivedAt"
+    ],
+    "UserDeletedEvent": [
+      "deleteConversationChannels",
+      "deleteMessages",
+      "markMessagesDeleted"
+    ],
+    "UserReactivatedEvent": [
+      "createdBy",
+      "custom",
+      "receivedAt"
+    ],
+    "UserUnbannedEvent": [
+      "channelCustom",
+      "channelId",
+      "channelMemberCount",
+      "channelMessageCount",
+      "channelType",
+      "cid"
+    ],
+    "VelocityFilterConfig": [
+      "cascadingActions",
+      "cidsPerUser",
+      "firstMessageOnly"
+    ],
+    "VideoContentParameters": [
+      "labelOperator"
+    ]
+  }
+}

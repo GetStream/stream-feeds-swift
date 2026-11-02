@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class LLMConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class LLMConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var appContext: String?
     public var async: Bool?
     public var enabled: Bool
@@ -27,7 +27,9 @@ public final class LLMConfig: @unchecked Sendable, Codable, JSONEncodable, Hasha
         case rules
         case severityDescriptions = "severity_descriptions"
     }
+}
 
+extension LLMConfig: Hashable {
     public static func == (lhs: LLMConfig, rhs: LLMConfig) -> Bool {
         lhs.appContext == rhs.appContext &&
             lhs.async == rhs.async &&

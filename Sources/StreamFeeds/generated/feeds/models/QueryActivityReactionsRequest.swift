@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class QueryActivityReactionsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryActivityReactionsRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Filters to apply to the query
     public var filter: [String: RawJSON]?
     public var limit: Int?
     public var next: String?
@@ -27,7 +28,9 @@ public final class QueryActivityReactionsRequest: @unchecked Sendable, Codable, 
         case prev
         case sort
     }
+}
 
+extension QueryActivityReactionsRequest: Hashable {
     public static func == (lhs: QueryActivityReactionsRequest, rhs: QueryActivityReactionsRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

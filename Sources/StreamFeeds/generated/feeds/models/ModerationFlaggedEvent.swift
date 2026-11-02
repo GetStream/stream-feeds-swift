@@ -5,41 +5,35 @@
 import Foundation
 import StreamCore
 
-public final class ModerationFlaggedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// This event is sent when content is flagged for moderation
+public final class ModerationFlaggedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var createdAt: Date
-    public var item: String?
-    public var objectId: String?
+    /// The ID of the flagged content
+    public var objectId: String
     public var type: String = "moderation.flagged"
-    public var user: User?
 
-    public init(createdAt: Date, item: String? = nil, objectId: String? = nil, user: User? = nil) {
+    public init(createdAt: Date, objectId: String) {
         self.createdAt = createdAt
-        self.item = item
         self.objectId = objectId
-        self.user = user
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case createdAt = "created_at"
-        case item
         case objectId = "object_id"
         case type
-        case user
     }
+}
 
+extension ModerationFlaggedEvent: Hashable {
     public static func == (lhs: ModerationFlaggedEvent, rhs: ModerationFlaggedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
-            lhs.item == rhs.item &&
             lhs.objectId == rhs.objectId &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
-        hasher.combine(item)
         hasher.combine(objectId)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

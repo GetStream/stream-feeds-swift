@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AutomodSemanticFiltersConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AutomodSemanticFiltersConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var async: Bool?
     public var enabled: Bool
     public var rules: [AutomodSemanticFiltersRule]
@@ -21,7 +21,9 @@ public final class AutomodSemanticFiltersConfig: @unchecked Sendable, Codable, J
         case enabled
         case rules
     }
+}
 
+extension AutomodSemanticFiltersConfig: Hashable {
     public static func == (lhs: AutomodSemanticFiltersConfig, rhs: AutomodSemanticFiltersConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&

@@ -22,7 +22,6 @@ extension UserResponseCommonFields {
             lastActive: Date(),
             name: "Test User",
             online: true,
-            revokeTokensIssuedBefore: nil,
             role: "user",
             teams: ["team1"],
             teamsRole: ["team1": "member"],

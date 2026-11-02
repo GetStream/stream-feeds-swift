@@ -5,29 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum AutomodSemanticFiltersRuleAction: String, Sendable, Codable, CaseIterable {
-        case flag
-        case remove
-        case shadow
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var action: AutomodSemanticFiltersRuleAction
+public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSONEncodable {
+    /// What a moderation rule does when it matches.
+    public var action: ModerationAction
     public var name: String
     public var threshold: Float
 
-    public init(action: AutomodSemanticFiltersRuleAction, name: String, threshold: Float) {
+    public init(action: ModerationAction, name: String, threshold: Float) {
         self.action = action
         self.name = name
         self.threshold = threshold
@@ -38,7 +22,9 @@ public final class AutomodSemanticFiltersRule: @unchecked Sendable, Codable, JSO
         case name
         case threshold
     }
+}
 
+extension AutomodSemanticFiltersRule: Hashable {
     public static func == (lhs: AutomodSemanticFiltersRule, rhs: AutomodSemanticFiltersRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.name == rhs.name &&

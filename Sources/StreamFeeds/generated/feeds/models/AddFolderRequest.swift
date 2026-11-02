@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class AddFolderRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AddFolderRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Custom data for the folder
     public var custom: [String: RawJSON]?
+    /// Name of the folder
     public var name: String
 
     public init(custom: [String: RawJSON]? = nil, name: String) {
@@ -18,7 +20,9 @@ public final class AddFolderRequest: @unchecked Sendable, Codable, JSONEncodable
         case custom
         case name
     }
+}
 
+extension AddFolderRequest: Hashable {
     public static func == (lhs: AddFolderRequest, rhs: AddFolderRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.name == rhs.name

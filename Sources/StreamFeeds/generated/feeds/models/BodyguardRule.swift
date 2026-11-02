@@ -5,12 +5,15 @@
 import Foundation
 import StreamCore
 
-public final class BodyguardRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class BodyguardRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum BodyguardRuleAction: String, Sendable, Codable, CaseIterable {
         case bounce
         case bounceFlag = "bounce_flag"
         case bounceRemove = "bounce_remove"
         case flag
+        case keep
+        case mask
+        case maskFlag = "mask_flag"
         case remove
         case shadow
         case unknown = "_unknown"
@@ -41,7 +44,9 @@ public final class BodyguardRule: @unchecked Sendable, Codable, JSONEncodable, H
         case label
         case severityRules = "severity_rules"
     }
+}
 
+extension BodyguardRule: Hashable {
     public static func == (lhs: BodyguardRule, rhs: BodyguardRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.label == rhs.label &&

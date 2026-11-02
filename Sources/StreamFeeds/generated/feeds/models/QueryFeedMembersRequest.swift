@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class QueryFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryFeedMembersRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Filter parameters for the query
     public var filter: [String: RawJSON]?
     public var limit: Int?
     public var next: String?
     public var prev: String?
+    /// Sort parameters for the query
     public var sort: [SortParamRequest]?
 
     public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
@@ -27,7 +29,9 @@ public final class QueryFeedMembersRequest: @unchecked Sendable, Codable, JSONEn
         case prev
         case sort
     }
+}
 
+extension QueryFeedMembersRequest: Hashable {
     public static func == (lhs: QueryFeedMembersRequest, rhs: QueryFeedMembersRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

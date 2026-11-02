@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteActivitiesResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// List of activity IDs that were successfully deleted
     public var deletedIds: [String]
     public var duration: String
 
@@ -18,7 +19,9 @@ public final class DeleteActivitiesResponse: @unchecked Sendable, Codable, JSONE
         case deletedIds = "deleted_ids"
         case duration
     }
+}
 
+extension DeleteActivitiesResponse: Hashable {
     public static func == (lhs: DeleteActivitiesResponse, rhs: DeleteActivitiesResponse) -> Bool {
         lhs.deletedIds == rhs.deletedIds &&
             lhs.duration == rhs.duration

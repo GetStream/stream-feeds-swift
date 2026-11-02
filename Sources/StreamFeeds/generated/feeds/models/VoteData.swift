@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class VoteData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class VoteData: @unchecked Sendable, Codable, JSONEncodable {
     public var answerText: String?
     public var optionId: String?
 
@@ -18,7 +18,9 @@ public final class VoteData: @unchecked Sendable, Codable, JSONEncodable, Hashab
         case answerText = "answer_text"
         case optionId = "option_id"
     }
+}
 
+extension VoteData: Hashable {
     public static func == (lhs: VoteData, rhs: VoteData) -> Bool {
         lhs.answerText == rhs.answerText &&
             lhs.optionId == rhs.optionId

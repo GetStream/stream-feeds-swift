@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class GetConfigResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetConfigResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var config: ConfigResponse?
     public var duration: String
 
@@ -18,7 +18,9 @@ public final class GetConfigResponse: @unchecked Sendable, Codable, JSONEncodabl
         case config
         case duration
     }
+}
 
+extension GetConfigResponse: Hashable {
     public static func == (lhs: GetConfigResponse, rhs: GetConfigResponse) -> Bool {
         lhs.config == rhs.config &&
             lhs.duration == rhs.duration

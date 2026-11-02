@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class ReadReceiptsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// The settings for the read receipt events.
+public final class ReadReceiptsResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var enabled: Bool
 
     public init(enabled: Bool) {
@@ -15,7 +16,9 @@ public final class ReadReceiptsResponse: @unchecked Sendable, Codable, JSONEncod
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case enabled
     }
+}
 
+extension ReadReceiptsResponse: Hashable {
     public static func == (lhs: ReadReceiptsResponse, rhs: ReadReceiptsResponse) -> Bool {
         lhs.enabled == rhs.enabled
     }

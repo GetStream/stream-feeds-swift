@@ -5,17 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var aiProviders: [String]
+    /// Timestamp when the action was taken
     public var createdAt: Date
+    /// Additional metadata about the action
     public var custom: [String: RawJSON]
+    /// Unique identifier of the action log
     public var id: String
+    /// Reason for the moderation action
     public var reason: String
     public var reviewQueueItem: ReviewQueueItemResponse?
+    /// User response object
     public var targetUser: UserResponse?
+    /// ID of the user who was the target of the action
     public var targetUserId: String
+    /// Type of moderation action
     public var type: String
+    /// User response object
     public var user: UserResponse?
+    /// ID of the user who performed the action
     public var userId: String
 
     public init(aiProviders: [String], createdAt: Date, custom: [String: RawJSON], id: String, reason: String, reviewQueueItem: ReviewQueueItemResponse? = nil, targetUser: UserResponse? = nil, targetUserId: String, type: String, user: UserResponse? = nil, userId: String) {
@@ -45,7 +54,9 @@ public final class ActionLogResponse: @unchecked Sendable, Codable, JSONEncodabl
         case user
         case userId = "user_id"
     }
+}
 
+extension ActionLogResponse: Hashable {
     public static func == (lhs: ActionLogResponse, rhs: ActionLogResponse) -> Bool {
         lhs.aiProviders == rhs.aiProviders &&
             lhs.createdAt == rhs.createdAt &&

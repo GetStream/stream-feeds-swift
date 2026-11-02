@@ -5,11 +5,12 @@
 import Foundation
 import StreamCore
 
-public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
-    public var suggestions: [FeedResponse]
+    /// List of suggested feeds to follow
+    public var suggestions: [FeedSuggestionResponse]
 
-    public init(duration: String, suggestions: [FeedResponse]) {
+    public init(duration: String, suggestions: [FeedSuggestionResponse]) {
         self.duration = duration
         self.suggestions = suggestions
     }
@@ -18,7 +19,9 @@ public final class GetFollowSuggestionsResponse: @unchecked Sendable, Codable, J
         case duration
         case suggestions
     }
+}
 
+extension GetFollowSuggestionsResponse: Hashable {
     public static func == (lhs: GetFollowSuggestionsResponse, rhs: GetFollowSuggestionsResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.suggestions == rhs.suggestions

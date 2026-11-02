@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AutomodToxicityConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AutomodToxicityConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var async: Bool?
     public var enabled: Bool
     public var rules: [AutomodRule]
@@ -21,7 +21,9 @@ public final class AutomodToxicityConfig: @unchecked Sendable, Codable, JSONEnco
         case enabled
         case rules
     }
+}
 
+extension AutomodToxicityConfig: Hashable {
     public static func == (lhs: AutomodToxicityConfig, rhs: AutomodToxicityConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&

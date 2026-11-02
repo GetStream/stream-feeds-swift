@@ -5,15 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var actionConfig: [String: [ModerationActionConfig]]
+public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Configuration for moderation actions
+    public var actionConfig: [String: [ModerationActionConfigResponse]]
     public var duration: String
+    /// List of review queue items
     public var items: [ReviewQueueItemResponse]
     public var next: String?
     public var prev: String?
+    /// Statistics about the review queue
     public var stats: [String: RawJSON]
 
-    public init(actionConfig: [String: [ModerationActionConfig]], duration: String, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
+    public init(actionConfig: [String: [ModerationActionConfigResponse]], duration: String, items: [ReviewQueueItemResponse], next: String? = nil, prev: String? = nil, stats: [String: RawJSON]) {
         self.actionConfig = actionConfig
         self.duration = duration
         self.items = items
@@ -30,7 +33,9 @@ public final class QueryReviewQueueResponse: @unchecked Sendable, Codable, JSONE
         case prev
         case stats
     }
+}
 
+extension QueryReviewQueueResponse: Hashable {
     public static func == (lhs: QueryReviewQueueResponse, rhs: QueryReviewQueueResponse) -> Bool {
         lhs.actionConfig == rhs.actionConfig &&
             lhs.duration == rhs.duration &&

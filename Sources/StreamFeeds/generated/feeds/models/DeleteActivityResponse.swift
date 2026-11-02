@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteActivityResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
 
     public init(duration: String) {
@@ -15,7 +15,9 @@ public final class DeleteActivityResponse: @unchecked Sendable, Codable, JSONEnc
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case duration
     }
+}
 
+extension DeleteActivityResponse: Hashable {
     public static func == (lhs: DeleteActivityResponse, rhs: DeleteActivityResponse) -> Bool {
         lhs.duration == rhs.duration
     }

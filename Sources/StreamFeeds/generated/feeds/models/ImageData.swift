@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class ImageData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ImageData: @unchecked Sendable, Codable, JSONEncodable {
     public var frames: String
     public var height: String
     public var size: String
@@ -27,7 +27,9 @@ public final class ImageData: @unchecked Sendable, Codable, JSONEncodable, Hasha
         case url
         case width
     }
+}
 
+extension ImageData: Hashable {
     public static func == (lhs: ImageData, rhs: ImageData) -> Bool {
         lhs.frames == rhs.frames &&
             lhs.height == rhs.height &&

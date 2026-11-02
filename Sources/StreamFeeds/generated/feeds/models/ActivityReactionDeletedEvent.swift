@@ -5,18 +5,22 @@
 import Foundation
 import StreamCore
 
-public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when a reaction is deleted from an activity.
+public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var activity: ActivityResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var reaction: FeedsReactionResponse
     public var receivedAt: Date?
+    /// The type of the reaction that was removed
     public var type: String = "feeds.activity.reaction.deleted"
     public var user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, reaction: FeedsReactionResponse, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
@@ -38,7 +42,9 @@ public final class ActivityReactionDeletedEvent: @unchecked Sendable, Event, Cod
         case type
         case user
     }
+}
 
+extension ActivityReactionDeletedEvent: Hashable {
     public static func == (lhs: ActivityReactionDeletedEvent, rhs: ActivityReactionDeletedEvent) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&

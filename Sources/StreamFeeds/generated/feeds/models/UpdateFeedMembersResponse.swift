@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class UpdateFeedMembersResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class UpdateFeedMembersResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var added: [FeedMemberResponse]
+    /// Duration of the request in milliseconds
     public var duration: String
     public var removedIds: [String]
     public var updated: [FeedMemberResponse]
@@ -24,7 +26,9 @@ public final class UpdateFeedMembersResponse: @unchecked Sendable, Codable, JSON
         case removedIds = "removed_ids"
         case updated
     }
+}
 
+extension UpdateFeedMembersResponse: Hashable {
     public static func == (lhs: UpdateFeedMembersResponse, rhs: UpdateFeedMembersResponse) -> Bool {
         lhs.added == rhs.added &&
             lhs.duration == rhs.duration &&

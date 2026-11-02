@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class FlagUserOptions: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FlagUserOptions: @unchecked Sendable, Codable, JSONEncodable {
     public var reason: String?
 
     public init(reason: String? = nil) {
@@ -15,7 +15,9 @@ public final class FlagUserOptions: @unchecked Sendable, Codable, JSONEncodable,
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case reason
     }
+}
 
+extension FlagUserOptions: Hashable {
     public static func == (lhs: FlagUserOptions, rhs: FlagUserOptions) -> Bool {
         lhs.reason == rhs.reason
     }

@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class RejectFollowRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class RejectFollowRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Fully qualified ID of the source feed
     public var source: String
+    /// Fully qualified ID of the target feed
     public var target: String
 
     public init(source: String, target: String) {
@@ -18,7 +20,9 @@ public final class RejectFollowRequest: @unchecked Sendable, Codable, JSONEncoda
         case source
         case target
     }
+}
 
+extension RejectFollowRequest: Hashable {
     public static func == (lhs: RejectFollowRequest, rhs: RejectFollowRequest) -> Bool {
         lhs.source == rhs.source &&
             lhs.target == rhs.target

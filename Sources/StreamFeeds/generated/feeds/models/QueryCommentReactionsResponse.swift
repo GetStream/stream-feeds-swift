@@ -5,7 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
     public var next: String?
     public var prev: String?
@@ -24,7 +26,9 @@ public final class QueryCommentReactionsResponse: @unchecked Sendable, Codable, 
         case prev
         case reactions
     }
+}
 
+extension QueryCommentReactionsResponse: Hashable {
     public static func == (lhs: QueryCommentReactionsResponse, rhs: QueryCommentReactionsResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&

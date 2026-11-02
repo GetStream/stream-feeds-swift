@@ -5,17 +5,21 @@
 import Foundation
 import StreamCore
 
-public final class ActivityUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
+/// Emitted when an activity is updated.
+public final class ActivityUpdatedEvent: @unchecked Sendable, Event, Codable, JSONEncodable {
     public var activity: ActivityResponse
+    /// Date/time of creation
     public var createdAt: Date
     public var custom: [String: RawJSON]
-    public var feedVisibility: String?
+    /// Who can see and follow a feed.
+    public var feedVisibility: FeedVisibility?
     public var fid: String
     public var receivedAt: Date?
+    /// The type of the event
     public var type: String = "feeds.activity.updated"
     public var user: UserResponseCommonFields?
 
-    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activity: ActivityResponse, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
         self.activity = activity
         self.createdAt = createdAt
         self.custom = custom
@@ -35,7 +39,9 @@ public final class ActivityUpdatedEvent: @unchecked Sendable, Event, Codable, JS
         case type
         case user
     }
+}
 
+extension ActivityUpdatedEvent: Hashable {
     public static func == (lhs: ActivityUpdatedEvent, rhs: ActivityUpdatedEvent) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.createdAt == rhs.createdAt &&

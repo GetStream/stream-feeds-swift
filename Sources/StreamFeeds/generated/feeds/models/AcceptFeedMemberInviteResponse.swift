@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AcceptFeedMemberInviteResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AcceptFeedMemberInviteResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
     public var member: FeedMemberResponse
 
@@ -18,7 +18,9 @@ public final class AcceptFeedMemberInviteResponse: @unchecked Sendable, Codable,
         case duration
         case member
     }
+}
 
+extension AcceptFeedMemberInviteResponse: Hashable {
     public static func == (lhs: AcceptFeedMemberInviteResponse, rhs: AcceptFeedMemberInviteResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.member == rhs.member

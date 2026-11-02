@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// An attachment is a message object that represents a file uploaded by a user.
+public final class Attachment: @unchecked Sendable, Codable, JSONEncodable {
     public var actions: [Action]?
     public var assetUrl: String?
     public var authorIcon: String?
@@ -27,6 +28,7 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
     public var thumbUrl: String?
     public var title: String?
     public var titleLink: String?
+    /// Attachment type (e.g. image, video, url)
     public var type: String?
 
     public init(actions: [Action]? = nil, assetUrl: String? = nil, authorIcon: String? = nil, authorLink: String? = nil, authorName: String? = nil, color: String? = nil, custom: [String: RawJSON], fallback: String? = nil, fields: [Field]? = nil, footer: String? = nil, footerIcon: String? = nil, giphy: Images? = nil, imageUrl: String? = nil, ogScrapeUrl: String? = nil, originalHeight: Int? = nil, originalWidth: Int? = nil, pretext: String? = nil, text: String? = nil, thumbUrl: String? = nil, title: String? = nil, titleLink: String? = nil) {
@@ -77,7 +79,9 @@ public final class Attachment: @unchecked Sendable, Codable, JSONEncodable, Hash
         case titleLink = "title_link"
         case type
     }
+}
 
+extension Attachment: Hashable {
     public static func == (lhs: Attachment, rhs: Attachment) -> Bool {
         lhs.actions == rhs.actions &&
             lhs.assetUrl == rhs.assetUrl &&

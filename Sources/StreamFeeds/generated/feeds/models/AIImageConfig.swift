@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class AIImageConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class AIImageConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var async: Bool?
     public var enabled: Bool
     public var ocrRules: [OCRRule]
@@ -24,7 +24,9 @@ public final class AIImageConfig: @unchecked Sendable, Codable, JSONEncodable, H
         case ocrRules = "ocr_rules"
         case rules
     }
+}
 
+extension AIImageConfig: Hashable {
     public static func == (lhs: AIImageConfig, rhs: AIImageConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&

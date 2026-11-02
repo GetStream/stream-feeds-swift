@@ -10,7 +10,7 @@ extension FeedMemberUpdatedEvent {
     static func dummy(
         createdAt: Date = .fixed(),
         custom: [String: RawJSON] = [:],
-        feedVisibility: String? = nil,
+        feedVisibility: FeedVisibility? = nil,
         fid: String,
         member: FeedMemberResponse,
         receivedAt: Date? = nil,

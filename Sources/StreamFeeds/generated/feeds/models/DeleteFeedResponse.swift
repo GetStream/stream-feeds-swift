@@ -5,8 +5,9 @@
 import Foundation
 import StreamCore
 
-public final class DeleteFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteFeedResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
+    /// The ID of the async task that will handle feed cleanup and hard deletion
     public var taskId: String
 
     public init(duration: String, taskId: String) {
@@ -18,7 +19,9 @@ public final class DeleteFeedResponse: @unchecked Sendable, Codable, JSONEncodab
         case duration
         case taskId = "task_id"
     }
+}
 
+extension DeleteFeedResponse: Hashable {
     public static func == (lhs: DeleteFeedResponse, rhs: DeleteFeedResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.taskId == rhs.taskId

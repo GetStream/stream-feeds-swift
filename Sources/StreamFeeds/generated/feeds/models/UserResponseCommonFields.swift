@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONEncodable {
     public var avgResponseTime: Int?
     public var banned: Bool
     public var blockedUserIds: [String]
@@ -19,13 +19,12 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
     public var lastActive: Date?
     public var name: String?
     public var online: Bool
-    public var revokeTokensIssuedBefore: Date?
     public var role: String
     public var teams: [String]
     public var teamsRole: [String: String]?
     public var updatedAt: Date
 
-    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, revokeTokensIssuedBefore: Date? = nil, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
+    public init(avgResponseTime: Int? = nil, banned: Bool, blockedUserIds: [String], createdAt: Date, custom: [String: RawJSON], deactivatedAt: Date? = nil, deletedAt: Date? = nil, id: String, image: String? = nil, language: String, lastActive: Date? = nil, name: String? = nil, online: Bool, role: String, teams: [String], teamsRole: [String: String]? = nil, updatedAt: Date) {
         self.avgResponseTime = avgResponseTime
         self.banned = banned
         self.blockedUserIds = blockedUserIds
@@ -39,7 +38,6 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
         self.lastActive = lastActive
         self.name = name
         self.online = online
-        self.revokeTokensIssuedBefore = revokeTokensIssuedBefore
         self.role = role
         self.teams = teams
         self.teamsRole = teamsRole
@@ -60,13 +58,14 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
         case lastActive = "last_active"
         case name
         case online
-        case revokeTokensIssuedBefore = "revoke_tokens_issued_before"
         case role
         case teams
         case teamsRole = "teams_role"
         case updatedAt = "updated_at"
     }
+}
 
+extension UserResponseCommonFields: Hashable {
     public static func == (lhs: UserResponseCommonFields, rhs: UserResponseCommonFields) -> Bool {
         lhs.avgResponseTime == rhs.avgResponseTime &&
             lhs.banned == rhs.banned &&
@@ -81,7 +80,6 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
             lhs.lastActive == rhs.lastActive &&
             lhs.name == rhs.name &&
             lhs.online == rhs.online &&
-            lhs.revokeTokensIssuedBefore == rhs.revokeTokensIssuedBefore &&
             lhs.role == rhs.role &&
             lhs.teams == rhs.teams &&
             lhs.teamsRole == rhs.teamsRole &&
@@ -102,7 +100,6 @@ public final class UserResponseCommonFields: @unchecked Sendable, Codable, JSONE
         hasher.combine(lastActive)
         hasher.combine(name)
         hasher.combine(online)
-        hasher.combine(revokeTokensIssuedBefore)
         hasher.combine(role)
         hasher.combine(teams)
         hasher.combine(teamsRole)

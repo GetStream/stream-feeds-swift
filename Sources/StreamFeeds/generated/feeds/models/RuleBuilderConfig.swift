@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderConfig: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class RuleBuilderConfig: @unchecked Sendable, Codable, JSONEncodable {
     public var async: Bool?
     public var rules: [RuleBuilderRule]?
 
@@ -18,7 +18,9 @@ public final class RuleBuilderConfig: @unchecked Sendable, Codable, JSONEncodabl
         case async
         case rules
     }
+}
 
+extension RuleBuilderConfig: Hashable {
     public static func == (lhs: RuleBuilderConfig, rhs: RuleBuilderConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.rules == rhs.rules

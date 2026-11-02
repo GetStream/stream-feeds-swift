@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class Field: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class Field: @unchecked Sendable, Codable, JSONEncodable {
     public var short: Bool
     public var title: String
     public var value: String
@@ -21,7 +21,9 @@ public final class Field: @unchecked Sendable, Codable, JSONEncodable, Hashable 
         case title
         case value
     }
+}
 
+extension Field: Hashable {
     public static func == (lhs: Field, rhs: Field) -> Bool {
         lhs.short == rhs.short &&
             lhs.title == rhs.title &&

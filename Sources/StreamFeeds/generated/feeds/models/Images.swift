@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class Images: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class Images: @unchecked Sendable, Codable, JSONEncodable {
     public var fixedHeight: ImageData
     public var fixedHeightDownsampled: ImageData
     public var fixedHeightStill: ImageData
@@ -33,7 +33,9 @@ public final class Images: @unchecked Sendable, Codable, JSONEncodable, Hashable
         case fixedWidthStill = "fixed_width_still"
         case original
     }
+}
 
+extension Images: Hashable {
     public static func == (lhs: Images, rhs: Images) -> Bool {
         lhs.fixedHeight == rhs.fixedHeight &&
             lhs.fixedHeightDownsampled == rhs.fixedHeightDownsampled &&

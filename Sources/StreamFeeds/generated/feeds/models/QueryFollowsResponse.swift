@@ -5,10 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var duration: String
+    /// List of follow relationships matching the query
     public var follows: [FollowResponse]
+    /// Cursor for next page
     public var next: String?
+    /// Cursor for previous page
     public var prev: String?
 
     public init(duration: String, follows: [FollowResponse], next: String? = nil, prev: String? = nil) {
@@ -24,7 +27,9 @@ public final class QueryFollowsResponse: @unchecked Sendable, Codable, JSONEncod
         case next
         case prev
     }
+}
 
+extension QueryFollowsResponse: Hashable {
     public static func == (lhs: QueryFollowsResponse, rhs: QueryFollowsResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.follows == rhs.follows &&

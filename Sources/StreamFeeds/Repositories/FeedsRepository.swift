@@ -23,6 +23,8 @@ final class FeedsRepository: Sendable {
         let response = try await apiClient.getOrCreateFeed(
             feedGroupId: feed.group,
             feedId: feed.id,
+            language: nil,
+            translateText: nil,
             getOrCreateFeedRequest: request
         )
         let rawFollowers = response.followers.map { $0.toModel() }
@@ -80,7 +82,8 @@ final class FeedsRepository: Sendable {
         _ = try await apiClient.deleteFeed(
             feedGroupId: feedGroupId,
             feedId: feedId,
-            hardDelete: hardDelete
+            hardDelete: hardDelete,
+            purgeUserActivities: nil
         )
     }
     
@@ -118,7 +121,13 @@ final class FeedsRepository: Sendable {
     }
     
     func unfollow(source: FeedId, target: FeedId) async throws -> FollowData {
-        let response = try await apiClient.unfollow(source: source.rawValue, target: target.rawValue)
+        let response = try await apiClient.unfollow(
+            source: source.rawValue,
+            target: target.rawValue,
+            deleteNotificationActivity: nil,
+            keepHistory: nil,
+            enrichOwnFields: nil
+        )
         return response.follow.toModel()
     }
     

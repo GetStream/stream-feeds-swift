@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONEncodable {
     public enum VelocityFilterConfigRuleAction: String, Sendable, Codable, CaseIterable {
         case ban
         case flag
@@ -90,7 +90,9 @@ public final class VelocityFilterConfigRule: @unchecked Sendable, Codable, JSONE
         case slowSpamTtl = "slow_spam_ttl"
         case urlOnly = "url_only"
     }
+}
 
+extension VelocityFilterConfigRule: Hashable {
     public static func == (lhs: VelocityFilterConfigRule, rhs: VelocityFilterConfigRule) -> Bool {
         lhs.action == rhs.action &&
             lhs.banDuration == rhs.banDuration &&

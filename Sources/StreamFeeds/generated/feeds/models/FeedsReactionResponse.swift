@@ -5,13 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class FeedsReactionResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class FeedsReactionResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var activityId: String
     public var commentId: String?
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var type: String
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse
 
     public init(activityId: String, commentId: String? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, type: String, updatedAt: Date, user: UserResponse) {
@@ -33,7 +34,9 @@ public final class FeedsReactionResponse: @unchecked Sendable, Codable, JSONEnco
         case updatedAt = "updated_at"
         case user
     }
+}
 
+extension FeedsReactionResponse: Hashable {
     public static func == (lhs: FeedsReactionResponse, rhs: FeedsReactionResponse) -> Bool {
         lhs.activityId == rhs.activityId &&
             lhs.commentId == rhs.commentId &&

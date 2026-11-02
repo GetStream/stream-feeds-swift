@@ -5,8 +5,11 @@
 import Foundation
 import StreamCore
 
-public final class GetApplicationResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+/// Basic response information
+public final class GetApplicationResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// A type representing the app settings.
     public var app: AppResponseFields
+    /// Duration of the request in milliseconds
     public var duration: String
 
     public init(app: AppResponseFields, duration: String) {
@@ -18,7 +21,9 @@ public final class GetApplicationResponse: @unchecked Sendable, Codable, JSONEnc
         case app
         case duration
     }
+}
 
+extension GetApplicationResponse: Hashable {
     public static func == (lhs: GetApplicationResponse, rhs: GetApplicationResponse) -> Bool {
         lhs.app == rhs.app &&
             lhs.duration == rhs.duration

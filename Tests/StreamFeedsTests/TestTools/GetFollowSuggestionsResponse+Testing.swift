@@ -9,7 +9,7 @@ import StreamCore
 extension GetFollowSuggestionsResponse {
     static func dummy(
         duration: String = "1.23ms",
-        suggestions: [FeedResponse] = [.dummy()]
+        suggestions: [FeedSuggestionResponse] = [.dummy()]
     ) -> GetFollowSuggestionsResponse {
         GetFollowSuggestionsResponse(
             duration: duration,

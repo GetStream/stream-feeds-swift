@@ -5,24 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEncodable {
     public var createdAt: Date
     public var custom: [String: RawJSON]?
     public var entityCreatorId: String?
     public var entityId: String
     public var entityType: String
     public var labels: [String]?
-    public var moderationPayload: ModerationPayload?
+    /// Content payload for moderation
+    public var moderationPayload: ModerationPayloadResponse?
     public var reason: String?
     public var result: [[String: RawJSON]]
     public var reviewQueueItem: ReviewQueueItemResponse?
     public var reviewQueueItemId: String?
     public var type: String
     public var updatedAt: Date
+    /// User response object
     public var user: UserResponse?
     public var userId: String
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, labels: [String]? = nil, moderationPayload: ModerationPayload? = nil, reason: String? = nil, result: [[String: RawJSON]], reviewQueueItem: ReviewQueueItemResponse? = nil, reviewQueueItemId: String? = nil, type: String, updatedAt: Date, user: UserResponse? = nil, userId: String) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, entityCreatorId: String? = nil, entityId: String, entityType: String, labels: [String]? = nil, moderationPayload: ModerationPayloadResponse? = nil, reason: String? = nil, result: [[String: RawJSON]], reviewQueueItem: ReviewQueueItemResponse? = nil, reviewQueueItemId: String? = nil, type: String, updatedAt: Date, user: UserResponse? = nil, userId: String) {
         self.createdAt = createdAt
         self.custom = custom
         self.entityCreatorId = entityCreatorId
@@ -57,7 +59,9 @@ public final class ModerationFlagResponse: @unchecked Sendable, Codable, JSONEnc
         case user
         case userId = "user_id"
     }
+}
 
+extension ModerationFlagResponse: Hashable {
     public static func == (lhs: ModerationFlagResponse, rhs: ModerationFlagResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.custom == rhs.custom &&

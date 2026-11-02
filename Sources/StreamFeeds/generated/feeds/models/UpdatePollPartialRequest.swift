@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class UpdatePollPartialRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UpdatePollPartialRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Sets new field values
     public var set: [String: RawJSON]?
+    /// Array of field names to unset
     public var unset: [String]?
 
     public init(set: [String: RawJSON]? = nil, unset: [String]? = nil) {
@@ -18,7 +20,9 @@ public final class UpdatePollPartialRequest: @unchecked Sendable, Codable, JSONE
         case set
         case unset
     }
+}
 
+extension UpdatePollPartialRequest: Hashable {
     public static func == (lhs: UpdatePollPartialRequest, rhs: UpdatePollPartialRequest) -> Bool {
         lhs.set == rhs.set &&
             lhs.unset == rhs.unset

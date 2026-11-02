@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class VideoRuleParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class VideoRuleParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var harmLabels: [String]?
     public var threshold: Int?
     public var timeWindow: String?
@@ -21,7 +21,9 @@ public final class VideoRuleParameters: @unchecked Sendable, Codable, JSONEncoda
         case threshold
         case timeWindow = "time_window"
     }
+}
 
+extension VideoRuleParameters: Hashable {
     public static func == (lhs: VideoRuleParameters, rhs: VideoRuleParameters) -> Bool {
         lhs.harmLabels == rhs.harmLabels &&
             lhs.threshold == rhs.threshold &&

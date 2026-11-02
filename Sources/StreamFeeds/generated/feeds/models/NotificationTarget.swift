@@ -5,12 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class NotificationTarget: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class NotificationTarget: @unchecked Sendable, Codable, JSONEncodable {
+    /// Attachments on the target activity (for activity targets)
     public var attachments: [Attachment]?
+    /// The ID of the target (activity ID or user ID)
     public var id: String
+    /// The name of the target user (for user targets like follows)
     public var name: String?
+    /// The text content of the target activity (for activity targets)
     public var text: String?
+    /// The type of the target activity (for activity targets)
     public var type: String?
+    /// The ID of the user who created the target activity (for activity targets)
     public var userId: String?
 
     public init(attachments: [Attachment]? = nil, id: String, name: String? = nil, text: String? = nil, userId: String? = nil) {
@@ -29,7 +35,9 @@ public final class NotificationTarget: @unchecked Sendable, Codable, JSONEncodab
         case type
         case userId = "user_id"
     }
+}
 
+extension NotificationTarget: Hashable {
     public static func == (lhs: NotificationTarget, rhs: NotificationTarget) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.id == rhs.id &&

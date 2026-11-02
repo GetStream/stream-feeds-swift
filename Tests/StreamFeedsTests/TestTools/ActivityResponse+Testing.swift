@@ -21,7 +21,7 @@ extension ActivityResponse {
         ownReactions: [FeedsReactionResponse]? = nil,
         poll: PollResponseData? = nil,
         reactionCount: Int = 0,
-        reactionGroups: [String: ReactionGroupResponse] = [:],
+        reactionGroups: [String: FeedsReactionGroupResponse] = [:],
         text: String = "Test activity content",
         type: String = "post",
         user: UserResponse = .dummy()
@@ -39,6 +39,7 @@ extension ActivityResponse {
             expiresAt: expiresAt,
             feeds: feeds,
             filterTags: [],
+            hidden: false,
             id: id,
             interestTags: [],
             latestReactions: latestReactions ?? [],

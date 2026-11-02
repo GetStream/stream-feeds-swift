@@ -365,7 +365,7 @@ struct Activity_Tests {
         )
         try await activity.get()
         
-        let option = try await activity.getPollOption(optionId: "option-1", userId: nil)
+        let option = try await activity.getPollOption(optionId: "option-1")
         let statePoll = try #require(await activity.state.poll)
         #expect(option.id == "option-1")
         #expect(option.text == "Updated Option 1")

@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class StreamData: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class StreamData: @unchecked Sendable, Codable, JSONEncodable {
     public var id: String
 
     public init(id: String) {
@@ -15,7 +15,9 @@ public final class StreamData: @unchecked Sendable, Codable, JSONEncodable, Hash
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case id
     }
+}
 
+extension StreamData: Hashable {
     public static func == (lhs: StreamData, rhs: StreamData) -> Bool {
         lhs.id == rhs.id
     }

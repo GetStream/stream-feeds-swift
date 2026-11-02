@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Whether to permanently delete the activities
     public var hardDelete: Bool?
+    /// List of activity IDs to delete
     public var ids: [String]
 
     public init(hardDelete: Bool? = nil, ids: [String]) {
@@ -18,7 +20,9 @@ public final class DeleteActivitiesRequest: @unchecked Sendable, Codable, JSONEn
         case hardDelete = "hard_delete"
         case ids
     }
+}
 
+extension DeleteActivitiesRequest: Hashable {
     public static func == (lhs: DeleteActivitiesRequest, rhs: DeleteActivitiesRequest) -> Bool {
         lhs.hardDelete == rhs.hardDelete &&
             lhs.ids == rhs.ids

@@ -5,36 +5,31 @@
 import Foundation
 import StreamCore
 
-public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum UpdatePollRequestVotingVisibility: String, Sendable, Codable, CaseIterable {
-        case `public`
-        case anonymous
-        case unknown = "_unknown"
-
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
+public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodable {
+    /// Allow answers
     public var allowAnswers: Bool?
+    /// Allow user suggested options
     public var allowUserSuggestedOptions: Bool?
+    /// Custom data for this object
     public var custom: [String: RawJSON]?
+    /// Poll description
     public var description: String?
+    /// Enforce unique vote
     public var enforceUniqueVote: Bool?
+    /// Poll ID
     public var id: String
+    /// Is closed
     public var isClosed: Bool?
+    /// Max votes allowed
     public var maxVotesAllowed: Int?
+    /// Poll name
     public var name: String
+    /// Poll options
     public var options: [PollOptionRequest]?
-    public var votingVisibility: UpdatePollRequestVotingVisibility?
+    /// Voting visibility
+    public var votingVisibility: VotingVisibility?
 
-    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: UpdatePollRequestVotingVisibility? = nil) {
+    public init(allowAnswers: Bool? = nil, allowUserSuggestedOptions: Bool? = nil, custom: [String: RawJSON]? = nil, description: String? = nil, enforceUniqueVote: Bool? = nil, id: String, isClosed: Bool? = nil, maxVotesAllowed: Int? = nil, name: String, options: [PollOptionRequest]? = nil, votingVisibility: VotingVisibility? = nil) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.custom = custom
@@ -51,7 +46,7 @@ public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case allowAnswers = "allow_answers"
         case allowUserSuggestedOptions = "allow_user_suggested_options"
-        case custom = "Custom"
+        case custom
         case description
         case enforceUniqueVote = "enforce_unique_vote"
         case id
@@ -61,7 +56,9 @@ public final class UpdatePollRequest: @unchecked Sendable, Codable, JSONEncodabl
         case options
         case votingVisibility = "voting_visibility"
     }
+}
 
+extension UpdatePollRequest: Hashable {
     public static func == (lhs: UpdatePollRequest, rhs: UpdatePollRequest) -> Bool {
         lhs.allowAnswers == rhs.allowAnswers &&
             lhs.allowUserSuggestedOptions == rhs.allowUserSuggestedOptions &&

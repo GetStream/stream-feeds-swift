@@ -5,7 +5,8 @@
 import Foundation
 import StreamCore
 
-public final class PollResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class PollResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// Duration of the request in milliseconds
     public var duration: String
     public var poll: PollResponseData
 
@@ -18,7 +19,9 @@ public final class PollResponse: @unchecked Sendable, Codable, JSONEncodable, Ha
         case duration
         case poll
     }
+}
 
+extension PollResponse: Hashable {
     public static func == (lhs: PollResponse, rhs: PollResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.poll == rhs.poll

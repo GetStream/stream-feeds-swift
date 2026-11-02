@@ -5,12 +5,18 @@
 import Foundation
 import StreamCore
 
-public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSONEncodable {
+    /// When notifications were last read
     public var lastReadAt: Date?
+    /// When notifications were last seen
     public var lastSeenAt: Date?
+    /// Deprecated: use is_read on each activity/group instead. IDs of activities that have been read. Capped at ~101 entries for aggregated feeds.
     public var readActivities: [String]?
+    /// Deprecated: use is_seen on each activity/group instead. IDs of activities that have been seen. Capped at ~101 entries for aggregated feeds.
     public var seenActivities: [String]?
+    /// Number of unread notifications
     public var unread: Int
+    /// Number of unseen notifications
     public var unseen: Int
 
     public init(lastReadAt: Date? = nil, lastSeenAt: Date? = nil, readActivities: [String]? = nil, seenActivities: [String]? = nil, unread: Int, unseen: Int) {
@@ -30,7 +36,9 @@ public final class NotificationStatusResponse: @unchecked Sendable, Codable, JSO
         case unread
         case unseen
     }
+}
 
+extension NotificationStatusResponse: Hashable {
     public static func == (lhs: NotificationStatusResponse, rhs: NotificationStatusResponse) -> Bool {
         lhs.lastReadAt == rhs.lastReadAt &&
             lhs.lastSeenAt == rhs.lastSeenAt &&

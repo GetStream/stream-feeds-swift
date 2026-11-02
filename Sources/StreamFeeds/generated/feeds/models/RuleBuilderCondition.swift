@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncodable {
     public var confidence: Float?
     public var contentCountRuleParams: ContentCountRuleParameters?
     public var imageContentParams: ImageContentParameters?
@@ -47,7 +47,9 @@ public final class RuleBuilderCondition: @unchecked Sendable, Codable, JSONEncod
         case videoContentParams = "video_content_params"
         case videoRuleParams = "video_rule_params"
     }
+}
 
+extension RuleBuilderCondition: Hashable {
     public static func == (lhs: RuleBuilderCondition, rhs: RuleBuilderCondition) -> Bool {
         lhs.confidence == rhs.confidence &&
             lhs.contentCountRuleParams == rhs.contentCountRuleParams &&

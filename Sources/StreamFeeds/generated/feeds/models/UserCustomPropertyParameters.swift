@@ -5,7 +5,7 @@
 import Foundation
 import StreamCore
 
-public final class UserCustomPropertyParameters: @unchecked Sendable, Codable, JSONEncodable, Hashable {
+public final class UserCustomPropertyParameters: @unchecked Sendable, Codable, JSONEncodable {
     public var `operator`: String?
     public var propertyKey: String?
 
@@ -18,7 +18,9 @@ public final class UserCustomPropertyParameters: @unchecked Sendable, Codable, J
         case `operator`
         case propertyKey = "property_key"
     }
+}
 
+extension UserCustomPropertyParameters: Hashable {
     public static func == (lhs: UserCustomPropertyParameters, rhs: UserCustomPropertyParameters) -> Bool {
         lhs.operator == rhs.operator &&
             lhs.propertyKey == rhs.propertyKey
