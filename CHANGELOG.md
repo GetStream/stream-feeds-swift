@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `purgeUserActivities` to `Feed.deleteFeed(hardDelete:)` [#86](https://github.com/GetStream/stream-feeds-swift/pull/86)
 - Add `StreamFeedsLogsUI`, an in-app log viewer for demo apps and debug builds [#80](https://github.com/GetStream/stream-feeds-swift/pull/80)
 - Update generated models to the latest OpenAPI spec, which adds 17 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- Add `Feed.queryFollowRequests()` and `Feed.queryMoreFollowRequests(limit:)` for loading pending follow requests into `FeedState.followRequests` [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)
+
+### 🐞 Fixed
+- Fix pending follows sent by a feed showing up in its own `FeedState.followRequests` [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)
 
 ### 🔄 Changed
 - Deprecate the `role` argument of `Feed.acceptFollow(_:role:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
@@ -17,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Deprecate `PollVotesQuery.userId` and `FeedQuery.activitySelectorOptions`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate `UserData.revokeTokensIssuedBefore` and `ReactionGroupData.sumScores`, which the API no longer returns [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Rename some generated models, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse`. The old names are deprecated [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- `FeedQuery`'s `followerLimit` and `followingLimit` now default to 10 [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)
 
 ### 🚨 Breaking Changes
 - Remove `OwnUser.revokeTokensIssuedBefore` and `OwnUser.pushNotifications`, which the API never returns for client-side connections [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
