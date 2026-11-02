@@ -77,7 +77,7 @@ struct FeedListState_Tests {
     // MARK: - Helper Methods
 
     private func defaultClientWithFeedResponses(
-        _ additionalPayloads: [any Encodable] = []
+        _ additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

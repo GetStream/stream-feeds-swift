@@ -184,7 +184,7 @@ struct CommentReplyList_Tests {
     
     private func defaultClient(
         replies: [ThreadedCommentResponse] = [.dummy(id: "reply-1", objectId: Self.commentId, parentId: Self.commentId)],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

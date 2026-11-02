@@ -5,20 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class AddCommentsBatchResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var comments: [CommentResponse]
-    public var duration: String
+public final class AddCommentsBatchResponse: Sendable, Decodable {
+    /// List of comments added
+    public let comments: [CommentResponse]
+    public let duration: String
 
     public init(comments: [CommentResponse], duration: String) {
         self.comments = comments
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case comments
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.comments = try container.decode([CommentResponse].self, forKey: .comments)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
+}
 
+extension AddCommentsBatchResponse: Hashable {
     public static func == (lhs: AddCommentsBatchResponse, rhs: AddCommentsBatchResponse) -> Bool {
         lhs.comments == rhs.comments &&
             lhs.duration == rhs.duration

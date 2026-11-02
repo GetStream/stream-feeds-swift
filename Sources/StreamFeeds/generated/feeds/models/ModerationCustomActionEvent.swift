@@ -5,42 +5,49 @@
 import Foundation
 import StreamCore
 
-public final class ModerationCustomActionEvent: @unchecked Sendable,  Event, Codable, JSONEncodable, Hashable {
-    public var actionId: String
-    public var actionOptions: [String: RawJSON]?
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var receivedAt: Date?
-    public var reviewQueueItem: ReviewQueueItemResponse
-    public var type: String = "moderation.custom_action"
+/// This event is sent when a custom moderation action is executed
+public final class ModerationCustomActionEvent: Sendable, Event, Decodable {
+    /// The ID of the custom action that was executed
+    public let actionId: String
+    /// Additional options passed to the custom action
+    public let actionOptions: [String: RawJSON]?
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    public let receivedAt: Date?
+    public let reviewQueueItem: ReviewQueueItemResponse
+    public let type: String
 
-    public init(actionId: String, actionOptions: [String: RawJSON]? = nil, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, reviewQueueItem: ReviewQueueItemResponse) {
+    public init(actionId: String, actionOptions: [String: RawJSON]? = nil, createdAt: Date, custom: [String: RawJSON], receivedAt: Date? = nil, reviewQueueItem: ReviewQueueItemResponse, type: String = "moderation.custom_action") {
         self.actionId = actionId
         self.actionOptions = actionOptions
         self.createdAt = createdAt
         self.custom = custom
         self.receivedAt = receivedAt
         self.reviewQueueItem = reviewQueueItem
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case actionId = "action_id"
-        case actionOptions = "action_options"
-        case createdAt = "created_at"
-        case custom
-        case receivedAt = "received_at"
-        case reviewQueueItem = "review_queue_item"
-        case type
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.actionId = try container.decode(String.self, forKey: .actionId)
+        self.actionOptions = try container.decodeIfPresent([String: RawJSON].self, forKey: .actionOptions)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.reviewQueueItem = try container.decode(ReviewQueueItemResponse.self, forKey: .reviewQueueItem)
+        self.type = try container.decode(String.self, forKey: .type)
     }
+}
 
+extension ModerationCustomActionEvent: Hashable {
     public static func == (lhs: ModerationCustomActionEvent, rhs: ModerationCustomActionEvent) -> Bool {
         lhs.actionId == rhs.actionId &&
-        lhs.actionOptions == rhs.actionOptions &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.custom == rhs.custom &&
-        lhs.receivedAt == rhs.receivedAt &&
-        lhs.reviewQueueItem == rhs.reviewQueueItem &&
-        lhs.type == rhs.type
+            lhs.actionOptions == rhs.actionOptions &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.reviewQueueItem == rhs.reviewQueueItem &&
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {

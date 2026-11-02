@@ -5,12 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class UserMuteResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var createdAt: Date
-    public var expires: Date?
-    public var target: UserResponse?
-    public var updatedAt: Date
-    public var user: UserResponse?
+public final class UserMuteResponse: Sendable, Decodable {
+    public let createdAt: Date
+    public let expires: Date?
+    /// User response object
+    public let target: UserResponse?
+    public let updatedAt: Date
+    /// User response object
+    public let user: UserResponse?
 
     public init(createdAt: Date, expires: Date? = nil, target: UserResponse? = nil, updatedAt: Date, user: UserResponse? = nil) {
         self.createdAt = createdAt
@@ -20,14 +22,17 @@ public final class UserMuteResponse: @unchecked Sendable, Codable, JSONEncodable
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case expires
-        case target
-        case updatedAt = "updated_at"
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.expires = try container.decodeIfPresent(Date.self, forKey: .expires)
+        self.target = try container.decodeIfPresent(UserResponse.self, forKey: .target)
+        self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decodeIfPresent(UserResponse.self, forKey: .user)
     }
+}
 
+extension UserMuteResponse: Hashable {
     public static func == (lhs: UserMuteResponse, rhs: UserMuteResponse) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.expires == rhs.expires &&

@@ -5,17 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class UnblockUsersRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var blockedUserId: String
+public final class UnblockUsersRequest: Sendable, Encodable, JSONEncodable {
+    public let blockedUserId: String
 
     public init(blockedUserId: String) {
         self.blockedUserId = blockedUserId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case blockedUserId = "blocked_user_id"
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encode(blockedUserId, forKey: .blockedUserId)
     }
+}
 
+extension UnblockUsersRequest: Hashable {
     public static func == (lhs: UnblockUsersRequest, rhs: UnblockUsersRequest) -> Bool {
         lhs.blockedUserId == rhs.blockedUserId
     }

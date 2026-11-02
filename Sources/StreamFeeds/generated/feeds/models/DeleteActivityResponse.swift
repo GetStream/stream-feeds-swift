@@ -5,17 +5,20 @@
 import Foundation
 import StreamCore
 
-public final class DeleteActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
+public final class DeleteActivityResponse: Sendable, Decodable {
+    public let duration: String
 
     public init(duration: String) {
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
+}
 
+extension DeleteActivityResponse: Hashable {
     public static func == (lhs: DeleteActivityResponse, rhs: DeleteActivityResponse) -> Bool {
         lhs.duration == rhs.duration
     }

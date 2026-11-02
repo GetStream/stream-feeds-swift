@@ -5,36 +5,36 @@
 import Foundation
 import StreamCore
 
-public final class ModerationMarkReviewedEvent: @unchecked Sendable, Event, Codable, JSONEncodable, Hashable {
-    public var createdAt: Date
-    public var item: ReviewQueueItemResponse?
-    public var type: String = "moderation.mark_reviewed"
-    public var user: User?
+/// This event is sent when a moderation item is marked as reviewed
+public final class ModerationMarkReviewedEvent: Sendable, Event, Decodable {
+    public let createdAt: Date
+    public let item: ReviewQueueItemResponse
+    public let type: String
 
-    public init(createdAt: Date, item: ReviewQueueItemResponse? = nil, user: User? = nil) {
+    public init(createdAt: Date, item: ReviewQueueItemResponse, type: String = "moderation.mark_reviewed") {
         self.createdAt = createdAt
         self.item = item
-        self.user = user
+        self.type = type
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case createdAt = "created_at"
-        case item
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.item = try container.decode(ReviewQueueItemResponse.self, forKey: .item)
+        self.type = try container.decode(String.self, forKey: .type)
     }
+}
 
+extension ModerationMarkReviewedEvent: Hashable {
     public static func == (lhs: ModerationMarkReviewedEvent, rhs: ModerationMarkReviewedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
             lhs.item == rhs.item &&
-            lhs.type == rhs.type &&
-            lhs.user == rhs.user
+            lhs.type == rhs.type
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
         hasher.combine(item)
         hasher.combine(type)
-        hasher.combine(user)
     }
 }

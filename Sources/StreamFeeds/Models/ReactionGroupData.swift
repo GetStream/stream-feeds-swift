@@ -9,18 +9,16 @@ public struct ReactionGroupData: Equatable, Sendable {
     public private(set) var count: Int
     public let firstReactionAt: Date
     public private(set) var lastReactionAt: Date
-    public let sumScores: Int?
 }
 
 // MARK: - Model Conversions
 
-extension ReactionGroupResponse {
+extension FeedsReactionGroupResponse {
     func toModel() -> ReactionGroupData {
         ReactionGroupData(
             count: count,
             firstReactionAt: firstReactionAt,
-            lastReactionAt: lastReactionAt,
-            sumScores: sumScores
+            lastReactionAt: lastReactionAt
         )
     }
 }

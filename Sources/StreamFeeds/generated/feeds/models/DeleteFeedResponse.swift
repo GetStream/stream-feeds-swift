@@ -5,20 +5,24 @@
 import Foundation
 import StreamCore
 
-public final class DeleteFeedResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
-    public var taskId: String
+public final class DeleteFeedResponse: Sendable, Decodable {
+    public let duration: String
+    /// The ID of the async task that will handle feed cleanup and hard deletion
+    public let taskId: String
 
     public init(duration: String, taskId: String) {
         self.duration = duration
         self.taskId = taskId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case taskId = "task_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.taskId = try container.decode(String.self, forKey: .taskId)
     }
+}
 
+extension DeleteFeedResponse: Hashable {
     public static func == (lhs: DeleteFeedResponse, rhs: DeleteFeedResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.taskId == rhs.taskId

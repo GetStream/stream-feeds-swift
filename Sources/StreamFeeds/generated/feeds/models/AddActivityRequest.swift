@@ -5,64 +5,50 @@
 import Foundation
 import StreamCore
 
-public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    
-    public enum AddActivityRequestRestrictReplies: String, Sendable, Codable, CaseIterable {
-        case everyone = "everyone"
-        case nobody = "nobody"
-        case peopleIFollow = "people_i_follow"
-        case unknown = "_unknown"
-        
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    
-    public enum AddActivityRequestVisibility: String, Sendable, Codable, CaseIterable {
-        case `private` = "private"
-        case `public` = "public"
-        case tag = "tag"
-        case unknown = "_unknown"
-        
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-    public var attachments: [Attachment]?
-    public var collectionRefs: [String]?
-    public var createNotificationActivity: Bool?
-    public var custom: [String: RawJSON]?
-    public var expiresAt: String?
-    public var feeds: [String]
-    public var filterTags: [String]?
-    public var id: String?
-    public var interestTags: [String]?
-    public var location: ActivityLocation?
-    public var mentionedUserIds: [String]?
-    public var parentId: String?
-    public var pollId: String?
-    public var restrictReplies: AddActivityRequestRestrictReplies?
-    public var searchData: [String: RawJSON]?
-    public var skipEnrichUrl: Bool?
-    public var skipPush: Bool?
-    public var text: String?
-    public var type: String
-    public var visibility: AddActivityRequestVisibility?
-    public var visibilityTag: String?
-    
-    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: ActivityLocation? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: AddActivityRequestRestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: AddActivityRequestVisibility? = nil, visibilityTag: String? = nil) {
+public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
+    /// List of attachments for the activity
+    public let attachments: [Attachment]?
+    /// Collections that this activity references
+    public let collectionRefs: [String]?
+    /// Whether to create notification activities for mentioned users
+    public let createNotificationActivity: Bool?
+    /// Custom data for the activity
+    public let custom: [String: RawJSON]?
+    /// Expiration time for the activity
+    public let expiresAt: String?
+    /// List of feeds to add the activity to with a default max limit of 25 feeds
+    public let feeds: [String]
+    /// Tags for filtering activities
+    public let filterTags: [String]?
+    /// Optional ID for the activity
+    public let id: String?
+    /// Tags for indicating user interests
+    public let interestTags: [String]?
+    public let location: Location?
+    /// List of users mentioned in the activity
+    public let mentionedUserIds: [String]?
+    /// ID of parent activity for replies/comments
+    public let parentId: String?
+    /// ID of a poll to attach to activity
+    public let pollId: String?
+    /// Controls who can add comments/replies to this activity. One of: everyone, people_i_follow, nobody
+    public let restrictReplies: RestrictReplies?
+    /// Additional data for search indexing
+    public let searchData: [String: RawJSON]?
+    /// Whether to skip URL enrichment for the activity
+    public let skipEnrichUrl: Bool?
+    /// Whether to skip push notifications
+    public let skipPush: Bool?
+    /// Text content of the activity
+    public let text: String?
+    /// Type of activity
+    public let type: String
+    /// Visibility setting for the activity. One of: public, private, tag
+    public let visibility: ActivityVisibility?
+    /// If visibility is 'tag', this is the tag name and is required
+    public let visibilityTag: String?
+
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: RestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.collectionRefs = collectionRefs
         self.createNotificationActivity = createNotificationActivity
@@ -85,55 +71,58 @@ public final class AddActivityRequest: @unchecked Sendable, Codable, JSONEncodab
         self.visibility = visibility
         self.visibilityTag = visibilityTag
     }
-    
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case attachments
-        case collectionRefs = "collection_refs"
-        case createNotificationActivity = "create_notification_activity"
-        case custom
-        case expiresAt = "expires_at"
-        case feeds
-        case filterTags = "filter_tags"
-        case id
-        case interestTags = "interest_tags"
-        case location
-        case mentionedUserIds = "mentioned_user_ids"
-        case parentId = "parent_id"
-        case pollId = "poll_id"
-        case restrictReplies = "restrict_replies"
-        case searchData = "search_data"
-        case skipEnrichUrl = "skip_enrich_url"
-        case skipPush = "skip_push"
-        case text
-        case type
-        case visibility
-        case visibilityTag = "visibility_tag"
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encodeIfPresent(collectionRefs, forKey: .collectionRefs)
+        try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
+        try container.encode(feeds, forKey: .feeds)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encodeIfPresent(interestTags, forKey: .interestTags)
+        try container.encodeIfPresent(location, forKey: .location)
+        try container.encodeIfPresent(mentionedUserIds, forKey: .mentionedUserIds)
+        try container.encodeIfPresent(parentId, forKey: .parentId)
+        try container.encodeIfPresent(pollId, forKey: .pollId)
+        try container.encodeIfPresent(restrictReplies, forKey: .restrictReplies)
+        try container.encodeIfPresent(searchData, forKey: .searchData)
+        try container.encodeIfPresent(skipEnrichUrl, forKey: .skipEnrichUrl)
+        try container.encodeIfPresent(skipPush, forKey: .skipPush)
+        try container.encodeIfPresent(text, forKey: .text)
+        try container.encode(type, forKey: .type)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
+        try container.encodeIfPresent(visibilityTag, forKey: .visibilityTag)
     }
-    
+}
+
+extension AddActivityRequest: Hashable {
     public static func == (lhs: AddActivityRequest, rhs: AddActivityRequest) -> Bool {
         lhs.attachments == rhs.attachments &&
-        lhs.collectionRefs == rhs.collectionRefs &&
-        lhs.createNotificationActivity == rhs.createNotificationActivity &&
-        lhs.custom == rhs.custom &&
-        lhs.expiresAt == rhs.expiresAt &&
-        lhs.feeds == rhs.feeds &&
-        lhs.filterTags == rhs.filterTags &&
-        lhs.id == rhs.id &&
-        lhs.interestTags == rhs.interestTags &&
-        lhs.location == rhs.location &&
-        lhs.mentionedUserIds == rhs.mentionedUserIds &&
-        lhs.parentId == rhs.parentId &&
-        lhs.pollId == rhs.pollId &&
-        lhs.restrictReplies == rhs.restrictReplies &&
-        lhs.searchData == rhs.searchData &&
-        lhs.skipEnrichUrl == rhs.skipEnrichUrl &&
-        lhs.skipPush == rhs.skipPush &&
-        lhs.text == rhs.text &&
-        lhs.type == rhs.type &&
-        lhs.visibility == rhs.visibility &&
-        lhs.visibilityTag == rhs.visibilityTag
+            lhs.collectionRefs == rhs.collectionRefs &&
+            lhs.createNotificationActivity == rhs.createNotificationActivity &&
+            lhs.custom == rhs.custom &&
+            lhs.expiresAt == rhs.expiresAt &&
+            lhs.feeds == rhs.feeds &&
+            lhs.filterTags == rhs.filterTags &&
+            lhs.id == rhs.id &&
+            lhs.interestTags == rhs.interestTags &&
+            lhs.location == rhs.location &&
+            lhs.mentionedUserIds == rhs.mentionedUserIds &&
+            lhs.parentId == rhs.parentId &&
+            lhs.pollId == rhs.pollId &&
+            lhs.restrictReplies == rhs.restrictReplies &&
+            lhs.searchData == rhs.searchData &&
+            lhs.skipEnrichUrl == rhs.skipEnrichUrl &&
+            lhs.skipPush == rhs.skipPush &&
+            lhs.text == rhs.text &&
+            lhs.type == rhs.type &&
+            lhs.visibility == rhs.visibility &&
+            lhs.visibilityTag == rhs.visibilityTag
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
         hasher.combine(collectionRefs)

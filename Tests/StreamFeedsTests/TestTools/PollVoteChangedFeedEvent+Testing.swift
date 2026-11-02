@@ -10,7 +10,7 @@ extension PollVoteChangedFeedEvent {
     static func dummy(
         createdAt: Date = .fixed(),
         custom: [String: RawJSON] = [:],
-        feedVisibility: String? = nil,
+        feedVisibility: FeedVisibility? = nil,
         fid: String,
         poll: PollResponseData = .dummy(),
         pollVote: PollVoteResponseData = .dummy(),

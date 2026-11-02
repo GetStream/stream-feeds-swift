@@ -156,6 +156,11 @@ struct ProfileView: View {
                     } catch {
                         log.error("Error querying follow suggestions \(error)")
                     }
+                    do {
+                        try await feed.queryFollowRequests()
+                    } catch {
+                        log.error("Error querying follow requests \(error)")
+                    }
                 }
             }
         }

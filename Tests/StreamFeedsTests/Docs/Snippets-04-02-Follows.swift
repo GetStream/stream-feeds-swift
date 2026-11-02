@@ -69,11 +69,12 @@ import StreamFeeds
         let followRequest = try await adamTimeline.follow(saraFeed.feed) // user:sara
         print(followRequest.status) // .pending
         
+        // Sara loading pending follow requests
+        try await saraFeed.queryFollowRequests()
+        print(saraFeed.state.followRequests.count) // 1
+        
         // Sara accepting
-        try await saraFeed.acceptFollow(
-            adamTimeline.feed, // timeline:adam
-            role: "feed_member" // optional
-        )
+        try await saraFeed.acceptFollow(adamTimeline.feed) // timeline:adam
         // or rejecting the request
         try await saraFeed.rejectFollow(adamTimeline.feed) // timeline:adam
     }

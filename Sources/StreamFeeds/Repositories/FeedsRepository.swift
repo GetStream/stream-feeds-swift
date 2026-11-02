@@ -23,6 +23,8 @@ final class FeedsRepository: Sendable {
         let response = try await apiClient.getOrCreateFeed(
             feedGroupId: feed.group,
             feedId: feed.id,
+            language: nil,
+            translateText: nil,
             getOrCreateFeedRequest: request
         )
         let rawFollowers = response.followers.map { $0.toModel() }
@@ -54,7 +56,6 @@ final class FeedsRepository: Sendable {
             aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
             allOwnCapabilities: allOwnCapabilities,
             feed: response.feed.toModel(),
-            followRequests: rawFollowers.filter(\.isFollowRequest),
             followers: rawFollowers.filter { $0.isFollower(of: feed) },
             following: rawFollowing.filter { $0.isFollowing(feed) },
             members: PaginationResult(
@@ -76,11 +77,12 @@ final class FeedsRepository: Sendable {
     
     // MARK: - Managing the Feed
     
-    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool) async throws {
+    func deleteFeed(feedGroupId: String, feedId: String, hardDelete: Bool, purgeUserActivities: Bool) async throws {
         _ = try await apiClient.deleteFeed(
             feedGroupId: feedGroupId,
             feedId: feedId,
-            hardDelete: hardDelete
+            hardDelete: hardDelete,
+            purgeUserActivities: purgeUserActivities
         )
     }
     
@@ -117,8 +119,14 @@ final class FeedsRepository: Sendable {
         return response.follow.toModel()
     }
     
-    func unfollow(source: FeedId, target: FeedId) async throws -> FollowData {
-        let response = try await apiClient.unfollow(source: source.rawValue, target: target.rawValue)
+    func unfollow(source: FeedId, target: FeedId, deleteNotificationActivity: Bool, keepHistory: Bool) async throws -> FollowData {
+        let response = try await apiClient.unfollow(
+            source: source.rawValue,
+            target: target.rawValue,
+            deleteNotificationActivity: deleteNotificationActivity,
+            keepHistory: keepHistory,
+            enrichOwnFields: nil
+        )
         return response.follow.toModel()
     }
     
@@ -165,7 +173,6 @@ extension FeedsRepository {
         let aggregatedActivities: [AggregatedActivityData]
         let allOwnCapabilities: [FeedId: Set<FeedOwnCapability>]
         let feed: FeedData
-        let followRequests: [FollowData]
         let followers: [FollowData]
         let following: [FollowData]
         let members: PaginationResult<FeedMemberData>

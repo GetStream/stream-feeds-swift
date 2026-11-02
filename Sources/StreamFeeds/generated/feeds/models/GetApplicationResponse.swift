@@ -5,20 +5,26 @@
 import Foundation
 import StreamCore
 
-public final class GetApplicationResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var app: AppResponseFields
-    public var duration: String
+/// Basic response information
+public final class GetApplicationResponse: Sendable, Decodable {
+    /// A type representing the app settings.
+    public let app: AppResponseFields
+    /// Duration of the request in milliseconds
+    public let duration: String
 
     public init(app: AppResponseFields, duration: String) {
         self.app = app
         self.duration = duration
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case app
-        case duration
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.app = try container.decode(AppResponseFields.self, forKey: .app)
+        self.duration = try container.decode(String.self, forKey: .duration)
     }
+}
 
+extension GetApplicationResponse: Hashable {
     public static func == (lhs: GetApplicationResponse, rhs: GetApplicationResponse) -> Bool {
         lhs.app == rhs.app &&
             lhs.duration == rhs.duration

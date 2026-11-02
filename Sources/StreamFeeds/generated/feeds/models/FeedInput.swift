@@ -5,34 +5,16 @@
 import Foundation
 import StreamCore
 
-public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public enum FeedInputVisibility: String, Sendable, Codable, CaseIterable {
-        case `private`
-        case `public`
-        case followers
-        case members
-        case visible
-        case unknown = "_unknown"
+public final class FeedInput: Sendable, Encodable, JSONEncodable {
+    public let custom: [String: RawJSON]?
+    public let description: String?
+    public let filterTags: [String]?
+    public let members: [FeedMemberRequest]?
+    public let name: String?
+    /// Who can see and follow a feed.
+    public let visibility: FeedVisibility?
 
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            if let decodedValue = try? container.decode(String.self),
-               let value = Self(rawValue: decodedValue) {
-                self = value
-            } else {
-                self = .unknown
-            }
-        }
-    }
-
-    public var custom: [String: RawJSON]?
-    public var description: String?
-    public var filterTags: [String]?
-    public var members: [FeedMemberRequest]?
-    public var name: String?
-    public var visibility: FeedInputVisibility?
-
-    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedInputVisibility? = nil) {
+    public init(custom: [String: RawJSON]? = nil, description: String? = nil, filterTags: [String]? = nil, members: [FeedMemberRequest]? = nil, name: String? = nil, visibility: FeedVisibility? = nil) {
         self.custom = custom
         self.description = description
         self.filterTags = filterTags
@@ -41,15 +23,18 @@ public final class FeedInput: @unchecked Sendable, Codable, JSONEncodable, Hasha
         self.visibility = visibility
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case description
-        case filterTags = "filter_tags"
-        case members
-        case name
-        case visibility
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(description, forKey: .description)
+        try container.encodeIfPresent(filterTags, forKey: .filterTags)
+        try container.encodeIfPresent(members, forKey: .members)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(visibility, forKey: .visibility)
     }
+}
 
+extension FeedInput: Hashable {
     public static func == (lhs: FeedInput, rhs: FeedInput) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.description == rhs.description &&

@@ -5,18 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class StoriesFeedUpdatedEvent: @unchecked Sendable,  Event, Codable, JSONEncodable, Hashable {
-    public var activities: [ActivityResponse]?
-    public var aggregatedActivities: [AggregatedActivityResponse]?
-    public var createdAt: Date
-    public var custom: [String: RawJSON]
-    public var feedVisibility: String?
-    public var fid: String
-    public var receivedAt: Date?
-    public var type: String = "feeds.stories_feed.updated"
-    public var user: UserResponseCommonFields?
+/// Emitted when stories feed is updated.
+public final class StoriesFeedUpdatedEvent: Sendable, Event, Decodable {
+    /// Individual activities for stories feeds
+    public let activities: [ActivityResponse]?
+    /// Aggregated activities for stories feeds
+    public let aggregatedActivities: [AggregatedActivityResponse]?
+    /// Date/time of creation
+    public let createdAt: Date
+    public let custom: [String: RawJSON]
+    /// Who can see and follow a feed.
+    public let feedVisibility: FeedVisibility?
+    /// The ID of the feed
+    public let fid: String
+    public let receivedAt: Date?
+    /// The type of event: "feeds.stories_feed.updated" in this case
+    public let type: String
+    public let user: UserResponseCommonFields?
 
-    public init(activities: [ActivityResponse]? = nil, aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: String? = nil, fid: String, receivedAt: Date? = nil, user: UserResponseCommonFields? = nil) {
+    public init(activities: [ActivityResponse]? = nil, aggregatedActivities: [AggregatedActivityResponse]? = nil, createdAt: Date, custom: [String: RawJSON], feedVisibility: FeedVisibility? = nil, fid: String, receivedAt: Date? = nil, type: String = "feeds.stories_feed.updated", user: UserResponseCommonFields? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.createdAt = createdAt
@@ -24,31 +31,35 @@ public final class StoriesFeedUpdatedEvent: @unchecked Sendable,  Event, Codable
         self.feedVisibility = feedVisibility
         self.fid = fid
         self.receivedAt = receivedAt
+        self.type = type
         self.user = user
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activities
-        case aggregatedActivities = "aggregated_activities"
-        case createdAt = "created_at"
-        case custom
-        case feedVisibility = "feed_visibility"
-        case fid
-        case receivedAt = "received_at"
-        case type
-        case user
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activities = try container.decodeIfPresent([ActivityResponse].self, forKey: .activities)
+        self.aggregatedActivities = try container.decodeIfPresent([AggregatedActivityResponse].self, forKey: .aggregatedActivities)
+        self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
+        self.feedVisibility = try container.decodeIfPresent(FeedVisibility.self, forKey: .feedVisibility)
+        self.fid = try container.decode(String.self, forKey: .fid)
+        self.receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.user = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .user)
     }
+}
 
+extension StoriesFeedUpdatedEvent: Hashable {
     public static func == (lhs: StoriesFeedUpdatedEvent, rhs: StoriesFeedUpdatedEvent) -> Bool {
         lhs.activities == rhs.activities &&
-        lhs.aggregatedActivities == rhs.aggregatedActivities &&
-        lhs.createdAt == rhs.createdAt &&
-        lhs.custom == rhs.custom &&
-        lhs.feedVisibility == rhs.feedVisibility &&
-        lhs.fid == rhs.fid &&
-        lhs.receivedAt == rhs.receivedAt &&
-        lhs.type == rhs.type &&
-        lhs.user == rhs.user
+            lhs.aggregatedActivities == rhs.aggregatedActivities &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.custom == rhs.custom &&
+            lhs.feedVisibility == rhs.feedVisibility &&
+            lhs.fid == rhs.fid &&
+            lhs.receivedAt == rhs.receivedAt &&
+            lhs.type == rhs.type &&
+            lhs.user == rhs.user
     }
 
     public func hash(into hasher: inout Hasher) {

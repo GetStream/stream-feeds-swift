@@ -15,7 +15,7 @@ final class BookmarksRepository: Sendable {
     // MARK: - Bookmarks
     
     func queryBookmarks(with query: BookmarksQuery) async throws -> PaginationResult<BookmarkData> {
-        let response = try await apiClient.queryBookmarks(queryBookmarksRequest: query.toRequest())
+        let response = try await apiClient.queryBookmarks(language: nil, translateText: nil, queryBookmarksRequest: query.toRequest())
         return PaginationResult(
             models: response.bookmarks.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)

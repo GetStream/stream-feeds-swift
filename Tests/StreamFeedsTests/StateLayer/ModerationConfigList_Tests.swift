@@ -70,7 +70,7 @@ struct ModerationConfigList_Tests {
     
     private func defaultClient(
         configs: [ConfigResponse] = [.dummy(key: "config-1", team: "Config 1")],
-        additionalPayloads: [any Encodable] = []
+        additionalPayloads: [any Sendable] = []
     ) -> FeedsClient {
         FeedsClient.mock(
             apiTransport: .withPayloads(

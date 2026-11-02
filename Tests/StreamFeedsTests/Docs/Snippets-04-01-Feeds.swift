@@ -127,7 +127,6 @@ import StreamFeeds
             request: .init(
                 members: [.init(
                     custom: ["joined": "2024-01-01"],
-                    role: "moderator",
                     userId: "john"
                 )],
                 operation: .upsert
@@ -143,7 +142,7 @@ import StreamFeeds
         // Set members (overwrites the list)
         try await feed.updateFeedMembers(
             request: .init(
-                members: [.init(role: "moderator", userId: "john")],
+                members: [.init(userId: "john")],
                 operation: .set
             )
         )
@@ -156,7 +155,6 @@ import StreamFeeds
                 members: [.init(
                     custom: ["reason": "community builder"],
                     invite: true,
-                    role: "moderator",
                     userId: "john"
                 )],
                 operation: .upsert

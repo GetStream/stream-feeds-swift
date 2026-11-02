@@ -85,9 +85,7 @@ import UIKit
     }
     
     func retrievingPoll() async throws {
-        let poll = try await activity.getPoll(userId: "john")
-        // userId is optional and can be provided for serverside calls
-        // in case you want to include the votes for the user
+        let poll = try await activity.getPoll()
         
         suppressUnusedWarning(poll)
     }

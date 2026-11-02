@@ -5,12 +5,14 @@
 import Foundation
 import StreamCore
 
-public final class QueryPollsRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var filter: [String: RawJSON]?
-    public var limit: Int?
-    public var next: String?
-    public var prev: String?
-    public var sort: [SortParamRequest]?
+public final class QueryPollsRequest: Sendable, Encodable, JSONEncodable {
+    /// Filter to apply to the query
+    public let filter: [String: RawJSON]?
+    public let limit: Int?
+    public let next: String?
+    public let prev: String?
+    /// Array of sort parameters
+    public let sort: [SortParamRequest]?
 
     public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
         self.filter = filter
@@ -20,14 +22,17 @@ public final class QueryPollsRequest: @unchecked Sendable, Codable, JSONEncodabl
         self.sort = sort
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case filter
-        case limit
-        case next
-        case prev
-        case sort
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(filter, forKey: .filter)
+        try container.encodeIfPresent(limit, forKey: .limit)
+        try container.encodeIfPresent(next, forKey: .next)
+        try container.encodeIfPresent(prev, forKey: .prev)
+        try container.encodeIfPresent(sort, forKey: .sort)
     }
+}
 
+extension QueryPollsRequest: Hashable {
     public static func == (lhs: QueryPollsRequest, rhs: QueryPollsRequest) -> Bool {
         lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&

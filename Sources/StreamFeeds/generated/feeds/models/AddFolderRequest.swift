@@ -5,20 +5,25 @@
 import Foundation
 import StreamCore
 
-public final class AddFolderRequest: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var custom: [String: RawJSON]?
-    public var name: String
+public final class AddFolderRequest: Sendable, Encodable, JSONEncodable {
+    /// Custom data for the folder
+    public let custom: [String: RawJSON]?
+    /// Name of the folder
+    public let name: String
 
     public init(custom: [String: RawJSON]? = nil, name: String) {
         self.custom = custom
         self.name = name
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case custom
-        case name
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encode(name, forKey: .name)
     }
+}
 
+extension AddFolderRequest: Hashable {
     public static func == (lhs: AddFolderRequest, rhs: AddFolderRequest) -> Bool {
         lhs.custom == rhs.custom &&
             lhs.name == rhs.name

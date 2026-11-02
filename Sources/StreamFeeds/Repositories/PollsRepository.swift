@@ -26,12 +26,12 @@ final class PollsRepository: Sendable {
         return response.poll.toModel()
     }
 
-    func deletePoll(pollId: String, userId: String?) async throws {
-        _ = try await apiClient.deletePoll(pollId: pollId, userId: userId)
+    func deletePoll(pollId: String) async throws {
+        _ = try await apiClient.deletePoll(pollId: pollId)
     }
 
-    func getPoll(pollId: String, userId: String?) async throws -> PollData {
-        let response = try await apiClient.getPoll(pollId: pollId, userId: userId)
+    func getPoll(pollId: String) async throws -> PollData {
+        let response = try await apiClient.getPoll(pollId: pollId)
         return response.poll.toModel()
     }
 
@@ -60,18 +60,16 @@ final class PollsRepository: Sendable {
 
     func deletePollOption(
         pollId: String,
-        optionId: String,
-        userId: String?
+        optionId: String
     ) async throws {
-        _ = try await apiClient.deletePollOption(pollId: pollId, optionId: optionId, userId: userId)
+        _ = try await apiClient.deletePollOption(pollId: pollId, optionId: optionId)
     }
 
     func getPollOption(
         pollId: String,
-        optionId: String,
-        userId: String?
+        optionId: String
     ) async throws -> PollOptionData {
-        let response = try await apiClient.getPollOption(pollId: pollId, optionId: optionId, userId: userId)
+        let response = try await apiClient.getPollOption(pollId: pollId, optionId: optionId)
         return response.pollOption.toModel()
     }
 
@@ -89,7 +87,7 @@ final class PollsRepository: Sendable {
     // MARK: - Poll Lists
     
     func queryPolls(with query: PollsQuery) async throws -> PaginationResult<PollData> {
-        let response = try await apiClient.queryPolls(userId: nil, queryPollsRequest: query.toRequest())
+        let response = try await apiClient.queryPolls(queryPollsRequest: query.toRequest())
         return PaginationResult(
             models: response.polls.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -110,10 +108,9 @@ final class PollsRepository: Sendable {
 
     func queryPollVotes(
         pollId: String,
-        userId: String?,
         request: QueryPollVotesRequest
     ) async throws -> PaginationResult<PollVoteData> {
-        let response = try await apiClient.queryPollVotes(pollId: pollId, userId: userId, queryPollVotesRequest: request)
+        let response = try await apiClient.queryPollVotes(pollId: pollId, queryPollVotesRequest: request)
         return PaginationResult(
             models: response.votes.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -123,14 +120,12 @@ final class PollsRepository: Sendable {
     func deletePollVote(
         activityId: String,
         pollId: String,
-        voteId: String,
-        userId: String?
+        voteId: String
     ) async throws -> PollVoteData? {
         let response = try await apiClient.deletePollVote(
             activityId: activityId,
             pollId: pollId,
-            voteId: voteId,
-            userId: userId
+            voteId: voteId
         )
         guard let vote = response.vote else { return nil }
         return vote.toModel()

@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class UnpinActivityResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var activity: ActivityResponse
-    public var duration: String
-    public var feed: String
-    public var userId: String
+public final class UnpinActivityResponse: Sendable, Decodable {
+    public let activity: ActivityResponse
+    public let duration: String
+    /// Fully qualified ID of the feed the activity was unpinned from
+    public let feed: String
+    /// ID of the user who unpinned the activity
+    public let userId: String
 
     public init(activity: ActivityResponse, duration: String, feed: String, userId: String) {
         self.activity = activity
@@ -18,13 +20,16 @@ public final class UnpinActivityResponse: @unchecked Sendable, Codable, JSONEnco
         self.userId = userId
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case activity
-        case duration
-        case feed
-        case userId = "user_id"
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.feed = try container.decode(String.self, forKey: .feed)
+        self.userId = try container.decode(String.self, forKey: .userId)
     }
+}
 
+extension UnpinActivityResponse: Hashable {
     public static func == (lhs: UnpinActivityResponse, rhs: UnpinActivityResponse) -> Bool {
         lhs.activity == rhs.activity &&
             lhs.duration == rhs.duration &&

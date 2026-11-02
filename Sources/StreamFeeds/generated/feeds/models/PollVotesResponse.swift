@@ -5,11 +5,13 @@
 import Foundation
 import StreamCore
 
-public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodable, Hashable {
-    public var duration: String
-    public var next: String?
-    public var prev: String?
-    public var votes: [PollVoteResponseData]
+public final class PollVotesResponse: Sendable, Decodable {
+    /// Duration of the request in milliseconds
+    public let duration: String
+    public let next: String?
+    public let prev: String?
+    /// Poll votes
+    public let votes: [PollVoteResponseData]
 
     public init(duration: String, next: String? = nil, prev: String? = nil, votes: [PollVoteResponseData]) {
         self.duration = duration
@@ -18,13 +20,16 @@ public final class PollVotesResponse: @unchecked Sendable, Codable, JSONEncodabl
         self.votes = votes
     }
 
-    public enum CodingKeys: String, CodingKey, CaseIterable {
-        case duration
-        case next
-        case prev
-        case votes
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.votes = try container.decode([PollVoteResponseData].self, forKey: .votes)
     }
+}
 
+extension PollVotesResponse: Hashable {
     public static func == (lhs: PollVotesResponse, rhs: PollVotesResponse) -> Bool {
         lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&

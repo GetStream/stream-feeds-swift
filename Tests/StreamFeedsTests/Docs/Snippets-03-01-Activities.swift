@@ -36,7 +36,7 @@ struct Snippets_03_01_Activities {
         let imageActivity = try await feed.addActivity(
             request: .init(
                 attachments: [
-                    Attachment(imageUrl: "https://example.com/image.jpg", type: "image")
+                    Attachment(custom: [:], imageUrl: "https://example.com/image.jpg", type: "image")
                 ],
                 text: "look at NYC",
                 type: "post"
@@ -51,8 +51,8 @@ struct Snippets_03_01_Activities {
         let storyActivity = try await feed.addActivity(
             request: .init(
                 attachments: [
-                    Attachment(imageUrl: "https://example.com/image1.jpg", type: "image"),
-                    Attachment(assetUrl: "https://example.com/video1.mp4", type: "video")
+                    Attachment(custom: [:], imageUrl: "https://example.com/image1.jpg", type: "image"),
+                    Attachment(assetUrl: "https://example.com/video1.mp4", custom: [:], type: "video")
                 ],
                 expiresAt: ISO8601DateFormatter().string(from: tomorrow),
                 text: "My story",
