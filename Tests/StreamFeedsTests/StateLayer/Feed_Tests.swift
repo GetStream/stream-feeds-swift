@@ -21,6 +21,13 @@ struct Feed_Tests {
         #expect(stateFeedData == feedData)
     }
 
+    @Test func feedQueryRequestsFollowersAndFollowingByDefault() {
+        let request = FeedQuery(group: "user", id: "jane").toRequest()
+        #expect(request.followersPagination?.limit == 10)
+        #expect(request.followingPagination?.limit == 10)
+        #expect(request.memberPagination == nil)
+    }
+
     @Test func updateFeedUpdatesState() async throws {
         let customData = ["test": RawJSON.string("value")]
         let feedId = FeedId(group: "user", id: "jane")

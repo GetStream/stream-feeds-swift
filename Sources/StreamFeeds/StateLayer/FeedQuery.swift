@@ -68,8 +68,8 @@ public struct FeedQuery: Sendable {
     ///   - activityLimit: Maximum number of activities to retrieve.
     ///   - data: Additional data to associate with the feed.
     ///   - externalRanking: Additional data used for ranking activities.
-    ///   - followerLimit: Maximum number of followers to retrieve.
-    ///   - followingLimit: Maximum number of following users to retrieve.
+    ///   - followerLimit: Maximum number of followers to retrieve. Defaults to 10.
+    ///   - followingLimit: Maximum number of following users to retrieve. Defaults to 10.
     ///   - interestWeights: Weights for different interests to influence ranking.
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - view: Custom view for ranking or aggregation logic.
@@ -81,8 +81,8 @@ public struct FeedQuery: Sendable {
         activityLimit: Int? = nil,
         data: FeedInput? = nil,
         externalRanking: [String: RawJSON]? = nil,
-        followerLimit: Int? = nil,
-        followingLimit: Int? = nil,
+        followerLimit: Int? = 10,
+        followingLimit: Int? = 10,
         interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         view: String? = nil,
@@ -111,8 +111,8 @@ public struct FeedQuery: Sendable {
     ///   - activityLimit: Maximum number of activities to retrieve.
     ///   - data: Additional data to associate with the feed.
     ///   - externalRanking: Additional data used for ranking activities.
-    ///   - followerLimit: Maximum number of followers to retrieve.
-    ///   - followingLimit: Maximum number of following users to retrieve.
+    ///   - followerLimit: Maximum number of followers to retrieve. Defaults to 10.
+    ///   - followingLimit: Maximum number of following users to retrieve. Defaults to 10.
     ///   - interestWeights: Weights for different interests to influence ranking.
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - view: Custom view for ranking or aggregation logic.
@@ -123,8 +123,8 @@ public struct FeedQuery: Sendable {
         activityLimit: Int? = nil,
         data: FeedInput? = nil,
         externalRanking: [String: RawJSON]? = nil,
-        followerLimit: Int? = nil,
-        followingLimit: Int? = nil,
+        followerLimit: Int? = 10,
+        followingLimit: Int? = 10,
         interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         view: String? = nil,

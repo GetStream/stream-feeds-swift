@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Deprecate `PollVotesQuery.userId` and `FeedQuery.activitySelectorOptions`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate `UserData.revokeTokensIssuedBefore` and `ReactionGroupData.sumScores`, which the API no longer returns [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Rename some generated models, for example `ReactionGroupResponse` -> `FeedsReactionGroupResponse`. The old names are deprecated [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
+- `FeedQuery`'s `followerLimit` and `followingLimit` now default to 10 [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)
 
 ### 🚨 Breaking Changes
 - Remove `OwnUser.revokeTokensIssuedBefore` and `OwnUser.pushNotifications`, which the API never returns for client-side connections [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)

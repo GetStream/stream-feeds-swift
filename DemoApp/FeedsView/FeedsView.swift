@@ -28,10 +28,7 @@ struct FeedsView: View {
             data: .init(
                 members: [.init(userId: client.user.id)],
                 visibility: .public
-            ),
-            followerLimit: 25,
-            followingLimit: 25,
-            memberLimit: 25
+            )
         )
         _feed = State(initialValue: client.feed(for: query))
         
