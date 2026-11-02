@@ -109,6 +109,7 @@ swiftlint --strict
 ### PR checklist & conventions
   • Keep PRs small and focused; include tests.
   • Update CHANGELOG for user-visible changes.
+  • After a release, `# Upcoming` holds only an empty `### 🔄 Changed` placeholder. When adding the first entry, remove that empty placeholder, unless the new entry belongs under `### 🔄 Changed`.
   • Ensure zero new warnings.
   • If behavior is visible to developers (API/UX), include brief release-note text and, if applicable, screenshots/log excerpts.
   • Mention relevant CODEOWNERS for areas you touch.
