@@ -58,12 +58,10 @@ final class FeedsRepository: Sendable {
             feed: response.feed.toModel(),
             followers: rawFollowers.filter { $0.isFollower(of: feed) },
             following: rawFollowing.filter { $0.isFollowing(feed) },
-            members: response.memberPagination.map { pagination in
-                PaginationResult(
-                    models: response.members.map { $0.toModel() },
-                    pagination: pagination.toModel()
-                )
-            },
+            members: query.memberLimit == 0 ? nil : PaginationResult(
+                models: response.members.map { $0.toModel() },
+                pagination: response.memberPagination?.toModel() ?? .empty
+            ),
             notificationStatus: response.notificationStatus?.toModel(),
             ownCapabilities: ownCapabilities,
             pinnedActivities: pinnedActivities
