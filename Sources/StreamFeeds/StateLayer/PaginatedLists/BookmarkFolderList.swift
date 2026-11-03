@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class BookmarkFolderList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<BookmarkFolderListState>
     private let bookmarksRepository: BookmarksRepository
 
@@ -14,6 +15,7 @@ public final class BookmarkFolderList: Sendable {
         self.query = query
         let eventPublisher = client.stateLayerEventPublisher
         stateBuilder = StateBuilder { BookmarkFolderListState(query: query, eventPublisher: eventPublisher) }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: BookmarkFoldersQuery
@@ -54,4 +56,18 @@ public final class BookmarkFolderList: Sendable {
         )
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension BookmarkFolderList: PaginatedListRefetching {
+    func fetchPage(with query: BookmarkFoldersQuery) async throws -> PaginationResult<BookmarkFolderData> {
+        try await bookmarksRepository.queryBookmarkFolders(with: query)
+    }
+}
+
+extension BookmarkFoldersQuery: CursorPaginatedQuery {}
+
+extension BookmarkFolderListState: PaginatedListState {
+    var models: [BookmarkFolderData] { folders }
 }

@@ -22,6 +22,22 @@ struct MemberList_Tests {
         await #expect(memberList.state.pagination?.next == "next-cursor")
     }
 
+    @Test func reconnectionRefetchesLoadedMembers() async throws {
+        let client = defaultClientWithMemberResponses([
+            QueryFeedMembersResponse.dummy(
+                members: [.dummy(user: .dummy(id: "member-3", name: "Third Member"))],
+                next: nil
+            )
+        ])
+        let memberList = client.memberList(for: MembersQuery(feed: FeedId(rawValue: "user:test")))
+        try await memberList.get()
+
+        client.simulateReconnection()
+
+        try await waitUntil { memberList.state.members.map(\.id) == ["member-3"] }
+        #expect(await memberList.state.canLoadMore == false)
+    }
+
     @Test func queryMoreMembersUpdatesState() async throws {
         let client = defaultClientWithMemberResponses([
             QueryFeedMembersResponse.dummy(

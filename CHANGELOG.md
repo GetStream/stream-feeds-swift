@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `StreamFeedsLogsUI`, an in-app log viewer for demo apps and debug builds [#80](https://github.com/GetStream/stream-feeds-swift/pull/80)
 - Update generated models to the latest OpenAPI spec, which adds 17 new types [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Add `Feed.queryFollowRequests()` and `Feed.queryMoreFollowRequests(limit:)` for loading pending follow requests into `FeedState.followRequests` [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)
+- Add `FeedsConfig.isAutomaticSyncOnReconnectEnabled` for refetching loaded data in `Feed`, `Activity` and paginated lists after the web-socket reconnects (on by default) [#89](https://github.com/GetStream/stream-feeds-swift/pull/89)
 
 ### 🐞 Fixed
 - Fix pending follows sent by a feed showing up in its own `FeedState.followRequests` [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)

@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class CommentList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<CommentListState>
     private let commentsRepository: CommentsRepository
     
@@ -21,6 +22,7 @@ public final class CommentList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: CommentsQuery
@@ -62,4 +64,18 @@ public final class CommentList: Sendable {
         )
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension CommentList: PaginatedListRefetching {
+    func fetchPage(with query: CommentsQuery) async throws -> PaginationResult<CommentData> {
+        try await commentsRepository.queryComments(request: query.toRequest())
+    }
+}
+
+extension CommentsQuery: CursorPaginatedQuery {}
+
+extension CommentListState: PaginatedListState {
+    var models: [CommentData] { comments }
 }

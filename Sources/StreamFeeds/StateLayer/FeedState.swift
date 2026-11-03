@@ -464,6 +464,16 @@ extension FeedState {
     func didQueryFeed(with response: FeedsRepository.GetOrCreateInfo) {
         activities = response.activities.models
         activitiesPagination = response.activities.pagination
+        didRefetchFeed(with: response)
+
+        // Members are managed by the paginatable list
+        if let members = response.members {
+            memberListState.didPaginate(with: members, for: .empty)
+        }
+    }
+
+    // Activities are replaced once all the pages are refetched
+    func didRefetchFeed(with response: FeedsRepository.GetOrCreateInfo) {
         activitiesQueryConfig = response.activitiesQueryConfig
         feedData = response.feed
         followers = response.followers
@@ -472,9 +482,11 @@ extension FeedState {
         pinnedActivities = response.pinnedActivities
         aggregatedActivities = response.aggregatedActivities
         notificationStatus = response.notificationStatus
-        
-        // Members are managed by the paginatable list
-        memberListState.didPaginate(with: response.members, for: .empty)
+    }
+    
+    func didRefetchActivities(_ response: PaginationResult<ActivityData>) {
+        activities = response.models
+        activitiesPagination = response.pagination
     }
     
     func didPaginateActivities(

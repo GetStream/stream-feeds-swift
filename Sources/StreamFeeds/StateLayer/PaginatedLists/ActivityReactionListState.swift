@@ -145,4 +145,9 @@ extension ActivityReactionListState {
         self.queryConfig = queryConfig
         reactions = reactions.sortedMerge(response.models, sorting: reactionsSorting)
     }
+    
+    func didRefetch(with response: PaginationResult<FeedsReactionData>) {
+        pagination = response.pagination
+        reactions = response.models
+    }
 }

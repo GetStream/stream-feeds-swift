@@ -7,14 +7,24 @@ import StreamCore
 @testable import StreamFeeds
 
 extension FeedsClient {
-    static func mock(apiTransport: APITransportMock) -> FeedsClient {
+    static func mock(apiTransport: APITransportMock, feedsConfig: FeedsConfig = .default) -> FeedsClient {
         FeedsClient(
             apiKey: APIKey("UnitTests"),
             user: User.dummy(id: "current-user-id"),
             token: "UnitTestingToken",
-            feedsConfig: .default,
+            feedsConfig: feedsConfig,
             apiTransport: apiTransport,
             jsonDecoder: apiTransport.decoder
         )
+    }
+
+    func simulateReconnection() {
+        connectionSubject.withLock { subject in
+            subject.send(.connecting)
+            subject.send(.connected)
+            subject.send(.disconnected(error: TestError()))
+            subject.send(.connecting)
+            subject.send(.connected)
+        }
     }
 }

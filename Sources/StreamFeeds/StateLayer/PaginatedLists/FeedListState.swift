@@ -118,6 +118,11 @@ extension FeedListState {
         self.queryConfig = queryConfig
         feeds = feeds.sortedMerge(response.models, sorting: feedsSorting)
     }
+
+    func didRefetch(with response: PaginationResult<FeedData>) {
+        pagination = response.pagination
+        feeds = response.models
+    }
     
     func didRefetch(_ models: [FeedData]) {
         guard !models.isEmpty else { return }

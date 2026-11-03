@@ -10,6 +10,7 @@ import StreamCore
 /// This class provides a way to fetch and manage a collection of polls with support for filtering,
 /// sorting, and pagination. It maintains an observable state that can be used in SwiftUI views.
 public final class PollList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<PollListState>
     private let pollsRepository: PollsRepository
     
@@ -25,6 +26,7 @@ public final class PollList: Sendable {
                 currentUserId: currentUserId
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: PollsQuery
@@ -80,4 +82,18 @@ public final class PollList: Sendable {
         )
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension PollList: PaginatedListRefetching {
+    func fetchPage(with query: PollsQuery) async throws -> PaginationResult<PollData> {
+        try await pollsRepository.queryPolls(with: query)
+    }
+}
+
+extension PollsQuery: CursorPaginatedQuery {}
+
+extension PollListState: PaginatedListState {
+    var models: [PollData] { polls }
 }

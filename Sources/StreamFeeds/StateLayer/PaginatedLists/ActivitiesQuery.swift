@@ -20,11 +20,11 @@ public struct ActivitiesQuery: Sendable {
     
     /// Pagination cursor for fetching the next page of results.
     /// This is typically provided in the response of a previous request.
-    public let next: String?
+    public var next: String?
     
     /// Pagination cursor for fetching the previous page of results.
     /// This is typically provided in the response of a previous request.
-    public let previous: String?
+    public var previous: String?
     
     /// Maximum number of activities to return in a single request.
     /// If not specified, the API will use its default limit.

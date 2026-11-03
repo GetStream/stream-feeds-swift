@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class FollowList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<FollowListState>
     private let eventPublisher: StateLayerEventPublisher
     private let feedsRepository: FeedsRepository
@@ -23,6 +24,7 @@ public final class FollowList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: FollowsQuery
@@ -66,4 +68,25 @@ public final class FollowList: Sendable {
         }
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension FollowList: PaginatedListRefetching {
+    func fetchPage(with query: FollowsQuery) async throws -> PaginationResult<FollowData> {
+        try await feedsRepository.queryFollows(request: query.toRequest())
+    }
+    
+    func didRefetch(_ result: PaginationResult<FollowData>) async {
+        await state.didRefetch(with: result)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.map(\.sourceFeed) + result.models.map(\.targetFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
+    }
+}
+
+extension FollowsQuery: CursorPaginatedQuery {}
+
+extension FollowListState: PaginatedListState {
+    var models: [FollowData] { follows }
 }

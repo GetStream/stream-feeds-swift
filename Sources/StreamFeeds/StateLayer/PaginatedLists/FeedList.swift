@@ -26,6 +26,7 @@ public final class FeedList: Sendable {
             FeedListState(query: query, eventPublisher: eventPublisher, refetchSubject: refetchSubject)
         }
         subscribeToRefetch()
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: FeedsQuery
@@ -109,4 +110,25 @@ public final class FeedList: Sendable {
                 .store(in: disposableBag)
         }
     }
+}
+
+// MARK: - Refetching
+
+extension FeedList: PaginatedListRefetching {
+    func fetchPage(with query: FeedsQuery) async throws -> PaginationResult<FeedData> {
+        try await feedsRepository.queryFeeds(with: query)
+    }
+
+    func didRefetch(_ result: PaginationResult<FeedData>) async {
+        await state.didRefetch(with: result)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
+    }
+}
+
+extension FeedsQuery: CursorPaginatedQuery {}
+
+extension FeedListState: PaginatedListState {
+    var models: [FeedData] { feeds }
 }

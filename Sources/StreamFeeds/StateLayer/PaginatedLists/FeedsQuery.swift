@@ -33,11 +33,11 @@ public struct FeedsQuery: Sendable {
     
     /// Pagination cursor for fetching the next page of results.
     /// This is typically provided in the response of a previous request.
-    public let next: String?
+    public var next: String?
     
     /// Pagination cursor for fetching the previous page of results.
     /// This is typically provided in the response of a previous request.
-    public let previous: String?
+    public var previous: String?
     
     /// Array of sorting criteria to apply to the feeds.
     /// If not specified, the API will use its default sorting.

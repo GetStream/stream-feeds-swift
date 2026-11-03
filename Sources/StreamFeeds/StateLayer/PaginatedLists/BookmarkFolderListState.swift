@@ -75,4 +75,9 @@ extension BookmarkFolderListState {
         self.queryConfig = queryConfig
         folders = folders.sortedMerge(response.models, sorting: bookmarksSorting)
     }
+
+    func didRefetch(with response: PaginationResult<BookmarkFolderData>) {
+        pagination = response.pagination
+        folders = response.models
+    }
 }

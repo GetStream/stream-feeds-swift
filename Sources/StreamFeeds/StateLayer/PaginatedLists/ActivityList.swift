@@ -11,6 +11,7 @@ import StreamCore
 /// with automatic real-time updates via WebSocket events. It manages the state of activities
 /// and provides methods for loading more activities as needed.
 public final class ActivityList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<ActivityListState>
     private let activitiesRepository: ActivitiesRepository
     private let eventPublisher: StateLayerEventPublisher
@@ -29,6 +30,7 @@ public final class ActivityList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     /// The query configuration used for fetching activities.
@@ -95,4 +97,25 @@ public final class ActivityList: Sendable {
         }
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension ActivityList: PaginatedListRefetching {
+    func fetchPage(with query: ActivitiesQuery) async throws -> PaginationResult<ActivityData> {
+        try await activitiesRepository.queryActivities(with: query)
+    }
+    
+    func didRefetch(_ result: PaginationResult<ActivityData>) async {
+        await state.didRefetch(with: result)
+        if let updated = ownCapabilitiesRepository.saveCapabilities(in: result.models.compactMap(\.currentFeed)) {
+            await eventPublisher.sendEvent(.feedOwnCapabilitiesUpdated(updated))
+        }
+    }
+}
+
+extension ActivitiesQuery: CursorPaginatedQuery {}
+
+extension ActivityListState: PaginatedListState {
+    var models: [ActivityData] { activities }
 }

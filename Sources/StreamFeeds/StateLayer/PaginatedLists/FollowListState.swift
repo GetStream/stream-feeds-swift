@@ -87,4 +87,9 @@ extension FollowListState {
         self.queryConfig = queryConfig
         follows = follows.sortedMerge(response.models, sorting: followsSorting)
     }
+    
+    func didRefetch(with response: PaginationResult<FollowData>) {
+        pagination = response.pagination
+        follows = response.models
+    }
 }

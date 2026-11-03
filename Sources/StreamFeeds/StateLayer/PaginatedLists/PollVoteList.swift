@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class PollVoteList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<PollVoteListState>
     private let pollsRepository: PollsRepository
     
@@ -19,6 +20,7 @@ public final class PollVoteList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     public let query: PollVotesQuery
@@ -63,4 +65,18 @@ public final class PollVoteList: Sendable {
         )
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension PollVoteList: PaginatedListRefetching {
+    func fetchPage(with query: PollVotesQuery) async throws -> PaginationResult<PollVoteData> {
+        try await pollsRepository.queryPollVotes(pollId: query.pollId, request: query.toRequest())
+    }
+}
+
+extension PollVotesQuery: CursorPaginatedQuery {}
+
+extension PollVoteListState: PaginatedListState {
+    var models: [PollVoteData] { votes }
 }

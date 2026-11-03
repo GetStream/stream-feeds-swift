@@ -58,7 +58,7 @@ final class FeedsRepository: Sendable {
             feed: response.feed.toModel(),
             followers: rawFollowers.filter { $0.isFollower(of: feed) },
             following: rawFollowing.filter { $0.isFollowing(feed) },
-            members: PaginationResult(
+            members: query.memberLimit == 0 ? nil : PaginationResult(
                 models: response.members.map { $0.toModel() },
                 pagination: response.memberPagination?.toModel() ?? .empty
             ),
@@ -175,7 +175,7 @@ extension FeedsRepository {
         let feed: FeedData
         let followers: [FollowData]
         let following: [FollowData]
-        let members: PaginationResult<FeedMemberData>
+        let members: PaginationResult<FeedMemberData>?
         let notificationStatus: NotificationStatusData?
         let ownCapabilities: Set<FeedOwnCapability>
         let pinnedActivities: [ActivityPinData]

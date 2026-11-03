@@ -220,4 +220,9 @@ extension CommentReplyListState {
         pagination = response.pagination
         replies = replies.sortedMerge(response.models, sorting: CommentsSort.areInIncreasingOrder(query.sort ?? .last))
     }
+    
+    func didRefetch(with response: PaginationResult<ThreadedCommentData>) {
+        pagination = response.pagination
+        replies = response.models
+    }
 }

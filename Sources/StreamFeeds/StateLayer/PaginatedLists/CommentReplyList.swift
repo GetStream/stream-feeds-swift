@@ -48,6 +48,7 @@ import StreamCore
 /// This class is thread-safe and conforms to `Sendable`. All state updates are
 /// performed on the main actor to ensure UI consistency.
 public final class CommentReplyList: Sendable {
+    private let disposableBag = DisposableBag()
     @MainActor private let stateBuilder: StateBuilder<CommentReplyListState>
     private let commentsRepository: CommentsRepository
     
@@ -68,6 +69,7 @@ public final class CommentReplyList: Sendable {
                 eventPublisher: eventPublisher
             )
         }
+        subscribeToReconnectionRefresh(of: client, in: disposableBag)
     }
 
     /// The query configuration used to fetch replies.
@@ -167,4 +169,18 @@ public final class CommentReplyList: Sendable {
         await state.didPaginate(with: result)
         return result.models
     }
+}
+
+// MARK: - Refetching
+
+extension CommentReplyList: PaginatedListRefetching {
+    func fetchPage(with query: CommentRepliesQuery) async throws -> PaginationResult<ThreadedCommentData> {
+        try await commentsRepository.getCommentReplies(with: query)
+    }
+}
+
+extension CommentRepliesQuery: CursorPaginatedQuery {}
+
+extension CommentReplyListState: PaginatedListState {
+    var models: [ThreadedCommentData] { replies }
 }

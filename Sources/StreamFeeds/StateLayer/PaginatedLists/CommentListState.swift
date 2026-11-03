@@ -126,4 +126,9 @@ extension CommentListState {
         queryConfig = (filter, sort)
         comments = comments.sortedMerge(response.models, sorting: CommentsSort.areInIncreasingOrder(sortingKey))
     }
+    
+    func didRefetch(with response: PaginationResult<CommentData>) {
+        pagination = response.pagination
+        comments = response.models
+    }
 }

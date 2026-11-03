@@ -18,6 +18,26 @@ struct FollowList_Tests {
         #expect(stateFollows.map(\.id) == ["user:current-user-id-user:user-1"])
     }
     
+    @Test func reconnectionRefetchesLoadedFollows() async throws {
+        let client = defaultClient(
+            additionalPayloads: [
+                QueryFollowsResponse.dummy(
+                    follows: [.dummy(sourceFeed: .dummy(feed: "user:current-user-id"), targetFeed: .dummy(feed: "user:user-2"))],
+                    next: nil
+                )
+            ]
+        )
+        let followList = client.followList(
+            for: FollowsQuery(filter: .equal(.sourceFeed, "user:current-user-id"))
+        )
+        try await followList.get()
+    
+        client.simulateReconnection()
+    
+        try await waitUntil { followList.state.follows.map(\.id) == ["user:current-user-id-user:user-2"] }
+        #expect(await followList.state.canLoadMore == false)
+    }
+    
     @Test func paginationLoadsMoreFollows() async throws {
         let client = defaultClient(
             additionalPayloads: [
