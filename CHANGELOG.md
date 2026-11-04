@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### 🐞 Fixed
 - Fix pending follows sent by a feed showing up in its own `FeedState.followRequests` [#88](https://github.com/GetStream/stream-feeds-swift/pull/88)
 
+### ⚡ Performance
+- Reduce SDK size by 3 MB [#83](https://github.com/GetStream/stream-feeds-swift/pull/83), [#84](https://github.com/GetStream/stream-feeds-swift/pull/84), [#90](https://github.com/GetStream/stream-feeds-swift/pull/90), [#91](https://github.com/GetStream/stream-feeds-swift/pull/91)
+
 ### 🔄 Changed
 - Deprecate the `role` argument of `Feed.acceptFollow(_:role:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
 - Deprecate the `userId` argument of `Activity.getPoll(userId:)`, `deletePoll(userId:)`, `getPollOption(optionId:userId:)`, `deletePollOption(optionId:userId:)` and `deletePollVote(voteId:userId:)`, which the API no longer accepts [#83](https://github.com/GetStream/stream-feeds-swift/pull/83)
