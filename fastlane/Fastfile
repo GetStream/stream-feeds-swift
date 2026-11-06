@@ -120,6 +120,7 @@ lane :test do |options|
     cloned_source_packages_path: source_packages_path,
     devices: options[:device],
     number_of_retries: 3,
+    result_bundle: true,
     skip_build: options[:skip_build],
     build_for_testing: options[:build_for_testing],
     parallel_testing: !options[:cron],
@@ -132,6 +133,8 @@ lane :test do |options|
     UI.user_error!(e) unless options[:cron]
 
     failed_tests = retreive_failed_tests
+    raise e if failed_tests.empty?
+
     UI.important("Re-running #{failed_tests.size} failed tests ⌛️")
     scan(scan_options.merge(only_testing: failed_tests))
   end
@@ -139,26 +142,33 @@ lane :test do |options|
   slather unless options[:build_for_testing]
 end
 
+# The tests that failed in the last scan, as `Bundle/Suite/test()` for `only_testing`.
+# Read from the result bundle rather than scan's junit report: scan skips the report when the
+# formatted output lacks a test summary, as xcbeautify's does for Swift Testing, and the report
+# names Swift Testing tests by their display names, which `only_testing` doesn't accept.
 private_lane :retreive_failed_tests do
-  report_path = 'test_output/report.junit'
-  raise UI.user_error!('There is no junit report to parse') unless File.file?(report_path)
+  result_bundle_path = lane_context[SharedValues::SCAN_GENERATED_XCRESULT_PATH]
+  next [] if result_bundle_path.nil? || !File.directory?(result_bundle_path)
 
-  junit_report = Nokogiri::XML(File.read(report_path))
-  failed_tests = []
-  passed_tests = []
-  suite_name = junit_report.xpath('//testsuite').first['name'].split('.').first
-  junit_report.xpath('//testcase').each do |testcase|
-    class_name = testcase['classname'].split('.').last
-    test_name = testcase['name'].delete('()')
-
-    if testcase.at_xpath('failure')
-      failed_tests << "#{suite_name}/#{class_name}/#{test_name}"
-    else
-      passed_tests << "#{suite_name}/#{class_name}/#{test_name}"
-    end
+  begin
+    results = JSON.parse(sh('xcrun', 'xcresulttool', 'get', 'test-results', 'tests', '--path', result_bundle_path, log: false))
+  rescue StandardError => e
+    UI.error("Couldn't read the failed tests from #{result_bundle_path}: #{e.message}")
+    next []
   end
 
-  (failed_tests - passed_tests).uniq
+  failed_tests = []
+  collect_failed = lambda do |node, bundle|
+    bundle = node['name'] if ['Unit test bundle', 'UI test bundle'].include?(node['nodeType'])
+    if node['nodeType'] == 'Test Case'
+      failed_tests << "#{bundle}/#{node['nodeIdentifier']}" if node['result'] == 'Failed' && bundle && node['nodeIdentifier']
+    else
+      node.fetch('children', []).each { |child| collect_failed.call(child, bundle) }
+    end
+  end
+  results.fetch('testNodes', []).each { |node| collect_failed.call(node, nil) }
+
+  failed_tests.uniq
 end
 
 private_lane :update_testplan_on_ci do |options|
