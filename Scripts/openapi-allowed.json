@@ -363,499 +363,506 @@
     "VoteData"
   ],
   "removedProperties": {
+    "AIImageConfig": [
+      { "ocrSeverityRules": "Pending review (IOS-2246)" }
+    ],
     "AITextConfig": [
-      "profile"
+      { "profile": "Pending review (IOS-2246)" }
     ],
     "AWSRekognitionRule": [
-      "subclassifications"
+      { "subclassifications": "Pending review (IOS-2246)" }
     ],
     "AcceptFollowRequest": [
-      "followerRole"
+      { "followerRole": "Server-side only" }
     ],
     "ActionLogResponse": [
-      "reporterType"
+      { "reporterType": "Moderation tooling" }
     ],
     "ActivityRequest": [
-      "collectionRefs",
-      "collections",
-      "copyCustomToNotification",
-      "createNotificationActivity",
-      "restrictReplies",
-      "skipEnrichUrl",
-      "skipPush"
+      { "collectionRefs": "Pending review (IOS-2246)" },
+      { "collections": "Pending review (IOS-2246)" },
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "createNotificationActivity": "Pending review (IOS-2246)" },
+      { "restrictReplies": "Pending review (IOS-2246)" },
+      { "skipEnrichUrl": "Pending review (IOS-2246)" },
+      { "skipPush": "Pending review (IOS-2246)" }
     ],
     "ActivityResponse": [
-      "collections",
-      "friendReactionCount",
-      "friendReactions",
-      "i18n",
-      "isRead",
-      "isSeen",
-      "isWatched",
-      "latestShares",
-      "metrics",
-      "moderationAction",
-      "preview",
-      "restrictReplies",
-      "scoreVars",
-      "selectorSource",
-      "topLevelCommentCount"
+      { "collections": "Pending review (IOS-2246)" },
+      { "friendReactionCount": "Pending review (IOS-2246)" },
+      { "friendReactions": "Pending review (IOS-2246)" },
+      { "i18n": "Pending review (IOS-2246)" },
+      { "isRead": "Pending review (IOS-2246)" },
+      { "isSeen": "Pending review (IOS-2246)" },
+      { "isWatched": "Pending review (IOS-2246)" },
+      { "latestShares": "Pending review (IOS-2246)" },
+      { "metrics": "Pending review (IOS-2246)" },
+      { "moderationAction": "Pending review (IOS-2246)" },
+      { "position": "Pending review (IOS-2246)" },
+      { "preview": "Pending review (IOS-2246)" },
+      { "reasons": "Pending review (IOS-2246)" },
+      { "restrictReplies": "Pending review (IOS-2246)" },
+      { "scoreVars": "Pending review (IOS-2246)" },
+      { "selectorSource": "Pending review (IOS-2246)" },
+      { "topLevelCommentCount": "Pending review (IOS-2246)" }
     ],
     "AddActivityRequest": [
-      "collections",
-      "copyCustomToNotification",
-      "enrichOwnFields"
+      { "collections": "Pending review (IOS-2246)" },
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
     "AddActivityResponse": [
-      "skippedExisting"
+      { "skippedExisting": "Pending review (IOS-2246)" }
     ],
     "AddCommentReactionRequest": [
-      "copyCustomToNotification",
-      "targetFeeds"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "targetFeeds": "Pending review (IOS-2246)" }
     ],
     "AddCommentReactionResponse": [
-      "counterDelta",
-      "notificationAccepted",
-      "notificationCreated",
-      "notificationTaskId",
-      "outcome",
-      "previousReactionType",
-      "referenceActivity"
+      { "counterDelta": "Pending review (IOS-2246)" },
+      { "notificationAccepted": "Pending review (IOS-2246)" },
+      { "notificationCreated": "Deprecated, use notificationAccepted" },
+      { "notificationTaskId": "Pending review (IOS-2246)" },
+      { "outcome": "Pending review (IOS-2246)" },
+      { "previousReactionType": "Pending review (IOS-2246)" },
+      { "referenceActivity": "Pending review (IOS-2246)" }
     ],
     "AddCommentRequest": [
-      "copyCustomToNotification",
-      "id",
-      "skipEnrichUrl"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "id": "Pending review (IOS-2246)" },
+      { "skipEnrichUrl": "Pending review (IOS-2246)" }
     ],
     "AddCommentResponse": [
-      "mentionNotificationsCreated",
-      "notificationCreated"
+      { "mentionNotificationsCreated": "Pending review (IOS-2246)" },
+      { "notificationCreated": "Pending review (IOS-2246)" }
     ],
     "AddReactionRequest": [
-      "copyCustomToNotification",
-      "targetFeeds"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "targetFeeds": "Pending review (IOS-2246)" }
     ],
     "AddReactionResponse": [
-      "counterDelta",
-      "notificationAccepted",
-      "notificationCreated",
-      "notificationTaskId",
-      "outcome",
-      "previousReactionType",
-      "referenceActivity"
+      { "counterDelta": "Pending review (IOS-2246)" },
+      { "notificationAccepted": "Pending review (IOS-2246)" },
+      { "notificationCreated": "Deprecated, use notificationAccepted" },
+      { "notificationTaskId": "Pending review (IOS-2246)" },
+      { "outcome": "Pending review (IOS-2246)" },
+      { "previousReactionType": "Pending review (IOS-2246)" },
+      { "referenceActivity": "Pending review (IOS-2246)" }
     ],
     "AggregatedActivityResponse": [
-      "isRead",
-      "isSeen"
+      { "isRead": "Pending review (IOS-2246)" },
+      { "isSeen": "Pending review (IOS-2246)" }
     ],
     "AppResponseFields": [
-      "id",
-      "placement"
+      { "id": "Pending review (IOS-2246)" },
+      { "placement": "Pending review (IOS-2246)" }
     ],
     "BanInfoResponse": [
-      "channel",
-      "channelCid",
-      "user"
+      { "channel": "Chat only" },
+      { "channelCid": "Chat only" },
+      { "user": "Moderation review queue" }
     ],
     "BanOptions": [
-      "deleteMessages"
+      { "deleteMessages": "Chat only" }
     ],
     "BanRequest": [
-      "banFromFutureChannels",
-      "channelCid",
-      "deleteMessages",
-      "deleteReactions"
+      { "banFromFutureChannels": "Chat only" },
+      { "channelCid": "Chat only" },
+      { "deleteMessages": "Chat only" },
+      { "deleteReactions": "Chat only" }
     ],
     "BlockListConfig": [
-      "matchSubstring"
+      { "explicitUrlsOnly": "Pending review (IOS-2246)" },
+      { "matchSubstring": "Pending review (IOS-2246)" }
     ],
     "BookmarkFolderResponse": [
-      "user"
+      { "user": "Pending review (IOS-2246)" }
     ],
     "BookmarkResponse": [
-      "activityId",
-      "comment",
-      "objectId",
-      "objectType"
+      { "activityId": "Deprecated, use objectId" },
+      { "comment": "Pending review (IOS-2246)" },
+      { "objectId": "Pending review (IOS-2246)" },
+      { "objectType": "Pending review (IOS-2246)" }
     ],
     "CommentResponse": [
-      "bookmarkCount",
-      "editedAt",
-      "hidden",
-      "i18n"
+      { "bookmarkCount": "Pending review (IOS-2246)" },
+      { "editedAt": "Pending review (IOS-2246)" },
+      { "hidden": "Pending review (IOS-2246)" },
+      { "i18n": "Pending review (IOS-2246)" }
     ],
     "ConfigResponse": [
-      "aiAudioConfig",
-      "aiImageLabelDefinitions",
-      "aiImageSubclassifications",
-      "availableBodyguardProfiles",
-      "floodConfig",
-      "intentConfig",
-      "supportedVideoCallHarmTypes",
-      "videoCallRuleConfig"
+      { "aiAudioConfig": "Moderation tooling" },
+      { "aiImageLabelDefinitions": "Moderation dashboard" },
+      { "aiImageSubclassifications": "Moderation dashboard" },
+      { "availableBodyguardProfiles": "Moderation dashboard" },
+      { "engine": "Moderation config" },
+      { "floodConfig": "Moderation tooling" },
+      { "intentConfig": "Chat only, conversation intent" },
+      { "publishedVersion": "Moderation config" },
+      { "supportedVideoCallHarmTypes": "Video only" },
+      { "videoCallRuleConfig": "Video only" }
     ],
     "CreatePollRequest": [
-      "team"
+      { "team": "Chat only, multi-tenant teams" }
     ],
     "DeleteActivityRequestPayload": [
-      "entityId",
-      "entityType",
-      "reason"
+      { "entityId": "Moderation tooling" },
+      { "entityType": "Moderation tooling" },
+      { "reason": "Moderation tooling" }
     ],
     "DeleteReactionRequestPayload": [
-      "entityId",
-      "entityType",
-      "reason"
+      { "entityId": "Moderation tooling" },
+      { "entityType": "Moderation tooling" },
+      { "reason": "Moderation tooling" }
     ],
     "EnrichedActivity": [
-      "time"
+      { "time": "Legacy Feeds v2 model" }
     ],
     "EnrichedReaction": [
-      "createdAt",
-      "updatedAt"
+      { "createdAt": "Legacy Feeds v2 model" },
+      { "updatedAt": "Legacy Feeds v2 model" }
     ],
     "FeedGroupChangedEvent": [
-      "feedGroup"
+      { "feedGroup": "Server-side feed group config, event never emitted" }
     ],
     "FeedInput": [
-      "location"
+      { "location": "Pending review (IOS-2246)" }
     ],
     "FeedMemberRequest": [
-      "membershipLevel",
-      "role"
+      { "membershipLevel": "Server-side only, rejected for client tokens" },
+      { "role": "Server-side only, rejected for client tokens" }
     ],
     "FeedResponse": [
-      "activityCount",
-      "location",
-      "ownFollowings"
+      { "activityCount": "Pending review (IOS-2246)" },
+      { "location": "Pending review (IOS-2246)" },
+      { "ownFollowings": "Pending review (IOS-2246)" }
     ],
     "FlagRequest": [
-      "entityCreatorId"
+      { "entityCreatorId": "Server-side only, backend sets it from the flagged entity" }
     ],
     "FollowRequest": [
-      "activityCopyLimit",
-      "copyCustomToNotification",
-      "enrichOwnFields"
+      { "activityCopyLimit": "Pending review (IOS-2246)" },
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
     "GetCommentRepliesResponse": [
-      "sort"
+      { "sort": "Pending review (IOS-2246)" }
     ],
     "GetCommentsResponse": [
-      "commentCount",
-      "sort",
-      "topLevelCommentCount"
+      { "commentCount": "Pending review (IOS-2246)" },
+      { "sort": "Pending review (IOS-2246)" },
+      { "topLevelCommentCount": "Pending review (IOS-2246)" }
     ],
     "GetFollowSuggestionsResponse": [
-      "algorithmUsed"
+      { "algorithmUsed": "Pending review (IOS-2246)" }
     ],
     "GetOrCreateFeedRequest": [
-      "discardActors",
-      "enrichmentOptions",
-      "friendReactionsOptions",
-      "idAround",
-      "overwriteInterestWeights",
-      "viewerLocation"
+      { "discardActors": "Gated to a single organization" },
+      { "enrichmentOptions": "Pending review (IOS-2246)" },
+      { "friendReactionsOptions": "Pending review (IOS-2246)" },
+      { "idAround": "Pending review (IOS-2246)" },
+      { "overwriteInterestWeights": "Pending review (IOS-2246)" },
+      { "viewerLocation": "Pending review (IOS-2246)" }
     ],
     "GetOrCreateFeedResponse": [
-      "degradedSelectors"
+      { "degradedSelectors": "Pending review (IOS-2246)" },
+      { "requestId": "Pending review (IOS-2246)" }
     ],
     "HealthCheckEvent": [
-      "custom",
-      "me"
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "me": "Pending review (IOS-2246)" }
     ],
     "ImageContentParameters": [
-      "labelOperator",
-      "minConfidence"
+      { "labelOperator": "Moderation tooling" },
+      { "minConfidence": "Moderation tooling" }
     ],
     "ImageRuleParameters": [
-      "minConfidence"
+      { "minConfidence": "Moderation tooling" }
     ],
     "LLMConfig": [
-      "contextCustomKeys",
-      "customKeysContextDescription"
+      { "contextCustomKeys": "Moderation tooling" },
+      { "customKeysContextDescription": "Moderation tooling" }
     ],
     "MarkReviewedRequestPayload": [
-      "decisionReason",
-      "reason"
+      { "decisionReason": "Moderation tooling" },
+      { "reason": "Moderation tooling" }
     ],
     "ModerationActionConfigResponse": [
-      "id",
-      "queueType"
+      { "id": "Moderation tooling" },
+      { "queueType": "Moderation tooling" }
     ],
     "ModerationCustomActionEvent": [
-      "message"
+      { "message": "Chat only" }
     ],
     "ModerationFlagResponse": [
-      "contentPublishedAt",
-      "id"
+      { "contentPublishedAt": "Moderation tooling" },
+      { "id": "Moderation tooling" }
     ],
     "ModerationFlaggedEvent": [
-      "contentType",
-      "custom",
-      "receivedAt"
+      { "contentType": "Moderation tooling" },
+      { "custom": "Moderation tooling" },
+      { "receivedAt": "Moderation tooling" }
     ],
     "ModerationMarkReviewedEvent": [
-      "custom",
-      "message",
-      "receivedAt"
+      { "custom": "Moderation tooling" },
+      { "message": "Chat only" },
+      { "receivedAt": "Moderation tooling" }
     ],
     "ModerationPayload": [
-      "audios",
-      "countryCode",
-      "countryCodes",
-      "imageIds",
-      "imageOrderedKeys",
-      "otherMedia",
-      "textIds",
-      "textOrderedKeys"
+      { "audios": "Moderation tooling" },
+      { "countryCode": "Moderation tooling" },
+      { "countryCodes": "Moderation tooling" },
+      { "imageIds": "Moderation tooling" },
+      { "imageOrderedKeys": "Moderation tooling" },
+      { "otherMedia": "Moderation tooling" },
+      { "textIds": "Moderation tooling" },
+      { "textOrderedKeys": "Moderation tooling" }
     ],
     "ModerationV2Response": [
-      "blocklistsMatched"
+      { "blocklistsMatched": "Pending review (IOS-2246)" }
     ],
     "NotificationTarget": [
-      "comment",
-      "custom",
-      "parentActivity"
+      { "comment": "Pending review (IOS-2246)" },
+      { "custom": "Pending review (IOS-2246)" },
+      { "parentActivity": "Pending review (IOS-2246)" }
     ],
     "NotificationTrigger": [
-      "comment",
-      "custom"
+      { "comment": "Pending review (IOS-2246)" },
+      { "custom": "Pending review (IOS-2246)" }
     ],
     "OwnUserResponse": [
-      "avgResponseTime",
-      "banned",
-      "channelMutes",
-      "invisible",
-      "latestHiddenChannels",
-      "mutes",
-      "online",
-      "privacySettings",
-      "pushPreferences",
-      "teamsRole",
-      "totalUnreadCount",
-      "totalUnreadCountByTeam",
-      "unreadChannels",
-      "unreadCount",
-      "unreadThreads"
+      { "channelMutes": "Chat only" },
+      { "invisible": "Chat only" },
+      { "latestHiddenChannels": "Chat only" },
+      { "mutes": "Pending review (IOS-2246)" },
+      { "privacySettings": "Chat only" },
+      { "pushPreferences": "Pending review (IOS-2246)" },
+      { "totalUnreadCount": "Chat only" },
+      { "totalUnreadCountByTeam": "Chat only" },
+      { "unreadChannels": "Chat only" },
+      { "unreadCount": "Chat only" },
+      { "unreadThreads": "Chat only" }
     ],
     "PollOptionResponseData": [
-      "textI18n"
+      { "textI18n": "Pending review (IOS-2246)" }
     ],
     "PollResponseData": [
-      "descriptionI18n",
-      "nameI18n"
+      { "descriptionI18n": "Pending review (IOS-2246)" },
+      { "nameI18n": "Pending review (IOS-2246)" }
     ],
     "PollVoteResponse": [
-      "poll"
+      { "poll": "Pending review (IOS-2246)" }
     ],
     "PollVoteResponseData": [
-      "answerTextI18n"
+      { "answerTextI18n": "Pending review (IOS-2246)" }
     ],
     "PrivacySettingsResponse": [
-      "deliveryReceipts",
-      "typingIndicators"
+      { "deliveryReceipts": "Chat only" },
+      { "typingIndicators": "Chat only" }
     ],
     "QueryActivitiesRequest": [
-      "enrichOwnFields"
+      { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
     "QueryBookmarksRequest": [
-      "enrichOwnFields"
+      { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
     "QueryCommentsRequest": [
-      "idAround"
+      { "idAround": "Pending review (IOS-2246)" }
     ],
     "QueryFeedsRequest": [
-      "enrichOwnFields"
+      { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
     "QueryFollowsRequest": [
-      "includeGroupCounts"
+      { "includeGroupCounts": "Server-side only" }
     ],
     "QueryFollowsResponse": [
-      "groupCounts"
+      { "groupCounts": "Server-side only, needs includeGroupCounts" }
     ],
     "QueryReviewQueueRequest": [
-      "excludeDefaultActionConfig"
+      { "excludeDefaultActionConfig": "Moderation tooling" }
     ],
     "QueryReviewQueueResponse": [
-      "defaultActionConfig",
-      "filterConfig"
+      { "defaultActionConfig": "Moderation tooling" },
+      { "filterConfig": "Moderation tooling" }
     ],
     "ReviewQueueItemResponse": [
-      "appeal",
-      "call",
-      "confidenceScore",
-      "countryCode",
-      "countryCodes",
-      "escalated",
-      "escalatedAt",
-      "escalatedBy",
-      "escalationMetadata",
-      "falsePositiveFlags",
-      "feedsV2Reaction",
-      "feedsV3Activity",
-      "feedsV3Comment",
-      "latestModeratorAction",
-      "mediaDisplay",
-      "message",
-      "poll",
-      "reaction"
+      { "appeal": "Moderation tooling" },
+      { "call": "Video only" },
+      { "confidenceScore": "Moderation tooling" },
+      { "countryCode": "Moderation tooling" },
+      { "countryCodes": "Moderation tooling" },
+      { "escalated": "Moderation tooling" },
+      { "escalatedAt": "Moderation tooling" },
+      { "escalatedBy": "Moderation tooling" },
+      { "escalationMetadata": "Moderation tooling" },
+      { "falsePositiveFlags": "Moderation tooling" },
+      { "feedsV2Reaction": "Legacy Feeds v2 model" },
+      { "feedsV3Activity": "Moderation tooling" },
+      { "feedsV3Comment": "Moderation tooling" },
+      { "latestModeratorAction": "Moderation tooling" },
+      { "mediaDisplay": "Moderation dashboard" },
+      { "message": "Chat only" },
+      { "poll": "Moderation tooling" },
+      { "reaction": "Moderation tooling" }
     ],
     "RuleBuilderAction": [
-      "callOptions",
-      "reason",
-      "skipInbox"
+      { "callOptions": "Video only" },
+      { "reason": "Moderation tooling" },
+      { "skipInbox": "Moderation tooling" }
     ],
     "RuleBuilderCondition": [
-      "appChannelCountParams",
-      "appMessageCountParams",
-      "callCustomPropertyParams",
-      "callTypeRuleParams",
-      "callViolationCountParams",
-      "channelMessageCountRuleParams",
-      "closedCaptionRuleParams",
-      "contentCountryCodeParams",
-      "contentCustomPropertyCountParams",
-      "contentCustomPropertyParams",
-      "contentFlagCountRuleParams",
-      "floodIdenticalParams",
-      "floodSimilarParams",
-      "intentRuleParams",
-      "ipContentCountRuleParams",
-      "ipFlagCountRuleParams",
-      "keyframeOcrRuleParams",
-      "keyframeRuleParams",
-      "ocrContentParams",
-      "userChannelBanCountParams",
-      "userChannelCountParams",
-      "userFlagCountRuleParams",
-      "userIdenticalContentCountParams",
-      "userIdenticalImageCountParams",
-      "userReactionCountParams",
-      "userRoleParams"
+      { "appChannelCountParams": "Chat only" },
+      { "appMessageCountParams": "Chat only" },
+      { "callCustomPropertyParams": "Video only" },
+      { "callTypeRuleParams": "Video only" },
+      { "callViolationCountParams": "Video only" },
+      { "channelMessageCountRuleParams": "Chat only" },
+      { "closedCaptionRuleParams": "Video only" },
+      { "contentCountryCodeParams": "Moderation tooling" },
+      { "contentCustomPropertyCountParams": "Moderation tooling" },
+      { "contentCustomPropertyParams": "Moderation tooling" },
+      { "contentFlagCountRuleParams": "Moderation tooling" },
+      { "floodIdenticalParams": "Moderation tooling" },
+      { "floodSimilarParams": "Moderation tooling" },
+      { "intentRuleParams": "Chat only" },
+      { "ipContentCountRuleParams": "Moderation tooling" },
+      { "ipFlagCountRuleParams": "Moderation tooling" },
+      { "keyframeOcrRuleParams": "Video only" },
+      { "keyframeRuleParams": "Video only" },
+      { "ocrContentParams": "Moderation tooling" },
+      { "userChannelBanCountParams": "Chat only" },
+      { "userChannelCountParams": "Chat only" },
+      { "userFlagCountRuleParams": "Moderation tooling" },
+      { "userIdenticalContentCountParams": "Moderation tooling" },
+      { "userIdenticalImageCountParams": "Moderation tooling" },
+      { "userReactionCountParams": "Moderation tooling" },
+      { "userRoleParams": "Moderation tooling" }
     ],
     "RuleBuilderRule": [
-      "actionSequences"
+      { "actionSequences": "Video only" }
     ],
     "SingleFollowResponse": [
-      "notificationCreated"
+      { "notificationCreated": "Pending review (IOS-2246)" }
     ],
     "SortParamRequest": [
-      "type"
+      { "type": "Moderation queries only" }
     ],
     "SubmitActionRequest": [
-      "appealId",
-      "ban",
-      "block",
-      "bypass",
-      "deleteComment",
-      "deleteMessage",
-      "deletePoll",
-      "deletePollAnswer",
-      "deletePollOption",
-      "deleteUser",
-      "deleteUserMessages",
-      "escalate",
-      "flag",
-      "rejectAppeal",
-      "restore",
-      "shadowBlock",
-      "unban",
-      "unblock"
+      { "appealId": "Moderation tooling" },
+      { "ban": "Moderation tooling" },
+      { "block": "Moderation tooling" },
+      { "bypass": "Moderation tooling" },
+      { "deleteComment": "Moderation tooling" },
+      { "deleteMessage": "Chat only" },
+      { "deletePoll": "Moderation tooling" },
+      { "deletePollAnswer": "Moderation tooling" },
+      { "deletePollOption": "Moderation tooling" },
+      { "deleteUser": "Moderation tooling" },
+      { "deleteUserMessages": "Chat only" },
+      { "escalate": "Moderation tooling" },
+      { "flag": "Moderation tooling" },
+      { "rejectAppeal": "Moderation tooling" },
+      { "restore": "Moderation tooling" },
+      { "shadowBlock": "Moderation tooling" },
+      { "unban": "Moderation tooling" },
+      { "unblock": "Deprecated, use restore" }
     ],
     "SubmitActionResponse": [
-      "appealItem",
-      "autoRestoreWarning"
+      { "appealItem": "Moderation tooling" },
+      { "autoRestoreWarning": "Moderation tooling" }
     ],
     "TextContentParameters": [
-      "labelOperator",
-      "textLength",
-      "textLengthOperator"
+      { "labelOperator": "Moderation tooling" },
+      { "textLength": "Moderation tooling" },
+      { "textLengthOperator": "Moderation tooling" }
     ],
     "TextRuleParameters": [
-      "semanticFilterMinThreshold",
-      "semanticFilterNames"
+      { "semanticFilterMinThreshold": "Moderation tooling" },
+      { "semanticFilterNames": "Moderation tooling" }
     ],
     "UpdateActivityRequest": [
-      "collectionRefs",
-      "copyCustomToNotification",
-      "enrichOwnFields",
-      "handleMentionNotifications",
-      "mentionedUserIds",
-      "restrictReplies",
-      "runActivityProcessors",
-      "searchData",
-      "skipEnrichUrl",
-      "visibilityTag"
+      { "collectionRefs": "Pending review (IOS-2246)" },
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "enrichOwnFields": "Pending review (IOS-2246)" },
+      { "handleMentionNotifications": "Pending review (IOS-2246)" },
+      { "mentionedUserIds": "Pending review (IOS-2246)" },
+      { "restrictReplies": "Pending review (IOS-2246)" },
+      { "runActivityProcessors": "Pending review (IOS-2246)" },
+      { "searchData": "Pending review (IOS-2246)" },
+      { "skipEnrichUrl": "Pending review (IOS-2246)" },
+      { "visibilityTag": "Pending review (IOS-2246)" }
     ],
     "UpdateCommentRequest": [
-      "attachments",
-      "copyCustomToNotification",
-      "handleMentionNotifications",
-      "mentionedUserIds",
-      "skipEnrichUrl"
+      { "attachments": "Pending review (IOS-2246)" },
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
+      { "handleMentionNotifications": "Pending review (IOS-2246)" },
+      { "mentionedUserIds": "Pending review (IOS-2246)" },
+      { "skipEnrichUrl": "Pending review (IOS-2246)" }
     ],
     "UpdateFeedRequest": [
-      "clearLocation",
-      "description",
-      "enrichOwnFields",
-      "filterTags",
-      "location",
-      "name"
+      { "clearLocation": "Pending review (IOS-2246)" },
+      { "description": "Pending review (IOS-2246)" },
+      { "enrichOwnFields": "Pending review (IOS-2246)" },
+      { "filterTags": "Pending review (IOS-2246)" },
+      { "location": "Pending review (IOS-2246)" },
+      { "name": "Pending review (IOS-2246)" }
     ],
     "UpsertActivitiesRequest": [
-      "enrichOwnFields"
+      { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
     "UpsertActivitiesResponse": [
-      "mentionNotificationsCreated",
-      "skippedExisting"
+      { "mentionNotificationsCreated": "Pending review (IOS-2246)" },
+      { "skippedExisting": "Pending review (IOS-2246)" }
     ],
     "UpsertConfigRequest": [
-      "aiAudioConfig",
-      "floodConfig",
-      "intentConfig",
-      "videoCallRuleConfig"
+      { "aiAudioConfig": "Moderation tooling" },
+      { "engine": "Moderation config" },
+      { "floodConfig": "Moderation tooling" },
+      { "intentConfig": "Chat only, conversation intent" },
+      { "videoCallRuleConfig": "Video only" }
     ],
     "UserBannedEvent": [
-      "channelCustom",
-      "channelId",
-      "channelMemberCount",
-      "channelMessageCount",
-      "channelType",
-      "cid",
-      "custom",
-      "receivedAt",
-      "reviewQueueItemId",
-      "totalBans"
+      { "banFromFutureChannels": "Chat only" },
+      { "channelCustom": "Chat only" },
+      { "channelId": "Chat only" },
+      { "channelMemberCount": "Chat only" },
+      { "channelMessageCount": "Chat only" },
+      { "channelType": "Chat only" },
+      { "cid": "Chat only" },
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "receivedAt": "Never set by the backend" },
+      { "reviewQueueItemId": "Moderation review queue" },
+      { "totalBans": "Webhooks only, not sent over WebSocket" }
     ],
     "UserDeactivatedEvent": [
-      "custom",
-      "receivedAt"
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "receivedAt": "Never set by the backend" }
     ],
     "UserDeletedEvent": [
-      "deleteConversationChannels",
-      "deleteMessages",
-      "markMessagesDeleted"
+      { "deleteConversationChannels": "Chat only" },
+      { "deleteMessages": "Chat only" },
+      { "markMessagesDeleted": "Chat only" }
     ],
     "UserReactivatedEvent": [
-      "createdBy",
-      "custom",
-      "receivedAt"
+      { "createdBy": "Pending review (IOS-2246)" },
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "receivedAt": "Never set by the backend" }
     ],
     "UserUnbannedEvent": [
-      "channelCustom",
-      "channelId",
-      "channelMemberCount",
-      "channelMessageCount",
-      "channelType",
-      "cid"
+      { "channelCustom": "Chat only" },
+      { "channelId": "Chat only" },
+      { "channelMemberCount": "Chat only" },
+      { "channelMessageCount": "Chat only" },
+      { "channelType": "Chat only" },
+      { "cid": "Chat only" }
     ],
     "VelocityFilterConfig": [
-      "cascadingActions",
-      "cidsPerUser",
-      "firstMessageOnly"
+      { "cascadingActions": "Pending review (IOS-2246)" },
+      { "cidsPerUser": "Pending review (IOS-2246)" },
+      { "firstMessageOnly": "Pending review (IOS-2246)" }
     ],
     "VideoContentParameters": [
-      "labelOperator"
+      { "labelOperator": "Moderation tooling" }
     ]
   }
 }

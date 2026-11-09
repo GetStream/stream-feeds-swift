@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class VelocityFilterConfigRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+public final class VelocityFilterConfigRuleAction: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue
@@ -18,8 +20,10 @@ public final class VelocityFilterConfigRuleAction: RawRepresentable, Codable, Ha
     public static let shadow = VelocityFilterConfigRuleAction(rawValue: "shadow")
 }
 
-public final class VelocityFilterConfigRuleCascadingAction: RawRepresentable, Codable, Hashable, Sendable {
+public final class VelocityFilterConfigRuleCascadingAction: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue

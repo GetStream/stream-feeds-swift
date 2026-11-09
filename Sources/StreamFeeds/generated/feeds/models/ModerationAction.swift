@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// What a moderation rule does when it matches.
-public final class ModerationAction: RawRepresentable, Codable, Hashable, Sendable {
+public final class ModerationAction: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue

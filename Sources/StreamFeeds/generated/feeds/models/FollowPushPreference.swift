@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// Whether a follow sends push notifications.
-public final class FollowPushPreference: RawRepresentable, Codable, Hashable, Sendable {
+public final class FollowPushPreference: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue
