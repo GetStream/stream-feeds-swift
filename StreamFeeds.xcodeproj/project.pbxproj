@@ -15,7 +15,6 @@
 		4FEED0162F80000000C0FFEE /* StreamFeedsLogsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FEED0012F80000000C0FFEE /* StreamFeedsLogsUI.framework */; };
 		82C6B2B02E1D177D00CB3B23 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 82C6B2AF2E1D177D00CB3B23 /* PrivacyInfo.xcprivacy */; };
 		845494EB2DBA2E7C00211413 /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
-		84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AA8E632DCA45880030DD7D /* StreamCore */; };
 		84AA92682DCE35170030DD7D /* StreamFeeds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; };
 		84AA92692DCE35170030DD7D /* StreamFeeds.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 845494E22DBA2E7C00211413 /* StreamFeeds.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		84B9B53B2E4A9F0300923DD8 /* StreamCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84B9B53A2E4A9F0300923DD8 /* StreamCore */; };
@@ -142,6 +141,7 @@
 			files = (
 				4FEED00F2F80000000C0FFEE /* StreamFeeds.framework in Frameworks */,
 				4FEED00E2F80000000C0FFEE /* StreamLogsUI in Frameworks */,
+				84B9B53B2E4A9F0300923DD8 /* StreamCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,8 +149,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84AA8E642DCA45880030DD7D /* StreamCore in Frameworks */,
-				84B9B53B2E4A9F0300923DD8 /* StreamCore in Frameworks */,
 				4F0767B52EA0D0BB00E5FD18 /* StreamAttachments in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,8 +243,6 @@
 			);
 			name = StreamFeeds;
 			packageProductDependencies = (
-				84AA8E632DCA45880030DD7D /* StreamCore */,
-				84B9B53A2E4A9F0300923DD8 /* StreamCore */,
 				4F0767B42EA0D0BB00E5FD18 /* StreamAttachments */,
 			);
 			productName = StreamFeeds;
@@ -320,6 +316,7 @@
 			name = StreamFeedsLogsUI;
 			packageProductDependencies = (
 				4FEED00D2F80000000C0FFEE /* StreamLogsUI */,
+				84B9B53A2E4A9F0300923DD8 /* StreamCore */,
 			);
 			productName = StreamFeedsLogsUI;
 			productReference = 4FEED0012F80000000C0FFEE /* StreamFeedsLogsUI.framework */;
@@ -1093,10 +1090,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84B9B5392E4A9F0300923DD8 /* XCRemoteSwiftPackageReference "stream-core-swift" */;
 			productName = StreamAttachments;
-		};
-		84AA8E632DCA45880030DD7D /* StreamCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = StreamCore;
 		};
 		84B9B53A2E4A9F0300923DD8 /* StreamCore */ = {
 			isa = XCSwiftPackageProductDependency;
