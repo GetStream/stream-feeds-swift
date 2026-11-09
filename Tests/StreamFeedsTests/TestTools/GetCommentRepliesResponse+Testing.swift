@@ -17,7 +17,8 @@ extension GetCommentRepliesResponse {
             comments: comments,
             duration: duration,
             next: next,
-            prev: prev
+            prev: prev,
+            sort: "first"
         )
     }
 }

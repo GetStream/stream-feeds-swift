@@ -6,7 +6,7 @@ import Foundation
 import StreamCore
 
 /// Who is allowed to reply to an activity.
-public final class RestrictReplies: RawRepresentable, Encodable, CustomStringConvertible, Hashable, Sendable {
+public final class RestrictReplies: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
 
     public var description: String { rawValue }

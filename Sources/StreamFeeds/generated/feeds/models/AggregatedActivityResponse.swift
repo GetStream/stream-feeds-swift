@@ -14,6 +14,10 @@ public final class AggregatedActivityResponse: Sendable, Decodable {
     public let createdAt: Date
     /// Grouping identifier
     public let group: String
+    /// Whether this aggregated group has been read. Only set for feed groups with notification config (track_seen/track_read enabled).
+    public let isRead: Bool?
+    /// Whether this aggregated group has been seen. Only set for feed groups with notification config (track_seen/track_read enabled).
+    public let isSeen: Bool?
     public let isWatched: Bool?
     /// Ranking score for this aggregation
     public let score: Double
@@ -24,11 +28,13 @@ public final class AggregatedActivityResponse: Sendable, Decodable {
     /// Whether this activity group has been truncated due to exceeding the group size limit
     public let userCountTruncated: Bool
 
-    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, isWatched: Bool? = nil, score: Double, updatedAt: Date, userCount: Int, userCountTruncated: Bool) {
+    public init(activities: [ActivityResponse], activityCount: Int, createdAt: Date, group: String, isRead: Bool? = nil, isSeen: Bool? = nil, isWatched: Bool? = nil, score: Double, updatedAt: Date, userCount: Int, userCountTruncated: Bool) {
         self.activities = activities
         self.activityCount = activityCount
         self.createdAt = createdAt
         self.group = group
+        self.isRead = isRead
+        self.isSeen = isSeen
         self.isWatched = isWatched
         self.score = score
         self.updatedAt = updatedAt
@@ -42,6 +48,8 @@ public final class AggregatedActivityResponse: Sendable, Decodable {
         self.activityCount = try container.decode(Int.self, forKey: .activityCount)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.group = try container.decode(String.self, forKey: .group)
+        self.isRead = try container.decodeIfPresent(Bool.self, forKey: .isRead)
+        self.isSeen = try container.decodeIfPresent(Bool.self, forKey: .isSeen)
         self.isWatched = try container.decodeIfPresent(Bool.self, forKey: .isWatched)
         self.score = try container.decode(Double.self, forKey: .score)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
@@ -56,6 +64,8 @@ extension AggregatedActivityResponse: Hashable {
             lhs.activityCount == rhs.activityCount &&
             lhs.createdAt == rhs.createdAt &&
             lhs.group == rhs.group &&
+            lhs.isRead == rhs.isRead &&
+            lhs.isSeen == rhs.isSeen &&
             lhs.isWatched == rhs.isWatched &&
             lhs.score == rhs.score &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -68,6 +78,8 @@ extension AggregatedActivityResponse: Hashable {
         hasher.combine(activityCount)
         hasher.combine(createdAt)
         hasher.combine(group)
+        hasher.combine(isRead)
+        hasher.combine(isSeen)
         hasher.combine(isWatched)
         hasher.combine(score)
         hasher.combine(updatedAt)

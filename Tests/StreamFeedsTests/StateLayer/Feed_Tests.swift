@@ -643,7 +643,7 @@ struct Feed_Tests {
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
             GetFollowSuggestionsResponse.dummy(
                 suggestions: [
-                    .dummy(feed: "user:suggestion1"),
+                    .dummy(feed: "user:suggestion1", reason: "popular", recommendationScore: 0.9),
                     .dummy(feed: "user:suggestion2")
                 ]
             )
@@ -655,7 +655,9 @@ struct Feed_Tests {
         let suggestions = try await feed.queryFollowSuggestions(limit: 10)
 
         #expect(suggestions.count == 2)
-        #expect(suggestions.map(\.feed.rawValue) == ["user:suggestion1", "user:suggestion2"])
+        #expect(suggestions.map(\.feed.feed.rawValue) == ["user:suggestion1", "user:suggestion2"])
+        #expect(suggestions.map(\.reason) == ["popular", nil])
+        #expect(suggestions.map(\.recommendationScore) == [0.9, nil])
     }
 
     @Test func followUpdatesState() async throws {

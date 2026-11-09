@@ -28,6 +28,7 @@ extension FeedResponse {
         visibility: FeedVisibility? = nil
     ) -> FeedResponse {
         FeedResponse(
+            activityCount: 0,
             createdAt: createdAt,
             createdBy: createdBy,
             custom: custom,

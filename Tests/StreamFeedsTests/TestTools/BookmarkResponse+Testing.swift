@@ -9,6 +9,7 @@ import StreamCore
 extension BookmarkResponse {
     static func dummy(
         activity: ActivityResponse = .dummy(),
+        comment: CommentResponse? = nil,
         createdAt: Date = .fixed(),
         custom: [String: RawJSON]? = nil,
         folder: BookmarkFolderResponse? = nil,
@@ -17,9 +18,12 @@ extension BookmarkResponse {
     ) -> BookmarkResponse {
         BookmarkResponse(
             activity: activity,
+            comment: comment,
             createdAt: createdAt,
             custom: custom,
             folder: folder,
+            objectId: comment?.id ?? activity.id,
+            objectType: comment == nil ? "activity" : "comment",
             updatedAt: updatedAt,
             user: user
         )

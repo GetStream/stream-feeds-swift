@@ -10,6 +10,18 @@ public struct AggregatedActivityData: Identifiable, Equatable, Sendable {
     public var activityCount: Int
     public var createdAt: Date
     public var group: String
+    /// Whether the group has been read.
+    ///
+    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    public var isRead: Bool?
+    /// Whether the group has been seen.
+    ///
+    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    public var isSeen: Bool?
+    /// Whether all activities in the group have been read or seen.
+    ///
+    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    public var isWatched: Bool?
     public var score: Double
     public var updatedAt: Date
     public var userCount: Int
@@ -31,6 +43,9 @@ extension AggregatedActivityResponse {
             activityCount: activityCount,
             createdAt: createdAt,
             group: group,
+            isRead: isRead,
+            isSeen: isSeen,
+            isWatched: isWatched,
             score: score,
             updatedAt: updatedAt,
             userCount: userCount,

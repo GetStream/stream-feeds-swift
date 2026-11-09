@@ -8,11 +8,15 @@ import StreamCore
 public final class BlockListConfig: Sendable, Codable, JSONEncodable {
     public let async: Bool?
     public let enabled: Bool
+    public let explicitUrlsOnly: Bool?
+    public let matchSubstring: Bool?
     public let rules: [BlockListRule]
 
-    public init(async: Bool? = nil, enabled: Bool, rules: [BlockListRule]) {
+    public init(async: Bool? = nil, enabled: Bool, explicitUrlsOnly: Bool? = nil, matchSubstring: Bool? = nil, rules: [BlockListRule]) {
         self.async = async
         self.enabled = enabled
+        self.explicitUrlsOnly = explicitUrlsOnly
+        self.matchSubstring = matchSubstring
         self.rules = rules
     }
 
@@ -20,6 +24,8 @@ public final class BlockListConfig: Sendable, Codable, JSONEncodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.async = try container.decodeIfPresent(Bool.self, forKey: .async)
         self.enabled = try container.decode(Bool.self, forKey: .enabled)
+        self.explicitUrlsOnly = try container.decodeIfPresent(Bool.self, forKey: .explicitUrlsOnly)
+        self.matchSubstring = try container.decodeIfPresent(Bool.self, forKey: .matchSubstring)
         self.rules = try container.decode([BlockListRule].self, forKey: .rules)
     }
 
@@ -27,6 +33,8 @@ public final class BlockListConfig: Sendable, Codable, JSONEncodable {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(async, forKey: .async)
         try container.encode(enabled, forKey: .enabled)
+        try container.encodeIfPresent(explicitUrlsOnly, forKey: .explicitUrlsOnly)
+        try container.encodeIfPresent(matchSubstring, forKey: .matchSubstring)
         try container.encode(rules, forKey: .rules)
     }
 }
@@ -35,12 +43,16 @@ extension BlockListConfig: Hashable {
     public static func == (lhs: BlockListConfig, rhs: BlockListConfig) -> Bool {
         lhs.async == rhs.async &&
             lhs.enabled == rhs.enabled &&
+            lhs.explicitUrlsOnly == rhs.explicitUrlsOnly &&
+            lhs.matchSubstring == rhs.matchSubstring &&
             lhs.rules == rhs.rules
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(async)
         hasher.combine(enabled)
+        hasher.combine(explicitUrlsOnly)
+        hasher.combine(matchSubstring)
         hasher.combine(rules)
     }
 }

@@ -8,15 +8,17 @@ import StreamCore
 public final class ModerationV2Response: Sendable, Decodable {
     public let action: String
     public let blocklistMatched: String?
+    public let blocklistsMatched: [String]?
     public let imageHarms: [String]?
     public let originalText: String
     public let platformCircumvented: Bool?
     public let semanticFilterMatched: String?
     public let textHarms: [String]?
 
-    public init(action: String, blocklistMatched: String? = nil, imageHarms: [String]? = nil, originalText: String, platformCircumvented: Bool? = nil, semanticFilterMatched: String? = nil, textHarms: [String]? = nil) {
+    public init(action: String, blocklistMatched: String? = nil, blocklistsMatched: [String]? = nil, imageHarms: [String]? = nil, originalText: String, platformCircumvented: Bool? = nil, semanticFilterMatched: String? = nil, textHarms: [String]? = nil) {
         self.action = action
         self.blocklistMatched = blocklistMatched
+        self.blocklistsMatched = blocklistsMatched
         self.imageHarms = imageHarms
         self.originalText = originalText
         self.platformCircumvented = platformCircumvented
@@ -28,6 +30,7 @@ public final class ModerationV2Response: Sendable, Decodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.action = try container.decode(String.self, forKey: .action)
         self.blocklistMatched = try container.decodeIfPresent(String.self, forKey: .blocklistMatched)
+        self.blocklistsMatched = try container.decodeIfPresent([String].self, forKey: .blocklistsMatched)
         self.imageHarms = try container.decodeIfPresent([String].self, forKey: .imageHarms)
         self.originalText = try container.decode(String.self, forKey: .originalText)
         self.platformCircumvented = try container.decodeIfPresent(Bool.self, forKey: .platformCircumvented)
@@ -40,6 +43,7 @@ extension ModerationV2Response: Hashable {
     public static func == (lhs: ModerationV2Response, rhs: ModerationV2Response) -> Bool {
         lhs.action == rhs.action &&
             lhs.blocklistMatched == rhs.blocklistMatched &&
+            lhs.blocklistsMatched == rhs.blocklistsMatched &&
             lhs.imageHarms == rhs.imageHarms &&
             lhs.originalText == rhs.originalText &&
             lhs.platformCircumvented == rhs.platformCircumvented &&
@@ -50,6 +54,7 @@ extension ModerationV2Response: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(action)
         hasher.combine(blocklistMatched)
+        hasher.combine(blocklistsMatched)
         hasher.combine(imageHarms)
         hasher.combine(originalText)
         hasher.combine(platformCircumvented)
