@@ -56,6 +56,7 @@
     "queryPollVotes",
     "queryPolls",
     "queryReviewQueue",
+    "readCollections",
     "rejectFeedMemberInvite",
     "rejectFollow",
     "stopWatchingFeed",
@@ -146,6 +147,8 @@
     "BookmarkFolderUpdatedEvent",
     "BookmarkResponse",
     "BookmarkUpdatedEvent",
+    "CollectionResponse",
+    "CollectionStatus",
     "CommentAddedEvent",
     "CommentDeletedEvent",
     "CommentFeedbackEvent",
@@ -169,6 +172,7 @@
     "DeleteFeedResponse",
     "DeleteModerationConfigResponse",
     "EnrichedActivity",
+    "EnrichedCollectionResponse",
     "EnrichedReaction",
     "EntityCreatorResponse",
     "FeedCreatedEvent",
@@ -250,6 +254,7 @@
     "QueryModerationConfigsResponse",
     "QueryPollsResponse",
     "QueryReviewQueueResponse",
+    "ReadCollectionsResponse",
     "RejectFeedMemberInviteResponse",
     "RejectFollowResponse",
     "RepliesMeta",
@@ -295,6 +300,7 @@
     "BanRequest",
     "BlockUsersRequest",
     "CastPollVoteRequest",
+    "CollectionRequest",
     "ContentCountRuleParameters",
     "CreatePollOptionRequest",
     "CreatePollRequest",
@@ -379,8 +385,6 @@
       { "reporterType": "Moderation tooling" }
     ],
     "ActivityRequest": [
-      { "collectionRefs": "Pending review (IOS-2246)" },
-      { "collections": "Pending review (IOS-2246)" },
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
       { "createNotificationActivity": "Pending review (IOS-2246)" },
       { "restrictReplies": "Pending review (IOS-2246)" },
@@ -388,7 +392,6 @@
       { "skipPush": "Pending review (IOS-2246)" }
     ],
     "ActivityResponse": [
-      { "collections": "Pending review (IOS-2246)" },
       { "friendReactionCount": "Pending review (IOS-2246)" },
       { "friendReactions": "Pending review (IOS-2246)" },
       { "i18n": "Pending review (IOS-2246)" },
@@ -407,7 +410,6 @@
       { "topLevelCommentCount": "Pending review (IOS-2246)" }
     ],
     "AddActivityRequest": [
-      { "collections": "Pending review (IOS-2246)" },
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
       { "enrichOwnFields": "Pending review (IOS-2246)" }
     ],
@@ -781,7 +783,6 @@
       { "semanticFilterNames": "Moderation tooling" }
     ],
     "UpdateActivityRequest": [
-      { "collectionRefs": "Pending review (IOS-2246)" },
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
       { "enrichOwnFields": "Pending review (IOS-2246)" },
       { "handleMentionNotifications": "Pending review (IOS-2246)" },

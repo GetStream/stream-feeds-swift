@@ -434,6 +434,17 @@ public final class FeedsClient: Sendable {
         return Set(response.deletedIds)
     }
     
+    // MARK: - Collections
+    
+    /// Reads collections by their references. By default, users can only read their own collections.
+    ///
+    /// - Parameter references: Collection references in the `name:id` format, at most 100.
+    /// - Returns: The collections that match the references.
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func readCollections(references: [String]) async throws -> [CollectionData] {
+        try await activitiesRepository.readCollections(references: references)
+    }
+    
     // MARK: - Bookmark Lists
     
     /// Creates a bookmark list instance based on the provided query.

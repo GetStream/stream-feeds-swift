@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
+### ✅ Added
+- Add `ActivityData.collections` with the activity's enriched collections, and `FeedsClient.readCollections(references:)` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
+- Add `collectionReferences` and `collections` to `FeedAddActivityRequest` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
+
 ### 🚨 Breaking Changes
 - `OwnUser` moves its user fields under `user`, for example `ownUser.id` -> `ownUser.user.id` [#98](https://github.com/GetStream/stream-feeds-swift/pull/98)
 

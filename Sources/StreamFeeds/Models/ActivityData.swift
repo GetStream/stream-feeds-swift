@@ -9,6 +9,8 @@ import StreamCore
 public struct ActivityData: Identifiable, Equatable, Sendable {
     public let attachments: [Attachment]
     public private(set) var bookmarkCount: Int
+    /// Collections referenced by the activity, keyed by collection reference (`name:id`).
+    public let collections: [String: CollectionData]
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentData]
     public let createdAt: Date
@@ -165,6 +167,7 @@ extension ActivityResponse {
         ActivityData(
             attachments: attachments,
             bookmarkCount: bookmarkCount,
+            collections: collections.mapValues { $0.toModel() },
             commentCount: commentCount,
             comments: comments.map { $0.toModel() },
             createdAt: createdAt,

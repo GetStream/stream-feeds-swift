@@ -204,6 +204,20 @@ struct FeedsClient_Test {
         #expect(response == Set(mockResponse.deletedIds))
     }
 
+    @Test func readCollections() async throws {
+        let mockResponse = ReadCollectionsResponse(
+            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")],
+            duration: "1.23ms"
+        )
+        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
+
+        let collections = try await client.readCollections(references: ["products:item-1"])
+
+        #expect(collections == [
+            CollectionData(createdAt: nil, custom: ["title": .string("Item")], id: "item-1", name: "products", status: nil, updatedAt: nil, userId: "user-1")
+        ])
+    }
+
     // MARK: - Properties Tests
 
     @Test func clientProperties() {

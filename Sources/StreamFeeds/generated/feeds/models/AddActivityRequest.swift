@@ -10,6 +10,8 @@ public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
     public let attachments: [Attachment]?
     /// Collections that this activity references
     public let collectionRefs: [String]?
+    /// Collections to create or update as part of this request, so an activity and the collections it references can be written in one call. Their refs (name:id) are added to collection_refs automatically; you do not need to restate them, and they count toward the same per-activity collection-reference limit, which is the effective cap here. A collection that already exists has its custom data updated. Use collection_refs instead when the collection already exists and you are only referencing it, which requires no collection permissions.
+    public let collections: [CollectionRequest]?
     /// Whether to create notification activities for mentioned users
     public let createNotificationActivity: Bool?
     /// Custom data for the activity
@@ -48,9 +50,10 @@ public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
     /// If visibility is 'tag', this is the tag name and is required
     public let visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: RestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, collections: [CollectionRequest]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: RestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.collectionRefs = collectionRefs
+        self.collections = collections
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
         self.expiresAt = expiresAt
@@ -76,6 +79,7 @@ public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(attachments, forKey: .attachments)
         try container.encodeIfPresent(collectionRefs, forKey: .collectionRefs)
+        try container.encodeIfPresent(collections, forKey: .collections)
         try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
@@ -102,6 +106,7 @@ extension AddActivityRequest: Hashable {
     public static func == (lhs: AddActivityRequest, rhs: AddActivityRequest) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.collectionRefs == rhs.collectionRefs &&
+            lhs.collections == rhs.collections &&
             lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&
             lhs.expiresAt == rhs.expiresAt &&
@@ -126,6 +131,7 @@ extension AddActivityRequest: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
         hasher.combine(collectionRefs)
+        hasher.combine(collections)
         hasher.combine(createNotificationActivity)
         hasher.combine(custom)
         hasher.combine(expiresAt)

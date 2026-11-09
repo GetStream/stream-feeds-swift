@@ -418,6 +418,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func readCollections(collectionRefs: [String]?) async throws -> ReadCollectionsResponse {
+        let path = "/api/v2/feeds/collections"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "collection_refs": (wrappedValue: collectionRefs?.encodeToJSON(), isExplode: true)
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "GET"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(ReadCollectionsResponse.self, from: $0)
+        }
+    }
+
     open func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?, includeTopLevelCommentCount: Bool?) async throws -> GetCommentsResponse {
         let path = "/api/v2/feeds/comments"
 
@@ -1410,6 +1427,8 @@ protocol DefaultAPIEndpoints {
     func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse
 
     func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
+
+    func readCollections(collectionRefs: [String]?) async throws -> ReadCollectionsResponse
 
     func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?, includeTopLevelCommentCount: Bool?) async throws -> GetCommentsResponse
 

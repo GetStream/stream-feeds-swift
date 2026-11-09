@@ -9,6 +9,7 @@ import StreamCore
 extension ActivityResponse {
     static func dummy(
         bookmarkCount: Int = 0,
+        collections: [String: EnrichedCollectionResponse] = [:],
         comments: [CommentResponse] = [],
         createdAt: Date = .fixed(),
         editedAt: Date? = nil,
@@ -29,6 +30,7 @@ extension ActivityResponse {
         ActivityResponse(
             attachments: [],
             bookmarkCount: bookmarkCount,
+            collections: collections,
             commentCount: 1,
             comments: comments,
             createdAt: createdAt,
