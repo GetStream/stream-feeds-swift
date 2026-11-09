@@ -43,6 +43,9 @@ public struct FeedsQuery: Sendable {
     /// If not specified, the API will use its default sorting.
     public let sort: [Sort<FeedsSortField>]?
     
+    /// If true, enriches each feed with the current user's own fields, such as `ownFollows` and `ownCapabilities`. Backend default is false.
+    public let enrichOwnFields: Bool?
+    
     /// Whether to watch for real-time updates on the feeds.
     /// Defaults to true for real-time functionality.
     public let watch: Bool
@@ -55,6 +58,7 @@ public struct FeedsQuery: Sendable {
     ///   - limit: Optional maximum number of feeds to return in a single request.
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
+    ///   - enrichOwnFields: If true, enriches each feed with the current user's own fields, such as `ownFollows` and `ownCapabilities`. Backend default is false.
     ///   - watch: Whether to watch for real-time updates on the feeds.
     public init(
         filter: FeedsFilter? = nil,
@@ -62,8 +66,10 @@ public struct FeedsQuery: Sendable {
         limit: Int? = nil,
         next: String? = nil,
         previous: String? = nil,
+        enrichOwnFields: Bool? = nil,
         watch: Bool = true
     ) {
+        self.enrichOwnFields = enrichOwnFields
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -298,6 +304,7 @@ extension FeedsQuery {
     /// - Returns: A `QueryFeedsRequest` object that can be sent to the API.
     func toRequest() -> QueryFeedsRequest {
         QueryFeedsRequest(
+            enrichOwnFields: enrichOwnFields,
             filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,

@@ -64,7 +64,7 @@ extension FeedQuery {
     }
 
     /// Creates a new feed query with the specified group and ID.
-    @available(*, deprecated, renamed: "init(group:id:activityFilter:activityLimit:data:externalRanking:followerLimit:followingLimit:interestWeights:memberLimit:view:watch:)", message: "The API no longer accepts activitySelectorOptions.")
+    @available(*, deprecated, renamed: "init(group:id:activityFilter:activityLimit:data:enrichmentOptions:externalRanking:followerLimit:followingLimit:friendReactionsOptions:idAround:interestWeights:memberLimit:overwriteInterestWeights:view:viewerLocation:watch:)", message: "The API no longer accepts activitySelectorOptions.")
     public init(
         group: String,
         id: String,
@@ -97,7 +97,7 @@ extension FeedQuery {
     }
 
     /// Creates a new feed query with the specified feed ID.
-    @available(*, deprecated, renamed: "init(feed:activityFilter:activityLimit:data:externalRanking:followerLimit:followingLimit:interestWeights:memberLimit:view:watch:)", message: "The API no longer accepts activitySelectorOptions.")
+    @available(*, deprecated, renamed: "init(feed:activityFilter:activityLimit:data:enrichmentOptions:externalRanking:followerLimit:followingLimit:friendReactionsOptions:idAround:interestWeights:memberLimit:overwriteInterestWeights:view:viewerLocation:watch:)", message: "The API no longer accepts activitySelectorOptions.")
     public init(
         feed: FeedId,
         activityFilter: ActivitiesFilter? = nil,

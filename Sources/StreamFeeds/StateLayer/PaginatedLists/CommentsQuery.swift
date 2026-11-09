@@ -39,6 +39,11 @@ public struct CommentsQuery: Sendable {
     /// This is typically provided in the response of a previous request.
     public var previous: String?
     
+    /// Returns the comment with this ID together with the comments around it.
+    ///
+    /// - Important: Ignored when paginating with `next` or `previous`.
+    public var idAround: String?
+    
     /// Creates a new comments query with the specified parameters.
     ///
     /// - Parameters:
@@ -47,18 +52,21 @@ public struct CommentsQuery: Sendable {
     ///   - limit: Optional maximum number of comments to return in a single request.
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
+    ///   - idAround: Returns the comment with this ID together with the comments around it.
     public init(
         filter: CommentsFilter?,
         sort: CommentsSort? = nil,
         limit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil
+        previous: String? = nil,
+        idAround: String? = nil
     ) {
         self.filter = filter
         self.sort = sort
         self.limit = limit
         self.next = next
         self.previous = previous
+        self.idAround = idAround
     }
 }
 
@@ -259,6 +267,7 @@ extension CommentsQuery {
     func toRequest() -> QueryCommentsRequest {
         QueryCommentsRequest(
             filter: filter?.toRawJSONDictionary() ?? [:],
+            idAround: next == nil && previous == nil ? idAround : nil,
             limit: limit,
             next: next,
             prev: previous,

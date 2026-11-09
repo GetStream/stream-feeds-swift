@@ -219,9 +219,11 @@ public final class Feed: Sendable {
                 activityFilter: state.activitiesQueryConfig?.filter,
                 activityLimit: limit ?? feedQuery.activityLimit,
                 data: nil,
+                enrichmentOptions: feedQuery.enrichmentOptions,
                 externalRanking: nil,
                 followerLimit: 0,
                 followingLimit: 0,
+                friendReactionsOptions: feedQuery.friendReactionsOptions,
                 interestWeights: nil,
                 memberLimit: 0,
                 view: nil,
@@ -232,7 +234,7 @@ public final class Feed: Sendable {
         }
         guard let nextQuery else { return [] }
         let response = try await feedsRepository.getOrCreateFeed(with: nextQuery)
-        await state.didPaginateActivities(with: response.activities, for: response.activitiesQueryConfig)
+        await state.didPaginateActivities(with: response)
         return response.activities.models
     }
     

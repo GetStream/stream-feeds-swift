@@ -55,6 +55,7 @@ final class FeedsRepository: Sendable {
             ),
             aggregatedActivities: response.aggregatedActivities.map { $0.toModel() },
             allOwnCapabilities: allOwnCapabilities,
+            degradedSelectors: response.degradedSelectors,
             feed: response.feed.toModel(),
             followers: rawFollowers.filter { $0.isFollower(of: feed) },
             following: rawFollowing.filter { $0.isFollowing(feed) },
@@ -64,7 +65,8 @@ final class FeedsRepository: Sendable {
             ),
             notificationStatus: response.notificationStatus?.toModel(),
             ownCapabilities: ownCapabilities,
-            pinnedActivities: pinnedActivities
+            pinnedActivities: pinnedActivities,
+            requestId: response.requestId
         )
     }
     
@@ -172,6 +174,7 @@ extension FeedsRepository {
         let activitiesQueryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
         let aggregatedActivities: [AggregatedActivityData]
         let allOwnCapabilities: [FeedId: Set<FeedOwnCapability>]
+        let degradedSelectors: [String]?
         let feed: FeedData
         let followers: [FollowData]
         let following: [FollowData]
@@ -179,5 +182,6 @@ extension FeedsRepository {
         let notificationStatus: NotificationStatusData?
         let ownCapabilities: Set<FeedOwnCapability>
         let pinnedActivities: [ActivityPinData]
+        let requestId: String?
     }
 }

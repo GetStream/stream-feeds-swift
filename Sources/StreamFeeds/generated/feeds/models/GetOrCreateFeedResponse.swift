@@ -9,6 +9,8 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
     public let activities: [ActivityResponse]
     public let aggregatedActivities: [AggregatedActivityResponse]
     public let created: Bool
+    /// Activity selectors dropped from this read because they exceeded their time budget (see the time_budget_ms selector setting). Their activities are missing from this page, and they stay out for the rest of this pagination session. Omitted when every selector completed
+    public let degradedSelectors: [String]?
     /// Duration of the request in milliseconds
     public let duration: String
     public let feed: FeedResponse
@@ -22,11 +24,14 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
     public let notificationStatus: NotificationStatusResponse?
     public let pinnedActivities: [ActivityPinResponse]
     public let prev: String?
+    /// Signed token identifying this read. Pass it with activity metrics events to attribute them to this read. Only set on feed reads for paid plans with an authenticated user, when the app uses feed impressions (For You exploration, or a For You ranking that uses impressions_bucket)
+    public let requestId: String?
 
-    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, degradedSelectors: [String]? = nil, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil, requestId: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.created = created
+        self.degradedSelectors = degradedSelectors
         self.duration = duration
         self.feed = feed
         self.followers = followers
@@ -39,6 +44,7 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
         self.notificationStatus = notificationStatus
         self.pinnedActivities = pinnedActivities
         self.prev = prev
+        self.requestId = requestId
     }
 
     public init(from decoder: Decoder) throws {
@@ -46,6 +52,7 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
         self.activities = try container.decode([ActivityResponse].self, forKey: .activities)
         self.aggregatedActivities = try container.decode([AggregatedActivityResponse].self, forKey: .aggregatedActivities)
         self.created = try container.decode(Bool.self, forKey: .created)
+        self.degradedSelectors = try container.decodeIfPresent([String].self, forKey: .degradedSelectors)
         self.duration = try container.decode(String.self, forKey: .duration)
         self.feed = try container.decode(FeedResponse.self, forKey: .feed)
         self.followers = try container.decode([FollowResponse].self, forKey: .followers)
@@ -58,6 +65,7 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
         self.notificationStatus = try container.decodeIfPresent(NotificationStatusResponse.self, forKey: .notificationStatus)
         self.pinnedActivities = try container.decode([ActivityPinResponse].self, forKey: .pinnedActivities)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
+        self.requestId = try container.decodeIfPresent(String.self, forKey: .requestId)
     }
 }
 
@@ -66,6 +74,7 @@ extension GetOrCreateFeedResponse: Hashable {
         lhs.activities == rhs.activities &&
             lhs.aggregatedActivities == rhs.aggregatedActivities &&
             lhs.created == rhs.created &&
+            lhs.degradedSelectors == rhs.degradedSelectors &&
             lhs.duration == rhs.duration &&
             lhs.feed == rhs.feed &&
             lhs.followers == rhs.followers &&
@@ -77,13 +86,15 @@ extension GetOrCreateFeedResponse: Hashable {
             lhs.next == rhs.next &&
             lhs.notificationStatus == rhs.notificationStatus &&
             lhs.pinnedActivities == rhs.pinnedActivities &&
-            lhs.prev == rhs.prev
+            lhs.prev == rhs.prev &&
+            lhs.requestId == rhs.requestId
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activities)
         hasher.combine(aggregatedActivities)
         hasher.combine(created)
+        hasher.combine(degradedSelectors)
         hasher.combine(duration)
         hasher.combine(feed)
         hasher.combine(followers)
@@ -96,5 +107,6 @@ extension GetOrCreateFeedResponse: Hashable {
         hasher.combine(notificationStatus)
         hasher.combine(pinnedActivities)
         hasher.combine(prev)
+        hasher.combine(requestId)
     }
 }

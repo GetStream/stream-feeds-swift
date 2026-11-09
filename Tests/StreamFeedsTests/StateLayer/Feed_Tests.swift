@@ -21,6 +21,39 @@ struct Feed_Tests {
         #expect(stateFeedData == feedData)
     }
 
+    @Test func getOrCreateAndPaginationUpdateReadMetadata() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                    degradedSelectors: ["popular"],
+                    feed: .dummy(feed: feedId.rawValue),
+                    requestId: "read-1"
+                ),
+                GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
+                    feed: .dummy(feed: feedId.rawValue),
+                    next: nil,
+                    requestId: "read-2"
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+
+        try await feed.getOrCreate()
+        let firstRequestId = await feed.state.requestId
+        let firstDegradedSelectors = await feed.state.degradedSelectors
+        #expect(firstRequestId == "read-1")
+        #expect(firstDegradedSelectors == ["popular"])
+
+        try await feed.queryMoreActivities()
+        let nextRequestId = await feed.state.requestId
+        let nextDegradedSelectors = await feed.state.degradedSelectors
+        #expect(nextRequestId == "read-2")
+        #expect(nextDegradedSelectors == nil)
+    }
+
     @Test func reconnectionRefetchesLoadedFeed() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"

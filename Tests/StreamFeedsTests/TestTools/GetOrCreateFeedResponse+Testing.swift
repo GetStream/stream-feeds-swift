@@ -11,6 +11,7 @@ extension GetOrCreateFeedResponse {
         activities: [ActivityResponse] = [ActivityResponse.dummy()],
         aggregatedActivities: [AggregatedActivityResponse] = [AggregatedActivityResponse.dummy()],
         created: Bool = false,
+        degradedSelectors: [String]? = nil,
         duration: String = "0.123s",
         feed: FeedResponse = .dummy(),
         followers: [FollowResponse] = [],
@@ -22,12 +23,14 @@ extension GetOrCreateFeedResponse {
         next: String? = "next-cursor",
         notificationStatus: NotificationStatusResponse? = .dummy(),
         pinnedActivities: [ActivityPinResponse] = [],
-        prev: String? = nil
+        prev: String? = nil,
+        requestId: String? = nil
     ) -> GetOrCreateFeedResponse {
         GetOrCreateFeedResponse(
             activities: activities,
             aggregatedActivities: aggregatedActivities,
             created: created,
+            degradedSelectors: degradedSelectors,
             duration: duration,
             feed: feed,
             followers: followers,
@@ -39,7 +42,8 @@ extension GetOrCreateFeedResponse {
             next: next,
             notificationStatus: notificationStatus,
             pinnedActivities: pinnedActivities,
-            prev: prev
+            prev: prev,
+            requestId: requestId
         )
     }
 }

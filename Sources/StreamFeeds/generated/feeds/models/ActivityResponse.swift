@@ -31,6 +31,10 @@ public final class ActivityResponse: Sendable, Decodable {
     public let feeds: [String]
     /// Tags for filtering
     public let filterTags: [String]
+    /// Total count of reactions from friends on this activity
+    public let friendReactionCount: Int?
+    /// Reactions from users the current user follows or has mutual follows with
+    public let friendReactions: [FeedsReactionResponse]?
     /// If this activity is hidden by this user (using activity feedback)
     public let hidden: Bool
     /// Unique identifier for the activity
@@ -52,14 +56,22 @@ public final class ActivityResponse: Sendable, Decodable {
     public let poll: PollResponseData?
     /// Popularity score of the activity
     public let popularity: Int
+    /// 1-based position of this activity. On ranked feeds it is the activity's slot in the ranked feed, continuing across pages; activities filtered out for this user leave gaps. Otherwise it is relative to the returned page. Only set on feed reads for paid plans with an authenticated user, when the app uses feed impressions (For You exploration, or a For You ranking that uses impressions_bucket).
+    public let position: Int?
     /// Number of reactions to the activity
     public let reactionCount: Int
     /// Grouped reactions by type
     public let reactionGroups: [String: FeedsReactionGroupResponse]
+    /// Codes explaining why this activity was shown (e.g. 'following', 'popular', 'interest:nba'). Only included when include_reasons is enabled in enrichment options.
+    public let reasons: [String]?
     /// Ranking score for this activity
     public let score: Double
+    /// Variable values used at ranking time. Only included when include_score_vars is enabled in enrichment options.
+    public let scoreVars: [String: RawJSON]?
     /// Data for search indexing
     public let searchData: [String: RawJSON]
+    /// Which activity selector provided this activity (e.g., 'following', 'popular', 'interest'), or 'exploration' for the For You exploration slot. Only set when using multiple activity selectors with ranking.
+    public let selectorSource: String?
     /// Number of times the activity was shared
     public let shareCount: Int
     /// Text content of the activity
@@ -75,7 +87,7 @@ public final class ActivityResponse: Sendable, Decodable {
     /// If visibility is 'tag', this is the tag name
     public let visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, collections: [String: EnrichedCollectionResponse], commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], score: Double, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, collections: [String: EnrichedCollectionResponse], commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], friendReactionCount: Int? = nil, friendReactions: [FeedsReactionResponse]? = nil, hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, position: Int? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], reasons: [String]? = nil, score: Double, scoreVars: [String: RawJSON]? = nil, searchData: [String: RawJSON], selectorSource: String? = nil, shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.collections = collections
@@ -89,6 +101,8 @@ public final class ActivityResponse: Sendable, Decodable {
         self.expiresAt = expiresAt
         self.feeds = feeds
         self.filterTags = filterTags
+        self.friendReactionCount = friendReactionCount
+        self.friendReactions = friendReactions
         self.hidden = hidden
         self.id = id
         self.interestTags = interestTags
@@ -102,10 +116,14 @@ public final class ActivityResponse: Sendable, Decodable {
         self.parent = parent
         self.poll = poll
         self.popularity = popularity
+        self.position = position
         self.reactionCount = reactionCount
         self.reactionGroups = reactionGroups
+        self.reasons = reasons
         self.score = score
+        self.scoreVars = scoreVars
         self.searchData = searchData
+        self.selectorSource = selectorSource
         self.shareCount = shareCount
         self.text = text
         self.type = type
@@ -130,6 +148,8 @@ public final class ActivityResponse: Sendable, Decodable {
         self.expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
         self.feeds = try container.decode([String].self, forKey: .feeds)
         self.filterTags = try container.decode([String].self, forKey: .filterTags)
+        self.friendReactionCount = try container.decodeIfPresent(Int.self, forKey: .friendReactionCount)
+        self.friendReactions = try container.decodeIfPresent([FeedsReactionResponse].self, forKey: .friendReactions)
         self.hidden = try container.decode(Bool.self, forKey: .hidden)
         self.id = try container.decode(String.self, forKey: .id)
         self.interestTags = try container.decode([String].self, forKey: .interestTags)
@@ -143,10 +163,14 @@ public final class ActivityResponse: Sendable, Decodable {
         self.parent = try container.decodeIfPresent(ActivityResponse.self, forKey: .parent)
         self.poll = try container.decodeIfPresent(PollResponseData.self, forKey: .poll)
         self.popularity = try container.decode(Int.self, forKey: .popularity)
+        self.position = try container.decodeIfPresent(Int.self, forKey: .position)
         self.reactionCount = try container.decode(Int.self, forKey: .reactionCount)
         self.reactionGroups = try container.decode([String: FeedsReactionGroupResponse].self, forKey: .reactionGroups)
+        self.reasons = try container.decodeIfPresent([String].self, forKey: .reasons)
         self.score = try container.decode(Double.self, forKey: .score)
+        self.scoreVars = try container.decodeIfPresent([String: RawJSON].self, forKey: .scoreVars)
         self.searchData = try container.decode([String: RawJSON].self, forKey: .searchData)
+        self.selectorSource = try container.decodeIfPresent(String.self, forKey: .selectorSource)
         self.shareCount = try container.decode(Int.self, forKey: .shareCount)
         self.text = try container.decodeIfPresent(String.self, forKey: .text)
         self.type = try container.decode(String.self, forKey: .type)
@@ -172,6 +196,8 @@ extension ActivityResponse: Hashable {
             lhs.expiresAt == rhs.expiresAt &&
             lhs.feeds == rhs.feeds &&
             lhs.filterTags == rhs.filterTags &&
+            lhs.friendReactionCount == rhs.friendReactionCount &&
+            lhs.friendReactions == rhs.friendReactions &&
             lhs.hidden == rhs.hidden &&
             lhs.id == rhs.id &&
             lhs.interestTags == rhs.interestTags &&
@@ -185,10 +211,14 @@ extension ActivityResponse: Hashable {
             lhs.parent == rhs.parent &&
             lhs.poll == rhs.poll &&
             lhs.popularity == rhs.popularity &&
+            lhs.position == rhs.position &&
             lhs.reactionCount == rhs.reactionCount &&
             lhs.reactionGroups == rhs.reactionGroups &&
+            lhs.reasons == rhs.reasons &&
             lhs.score == rhs.score &&
+            lhs.scoreVars == rhs.scoreVars &&
             lhs.searchData == rhs.searchData &&
+            lhs.selectorSource == rhs.selectorSource &&
             lhs.shareCount == rhs.shareCount &&
             lhs.text == rhs.text &&
             lhs.type == rhs.type &&
@@ -212,6 +242,8 @@ extension ActivityResponse: Hashable {
         hasher.combine(expiresAt)
         hasher.combine(feeds)
         hasher.combine(filterTags)
+        hasher.combine(friendReactionCount)
+        hasher.combine(friendReactions)
         hasher.combine(hidden)
         hasher.combine(id)
         hasher.combine(interestTags)
@@ -225,10 +257,14 @@ extension ActivityResponse: Hashable {
         hasher.combine(parent)
         hasher.combine(poll)
         hasher.combine(popularity)
+        hasher.combine(position)
         hasher.combine(reactionCount)
         hasher.combine(reactionGroups)
+        hasher.combine(reasons)
         hasher.combine(score)
+        hasher.combine(scoreVars)
         hasher.combine(searchData)
+        hasher.combine(selectorSource)
         hasher.combine(shareCount)
         hasher.combine(text)
         hasher.combine(type)
