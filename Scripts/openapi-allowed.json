@@ -385,11 +385,7 @@
       { "reporterType": "Moderation tooling" }
     ],
     "ActivityRequest": [
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "createNotificationActivity": "Pending review (IOS-2246)" },
-      { "restrictReplies": "Pending review (IOS-2246)" },
-      { "skipEnrichUrl": "Pending review (IOS-2246)" },
-      { "skipPush": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "ActivityResponse": [
       { "friendReactionCount": "Pending review (IOS-2246)" },
@@ -410,46 +406,22 @@
       { "topLevelCommentCount": "Pending review (IOS-2246)" }
     ],
     "AddActivityRequest": [
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "enrichOwnFields": "Pending review (IOS-2246)" }
-    ],
-    "AddActivityResponse": [
-      { "skippedExisting": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddCommentReactionRequest": [
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "targetFeeds": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddCommentReactionResponse": [
-      { "counterDelta": "Pending review (IOS-2246)" },
-      { "notificationAccepted": "Pending review (IOS-2246)" },
-      { "notificationCreated": "Deprecated, use notificationAccepted" },
-      { "notificationTaskId": "Pending review (IOS-2246)" },
-      { "outcome": "Pending review (IOS-2246)" },
-      { "previousReactionType": "Pending review (IOS-2246)" },
-      { "referenceActivity": "Pending review (IOS-2246)" }
+      { "notificationCreated": "Deprecated, use notificationAccepted" }
     ],
     "AddCommentRequest": [
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "id": "Pending review (IOS-2246)" },
-      { "skipEnrichUrl": "Pending review (IOS-2246)" }
-    ],
-    "AddCommentResponse": [
-      { "mentionNotificationsCreated": "Pending review (IOS-2246)" },
-      { "notificationCreated": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddReactionRequest": [
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "targetFeeds": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddReactionResponse": [
-      { "counterDelta": "Pending review (IOS-2246)" },
-      { "notificationAccepted": "Pending review (IOS-2246)" },
-      { "notificationCreated": "Deprecated, use notificationAccepted" },
-      { "notificationTaskId": "Pending review (IOS-2246)" },
-      { "outcome": "Pending review (IOS-2246)" },
-      { "previousReactionType": "Pending review (IOS-2246)" },
-      { "referenceActivity": "Pending review (IOS-2246)" }
+      { "notificationCreated": "Deprecated, use notificationAccepted" }
     ],
     "AggregatedActivityResponse": [
       { "isRead": "Pending review (IOS-2246)" },
@@ -527,9 +499,6 @@
     "FeedGroupChangedEvent": [
       { "feedGroup": "Server-side feed group config, event never emitted" }
     ],
-    "FeedInput": [
-      { "location": "Pending review (IOS-2246)" }
-    ],
     "FeedMemberRequest": [
       { "membershipLevel": "Server-side only, rejected for client tokens" },
       { "role": "Server-side only, rejected for client tokens" }
@@ -543,9 +512,7 @@
       { "entityCreatorId": "Server-side only, backend sets it from the flagged entity" }
     ],
     "FollowRequest": [
-      { "activityCopyLimit": "Pending review (IOS-2246)" },
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "enrichOwnFields": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "GetCommentRepliesResponse": [
       { "sort": "Pending review (IOS-2246)" }
@@ -743,9 +710,6 @@
     "RuleBuilderRule": [
       { "actionSequences": "Video only" }
     ],
-    "SingleFollowResponse": [
-      { "notificationCreated": "Pending review (IOS-2246)" }
-    ],
     "SortParamRequest": [
       { "type": "Moderation queries only" }
     ],
@@ -783,37 +747,13 @@
       { "semanticFilterNames": "Moderation tooling" }
     ],
     "UpdateActivityRequest": [
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "enrichOwnFields": "Pending review (IOS-2246)" },
-      { "handleMentionNotifications": "Pending review (IOS-2246)" },
-      { "mentionedUserIds": "Pending review (IOS-2246)" },
-      { "restrictReplies": "Pending review (IOS-2246)" },
-      { "runActivityProcessors": "Pending review (IOS-2246)" },
-      { "searchData": "Pending review (IOS-2246)" },
-      { "skipEnrichUrl": "Pending review (IOS-2246)" },
-      { "visibilityTag": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpdateCommentRequest": [
-      { "attachments": "Pending review (IOS-2246)" },
-      { "copyCustomToNotification": "Deprecated, use notificationContext custom" },
-      { "handleMentionNotifications": "Pending review (IOS-2246)" },
-      { "mentionedUserIds": "Pending review (IOS-2246)" },
-      { "skipEnrichUrl": "Pending review (IOS-2246)" }
-    ],
-    "UpdateFeedRequest": [
-      { "clearLocation": "Pending review (IOS-2246)" },
-      { "description": "Pending review (IOS-2246)" },
-      { "enrichOwnFields": "Pending review (IOS-2246)" },
-      { "filterTags": "Pending review (IOS-2246)" },
-      { "location": "Pending review (IOS-2246)" },
-      { "name": "Pending review (IOS-2246)" }
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpsertActivitiesRequest": [
-      { "enrichOwnFields": "Pending review (IOS-2246)" }
-    ],
-    "UpsertActivitiesResponse": [
-      { "mentionNotificationsCreated": "Pending review (IOS-2246)" },
-      { "skippedExisting": "Pending review (IOS-2246)" }
+      { "enrichOwnFields": "Only applies to single-activity upserts, addActivity covers it" }
     ],
     "UpsertConfigRequest": [
       { "aiAudioConfig": "Moderation tooling" },

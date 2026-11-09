@@ -14,6 +14,8 @@ public final class AddCommentRequest: Sendable, Encodable, JSONEncodable {
     public let createNotificationActivity: Bool?
     /// Custom data for the comment
     public let custom: [String: RawJSON]?
+    /// Optional custom ID for the comment (max 255 characters). If not provided, a UUID will be generated.
+    public let id: String?
     /// List of users mentioned in the reply
     public let mentionedUserIds: [String]?
     /// ID of the object to comment on. Required for root comments
@@ -22,17 +24,21 @@ public final class AddCommentRequest: Sendable, Encodable, JSONEncodable {
     public let objectType: String?
     /// ID of parent comment for replies. When provided, object_id and object_type are automatically inherited from the parent comment.
     public let parentId: String?
+    /// Whether to skip URL enrichment for this comment
+    public let skipEnrichUrl: Bool?
     public let skipPush: Bool?
 
-    public init(attachments: [Attachment]? = nil, comment: String? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, mentionedUserIds: [String]? = nil, objectId: String? = nil, objectType: String? = nil, parentId: String? = nil, skipPush: Bool? = nil) {
+    public init(attachments: [Attachment]? = nil, comment: String? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, id: String? = nil, mentionedUserIds: [String]? = nil, objectId: String? = nil, objectType: String? = nil, parentId: String? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil) {
         self.attachments = attachments
         self.comment = comment
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
+        self.id = id
         self.mentionedUserIds = mentionedUserIds
         self.objectId = objectId
         self.objectType = objectType
         self.parentId = parentId
+        self.skipEnrichUrl = skipEnrichUrl
         self.skipPush = skipPush
     }
 
@@ -42,10 +48,12 @@ public final class AddCommentRequest: Sendable, Encodable, JSONEncodable {
         try container.encodeIfPresent(comment, forKey: .comment)
         try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(id, forKey: .id)
         try container.encodeIfPresent(mentionedUserIds, forKey: .mentionedUserIds)
         try container.encodeIfPresent(objectId, forKey: .objectId)
         try container.encodeIfPresent(objectType, forKey: .objectType)
         try container.encodeIfPresent(parentId, forKey: .parentId)
+        try container.encodeIfPresent(skipEnrichUrl, forKey: .skipEnrichUrl)
         try container.encodeIfPresent(skipPush, forKey: .skipPush)
     }
 }
@@ -56,10 +64,12 @@ extension AddCommentRequest: Hashable {
             lhs.comment == rhs.comment &&
             lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&
+            lhs.id == rhs.id &&
             lhs.mentionedUserIds == rhs.mentionedUserIds &&
             lhs.objectId == rhs.objectId &&
             lhs.objectType == rhs.objectType &&
             lhs.parentId == rhs.parentId &&
+            lhs.skipEnrichUrl == rhs.skipEnrichUrl &&
             lhs.skipPush == rhs.skipPush
     }
 
@@ -68,10 +78,12 @@ extension AddCommentRequest: Hashable {
         hasher.combine(comment)
         hasher.combine(createNotificationActivity)
         hasher.combine(custom)
+        hasher.combine(id)
         hasher.combine(mentionedUserIds)
         hasher.combine(objectId)
         hasher.combine(objectType)
         hasher.combine(parentId)
+        hasher.combine(skipEnrichUrl)
         hasher.combine(skipPush)
     }
 }
