@@ -77,7 +77,7 @@ jobs:
         include:
           - xcode: 26.2 # swift 6.2
             os: macos-15
-          - xcode: 16.1 # swift 6.0
+          - xcode: 16.4 # swift 6.1
             os: macos-15
       fail-fast: false
     runs-on: ${{ matrix.os }}
