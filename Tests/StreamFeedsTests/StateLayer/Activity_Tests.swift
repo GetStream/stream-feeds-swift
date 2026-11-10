@@ -664,6 +664,35 @@ struct Activity_Tests {
         #expect(stateActivity.topLevelCommentCount == 4)
     }
     
+    @Test func activityUpdatedEventKeepsTranslations() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses([
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/activities/"),
+                    payload: GetActivityResponse.dummy(activity: .dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "activity-123", text: "Hello"))
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/comments"),
+                    payload: GetCommentsResponse.dummy(comments: [])
+                )
+            ])
+        )
+        let activity = client.activity(for: "activity-123", in: feedId, language: "fr")
+        try await activity.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-123", reactionCount: 1, text: "Hello"),
+                fid: feedId.rawValue
+            )
+        )
+
+        let stateActivity = try #require(await activity.state.activity)
+        #expect(stateActivity.reactionCount == 1)
+        #expect(stateActivity.translatedText(for: "fr") == "Bonjour")
+    }
+    
     @Test func activityBatchUpdateEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivityAndCommentsResponses(

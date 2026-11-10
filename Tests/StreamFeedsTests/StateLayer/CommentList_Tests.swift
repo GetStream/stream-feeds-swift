@@ -239,6 +239,33 @@ struct CommentList_Tests {
         #expect(comment.ownReactions.map(\.type) == ["like"])
     }
     
+    @Test func commentUpdatedEventKeepsTranslations() async throws {
+        let client = defaultClient(
+            comments: [.dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "comment-1", objectId: Self.activityId, objectType: "activity", text: "Hello")]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity")
+                ]),
+                language: "fr"
+            )
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, reactionCount: 1, text: "Hello"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.reactionCount == 1)
+        #expect(comment.translatedText(for: "fr") == "Bonjour")
+    }
+    
     @Test func commentUpdatedEventKeepsCommentInHiddenQuery() async throws {
         let client = defaultClient(
             comments: [.dummy(hidden: true, id: "comment-1", objectId: Self.activityId, objectType: "activity")]

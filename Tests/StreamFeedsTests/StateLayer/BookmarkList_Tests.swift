@@ -198,6 +198,37 @@ struct BookmarkList_Tests {
         #expect(bookmark.activity.ownReactions.map(\.type) == ["like"])
     }
 
+    @Test func bookmarkUpdatedEventKeepsActivityTranslations() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                QueryBookmarksResponse.dummy(
+                    bookmarks: [
+                        .dummy(
+                            activity: .dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "activity-1", text: "Hello"),
+                            user: .dummy(id: "user-1")
+                        )
+                    ]
+                )
+            ])
+        )
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery(language: "fr"))
+        try await bookmarkList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(
+                    activity: .dummy(id: "activity-1", reactionCount: 1, text: "Hello"),
+                    user: .dummy(id: "user-1")
+                ),
+                fid: "user:test"
+            )
+        )
+
+        let bookmark = try #require(await bookmarkList.state.bookmarks.first)
+        #expect(bookmark.activity.reactionCount == 1)
+        #expect(bookmark.activity.translatedText(for: "fr") == "Bonjour")
+    }
+
     @Test func bookmarkFolderUpdatedEventUpdatesState() async throws {
         let client = defaultClientWithBookmarkResponses()
         let bookmarkList = client.bookmarkList(for: BookmarksQuery())
