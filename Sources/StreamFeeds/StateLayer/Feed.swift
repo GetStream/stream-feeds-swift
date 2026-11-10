@@ -227,6 +227,7 @@ public final class Feed: Sendable {
                 interestWeights: nil,
                 memberLimit: 0,
                 view: nil,
+                viewerLocation: feedQuery.viewerLocation,
                 watch: feedQuery.watch
             )
             query.activityNext = next

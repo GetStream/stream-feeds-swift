@@ -78,11 +78,6 @@ import StreamCore
     /// Returns information about the notification status (read / seen activities).
     @Published public private(set) var notificationStatus: NotificationStatusData?
 
-    /// The signed token of the latest feed read, for attributing activity metrics to it.
-    ///
-    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. No request property turns it on.
-    @Published public private(set) var requestId: String?
-
     /// The activity selectors that the latest feed read dropped because they exceeded their time budget.
     @Published public private(set) var degradedSelectors: [String]?
     
@@ -490,7 +485,6 @@ extension FeedState {
         pinnedActivities = response.pinnedActivities
         aggregatedActivities = response.aggregatedActivities
         notificationStatus = response.notificationStatus
-        requestId = response.requestId
         degradedSelectors = response.degradedSelectors
     }
     
@@ -503,7 +497,6 @@ extension FeedState {
         activitiesPagination = response.activities.pagination
         activitiesQueryConfig = response.activitiesQueryConfig
         activities = activities.sortedMerge(response.activities.models, sorting: activitiesSorting)
-        requestId = response.requestId
         degradedSelectors = response.degradedSelectors
     }
 }

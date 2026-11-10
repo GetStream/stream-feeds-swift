@@ -23,8 +23,7 @@ extension GetOrCreateFeedResponse {
         next: String? = "next-cursor",
         notificationStatus: NotificationStatusResponse? = .dummy(),
         pinnedActivities: [ActivityPinResponse] = [],
-        prev: String? = nil,
-        requestId: String? = nil
+        prev: String? = nil
     ) -> GetOrCreateFeedResponse {
         GetOrCreateFeedResponse(
             activities: activities,
@@ -42,8 +41,7 @@ extension GetOrCreateFeedResponse {
             next: next,
             notificationStatus: notificationStatus,
             pinnedActivities: pinnedActivities,
-            prev: prev,
-            requestId: requestId
+            prev: prev
         )
     }
 }

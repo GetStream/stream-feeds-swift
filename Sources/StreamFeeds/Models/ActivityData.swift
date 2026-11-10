@@ -24,11 +24,11 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let expiresAt: Date?
     public let feeds: [String]
     public let filterTags: [String]
-    /// The number of reactions from users the current user follows.
+    /// The number of reactions from users the current user follows, or only from mutual follows when ``FriendReactionsOptions/type`` is ``FriendReactionType/mutual``.
     ///
     /// - Note: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
     public private(set) var friendReactionCount: Int?
-    /// Reactions from users the current user follows.
+    /// Reactions from users the current user follows, or only from mutual follows when ``FriendReactionsOptions/type`` is ``FriendReactionType/mutual``.
     ///
     /// - Note: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
     public private(set) var friendReactions: [FeedsReactionData]?

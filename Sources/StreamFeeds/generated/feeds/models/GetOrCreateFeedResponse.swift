@@ -24,10 +24,8 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
     public let notificationStatus: NotificationStatusResponse?
     public let pinnedActivities: [ActivityPinResponse]
     public let prev: String?
-    /// Signed token identifying this read. Pass it with activity metrics events to attribute them to this read. Only set on feed reads for paid plans with an authenticated user, when the app uses feed impressions (For You exploration, or a For You ranking that uses impressions_bucket)
-    public let requestId: String?
 
-    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, degradedSelectors: [String]? = nil, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil, requestId: String? = nil) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, degradedSelectors: [String]? = nil, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.created = created
@@ -44,7 +42,6 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
         self.notificationStatus = notificationStatus
         self.pinnedActivities = pinnedActivities
         self.prev = prev
-        self.requestId = requestId
     }
 
     public init(from decoder: Decoder) throws {
@@ -65,7 +62,6 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
         self.notificationStatus = try container.decodeIfPresent(NotificationStatusResponse.self, forKey: .notificationStatus)
         self.pinnedActivities = try container.decode([ActivityPinResponse].self, forKey: .pinnedActivities)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-        self.requestId = try container.decodeIfPresent(String.self, forKey: .requestId)
     }
 }
 
@@ -86,8 +82,7 @@ extension GetOrCreateFeedResponse: Hashable {
             lhs.next == rhs.next &&
             lhs.notificationStatus == rhs.notificationStatus &&
             lhs.pinnedActivities == rhs.pinnedActivities &&
-            lhs.prev == rhs.prev &&
-            lhs.requestId == rhs.requestId
+            lhs.prev == rhs.prev
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -107,6 +102,5 @@ extension GetOrCreateFeedResponse: Hashable {
         hasher.combine(notificationStatus)
         hasher.combine(pinnedActivities)
         hasher.combine(prev)
-        hasher.combine(requestId)
     }
 }

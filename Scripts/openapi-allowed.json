@@ -541,7 +541,11 @@
       { "algorithmUsed": "Pending review (IOS-2246)" }
     ],
     "GetOrCreateFeedRequest": [
-      { "discardActors": "Gated to a single organization" }
+      { "discardActors": "Gated to a single organization" },
+      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
+    ],
+    "GetOrCreateFeedResponse": [
+      { "requestId": "Unused (not exposed), only trackActivityMetrics takes it" }
     ],
     "HealthCheckEvent": [
       { "custom": "Webhooks only, not sent over WebSocket" },
@@ -634,6 +638,9 @@
     "PrivacySettingsResponse": [
       { "deliveryReceipts": "Chat only" },
       { "typingIndicators": "Chat only" }
+    ],
+    "QueryCommentsRequest": [
+      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
     ],
     "QueryFollowsRequest": [
       { "includeGroupCounts": "Server-side only" }

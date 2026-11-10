@@ -21,37 +21,56 @@ struct Feed_Tests {
         #expect(stateFeedData == feedData)
     }
 
-    @Test func getOrCreateAndPaginationUpdateReadMetadata() async throws {
+    @Test func getOrCreateAndPaginationUpdateDegradedSelectors() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = FeedsClient.mock(
             apiTransport: .withPayloads([
                 GetOrCreateFeedResponse.dummy(
                     activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
                     degradedSelectors: ["popular"],
-                    feed: .dummy(feed: feedId.rawValue),
-                    requestId: "read-1"
+                    feed: .dummy(feed: feedId.rawValue)
                 ),
                 GetOrCreateFeedResponse.dummy(
                     activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
                     feed: .dummy(feed: feedId.rawValue),
-                    next: nil,
-                    requestId: "read-2"
+                    next: nil
                 )
             ])
         )
         let feed = client.feed(for: feedId)
 
         try await feed.getOrCreate()
-        let firstRequestId = await feed.state.requestId
         let firstDegradedSelectors = await feed.state.degradedSelectors
-        #expect(firstRequestId == "read-1")
         #expect(firstDegradedSelectors == ["popular"])
 
         try await feed.queryMoreActivities()
-        let nextRequestId = await feed.state.requestId
         let nextDegradedSelectors = await feed.state.degradedSelectors
-        #expect(nextRequestId == "read-2")
         #expect(nextDegradedSelectors == nil)
+    }
+
+    @Test func queryMoreActivitiesSendsViewerLocation() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let transport = APITransportMock.withPayloads([
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                feed: .dummy(feed: feedId.rawValue)
+            ),
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
+                feed: .dummy(feed: feedId.rawValue),
+                next: nil
+            )
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        let feed = client.feed(for: FeedQuery(feed: feedId, viewerLocation: Location(lat: 59.43, lng: 24.75), watch: false))
+
+        try await feed.getOrCreate()
+        try await feed.queryMoreActivities()
+
+        let paginationRequest = try #require(transport.requests.value.last)
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(paginationRequest.body))
+        #expect(body["next"] == .string("next-cursor"))
+        #expect(body["viewer_location"] == .dictionary(["lat": .number(59.43), "lng": .number(24.75)]))
     }
 
     @Test func reconnectionRefetchesLoadedFeed() async throws {

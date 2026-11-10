@@ -65,8 +65,7 @@ final class FeedsRepository: Sendable {
             ),
             notificationStatus: response.notificationStatus?.toModel(),
             ownCapabilities: ownCapabilities,
-            pinnedActivities: pinnedActivities,
-            requestId: response.requestId
+            pinnedActivities: pinnedActivities
         )
     }
     
@@ -182,6 +181,5 @@ extension FeedsRepository {
         let notificationStatus: NotificationStatusData?
         let ownCapabilities: Set<FeedOwnCapability>
         let pinnedActivities: [ActivityPinData]
-        let requestId: String?
     }
 }

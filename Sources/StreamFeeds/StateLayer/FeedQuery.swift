@@ -50,13 +50,8 @@ public struct FeedQuery: Sendable {
     /// Maximum number of following users to retrieve.
     public var followingLimit: Int?
     
-    /// Options for including reactions from followed users on activities. Backend default doesn't include them.
+    /// Options for including reactions from followed or mutually followed users on activities. Backend default doesn't include them.
     public var friendReactionsOptions: FriendReactionsOptions?
-    
-    /// Returns the page of activities around the activity with this ID.
-    ///
-    /// - Important: Not supported for aggregated feeds. Ignored when paginating with `activityNext` or `activityPrevious`.
-    public var idAround: String?
     
     /// Weights for different interests to influence activity ranking.
     public var interestWeights: [String: Double]?
@@ -90,8 +85,7 @@ public struct FeedQuery: Sendable {
     ///   - externalRanking: Additional data used for ranking activities.
     ///   - followerLimit: Maximum number of followers to retrieve. Defaults to 10.
     ///   - followingLimit: Maximum number of following users to retrieve. Defaults to 10.
-    ///   - friendReactionsOptions: Options for including reactions from followed users on activities. Backend default doesn't include them.
-    ///   - idAround: Returns the page of activities around the activity with this ID.
+    ///   - friendReactionsOptions: Options for including reactions from followed or mutually followed users on activities. Backend default doesn't include them.
     ///   - interestWeights: Weights for different interests to influence ranking.
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - overwriteInterestWeights: If true, `interestWeights` replace the stored interest weights. Backend default is false.
@@ -109,7 +103,6 @@ public struct FeedQuery: Sendable {
         followerLimit: Int? = 10,
         followingLimit: Int? = 10,
         friendReactionsOptions: FriendReactionsOptions? = nil,
-        idAround: String? = nil,
         interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         overwriteInterestWeights: Bool? = nil,
@@ -127,7 +120,6 @@ public struct FeedQuery: Sendable {
             followerLimit: followerLimit,
             followingLimit: followingLimit,
             friendReactionsOptions: friendReactionsOptions,
-            idAround: idAround,
             interestWeights: interestWeights,
             memberLimit: memberLimit,
             overwriteInterestWeights: overwriteInterestWeights,
@@ -148,8 +140,7 @@ public struct FeedQuery: Sendable {
     ///   - externalRanking: Additional data used for ranking activities.
     ///   - followerLimit: Maximum number of followers to retrieve. Defaults to 10.
     ///   - followingLimit: Maximum number of following users to retrieve. Defaults to 10.
-    ///   - friendReactionsOptions: Options for including reactions from followed users on activities. Backend default doesn't include them.
-    ///   - idAround: Returns the page of activities around the activity with this ID.
+    ///   - friendReactionsOptions: Options for including reactions from followed or mutually followed users on activities. Backend default doesn't include them.
     ///   - interestWeights: Weights for different interests to influence ranking.
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - overwriteInterestWeights: If true, `interestWeights` replace the stored interest weights. Backend default is false.
@@ -166,7 +157,6 @@ public struct FeedQuery: Sendable {
         followerLimit: Int? = 10,
         followingLimit: Int? = 10,
         friendReactionsOptions: FriendReactionsOptions? = nil,
-        idAround: String? = nil,
         interestWeights: [String: Double]? = nil,
         memberLimit: Int? = nil,
         overwriteInterestWeights: Bool? = nil,
@@ -183,7 +173,6 @@ public struct FeedQuery: Sendable {
         self.followerLimit = followerLimit
         self.followingLimit = followingLimit
         self.friendReactionsOptions = friendReactionsOptions
-        self.idAround = idAround
         self.interestWeights = interestWeights
         self.memberLimit = memberLimit
         self.overwriteInterestWeights = overwriteInterestWeights
@@ -205,7 +194,6 @@ extension FeedQuery {
             followersPagination: followerLimit.flatMap { PagerRequest(limit: $0) },
             followingPagination: followingLimit.flatMap { PagerRequest(limit: $0) },
             friendReactionsOptions: friendReactionsOptions,
-            idAround: activityNext == nil && activityPrevious == nil ? idAround : nil,
             interestWeights: interestWeights,
             limit: activityLimit,
             memberPagination: memberLimit.flatMap { PagerRequest(limit: $0) },
