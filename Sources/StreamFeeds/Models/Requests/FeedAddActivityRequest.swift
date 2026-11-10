@@ -34,7 +34,7 @@ public struct FeedAddActivityRequest: Sendable {
     ///   - collectionReferences: References to existing collections, in the `name:id` format.
     ///   - collections: Collections to create or update together with the activity. Their references are added to `collectionReferences`.
     ///   - custom: Custom data for the activity.
-    ///   - expiresAt: When the activity expires, as an ISO 8601 date.
+    ///   - expiresAt: When the activity expires, as an RFC 3339 date-time, for example `2026-01-01T00:00:00Z`.
     ///   - filterTags: Tags for filtering activities.
     ///   - id: A custom ID for the activity.
     ///   - interestTags: Tags for interest-based ranking.

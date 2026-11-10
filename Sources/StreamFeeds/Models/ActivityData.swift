@@ -11,7 +11,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var bookmarkCount: Int
     /// Collections referenced by the activity, keyed by collection reference (`name:id`).
     ///
-    /// - Note: Leaves out references to collections that don't exist.
+    /// - Important: Leaves out references to collections that don't exist.
     public let collections: [String: CollectionData]
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentData]
