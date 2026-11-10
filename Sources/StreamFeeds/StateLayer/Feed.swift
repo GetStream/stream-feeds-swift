@@ -225,6 +225,7 @@ public final class Feed: Sendable {
                 followingLimit: 0,
                 friendReactionsOptions: feedQuery.friendReactionsOptions,
                 interestWeights: nil,
+                language: feedQuery.language,
                 memberLimit: 0,
                 view: nil,
                 viewerLocation: feedQuery.viewerLocation,
@@ -314,7 +315,7 @@ public final class Feed: Sendable {
     /// - Returns: The comment data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
-        let comment = try await commentsRepository.getComment(commentId: commentId)
+        let comment = try await commentsRepository.getComment(commentId: commentId, language: feedQuery.language)
         await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
         return comment
     }

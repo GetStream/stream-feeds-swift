@@ -55,6 +55,27 @@ struct Activity_Tests {
         #expect(activityData.collections.keys.sorted() == ["products:1"])
     }
     
+    @Test func getSendsLanguage() async throws {
+        let apiTransport = APITransportMock.withMatchedResponses([
+            .init(
+                matching: .pathPrefix("/api/v2/feeds/activities/"),
+                payload: GetActivityResponse.dummy(activity: .dummy(i18n: ["fr_text": "Bonjour", "language": "en"], text: "Hello"))
+            ),
+            .init(
+                matching: .pathPrefix("/api/v2/feeds/comments"),
+                payload: GetCommentsResponse.dummy(comments: [])
+            )
+        ])
+        let activity = FeedsClient.mock(apiTransport: apiTransport)
+            .activity(for: "activity-123", in: FeedId(group: "user", id: "jane"), language: "fr")
+
+        let activityData = try await activity.get()
+
+        #expect(activityData.translatedText(for: "fr") == "Bonjour")
+        let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
+        #expect(languages == ["fr", "fr"])
+    }
+    
     @Test func reconnectionRefetchesActivityAndComments() async throws {
         let client = FeedsClient.mock(
             apiTransport: .withMatchedResponses([

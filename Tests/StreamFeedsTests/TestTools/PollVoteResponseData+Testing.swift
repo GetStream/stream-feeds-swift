@@ -9,6 +9,7 @@ import StreamCore
 extension PollVoteResponseData {
     static func dummy(
         answerText: String? = nil,
+        answerTextI18n: [String: String]? = nil,
         createdAt: Date = Date.fixed(),
         id: String = "vote-123",
         isAnswer: Bool = false,
@@ -19,6 +20,7 @@ extension PollVoteResponseData {
     ) -> PollVoteResponseData {
         PollVoteResponseData(
             answerText: answerText,
+            answerTextI18n: answerTextI18n,
             createdAt: createdAt,
             id: id,
             isAnswer: isAnswer,

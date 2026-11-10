@@ -78,7 +78,8 @@ public final class ActivityList: Sendable {
                 limit: limit,
                 next: next,
                 previous: nil,
-                enrichOwnFields: query.enrichOwnFields
+                enrichOwnFields: query.enrichOwnFields,
+                language: query.language
             )
         }
         guard let nextQuery else { return [] }

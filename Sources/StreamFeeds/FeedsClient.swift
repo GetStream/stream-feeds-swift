@@ -352,6 +352,7 @@ public final class FeedsClient: Sendable {
     ///   - activityId: The unique identifier of the activity
     ///   - feed: The feed identifier where the activity belongs
     ///   - data: The activity data already available for injecting to the state.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ActivityData/translations`` and ``ThreadedCommentData/translations``. Backend default includes no translations.
     /// - Returns: An `Activity` instance that can be used to interact with the specified activity
     ///
     /// - Example:
@@ -359,8 +360,8 @@ public final class FeedsClient: Sendable {
     ///   let feedId = FeedId(groupId: "user", id: "john")
     ///   let activity = client.activity(for: "activity-123", in: feedId)
     ///   ```
-    public func activity(for activityId: String, in feed: FeedId, data: ActivityData? = nil) -> Activity {
-        Activity(id: activityId, feed: feed, data: data, client: self)
+    public func activity(for activityId: String, in feed: FeedId, data: ActivityData? = nil, language: String? = nil) -> Activity {
+        Activity(id: activityId, feed: feed, data: data, language: language, client: self)
     }
     
     /// Creates an activity list instance based on the provided query.

@@ -23,7 +23,7 @@ final class FeedsRepository: Sendable {
         let response = try await apiClient.getOrCreateFeed(
             feedGroupId: feed.group,
             feedId: feed.id,
-            language: nil,
+            language: query.language,
             translateText: nil,
             getOrCreateFeedRequest: request
         )

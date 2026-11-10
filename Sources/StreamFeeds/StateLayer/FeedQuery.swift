@@ -56,6 +56,9 @@ public struct FeedQuery: Sendable {
     /// Weights for different interests to influence activity ranking.
     public var interestWeights: [String: Double]?
     
+    /// Includes the translations to this language code, for example `fr`, in ``ActivityData/translations``. Backend default includes no translations.
+    public var language: String?
+    
     /// Maximum number of feed members to retrieve.
     public var memberLimit: Int?
     
@@ -87,6 +90,7 @@ public struct FeedQuery: Sendable {
     ///   - followingLimit: Maximum number of following users to retrieve. Defaults to 10.
     ///   - friendReactionsOptions: Options for including reactions from followed or mutually followed users on activities. Backend default doesn't include them.
     ///   - interestWeights: Weights for different interests to influence ranking.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ActivityData/translations``. Backend default includes no translations.
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - overwriteInterestWeights: If true, `interestWeights` replace the stored interest weights. Backend default is false.
     ///   - view: Custom view for ranking or aggregation logic.
@@ -104,6 +108,7 @@ public struct FeedQuery: Sendable {
         followingLimit: Int? = 10,
         friendReactionsOptions: FriendReactionsOptions? = nil,
         interestWeights: [String: Double]? = nil,
+        language: String? = nil,
         memberLimit: Int? = nil,
         overwriteInterestWeights: Bool? = nil,
         view: String? = nil,
@@ -121,6 +126,7 @@ public struct FeedQuery: Sendable {
             followingLimit: followingLimit,
             friendReactionsOptions: friendReactionsOptions,
             interestWeights: interestWeights,
+            language: language,
             memberLimit: memberLimit,
             overwriteInterestWeights: overwriteInterestWeights,
             view: view,
@@ -142,6 +148,7 @@ public struct FeedQuery: Sendable {
     ///   - followingLimit: Maximum number of following users to retrieve. Defaults to 10.
     ///   - friendReactionsOptions: Options for including reactions from followed or mutually followed users on activities. Backend default doesn't include them.
     ///   - interestWeights: Weights for different interests to influence ranking.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ActivityData/translations``. Backend default includes no translations.
     ///   - memberLimit: Maximum number of feed members to retrieve.
     ///   - overwriteInterestWeights: If true, `interestWeights` replace the stored interest weights. Backend default is false.
     ///   - view: Custom view for ranking or aggregation logic.
@@ -158,6 +165,7 @@ public struct FeedQuery: Sendable {
         followingLimit: Int? = 10,
         friendReactionsOptions: FriendReactionsOptions? = nil,
         interestWeights: [String: Double]? = nil,
+        language: String? = nil,
         memberLimit: Int? = nil,
         overwriteInterestWeights: Bool? = nil,
         view: String? = nil,
@@ -174,6 +182,7 @@ public struct FeedQuery: Sendable {
         self.followingLimit = followingLimit
         self.friendReactionsOptions = friendReactionsOptions
         self.interestWeights = interestWeights
+        self.language = language
         self.memberLimit = memberLimit
         self.overwriteInterestWeights = overwriteInterestWeights
         self.view = view

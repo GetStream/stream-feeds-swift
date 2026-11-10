@@ -18,6 +18,7 @@ public final class Activity: Sendable {
     private let pollsRepository: PollsRepository
     private let disposableBag = DisposableBag()
     private let eventPublisher: StateLayerEventPublisher
+    private let language: String?
     @MainActor private let stateBuilder: StateBuilder<ActivityState>
     
     /// The unique identifier of this activity.
@@ -30,10 +31,11 @@ public final class Activity: Sendable {
         id: String,
         feed: FeedId,
         data: ActivityData?,
+        language: String?,
         client: FeedsClient
     ) {
         let commentList = client.activityCommentList(
-            for: .init(objectId: id, objectType: "activity", depth: 3)
+            for: .init(objectId: id, objectType: "activity", depth: 3, language: language)
         )
         self.commentList = commentList
         activityId = id
@@ -41,6 +43,7 @@ public final class Activity: Sendable {
         commentsRepository = client.commentsRepository
         eventPublisher = client.stateLayerEventPublisher
         self.feed = feed
+        self.language = language
         ownCapabilitiesRepository = client.ownCapabilitiesRepository
         pollsRepository = client.pollsRepository
         let currentUserId = client.user.id
@@ -71,7 +74,7 @@ public final class Activity: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func get() async throws -> ActivityData {
-        async let activity = activitiesRepository.getActivity(activityId: activityId)
+        async let activity = activitiesRepository.getActivity(activityId: activityId, language: language)
         async let comments = queryComments()
         let (activityData, _) = try await (activity, comments)
         await state.setActivity(activityData)
@@ -114,7 +117,7 @@ public final class Activity: Sendable {
     /// - Returns: The comment data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
-        let comment = try await commentsRepository.getComment(commentId: commentId)
+        let comment = try await commentsRepository.getComment(commentId: commentId, language: language)
         await eventPublisher.sendEvent(.commentUpdated(comment, activityId, feed))
         return comment
     }
@@ -430,7 +433,7 @@ private extension Activity {
     // Comments are refetched by the comment list
     func refetch() async throws {
         guard await state.activity != nil else { return }
-        let activityData = try await activitiesRepository.getActivity(activityId: activityId)
+        let activityData = try await activitiesRepository.getActivity(activityId: activityId, language: language)
         try Task.checkCancellation()
         await state.setActivity(activityData)
         if let updated = ownCapabilitiesRepository.saveCapabilities(in: activityData.currentFeed) {

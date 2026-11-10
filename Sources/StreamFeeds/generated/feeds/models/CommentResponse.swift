@@ -25,6 +25,7 @@ public final class CommentResponse: Sendable, Decodable {
     public let editedAt: Date?
     /// Only true in QueryComments results filtered with hidden: true
     public let hidden: Bool
+    public let i18n: [String: String]?
     /// Unique identifier for the comment
     public let id: String
     /// Recent reactions to the comment
@@ -59,7 +60,7 @@ public final class CommentResponse: Sendable, Decodable {
     /// User response object
     public let user: UserResponse
 
-    public init(attachments: [Attachment]? = nil, bookmarkCount: Int, confidenceScore: Double, controversyScore: Double? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, editedAt: Date? = nil, hidden: Bool, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
+    public init(attachments: [Attachment]? = nil, bookmarkCount: Int, confidenceScore: Double, controversyScore: Double? = nil, createdAt: Date, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, downvoteCount: Int, editedAt: Date? = nil, hidden: Bool, i18n: [String: String]? = nil, id: String, latestReactions: [FeedsReactionResponse]? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, objectId: String, objectType: String, ownReactions: [FeedsReactionResponse], parentId: String? = nil, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse]? = nil, replyCount: Int, score: Int, status: CommentStatus, text: String? = nil, updatedAt: Date, upvoteCount: Int, user: UserResponse) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
         self.confidenceScore = confidenceScore
@@ -70,6 +71,7 @@ public final class CommentResponse: Sendable, Decodable {
         self.downvoteCount = downvoteCount
         self.editedAt = editedAt
         self.hidden = hidden
+        self.i18n = i18n
         self.id = id
         self.latestReactions = latestReactions
         self.mentionedUsers = mentionedUsers
@@ -101,6 +103,7 @@ public final class CommentResponse: Sendable, Decodable {
         self.downvoteCount = try container.decode(Int.self, forKey: .downvoteCount)
         self.editedAt = try container.decodeIfPresent(Date.self, forKey: .editedAt)
         self.hidden = try container.decode(Bool.self, forKey: .hidden)
+        self.i18n = try container.decodeIfPresent([String: String].self, forKey: .i18n)
         self.id = try container.decode(String.self, forKey: .id)
         self.latestReactions = try container.decodeIfPresent([FeedsReactionResponse].self, forKey: .latestReactions)
         self.mentionedUsers = try container.decode([UserResponse].self, forKey: .mentionedUsers)
@@ -133,6 +136,7 @@ extension CommentResponse: Hashable {
             lhs.downvoteCount == rhs.downvoteCount &&
             lhs.editedAt == rhs.editedAt &&
             lhs.hidden == rhs.hidden &&
+            lhs.i18n == rhs.i18n &&
             lhs.id == rhs.id &&
             lhs.latestReactions == rhs.latestReactions &&
             lhs.mentionedUsers == rhs.mentionedUsers &&
@@ -163,6 +167,7 @@ extension CommentResponse: Hashable {
         hasher.combine(downvoteCount)
         hasher.combine(editedAt)
         hasher.combine(hidden)
+        hasher.combine(i18n)
         hasher.combine(id)
         hasher.combine(latestReactions)
         hasher.combine(mentionedUsers)

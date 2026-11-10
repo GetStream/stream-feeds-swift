@@ -14,6 +14,11 @@ public struct PollData: Identifiable, Equatable, Sendable {
     public let createdById: String
     public let custom: [String: RawJSON]
     public let description: String
+    let descriptionOriginalLanguage: String?
+    /// Automatic translations of ``description``, keyed by language code.
+    ///
+    /// - Note: Feeds doesn't translate polls automatically.
+    public let descriptionTranslations: [String: String]?
     public let enforceUniqueVote: Bool
     public let id: String
     public private(set) var isClosed: Bool
@@ -21,7 +26,13 @@ public struct PollData: Identifiable, Equatable, Sendable {
     public private(set) var latestVotesByOption: [String: [PollVoteData]]
     public let maxVotesAllowed: Int?
     public let name: String
+    /// Automatic translations of ``name``, keyed by language code.
+    ///
+    /// - Note: Feeds doesn't translate polls automatically.
+    public let nameTranslations: [String: String]?
     public private(set) var options: [PollOptionData]
+    /// The language code of the original ``name``.
+    public let originalLanguage: String?
     public private(set) var ownVotes: [PollVoteData]
     public let updatedAt: Date
     public private(set) var voteCount: Int
@@ -30,6 +41,20 @@ public struct PollData: Identifiable, Equatable, Sendable {
 }
 
 public typealias PollVotingVisibility = VotingVisibility
+
+// MARK: - Translations
+
+extension PollData {
+    /// The translation of ``description`` to the given language code, or `nil` when there is none, or it is the same as the original description.
+    public func translatedDescription(for language: String) -> String? {
+        I18n.validTranslation(of: description, in: descriptionTranslations, for: language, originalLanguage: descriptionOriginalLanguage)
+    }
+
+    /// The translation of ``name`` to the given language code, or `nil` when there is none, or it is the same as the original name.
+    public func translatedName(for language: String) -> String? {
+        I18n.validTranslation(of: name, in: nameTranslations, for: language, originalLanguage: originalLanguage)
+    }
+}
 
 // MARK: - Mutating the Data
 
@@ -91,6 +116,8 @@ extension PollResponseData {
             createdById: createdById,
             custom: custom,
             description: description,
+            descriptionOriginalLanguage: I18n.originalLanguage(from: descriptionI18n),
+            descriptionTranslations: I18n.translations(from: descriptionI18n),
             enforceUniqueVote: enforceUniqueVote,
             id: id,
             isClosed: isClosed ?? false,
@@ -98,7 +125,9 @@ extension PollResponseData {
             latestVotesByOption: latestVotesByOption.mapValues { votes in votes.map { $0.toModel() } },
             maxVotesAllowed: maxVotesAllowed,
             name: name,
+            nameTranslations: I18n.translations(from: nameI18n),
             options: options.map { $0.toModel() },
+            originalLanguage: I18n.originalLanguage(from: nameI18n),
             ownVotes: ownVotes.map { $0.toModel() },
             updatedAt: updatedAt,
             voteCount: voteCount,

@@ -108,6 +108,11 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     /// The type of object this comment belongs to (e.g., "activity").
     public let objectType: String
     
+    /// The language code of the original ``text``.
+    ///
+    /// - Note: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations.
+    public private(set) var originalLanguage: String?
+    
     /// All the reactions from the current user.
     public private(set) var ownReactions: [FeedsReactionData]
     
@@ -146,6 +151,11 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     /// `nil` for comments that only contain attachments or other media.
     public let text: String?
     
+    /// Automatic translations of ``text``, keyed by language code.
+    ///
+    /// - Note: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Holds the translation to that language and the original text.
+    public private(set) var translations: [String: String]?
+    
     /// The date and time when the comment was last updated.
     public let updatedAt: Date
     
@@ -156,16 +166,33 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     public private(set) var user: UserData
 }
 
+// MARK: - Translations
+
+extension CommentData {
+    /// The translation of ``text`` to the given language code, or `nil` when there is none, or it is the same as the original text.
+    public func translatedText(for language: String) -> String? {
+        I18n.validTranslation(of: text, in: translations, for: language, originalLanguage: originalLanguage)
+    }
+}
+
 // MARK: - Mutating the Data
 
 extension CommentData {
     mutating func merge(with incomingData: CommentData) {
         let hidden = hidden
+        let originalLanguage = originalLanguage
         let ownReactions = ownReactions
+        let text = text
+        let translations = translations
         self = incomingData
         // Per-viewer, web-socket events always send false
         self.hidden = hidden
         self.ownReactions = ownReactions
+        // Web-socket events don't carry translations, and the backend clears them when the text changes
+        if incomingData.translations == nil, incomingData.originalLanguage == nil, incomingData.text == text {
+            self.originalLanguage = originalLanguage
+            self.translations = translations
+        }
     }
     
     mutating func merge(with incomingData: CommentData, add reaction: FeedsReactionData, currentUserId: String) {
@@ -217,6 +244,7 @@ extension CommentResponse {
             moderation: moderation,
             objectId: objectId,
             objectType: objectType,
+            originalLanguage: I18n.originalLanguage(from: i18n),
             ownReactions: ownReactions.map { $0.toModel() },
             parentId: parentId,
             reactionCount: reactionCount,
@@ -225,6 +253,7 @@ extension CommentResponse {
             score: score,
             status: status,
             text: text,
+            translations: I18n.translations(from: i18n),
             updatedAt: updatedAt,
             upvoteCount: upvoteCount,
             user: user.toModel()

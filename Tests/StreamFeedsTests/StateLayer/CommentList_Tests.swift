@@ -25,6 +25,22 @@ struct CommentList_Tests {
         #expect(stateComments.map(\.id) == ["comment-1"])
     }
     
+    @Test func getAndPaginationSendLanguage() async throws {
+        let apiTransport = APITransportMock.withPayloads([
+            QueryCommentsResponse.dummy(comments: [.dummy(id: "comment-1", objectId: Self.activityId)], next: "next-cursor"),
+            QueryCommentsResponse.dummy(comments: [], next: nil)
+        ])
+        let commentList = FeedsClient.mock(apiTransport: apiTransport).commentList(
+            for: CommentsQuery(filter: .equal(.objectId, Self.activityId), language: "fr")
+        )
+
+        try await commentList.get()
+        try await commentList.queryMoreComments()
+
+        let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
+        #expect(languages == ["fr", "fr"])
+    }
+    
     @Test func reconnectionRefetchesLoadedComments() async throws {
         let client = defaultClient(
             additionalPayloads: [

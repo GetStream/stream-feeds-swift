@@ -7,6 +7,7 @@ import StreamCore
 
 public final class PollVoteResponseData: Sendable, Decodable {
     public let answerText: String?
+    public let answerTextI18n: [String: String]?
     public let createdAt: Date
     public let id: String
     public let isAnswer: Bool?
@@ -17,8 +18,9 @@ public final class PollVoteResponseData: Sendable, Decodable {
     public let user: UserResponse?
     public let userId: String?
 
-    public init(answerText: String? = nil, createdAt: Date, id: String, isAnswer: Bool? = nil, optionId: String, pollId: String, updatedAt: Date, user: UserResponse? = nil, userId: String? = nil) {
+    public init(answerText: String? = nil, answerTextI18n: [String: String]? = nil, createdAt: Date, id: String, isAnswer: Bool? = nil, optionId: String, pollId: String, updatedAt: Date, user: UserResponse? = nil, userId: String? = nil) {
         self.answerText = answerText
+        self.answerTextI18n = answerTextI18n
         self.createdAt = createdAt
         self.id = id
         self.isAnswer = isAnswer
@@ -32,6 +34,7 @@ public final class PollVoteResponseData: Sendable, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.answerText = try container.decodeIfPresent(String.self, forKey: .answerText)
+        self.answerTextI18n = try container.decodeIfPresent([String: String].self, forKey: .answerTextI18n)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.id = try container.decode(String.self, forKey: .id)
         self.isAnswer = try container.decodeIfPresent(Bool.self, forKey: .isAnswer)
@@ -46,6 +49,7 @@ public final class PollVoteResponseData: Sendable, Decodable {
 extension PollVoteResponseData: Hashable {
     public static func == (lhs: PollVoteResponseData, rhs: PollVoteResponseData) -> Bool {
         lhs.answerText == rhs.answerText &&
+            lhs.answerTextI18n == rhs.answerTextI18n &&
             lhs.createdAt == rhs.createdAt &&
             lhs.id == rhs.id &&
             lhs.isAnswer == rhs.isAnswer &&
@@ -58,6 +62,7 @@ extension PollVoteResponseData: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(answerText)
+        hasher.combine(answerTextI18n)
         hasher.combine(createdAt)
         hasher.combine(id)
         hasher.combine(isAnswer)

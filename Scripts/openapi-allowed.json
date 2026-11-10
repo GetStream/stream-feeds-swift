@@ -397,9 +397,6 @@
     "ActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
-    "ActivityResponse": [
-      { "i18n": "Pending review (IOS-2246)" }
-    ],
     "AddActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
@@ -460,9 +457,6 @@
     ],
     "BookmarkResponse": [
       { "activityId": "Deprecated, use objectId" }
-    ],
-    "CommentResponse": [
-      { "i18n": "Pending review (IOS-2246)" }
     ],
     "ConfigResponse": [
       { "aiAudioConfig": "Moderation tooling" },
@@ -589,18 +583,8 @@
       { "unreadCount": "Chat only" },
       { "unreadThreads": "Chat only" }
     ],
-    "PollOptionResponseData": [
-      { "textI18n": "Pending review (IOS-2246)" }
-    ],
-    "PollResponseData": [
-      { "descriptionI18n": "Pending review (IOS-2246)" },
-      { "nameI18n": "Pending review (IOS-2246)" }
-    ],
     "PollVoteResponse": [
       { "poll": "Unused (not exposed)" }
-    ],
-    "PollVoteResponseData": [
-      { "answerTextI18n": "Pending review (IOS-2246)" }
     ],
     "PrivacySettingsResponse": [
       { "deliveryReceipts": "Chat only" },

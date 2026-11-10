@@ -16,6 +16,7 @@ extension PollResponseData {
         createdById: String = "user-123",
         custom: [String: RawJSON] = [:],
         description: String = "Test poll description",
+        descriptionI18n: [String: String]? = nil,
         enforceUniqueVote: Bool = true,
         id: String = "poll-123",
         isClosed: Bool = false,
@@ -23,6 +24,7 @@ extension PollResponseData {
         latestVotesByOption: [String: [PollVoteResponseData]] = [:],
         maxVotesAllowed: Int = 1,
         name: String = "Test Poll",
+        nameI18n: [String: String]? = nil,
         options: [PollOptionResponseData] = [
             .dummy(id: "option-1", text: "Option 1"),
             .dummy(id: "option-2", text: "Option 2")
@@ -42,6 +44,7 @@ extension PollResponseData {
             createdById: createdById,
             custom: custom,
             description: description,
+            descriptionI18n: descriptionI18n,
             enforceUniqueVote: enforceUniqueVote,
             id: id,
             isClosed: isClosed,
@@ -49,6 +52,7 @@ extension PollResponseData {
             latestVotesByOption: latestVotesByOption,
             maxVotesAllowed: maxVotesAllowed,
             name: name,
+            nameI18n: nameI18n,
             options: options,
             ownVotes: ownVotes,
             updatedAt: updatedAt,

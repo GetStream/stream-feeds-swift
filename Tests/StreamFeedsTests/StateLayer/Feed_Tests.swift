@@ -455,6 +455,17 @@ struct Feed_Tests {
         #expect(finalActivities.map(\.text) == ["Third", "Second", "Test activity content"])
     }
 
+    @Test func getOrCreateAndPaginationSendLanguage() async throws {
+        let apiTransport = APITransportMock.withPayloads([GetOrCreateFeedResponse.dummy(), GetOrCreateFeedResponse.dummy()])
+        let feed = FeedsClient.mock(apiTransport: apiTransport).feed(for: FeedQuery(group: "user", id: "jane", language: "fr"))
+
+        try await feed.getOrCreate()
+        try await feed.queryMoreActivities()
+
+        let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
+        #expect(languages == ["fr", "fr"])
+    }
+
     @Test func addBookmarkUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
