@@ -6,6 +6,8 @@ import Foundation
 import StreamCore
 
 /// A collection that activities can reference.
+///
+/// - Important: A collection with status ``CollectionStatus/notfound`` does not exist, so only `id` and `name` are set.
 public struct CollectionData: Equatable, Sendable {
     /// The date when the collection was created.
     public let createdAt: Date?
