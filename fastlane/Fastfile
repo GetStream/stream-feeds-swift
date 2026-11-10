@@ -204,6 +204,7 @@ private_lane :build_example_app do |options|
     cloned_source_packages_path: source_packages_path,
     build_for_testing: true,
     devices: options[:device],
+    destination: options[:destination],
     xcodebuild_formatter: xcodebuild_formatter
   )
 end
