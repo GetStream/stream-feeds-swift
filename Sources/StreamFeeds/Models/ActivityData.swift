@@ -64,7 +64,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let notificationContext: NotificationContext?
     /// The language code of the original ``text``.
     ///
-    /// - Note: Only set when the activity is loaded with a language, such as ``FeedQuery/language``, and the activity has translations. Loading with a language doesn't translate the activity. It returns a translation only when the activity was translated to that language with ``Activity/translate(to:)``, ``Feed/translateActivity(id:to:)`` or from your server.
+    /// - Important: Only set when the activity is loaded with a language, such as ``FeedQuery/language``, and the activity has translations. Loading with a language doesn't translate the activity. It returns a translation only when the activity was translated to that language with ``Activity/translate(to:)``, ``Feed/translateActivity(id:to:)`` or from your server.
     public private(set) var originalLanguage: String?
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
@@ -103,7 +103,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var topLevelCommentCount: Int?
     /// Automatic translations of ``text``, keyed by language code.
     ///
-    /// - Note: Only set when the activity is loaded with a language, such as ``FeedQuery/language``, and the activity has translations. Loading with a language doesn't translate the activity. It returns a translation only when the activity was translated to that language with ``Activity/translate(to:)``, ``Feed/translateActivity(id:to:)`` or from your server. Holds the translation to that language and the original text.
+    /// - Important: Only set when the activity is loaded with a language, such as ``FeedQuery/language``, and the activity has translations. Loading with a language doesn't translate the activity. It returns a translation only when the activity was translated to that language with ``Activity/translate(to:)``, ``Feed/translateActivity(id:to:)`` or from your server. Holds the translation to that language and the original text.
     public private(set) var translations: [String: String]?
     public let type: String
     public let updatedAt: Date

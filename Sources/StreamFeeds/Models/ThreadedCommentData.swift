@@ -104,7 +104,7 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     
     /// The language code of the original ``text``.
     ///
-    /// - Note: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Loading with a language doesn't translate the comment. It returns a translation only when the comment was translated to that language with ``Activity/translateComment(commentId:to:)``, ``Feed/translateComment(commentId:to:)`` or from your server.
+    /// - Important: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Loading with a language doesn't translate the comment. It returns a translation only when the comment was translated to that language with ``Activity/translateComment(commentId:to:)``, ``Feed/translateComment(commentId:to:)`` or from your server.
     public private(set) var originalLanguage: String?
     
     /// All the reactions from the current user.
@@ -157,7 +157,7 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     
     /// Automatic translations of ``text``, keyed by language code.
     ///
-    /// - Note: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Loading with a language doesn't translate the comment. It returns a translation only when the comment was translated to that language with ``Activity/translateComment(commentId:to:)``, ``Feed/translateComment(commentId:to:)`` or from your server. Holds the translation to that language and the original text.
+    /// - Important: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Loading with a language doesn't translate the comment. It returns a translation only when the comment was translated to that language with ``Activity/translateComment(commentId:to:)``, ``Feed/translateComment(commentId:to:)`` or from your server. Holds the translation to that language and the original text.
     public private(set) var translations: [String: String]?
     
     /// The date and time when the comment was last updated.
