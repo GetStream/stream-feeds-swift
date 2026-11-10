@@ -10,6 +10,8 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let attachments: [Attachment]
     public private(set) var bookmarkCount: Int
     /// Collections referenced by the activity, keyed by collection reference (`name:id`).
+    ///
+    /// - Note: Leaves out references to collections that don't exist.
     public let collections: [String: CollectionData]
     public private(set) var commentCount: Int
     public private(set) var comments: [CommentData]
@@ -167,7 +169,7 @@ extension ActivityResponse {
         ActivityData(
             attachments: attachments,
             bookmarkCount: bookmarkCount,
-            collections: collections.mapValues { $0.toModel() },
+            collections: collections.compactMapValues { $0.status == .ok ? $0.collection.toModel() : nil },
             commentCount: commentCount,
             comments: comments.map { $0.toModel() },
             createdAt: createdAt,

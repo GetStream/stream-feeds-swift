@@ -214,7 +214,7 @@ struct FeedsClient_Test {
         let collections = try await client.readCollections(references: ["products:item-1"])
 
         #expect(collections == [
-            CollectionData(createdAt: nil, custom: ["title": .string("Item")], id: "item-1", name: "products", status: nil, updatedAt: nil, userId: "user-1")
+            CollectionData(createdAt: nil, custom: ["title": .string("Item")], id: "item-1", name: "products", updatedAt: nil, userId: "user-1")
         ])
     }
 
