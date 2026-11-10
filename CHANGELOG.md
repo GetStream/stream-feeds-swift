@@ -37,7 +37,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `enrichOwnFields` to `FeedsQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `FriendReactionType` for choosing between followed and mutual users in `FriendReactionsOptions.type` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `FriendReactionsOptions` for loading friend reactions with `FeedQuery.friendReactionsOptions` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
-- Add `me` to `HealthCheckEvent` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `blocklistsMatched` to `ModerationV2Response` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `comment`, `custom` and `parentActivity` to `NotificationTarget` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `comment` and `custom` to `NotificationTrigger` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
