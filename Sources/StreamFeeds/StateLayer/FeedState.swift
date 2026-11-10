@@ -131,7 +131,8 @@ extension FeedState {
                         state.activities = state.activities.sortedMerge(added.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
                     }
                     if !updated.isEmpty {
-                        state.activities = state.activities.sortedMerge(updated.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
+                        let merged = updated.map { state.activities.mergingExisting($0) }
+                        state.activities = state.activities.sortedMerge(merged.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
                     }
                     if !removedIds.isEmpty {
                         state.activities.removeAll(where: { removedIds.contains($0.id) })

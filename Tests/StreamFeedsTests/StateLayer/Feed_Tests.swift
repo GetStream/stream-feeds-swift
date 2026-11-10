@@ -1210,6 +1210,36 @@ struct Feed_Tests {
         await #expect(feed.state.activities.first?.text == "New From WS")
     }
     
+    @Test func upsertActivitiesKeepsReadTimeFields() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(currentFeed: .dummy(feed: feedId.rawValue), feeds: [feedId.rawValue], id: "1", position: 3)
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        .dummy(createdAt: .fixed(), editedAt: .fixed(), feeds: [feedId.rawValue], id: "1", text: "UPDATED TEXT")
+                    ],
+                    duration: "1.23ms"
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        try await client.upsertActivities([
+            ActivityRequest(feeds: [feedId.rawValue], id: "1", text: "UPDATED TEXT", type: "post")
+        ])
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.text == "UPDATED TEXT")
+        #expect(activity.position == 3)
+    }
+
     @Test func activityBatchUpdateEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(

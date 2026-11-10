@@ -80,6 +80,14 @@ public typealias ActivityDataVisibility = ActivityVisibility
 
 // MARK: - Mutating the Data
 
+extension Array where Element == ActivityData {
+    func mergingExisting(_ incomingData: ActivityData) -> ActivityData {
+        guard var existing = first(where: { $0.id == incomingData.id }) else { return incomingData }
+        existing.merge(with: incomingData)
+        return existing
+    }
+}
+
 extension ActivityData {
     // MARK: - Activity and Its Reactions
 

@@ -190,6 +190,39 @@ struct CommentList_Tests {
         #expect(comments.first?.text == "Updated text")
     }
     
+    @Test func commentUpdatedEventKeepsOwnReactions() async throws {
+        let client = defaultClient(
+            comments: [
+                .dummy(
+                    id: "comment-1",
+                    objectId: Self.activityId,
+                    objectType: "activity",
+                    ownReactions: [.dummy(type: "like")]
+                )
+            ]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity")
+                ])
+            )
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, text: "Updated text"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.text == "Updated text")
+        #expect(comment.ownReactions.map(\.type) == ["like"])
+    }
+    
     @Test func commentDeletedEventRemovesFromState() async throws {
         let client = defaultClient()
         let commentList = client.commentList(
