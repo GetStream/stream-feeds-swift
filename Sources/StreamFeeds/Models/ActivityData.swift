@@ -11,7 +11,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var bookmarkCount: Int
     /// Collections referenced by the activity, keyed by collection reference (`name:id`).
     ///
-    /// - Important: Empty when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/skipActivityCollections`` set to true.
+    /// - Important: Empty when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/skipActivityCollections``, ``EnrichmentOptions/skipActivity`` or ``EnrichmentOptions/skipAll`` set to true.
     /// - Important: Leaves out references to collections that don't exist.
     public let collections: [String: CollectionData]
     public private(set) var commentCount: Int
@@ -45,9 +45,9 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public var parent: ActivityData? { _parent?.getValue() }
     public internal(set) var poll: PollData?
     public let popularity: Int
-    /// The 1-based position of the activity in a ranked feed, continuing across pages.
+    /// The 1-based position of the activity in the feed. Ranked feeds continue counting across pages. Other feeds restart at 1 on each page.
     ///
-    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. No request property turns it on.
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. Not set for aggregated feeds. No request property turns it on.
     public private(set) var position: Int?
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
@@ -63,7 +63,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let searchData: [String: RawJSON]
     /// The activity selector that provided the activity, for example `following` or `popular`.
     ///
-    /// - Important: Only set on feed reads when the feed group uses several activity selectors.
+    /// - Important: Only set on feed reads, and only by some activity selectors, such as `following` and `popular`.
     public private(set) var selectorSource: String?
     public let shareCount: Int
     public let text: String?
