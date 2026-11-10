@@ -21,7 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `ownFollowings` to `FeedData` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `location` to `FeedInput` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `enrichmentOptions`, `friendReactionsOptions`, `overwriteInterestWeights` and `viewerLocation` to `FeedQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
-- Add `degradedSelectors` to `FeedState` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `enrichOwnFields` to `FeedsQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `FriendReactionType` for choosing between followed and mutual users in `FriendReactionsOptions.type` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `FriendReactionsOptions` for loading friend reactions with `FeedQuery.friendReactionsOptions` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)

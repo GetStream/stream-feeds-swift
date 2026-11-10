@@ -235,7 +235,7 @@ public final class Feed: Sendable {
         }
         guard let nextQuery else { return [] }
         let response = try await feedsRepository.getOrCreateFeed(with: nextQuery)
-        await state.didPaginateActivities(with: response)
+        await state.didPaginateActivities(with: response.activities, for: response.activitiesQueryConfig)
         return response.activities.models
     }
     

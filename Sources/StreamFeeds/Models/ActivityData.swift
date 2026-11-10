@@ -11,7 +11,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var bookmarkCount: Int
     /// Collections referenced by the activity, keyed by collection reference (`name:id`).
     ///
-    /// - Note: Empty when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/skipActivityCollections`` set to true.
+    /// - Important: Empty when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/skipActivityCollections`` set to true.
     /// - Important: Leaves out references to collections that don't exist.
     public let collections: [String: CollectionData]
     public private(set) var commentCount: Int
@@ -26,11 +26,11 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let filterTags: [String]
     /// The number of reactions from users the current user follows, or only from mutual follows when ``FriendReactionsOptions/type`` is ``FriendReactionType/mutual``.
     ///
-    /// - Note: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
+    /// - Important: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
     public private(set) var friendReactionCount: Int?
     /// Reactions from users the current user follows, or only from mutual follows when ``FriendReactionsOptions/type`` is ``FriendReactionType/mutual``.
     ///
-    /// - Note: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
+    /// - Important: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
     public private(set) var friendReactions: [FeedsReactionData]?
     public let hidden: Bool
     public let id: String
@@ -47,23 +47,23 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let popularity: Int
     /// The 1-based position of the activity in a ranked feed, continuing across pages.
     ///
-    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. No request property turns it on.
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. No request property turns it on.
     public private(set) var position: Int?
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
     /// Codes explaining why the activity was shown, for example `following` or `popular`.
     ///
-    /// - Note: Only set on For You feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeReasons`` set to true.
+    /// - Important: Only set on For You feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeReasons`` set to true.
     public private(set) var reasons: [String]?
     public let score: Double
     /// Variable values used for ranking the activity.
     ///
-    /// - Note: Only set on ranked feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeScoreVars`` set to true.
+    /// - Important: Only set on ranked feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeScoreVars`` set to true.
     public private(set) var scoreVariables: [String: RawJSON]?
     public let searchData: [String: RawJSON]
     /// The activity selector that provided the activity, for example `following` or `popular`.
     ///
-    /// - Note: Only set on feed reads when the feed group uses several activity selectors.
+    /// - Important: Only set on feed reads when the feed group uses several activity selectors.
     public private(set) var selectorSource: String?
     public let shareCount: Int
     public let text: String?

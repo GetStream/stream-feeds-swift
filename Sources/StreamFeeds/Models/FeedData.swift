@@ -23,7 +23,7 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public private(set) var ownFollows: [FollowData]?
     /// Follows from the feed owner's feeds to the current user's feeds.
     ///
-    /// - Note: Only set on feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/enrichOwnFollowings`` set to true, or when ``FeedsQuery/enrichOwnFields``, ``ActivitiesQuery/enrichOwnFields`` or ``BookmarksQuery/enrichOwnFields`` is true. ``Activity/get()`` includes it by default.
+    /// - Important: Only set on feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/enrichOwnFollowings`` set to true, or when ``FeedsQuery/enrichOwnFields``, ``ActivitiesQuery/enrichOwnFields`` or ``BookmarksQuery/enrichOwnFields`` is true. ``Activity/get()`` includes it by default.
     public private(set) var ownFollowings: [FollowData]?
     public private(set) var ownMembership: FeedMemberData?
     public let pinCount: Int

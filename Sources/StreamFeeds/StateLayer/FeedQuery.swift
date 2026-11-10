@@ -67,7 +67,7 @@ public struct FeedQuery: Sendable {
     
     /// The viewer's location.
     ///
-    /// - Note: Only the proximity activity selector uses it.
+    /// - Important: Only the proximity activity selector uses it.
     public var viewerLocation: Location?
     
     /// If true, subscribes to web-socket events for this feed.

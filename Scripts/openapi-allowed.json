@@ -545,6 +545,7 @@
       { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
     ],
     "GetOrCreateFeedResponse": [
+      { "degradedSelectors": "Unused (not exposed)" },
       { "requestId": "Unused (not exposed), only trackActivityMetrics takes it" }
     ],
     "HealthCheckEvent": [

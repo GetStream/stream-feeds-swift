@@ -21,33 +21,6 @@ struct Feed_Tests {
         #expect(stateFeedData == feedData)
     }
 
-    @Test func getOrCreateAndPaginationUpdateDegradedSelectors() async throws {
-        let feedId = FeedId(group: "user", id: "jane")
-        let client = FeedsClient.mock(
-            apiTransport: .withPayloads([
-                GetOrCreateFeedResponse.dummy(
-                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
-                    degradedSelectors: ["popular"],
-                    feed: .dummy(feed: feedId.rawValue)
-                ),
-                GetOrCreateFeedResponse.dummy(
-                    activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
-                    feed: .dummy(feed: feedId.rawValue),
-                    next: nil
-                )
-            ])
-        )
-        let feed = client.feed(for: feedId)
-
-        try await feed.getOrCreate()
-        let firstDegradedSelectors = await feed.state.degradedSelectors
-        #expect(firstDegradedSelectors == ["popular"])
-
-        try await feed.queryMoreActivities()
-        let nextDegradedSelectors = await feed.state.degradedSelectors
-        #expect(nextDegradedSelectors == nil)
-    }
-
     @Test func queryMoreActivitiesSendsViewerLocation() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let transport = APITransportMock.withPayloads([
