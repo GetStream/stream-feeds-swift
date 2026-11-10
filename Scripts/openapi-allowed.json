@@ -379,6 +379,15 @@
     "VoteData"
   ],
   "removedProperties": {
+    "AIImageConfig": [
+      { "ocrSeverityRules": "Unused (not exposed)" }
+    ],
+    "AITextConfig": [
+      { "profile": "Unused (not exposed)" }
+    ],
+    "AWSRekognitionRule": [
+      { "subclassifications": "Unused (not exposed)" }
+    ],
     "AcceptFollowRequest": [
       { "followerRole": "Server-side only" }
     ],
@@ -428,6 +437,9 @@
       { "previousReactionType": "Unused (not exposed)" },
       { "referenceActivity": "Unused (not exposed)" }
     ],
+    "AppResponseFields": [
+      { "placement": "Unused (not exposed)" }
+    ],
     "BanInfoResponse": [
       { "channel": "Chat only" },
       { "channelCid": "Chat only" },
@@ -441,6 +453,10 @@
       { "channelCid": "Chat only" },
       { "deleteMessages": "Chat only" },
       { "deleteReactions": "Chat only" }
+    ],
+    "BlockListConfig": [
+      { "explicitUrlsOnly": "Unused (not exposed)" },
+      { "matchSubstring": "Unused (not exposed)" }
     ],
     "BookmarkResponse": [
       { "activityId": "Deprecated, use objectId" }
@@ -493,6 +509,17 @@
     "FollowRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
+    "GetCommentRepliesResponse": [
+      { "sort": "Unused (not exposed)" }
+    ],
+    "GetCommentsResponse": [
+      { "commentCount": "Unused (not exposed)" },
+      { "sort": "Unused (not exposed)" },
+      { "topLevelCommentCount": "Unused (not exposed)" }
+    ],
+    "GetFollowSuggestionsResponse": [
+      { "algorithmUsed": "Unused (not exposed)" }
+    ],
     "GetOrCreateFeedRequest": [
       { "discardActors": "Gated to a single organization" },
       { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
@@ -502,7 +529,8 @@
       { "requestId": "Unused (not exposed), only trackActivityMetrics takes it" }
     ],
     "HealthCheckEvent": [
-      { "custom": "Webhooks only, not sent over WebSocket" }
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "me": "Unused (not exposed)" }
     ],
     "ImageContentParameters": [
       { "labelOperator": "Moderation tooling" },
@@ -567,6 +595,9 @@
     "PollResponseData": [
       { "descriptionI18n": "Pending review (IOS-2246)" },
       { "nameI18n": "Pending review (IOS-2246)" }
+    ],
+    "PollVoteResponse": [
+      { "poll": "Unused (not exposed)" }
     ],
     "PollVoteResponseData": [
       { "answerTextI18n": "Pending review (IOS-2246)" }
@@ -743,6 +774,11 @@
       { "channelMessageCount": "Chat only" },
       { "channelType": "Chat only" },
       { "cid": "Chat only" }
+    ],
+    "VelocityFilterConfig": [
+      { "cascadingActions": "Unused (not exposed)" },
+      { "cidsPerUser": "Unused (not exposed)" },
+      { "firstMessageOnly": "Unused (not exposed)" }
     ],
     "VideoContentParameters": [
       { "labelOperator": "Moderation tooling" }

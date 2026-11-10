@@ -13,8 +13,6 @@ public struct AppData: Equatable, Sendable {
     public let id: Int
     public let imageUploadConfig: FileUploadConfigData
     public let name: String
-    /// The region and shard that host the app, as `region.shard`.
-    public let placement: String
 }
 
 // MARK: - Model Conversions
@@ -27,8 +25,7 @@ extension AppResponseFields {
             fileUploadConfig: fileUploadConfig.toModel(),
             id: id,
             imageUploadConfig: imageUploadConfig.toModel(),
-            name: name,
-            placement: placement
+            name: name
         )
     }
 }

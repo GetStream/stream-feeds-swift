@@ -5,9 +5,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### ✅ Added
-- Add `ocrSeverityRules` to `AIImageConfig` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
-- Add `profile` to `AITextConfig` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
-- Add `subclassifications` to `AWSRekognitionRule` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `enrichOwnFields` to `ActivitiesQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `id`, `skipEnrichUrl` and `skipPush` to `ActivityAddCommentRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `collections` to `ActivityData` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
@@ -19,8 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `id` and `skipEnrichUrl` to `AddCommentRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `targetFeeds` to `AddReactionRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `isRead`, `isSeen` and `isWatched` to `AggregatedActivityData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
-- Add `id` and `placement` to `AppData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
-- Add `explicitUrlsOnly` and `matchSubstring` to `BlockListConfig` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
+- Add `id` to `AppData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `comment`, `objectId` and `objectType` to `BookmarkData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `user` to `BookmarkFolderData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `enrichOwnFields` to `BookmarksQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
@@ -47,7 +43,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `attachments`, `handleMentionNotifications`, `mentionedUserIds` and `skipEnrichUrl` to `UpdateCommentRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `clearLocation`, `description`, `enrichOwnFields`, `filterTags`, `location` and `name` to `UpdateFeedRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `createdBy` to `UserReactivatedEvent` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
-- Add `cascadingActions`, `cidsPerUser` and `firstMessageOnly` to `VelocityFilterConfig` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `activityCopyLimit`, `enrichOwnFields` and `skipPush` to `Feed.follow(...)` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `FeedsClient.readCollections(references:)` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
 

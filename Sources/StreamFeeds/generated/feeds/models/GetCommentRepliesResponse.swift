@@ -11,15 +11,12 @@ public final class GetCommentRepliesResponse: Sendable, Decodable {
     public let duration: String
     public let next: String?
     public let prev: String?
-    /// Sort order used for the replies (first, last, top, best, controversial)
-    public let sort: String
 
-    public init(comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil, sort: String) {
+    public init(comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil) {
         self.comments = comments
         self.duration = duration
         self.next = next
         self.prev = prev
-        self.sort = sort
     }
 
     public init(from decoder: Decoder) throws {
@@ -28,7 +25,6 @@ public final class GetCommentRepliesResponse: Sendable, Decodable {
         self.duration = try container.decode(String.self, forKey: .duration)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
-        self.sort = try container.decode(String.self, forKey: .sort)
     }
 }
 
@@ -37,8 +33,7 @@ extension GetCommentRepliesResponse: Hashable {
         lhs.comments == rhs.comments &&
             lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&
-            lhs.prev == rhs.prev &&
-            lhs.sort == rhs.sort
+            lhs.prev == rhs.prev
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -46,6 +41,5 @@ extension GetCommentRepliesResponse: Hashable {
         hasher.combine(duration)
         hasher.combine(next)
         hasher.combine(prev)
-        hasher.combine(sort)
     }
 }

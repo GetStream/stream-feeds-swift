@@ -16,16 +16,14 @@ public final class AppResponseFields: Sendable, Decodable {
     public let imageUploadConfig: FileUploadConfig
     /// The name of the app.
     public let name: String
-    public let placement: String
 
-    public init(asyncUrlEnrichEnabled: Bool, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig, id: Int, imageUploadConfig: FileUploadConfig, name: String, placement: String) {
+    public init(asyncUrlEnrichEnabled: Bool, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig, id: Int, imageUploadConfig: FileUploadConfig, name: String) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
         self.autoTranslationEnabled = autoTranslationEnabled
         self.fileUploadConfig = fileUploadConfig
         self.id = id
         self.imageUploadConfig = imageUploadConfig
         self.name = name
-        self.placement = placement
     }
 
     public init(from decoder: Decoder) throws {
@@ -36,7 +34,6 @@ public final class AppResponseFields: Sendable, Decodable {
         self.id = try container.decode(Int.self, forKey: .id)
         self.imageUploadConfig = try container.decode(FileUploadConfig.self, forKey: .imageUploadConfig)
         self.name = try container.decode(String.self, forKey: .name)
-        self.placement = try container.decode(String.self, forKey: .placement)
     }
 }
 
@@ -47,8 +44,7 @@ extension AppResponseFields: Hashable {
             lhs.fileUploadConfig == rhs.fileUploadConfig &&
             lhs.id == rhs.id &&
             lhs.imageUploadConfig == rhs.imageUploadConfig &&
-            lhs.name == rhs.name &&
-            lhs.placement == rhs.placement
+            lhs.name == rhs.name
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -58,6 +54,5 @@ extension AppResponseFields: Hashable {
         hasher.combine(id)
         hasher.combine(imageUploadConfig)
         hasher.combine(name)
-        hasher.combine(placement)
     }
 }
