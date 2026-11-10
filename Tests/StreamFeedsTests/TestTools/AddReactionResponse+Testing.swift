@@ -14,9 +14,7 @@ extension AddReactionResponse {
     ) -> AddReactionResponse {
         AddReactionResponse(
             activity: activity,
-            counterDelta: 1,
             duration: duration,
-            outcome: "created",
             reaction: reaction
         )
     }

@@ -14,9 +14,7 @@ extension AddCommentReactionResponse {
     ) -> AddCommentReactionResponse {
         AddCommentReactionResponse(
             comment: comment,
-            counterDelta: 1,
             duration: duration,
-            outcome: "created",
             reaction: reaction
         )
     }

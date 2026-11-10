@@ -408,20 +408,39 @@
     "AddActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
+    "AddActivityResponse": [
+      { "skippedExisting": "Server-side only, backend ignores skip_existing for client tokens" }
+    ],
     "AddCommentReactionRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddCommentReactionResponse": [
-      { "notificationCreated": "Deprecated, use notificationAccepted" }
+      { "counterDelta": "Unused (not exposed)" },
+      { "notificationAccepted": "Unused (not exposed)" },
+      { "notificationCreated": "Deprecated, use notificationAccepted" },
+      { "notificationTaskId": "Server-side only, GET /tasks/{id} rejects client tokens" },
+      { "outcome": "Unused (not exposed)" },
+      { "previousReactionType": "Unused (not exposed)" },
+      { "referenceActivity": "Unused (not exposed)" }
     ],
     "AddCommentRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
+    ],
+    "AddCommentResponse": [
+      { "mentionNotificationsCreated": "Unused (not exposed)" },
+      { "notificationCreated": "Unused (not exposed)" }
     ],
     "AddReactionRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddReactionResponse": [
-      { "notificationCreated": "Deprecated, use notificationAccepted" }
+      { "counterDelta": "Unused (not exposed)" },
+      { "notificationAccepted": "Unused (not exposed)" },
+      { "notificationCreated": "Deprecated, use notificationAccepted" },
+      { "notificationTaskId": "Server-side only, GET /tasks/{id} rejects client tokens" },
+      { "outcome": "Unused (not exposed)" },
+      { "previousReactionType": "Unused (not exposed)" },
+      { "referenceActivity": "Unused (not exposed)" }
     ],
     "AggregatedActivityResponse": [
       { "isRead": "Pending review (IOS-2246)" },
@@ -710,6 +729,9 @@
     "RuleBuilderRule": [
       { "actionSequences": "Video only" }
     ],
+    "SingleFollowResponse": [
+      { "notificationCreated": "Unused (not exposed)" }
+    ],
     "SortParamRequest": [
       { "type": "Moderation queries only" }
     ],
@@ -754,6 +776,10 @@
     ],
     "UpsertActivitiesRequest": [
       { "enrichOwnFields": "Only applies to single-activity upserts, addActivity covers it" }
+    ],
+    "UpsertActivitiesResponse": [
+      { "mentionNotificationsCreated": "Unused (not exposed)" },
+      { "skippedExisting": "Server-side only, backend ignores skip_existing for client tokens" }
     ],
     "UpsertConfigRequest": [
       { "aiAudioConfig": "Moderation tooling" },
