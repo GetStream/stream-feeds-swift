@@ -205,6 +205,7 @@ private_lane :build_example_app do |options|
     build_for_testing: true,
     devices: options[:device],
     destination: options[:destination],
+    skip_detect_devices: !options[:destination].nil?,
     xcodebuild_formatter: xcodebuild_formatter
   )
 end
