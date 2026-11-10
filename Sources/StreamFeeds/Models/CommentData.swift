@@ -81,7 +81,7 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     
     /// Whether the comment is hidden by the current user.
     ///
-    /// - Note: Only `true` in comment query results filtered by ``CommentsFilterField/hidden``.
+    /// - Important: Only `true` in comment query results filtered by ``CommentsFilterField/hidden``.
     public private(set) var hidden: Bool
     
     /// The unique identifier of the comment.

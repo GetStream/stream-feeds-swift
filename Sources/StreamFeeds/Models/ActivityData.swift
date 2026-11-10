@@ -37,26 +37,26 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let interestTags: [String]
     /// Whether the activity has been read.
     ///
-    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
     public private(set) var isRead: Bool?
     /// Whether the activity has been seen.
     ///
-    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
     public private(set) var isSeen: Bool?
     /// Whether the activity has been read or seen.
     ///
-    /// - Note: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
     public private(set) var isWatched: Bool?
     public private(set) var latestReactions: [FeedsReactionData]
     /// The most recent shares of the activity.
     ///
-    /// - Note: Only set when activity shares are enabled for the organization.
+    /// - Important: Only set when activity shares are enabled for the organization.
     public let latestShares: [ShareData]?
     public let location: CLLocationCoordinate2D?
     public let mentionedUsers: [UserData]
     /// Metric counts of the activity, keyed by metric name.
     ///
-    /// - Note: Only set when metrics were tracked for the activity.
+    /// - Important: Only set when metrics were tracked for the activity.
     public let metrics: [String: Int]?
     public let moderation: ModerationV2Response?
     /// The latest moderation action taken on the activity.
@@ -95,7 +95,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let text: String?
     /// The number of comments on the activity, excluding replies.
     ///
-    /// - Note: Only set by ``Activity/get()``.
+    /// - Important: Only set by ``Activity/get()``.
     public private(set) var topLevelCommentCount: Int?
     public let type: String
     public let updatedAt: Date

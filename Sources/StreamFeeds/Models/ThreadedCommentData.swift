@@ -69,7 +69,7 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     
     /// Whether the comment is hidden by the current user.
     ///
-    /// - Note: Only `true` in comment query results filtered by ``CommentsFilterField/hidden``.
+    /// - Important: Only `true` in comment query results filtered by ``CommentsFilterField/hidden``.
     public let hidden: Bool
     
     /// The unique identifier of the comment.
