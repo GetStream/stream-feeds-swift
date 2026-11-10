@@ -4,7 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
-### 🔄 Changed
+### 🚨 Breaking Changes
+- `OwnUser` moves its user fields under `user`, for example `ownUser.id` -> `ownUser.user.id` [#98](https://github.com/GetStream/stream-feeds-swift/pull/98)
 
 # [0.6.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.6.0)
 _November 04, 2026_

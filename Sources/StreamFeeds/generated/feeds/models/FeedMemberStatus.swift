@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// Membership status of a feed member.
-public final class FeedMemberStatus: RawRepresentable, Decodable, Hashable, Sendable {
+public final class FeedMemberStatus: RawRepresentable, Decodable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue
