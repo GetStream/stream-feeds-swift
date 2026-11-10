@@ -5,8 +5,10 @@
 import Foundation
 import StreamCore
 
-public final class BodyguardSeverityRuleAction: RawRepresentable, Codable, Hashable, Sendable {
+public final class BodyguardSeverityRuleAction: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue
@@ -22,8 +24,10 @@ public final class BodyguardSeverityRuleAction: RawRepresentable, Codable, Hasha
     public static let shadow = BodyguardSeverityRuleAction(rawValue: "shadow")
 }
 
-public final class BodyguardSeverityRuleSeverity: RawRepresentable, Codable, Hashable, Sendable {
+public final class BodyguardSeverityRuleSeverity: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue

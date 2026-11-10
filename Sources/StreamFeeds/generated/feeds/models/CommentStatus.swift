@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// Moderation status of a comment.
-public final class CommentStatus: RawRepresentable, Decodable, Hashable, Sendable {
+public final class CommentStatus: RawRepresentable, Decodable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue

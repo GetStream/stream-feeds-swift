@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// Whether poll votes are attributed to the voter.
-public final class VotingVisibility: RawRepresentable, Codable, Hashable, Sendable {
+public final class VotingVisibility: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue
