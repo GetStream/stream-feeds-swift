@@ -1242,6 +1242,34 @@ struct Feed_Tests {
         #expect(activity.position == 3)
     }
 
+    @Test func activityUpdatedEventKeepsHiddenAndPreview() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(currentFeed: .dummy(feed: feedId.rawValue), feeds: [feedId.rawValue], hidden: true, id: "1", preview: true)
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(feeds: [feedId.rawValue], id: "1", text: "NEW TEXT"),
+                fid: feedId.rawValue
+            )
+        )
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.text == "NEW TEXT")
+        #expect(activity.hidden)
+        #expect(activity.preview)
+    }
+
     @Test func activityBatchUpdateEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(

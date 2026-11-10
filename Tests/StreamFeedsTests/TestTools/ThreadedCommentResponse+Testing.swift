@@ -9,6 +9,7 @@ import StreamCore
 extension ThreadedCommentResponse {
     static func dummy(
         createdAt: Date = .fixed(),
+        hidden: Bool = false,
         id: String,
         latestReactions: [FeedsReactionResponse]? = nil,
         objectId: String,
@@ -31,7 +32,7 @@ extension ThreadedCommentResponse {
                 custom: nil,
                 deletedAt: nil,
                 downvoteCount: 0,
-                hidden: false,
+                hidden: hidden,
                 id: id,
                 latestReactions: latestReactions,
                 mentionedUsers: [UserResponse.dummy()],

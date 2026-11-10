@@ -82,7 +82,7 @@ public struct CommentData: Identifiable, Equatable, Sendable {
     /// Whether the comment is hidden by the current user.
     ///
     /// - Note: Only `true` in comment query results filtered by ``CommentsFilterField/hidden``.
-    public let hidden: Bool
+    public private(set) var hidden: Bool
     
     /// The unique identifier of the comment.
     public let id: String
@@ -160,8 +160,11 @@ public struct CommentData: Identifiable, Equatable, Sendable {
 
 extension CommentData {
     mutating func merge(with incomingData: CommentData) {
+        let hidden = hidden
         let ownReactions = ownReactions
         self = incomingData
+        // Per-viewer, web-socket events always send false
+        self.hidden = hidden
         self.ownReactions = ownReactions
     }
     

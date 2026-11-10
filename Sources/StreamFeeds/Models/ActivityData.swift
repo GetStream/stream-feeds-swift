@@ -32,7 +32,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     ///
     /// - Important: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
     public private(set) var friendReactions: [FeedsReactionData]?
-    public let hidden: Bool
+    public private(set) var hidden: Bool
     public let id: String
     public let interestTags: [String]
     /// Whether the activity has been read.
@@ -72,7 +72,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. Not set for aggregated feeds. No request property turns it on.
     public private(set) var position: Int?
     /// Whether the activity is a shortened preview of premium content the current user can't access.
-    public let preview: Bool
+    public private(set) var preview: Bool
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
     /// Codes explaining why the activity was shown, for example `following` or `popular`.
@@ -129,7 +129,9 @@ extension ActivityData {
         let isSeen = isSeen
         let isWatched = isWatched
         let friendReactions = friendReactions
+        let hidden = hidden
         let position = position
+        let preview = preview
         let reasons = reasons
         let scoreVariables = scoreVariables
         let selectorSource = selectorSource
@@ -137,6 +139,9 @@ extension ActivityData {
         self = incomingData
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
+        // Per-viewer, web-socket events always send false
+        self.hidden = hidden
+        self.preview = preview
         // Feed reads add these, and web-socket events don't carry them
         self.friendReactionCount = incomingData.friendReactionCount ?? friendReactionCount
         self.friendReactions = incomingData.friendReactions ?? friendReactions

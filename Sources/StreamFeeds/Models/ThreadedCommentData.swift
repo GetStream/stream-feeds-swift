@@ -220,7 +220,7 @@ extension ThreadedCommentData {
             deletedAt: incomingData.deletedAt,
             downvoteCount: incomingData.downvoteCount,
             editedAt: incomingData.editedAt,
-            hidden: incomingData.hidden,
+            hidden: hidden,
             id: incomingData.id,
             latestReactions: incomingData.latestReactions,
             mentionedUsers: incomingData.mentionedUsers,
