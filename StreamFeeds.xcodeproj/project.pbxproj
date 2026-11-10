@@ -1082,7 +1082,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/GetStream/stream-core-swift.git";
 			requirement = {
-				branch = "add-i18n-parsing";
+				branch = release/0.18.0;
 				kind = branch;
 			};
 		};

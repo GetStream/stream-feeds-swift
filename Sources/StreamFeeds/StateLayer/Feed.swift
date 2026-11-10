@@ -175,7 +175,21 @@ public final class Feed: Sendable {
         await eventPublisher.sendEvent(.activityUpdated(activity, feed))
         return activity
     }
-    
+
+    /// Translates the text of an activity and stores the translation.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the activity to translate
+    ///   - language: An ISO 639-1 language code, for example `fr`
+    /// - Returns: The activity with the translation in ``ActivityData/translations``
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func translateActivity(id: String, to language: String) async throws -> ActivityData {
+        let activity = try await activitiesRepository.translateActivity(activityId: id, language: language)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
+        return activity
+    }
+
     // MARK: - Activity Interactions
     
     /// Marks an activity as read or unread.
@@ -361,7 +375,21 @@ public final class Feed: Sendable {
         await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
         return comment
     }
-    
+
+    /// Translates the text of a comment and stores the translation.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to translate
+    ///   - language: An ISO 639-1 language code, for example `fr`
+    /// - Returns: The comment with the translation in ``CommentData/translations``
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func translateComment(commentId: String, to language: String) async throws -> CommentData {
+        let comment = try await commentsRepository.translateComment(commentId: commentId, language: language)
+        await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
+        return comment
+    }
+
     // MARK: - Follows
     
     /// Queries for feed suggestions that the current user might want to follow.

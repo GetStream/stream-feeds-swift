@@ -61,6 +61,8 @@
     "rejectFollow",
     "stopWatchingFeed",
     "submitAction",
+    "translateActivity",
+    "translateComment",
     "unblockUsers",
     "unfollow",
     "unpinActivity",
@@ -273,6 +275,8 @@
     "StreamData",
     "SubmitActionResponse",
     "ThreadedCommentResponse",
+    "TranslateActivityResponse",
+    "TranslateCommentResponse",
     "UnblockUsersResponse",
     "UnfollowResponse",
     "UnpinActivityResponse",
@@ -360,6 +364,8 @@
     "SubmitActionRequest",
     "TextContentParameters",
     "TextRuleParameters",
+    "TranslateActivityRequest",
+    "TranslateCommentRequest",
     "UnblockUsersRequest",
     "UpdateActivityRequest",
     "UpdateBookmarkRequest",
@@ -583,8 +589,18 @@
       { "unreadCount": "Chat only" },
       { "unreadThreads": "Chat only" }
     ],
+    "PollOptionResponseData": [
+      { "textI18n": "Chat only" }
+    ],
+    "PollResponseData": [
+      { "descriptionI18n": "Chat only" },
+      { "nameI18n": "Chat only" }
+    ],
     "PollVoteResponse": [
       { "poll": "Unused (not exposed)" }
+    ],
+    "PollVoteResponseData": [
+      { "answerTextI18n": "Chat only" }
     ],
     "PrivacySettingsResponse": [
       { "deliveryReceipts": "Chat only" },

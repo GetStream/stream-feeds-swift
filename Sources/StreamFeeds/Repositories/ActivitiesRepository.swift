@@ -116,6 +116,11 @@ final class ActivitiesRepository: Sendable {
         }
     }
     
+    func translateActivity(activityId: String, language: String) async throws -> ActivityData {
+        let response = try await apiClient.translateActivity(id: activityId, translateActivityRequest: TranslateActivityRequest(language: language))
+        return response.activity.toModel()
+    }
+
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws -> ActivityMarkData {
         _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
         return request.toModel(feed: FeedId(group: feedGroupId, id: feedId))

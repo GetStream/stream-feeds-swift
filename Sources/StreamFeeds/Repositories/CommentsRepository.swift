@@ -71,7 +71,12 @@ final class CommentsRepository: Sendable {
         let response = try await apiClient.updateComment(id: commentId, updateCommentRequest: request)
         return response.comment.toModel()
     }
-    
+
+    func translateComment(commentId: String, language: String) async throws -> CommentData {
+        let response = try await apiClient.translateComment(id: commentId, translateCommentRequest: TranslateCommentRequest(language: language))
+        return response.comment.toModel()
+    }
+
     // MARK: - Comment Reactions
     
     func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, comment: CommentData) {

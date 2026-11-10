@@ -15,7 +15,6 @@ public final class PollResponseData: Sendable, Decodable {
     public let createdById: String
     public let custom: [String: RawJSON]
     public let description: String
-    public let descriptionI18n: [String: String]?
     public let enforceUniqueVote: Bool
     public let id: String
     public let isClosed: Bool?
@@ -23,7 +22,6 @@ public final class PollResponseData: Sendable, Decodable {
     public let latestVotesByOption: [String: [PollVoteResponseData]]
     public let maxVotesAllowed: Int?
     public let name: String
-    public let nameI18n: [String: String]?
     public let options: [PollOptionResponseData]
     public let ownVotes: [PollVoteResponseData]
     public let updatedAt: Date
@@ -32,7 +30,7 @@ public final class PollResponseData: Sendable, Decodable {
     /// Voting visibility of the poll
     public let votingVisibility: VotingVisibility
 
-    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, descriptionI18n: [String: String]? = nil, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, nameI18n: [String: String]? = nil, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: VotingVisibility) {
+    public init(allowAnswers: Bool, allowUserSuggestedOptions: Bool, answersCount: Int, createdAt: Date, createdBy: UserResponse? = nil, createdById: String, custom: [String: RawJSON], description: String, enforceUniqueVote: Bool, id: String, isClosed: Bool? = nil, latestAnswers: [PollVoteResponseData], latestVotesByOption: [String: [PollVoteResponseData]], maxVotesAllowed: Int? = nil, name: String, options: [PollOptionResponseData], ownVotes: [PollVoteResponseData], updatedAt: Date, voteCount: Int, voteCountsByOption: [String: Int], votingVisibility: VotingVisibility) {
         self.allowAnswers = allowAnswers
         self.allowUserSuggestedOptions = allowUserSuggestedOptions
         self.answersCount = answersCount
@@ -41,7 +39,6 @@ public final class PollResponseData: Sendable, Decodable {
         self.createdById = createdById
         self.custom = custom
         self.description = description
-        self.descriptionI18n = descriptionI18n
         self.enforceUniqueVote = enforceUniqueVote
         self.id = id
         self.isClosed = isClosed
@@ -49,7 +46,6 @@ public final class PollResponseData: Sendable, Decodable {
         self.latestVotesByOption = latestVotesByOption
         self.maxVotesAllowed = maxVotesAllowed
         self.name = name
-        self.nameI18n = nameI18n
         self.options = options
         self.ownVotes = ownVotes
         self.updatedAt = updatedAt
@@ -68,7 +64,6 @@ public final class PollResponseData: Sendable, Decodable {
         self.createdById = try container.decode(String.self, forKey: .createdById)
         self.custom = try container.decode([String: RawJSON].self, forKey: .custom)
         self.description = try container.decode(String.self, forKey: .description)
-        self.descriptionI18n = try container.decodeIfPresent([String: String].self, forKey: .descriptionI18n)
         self.enforceUniqueVote = try container.decode(Bool.self, forKey: .enforceUniqueVote)
         self.id = try container.decode(String.self, forKey: .id)
         self.isClosed = try container.decodeIfPresent(Bool.self, forKey: .isClosed)
@@ -76,7 +71,6 @@ public final class PollResponseData: Sendable, Decodable {
         self.latestVotesByOption = try container.decode([String: [PollVoteResponseData]].self, forKey: .latestVotesByOption)
         self.maxVotesAllowed = try container.decodeIfPresent(Int.self, forKey: .maxVotesAllowed)
         self.name = try container.decode(String.self, forKey: .name)
-        self.nameI18n = try container.decodeIfPresent([String: String].self, forKey: .nameI18n)
         self.options = try container.decode([PollOptionResponseData].self, forKey: .options)
         self.ownVotes = try container.decode([PollVoteResponseData].self, forKey: .ownVotes)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
@@ -96,7 +90,6 @@ extension PollResponseData: Hashable {
             lhs.createdById == rhs.createdById &&
             lhs.custom == rhs.custom &&
             lhs.description == rhs.description &&
-            lhs.descriptionI18n == rhs.descriptionI18n &&
             lhs.enforceUniqueVote == rhs.enforceUniqueVote &&
             lhs.id == rhs.id &&
             lhs.isClosed == rhs.isClosed &&
@@ -104,7 +97,6 @@ extension PollResponseData: Hashable {
             lhs.latestVotesByOption == rhs.latestVotesByOption &&
             lhs.maxVotesAllowed == rhs.maxVotesAllowed &&
             lhs.name == rhs.name &&
-            lhs.nameI18n == rhs.nameI18n &&
             lhs.options == rhs.options &&
             lhs.ownVotes == rhs.ownVotes &&
             lhs.updatedAt == rhs.updatedAt &&
@@ -122,7 +114,6 @@ extension PollResponseData: Hashable {
         hasher.combine(createdById)
         hasher.combine(custom)
         hasher.combine(description)
-        hasher.combine(descriptionI18n)
         hasher.combine(enforceUniqueVote)
         hasher.combine(id)
         hasher.combine(isClosed)
@@ -130,7 +121,6 @@ extension PollResponseData: Hashable {
         hasher.combine(latestVotesByOption)
         hasher.combine(maxVotesAllowed)
         hasher.combine(name)
-        hasher.combine(nameI18n)
         hasher.combine(options)
         hasher.combine(ownVotes)
         hasher.combine(updatedAt)

@@ -10,14 +10,12 @@ extension PollOptionResponseData {
     static func dummy(
         custom: [String: RawJSON] = [:],
         id: String = "option-123",
-        text: String = "Test option",
-        textI18n: [String: String]? = nil
+        text: String = "Test option"
     ) -> PollOptionResponseData {
         PollOptionResponseData(
             custom: custom,
             id: id,
-            text: text,
-            textI18n: textI18n
+            text: text
         )
     }
 }
