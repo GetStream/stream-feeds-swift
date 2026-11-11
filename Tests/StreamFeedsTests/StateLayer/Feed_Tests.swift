@@ -365,6 +365,45 @@ struct Feed_Tests {
         #expect(updatedActivity.text == "Updated activity content")
     }
 
+    @Test func updateActivityPartialUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            UpdateActivityPartialResponse.dummy(
+                activity: .dummy(
+                    id: "1",
+                    text: "Updated activity content"
+                )
+            )
+        ])
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let updatedActivity = try await feed.updateActivityPartial(
+            id: "1",
+            request: UpdateActivityPartialRequest(set: ["text": .string("Updated activity content")])
+        )
+        let finalActivities = await feed.state.activities
+
+        #expect(finalActivities.map(\.id) == ["1"])
+        #expect(finalActivities.map(\.text) == ["Updated activity content"])
+        #expect(updatedActivity.text == "Updated activity content")
+    }
+
+    @Test func restoreActivityUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            RestoreActivityResponse.dummy(activity: .dummy(id: "2"))
+        ])
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let restoredActivity = try await feed.restoreActivity(id: "2")
+        let finalActivities = await feed.state.activities
+
+        #expect(restoredActivity.id == "2")
+        #expect(Set(finalActivities.map(\.id)) == ["1", "2"])
+    }
+
     @Test func translateActivityUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
