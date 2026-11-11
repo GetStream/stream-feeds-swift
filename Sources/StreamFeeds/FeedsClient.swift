@@ -472,6 +472,29 @@ public final class FeedsClient: Sendable {
         BookmarkFolderList(query: query, client: self)
     }
     
+    /// Deletes a bookmark folder and the bookmarks in it.
+    ///
+    /// - Parameter folderId: The unique identifier of the folder to delete
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func deleteBookmarkFolder(folderId: String) async throws {
+        try await bookmarksRepository.deleteBookmarkFolder(folderId: folderId)
+        await stateLayerEventPublisher.sendEvent(.bookmarkFolderDeleted(folderId))
+    }
+    
+    /// Updates the name or custom data of a bookmark folder.
+    ///
+    /// - Parameters:
+    ///   - folderId: The unique identifier of the folder to update
+    ///   - request: The new name or custom data of the folder
+    /// - Returns: The updated folder
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updateBookmarkFolder(folderId: String, request: UpdateBookmarkFolderRequest) async throws -> BookmarkFolderData {
+        let folder = try await bookmarksRepository.updateBookmarkFolder(folderId: folderId, request: request)
+        await stateLayerEventPublisher.sendEvent(.bookmarkFolderUpdated(folder))
+        return folder
+    }
+    
     // MARK: - Comment Lists
     
     /// Creates a comment list instance based on the provided query.

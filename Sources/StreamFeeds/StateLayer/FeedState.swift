@@ -226,6 +226,17 @@ extension FeedState {
                         changes: { $0.activity.merge(with: bookmarkData.activity, remove: bookmarkData, currentUserId: currentUserId) }
                     )
                 }
+            case .bookmarkFolderDeleted(let folderId):
+                await self?.access { state in
+                    state.activities.updateAll(
+                        where: { $0.ownBookmarks.contains { $0.folder?.id == folderId } },
+                        changes: { $0.removeOwnBookmarks(inFolder: folderId) }
+                    )
+                    state.pinnedActivities.updateAll(
+                        where: { $0.activity.ownBookmarks.contains { $0.folder?.id == folderId } },
+                        changes: { $0.activity.removeOwnBookmarks(inFolder: folderId) }
+                    )
+                }
             case .bookmarkUpdated(let bookmarkData):
                 await self?.access { state in
                     state.activities.sortedUpdate(

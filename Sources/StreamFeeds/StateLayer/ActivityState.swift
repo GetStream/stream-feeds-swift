@@ -85,6 +85,10 @@ extension ActivityState {
                 await self?.access { state in
                     state.activity?.merge(with: bookmarkData.activity, remove: bookmarkData, currentUserId: currentUserId)
                 }
+            case .bookmarkFolderDeleted(let folderId):
+                await self?.access { state in
+                    state.activity?.removeOwnBookmarks(inFolder: folderId)
+                }
             case .bookmarkUpdated(let bookmarkData):
                 guard bookmarkData.activity.id == activityId else { return }
                 await self?.access { state in

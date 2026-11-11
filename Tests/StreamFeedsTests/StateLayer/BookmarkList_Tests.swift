@@ -267,8 +267,7 @@ struct BookmarkList_Tests {
         )
 
         let updatedState = await bookmarkList.state.bookmarks
-        #expect(updatedState.count == 2)
-        #expect(updatedState.map(\.folder) == [nil, nil], "Same folder")
+        #expect(updatedState.isEmpty, "Deleting a folder deletes its bookmarks")
     }
 
     @Test func bookmarkUpdatedEventForUnrelatedUserDoesNotUpdateState() async throws {
