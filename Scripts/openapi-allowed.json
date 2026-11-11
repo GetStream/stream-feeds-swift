@@ -521,8 +521,7 @@
       { "algorithmUsed": "Unused (not exposed)" }
     ],
     "GetOrCreateFeedRequest": [
-      { "discardActors": "Gated to a single organization" },
-      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
+      { "discardActors": "Gated to a single organization" }
     ],
     "GetOrCreateFeedResponse": [
       { "degradedSelectors": "Unused (not exposed)" },
@@ -611,7 +610,7 @@
       { "chatPreferences": "Chat only" }
     ],
     "QueryCommentsRequest": [
-      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
+      { "idAround": "Unused (not exposed), backend returns no next or prev cursors on id_around pages" }
     ],
     "QueryFollowsRequest": [
       { "includeGroupCounts": "Server-side only" }
