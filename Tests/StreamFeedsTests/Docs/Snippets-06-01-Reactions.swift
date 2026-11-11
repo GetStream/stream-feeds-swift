@@ -33,4 +33,44 @@ import StreamFeeds
         
         suppressUnusedWarning(feedData)
     }
+
+    func overviewWithFriendReactions() async throws {
+        let feed = client.feed(
+            for: FeedQuery(
+                group: "user",
+                id: "sara",
+                friendReactionsOptions: FriendReactionsOptions(enabled: true)
+            )
+        )
+        try await feed.getOrCreate()
+        // Last 15 reactions on the first activity
+        print(feed.state.activities[0].latestReactions)
+        // Count of reactions by type
+        print(feed.state.activities[0].reactionGroups)
+        // Reactions from people the current user follows, and their total
+        print(feed.state.activities[0].friendReactionCount ?? 0)
+        print(feed.state.activities[0].friendReactions ?? [])
+    }
+
+    func queryingReactions() async throws {
+        // Query reactions to a specific activity
+        let activityReactionList = client.activityReactionList(
+            for: ActivityReactionsQuery(
+                activityId: "activity-123",
+                filter: .equal(.reactionType, "like")
+            )
+        )
+        let activityReactions = try await activityReactionList.get()
+
+        // Query reactions to a specific comment
+        let commentReactionList = client.commentReactionList(
+            for: CommentReactionsQuery(
+                commentId: "comment-456",
+                filter: .equal(.reactionType, "like")
+            )
+        )
+        let commentReactions = try await commentReactionList.get()
+
+        suppressUnusedWarning(activityReactions, commentReactions)
+    }
 }
