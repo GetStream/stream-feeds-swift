@@ -219,12 +219,15 @@ public final class Feed: Sendable {
                 activityFilter: state.activitiesQueryConfig?.filter,
                 activityLimit: limit ?? feedQuery.activityLimit,
                 data: nil,
+                enrichmentOptions: feedQuery.enrichmentOptions,
                 externalRanking: nil,
                 followerLimit: 0,
                 followingLimit: 0,
+                friendReactionsOptions: feedQuery.friendReactionsOptions,
                 interestWeights: nil,
                 memberLimit: 0,
                 view: nil,
+                viewerLocation: feedQuery.viewerLocation,
                 watch: feedQuery.watch
             )
             query.activityNext = next

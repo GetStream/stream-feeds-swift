@@ -556,6 +556,24 @@ struct Activity_Tests {
         await #expect(activity.state.activity?.text == "NEW TEXT")
     }
     
+    @Test func activityUpdatedEventKeepsOwnReactions() async throws {
+        let client = defaultClientWithActivityAndCommentsResponses()
+        let feedId = FeedId(group: "user", id: "jane")
+        let activity = client.activity(for: "activity-123", in: feedId)
+        try await activity.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-123", text: "NEW TEXT"),
+                fid: feedId.rawValue
+            )
+        )
+
+        let stateActivity = try #require(await activity.state.activity)
+        #expect(stateActivity.text == "NEW TEXT")
+        #expect(stateActivity.ownReactions.map(\.type) == ["like"])
+    }
+    
     @Test func activityBatchUpdateEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivityAndCommentsResponses(

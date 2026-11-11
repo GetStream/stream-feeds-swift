@@ -91,7 +91,7 @@ extension ActivityListState {
                 let matches = matchesQuery(activityData)
                 await self?.access { state in
                     if matches {
-                        state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                        state.activities.sortedInsert(state.activities.mergingExisting(activityData), sorting: state.activitiesSorting)
                     } else {
                         state.activities.remove(byId: activityData.id)
                     }
@@ -111,7 +111,8 @@ extension ActivityListState {
                         state.activities = state.activities.sortedMerge(added.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
                     }
                     if !updated.isEmpty {
-                        state.activities = state.activities.sortedMerge(updated.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
+                        let merged = updated.map { state.activities.mergingExisting($0) }
+                        state.activities = state.activities.sortedMerge(merged.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
                     }
                     if !removedIds.isEmpty {
                         state.activities.removeAll(where: { removedIds.contains($0.id) })

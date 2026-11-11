@@ -21,6 +21,31 @@ struct Feed_Tests {
         #expect(stateFeedData == feedData)
     }
 
+    @Test func queryMoreActivitiesSendsViewerLocation() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let transport = APITransportMock.withPayloads([
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "1")],
+                feed: .dummy(feed: feedId.rawValue)
+            ),
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(currentFeed: .dummy(feed: feedId.rawValue), id: "2")],
+                feed: .dummy(feed: feedId.rawValue),
+                next: nil
+            )
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        let feed = client.feed(for: FeedQuery(feed: feedId, viewerLocation: Location(lat: 59.43, lng: 24.75), watch: false))
+
+        try await feed.getOrCreate()
+        try await feed.queryMoreActivities()
+
+        let paginationRequest = try #require(transport.requests.value.last)
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(paginationRequest.body))
+        #expect(body["next"] == .string("next-cursor"))
+        #expect(body["viewer_location"] == .dictionary(["lat": .number(59.43), "lng": .number(24.75)]))
+    }
+
     @Test func reconnectionRefetchesLoadedFeed() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
@@ -1185,6 +1210,36 @@ struct Feed_Tests {
         await #expect(feed.state.activities.first?.text == "New From WS")
     }
     
+    @Test func upsertActivitiesKeepsReadTimeFields() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(currentFeed: .dummy(feed: feedId.rawValue), feeds: [feedId.rawValue], id: "1", position: 3)
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                ),
+                UpsertActivitiesResponse(
+                    activities: [
+                        .dummy(createdAt: .fixed(), editedAt: .fixed(), feeds: [feedId.rawValue], id: "1", text: "UPDATED TEXT")
+                    ],
+                    duration: "1.23ms"
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        try await client.upsertActivities([
+            ActivityRequest(feeds: [feedId.rawValue], id: "1", text: "UPDATED TEXT", type: "post")
+        ])
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.text == "UPDATED TEXT")
+        #expect(activity.position == 3)
+    }
+
     @Test func activityBatchUpdateEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(

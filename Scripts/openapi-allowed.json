@@ -308,11 +308,14 @@
     "DeleteActivitiesRequest",
     "DeleteActivityRequestPayload",
     "DeleteReactionRequestPayload",
+    "EnrichmentOptions",
     "FeedInput",
     "FeedMemberRequest",
     "FlagRequest",
     "FlagUserOptions",
     "FollowRequest",
+    "FriendReactionType",
+    "FriendReactionsOptions",
     "GetOrCreateFeedRequest",
     "GoogleVisionConfig",
     "ImageContentParameters",
@@ -388,8 +391,6 @@
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "ActivityResponse": [
-      { "friendReactionCount": "Pending review (IOS-2246)" },
-      { "friendReactions": "Pending review (IOS-2246)" },
       { "i18n": "Pending review (IOS-2246)" },
       { "isRead": "Pending review (IOS-2246)" },
       { "isSeen": "Pending review (IOS-2246)" },
@@ -397,12 +398,8 @@
       { "latestShares": "Pending review (IOS-2246)" },
       { "metrics": "Pending review (IOS-2246)" },
       { "moderationAction": "Pending review (IOS-2246)" },
-      { "position": "Pending review (IOS-2246)" },
       { "preview": "Pending review (IOS-2246)" },
-      { "reasons": "Pending review (IOS-2246)" },
       { "restrictReplies": "Pending review (IOS-2246)" },
-      { "scoreVars": "Pending review (IOS-2246)" },
-      { "selectorSource": "Pending review (IOS-2246)" },
       { "topLevelCommentCount": "Pending review (IOS-2246)" }
     ],
     "AddActivityRequest": [
@@ -524,8 +521,7 @@
     ],
     "FeedResponse": [
       { "activityCount": "Pending review (IOS-2246)" },
-      { "location": "Pending review (IOS-2246)" },
-      { "ownFollowings": "Pending review (IOS-2246)" }
+      { "location": "Pending review (IOS-2246)" }
     ],
     "FlagRequest": [
       { "entityCreatorId": "Server-side only, backend sets it from the flagged entity" }
@@ -546,15 +542,11 @@
     ],
     "GetOrCreateFeedRequest": [
       { "discardActors": "Gated to a single organization" },
-      { "enrichmentOptions": "Pending review (IOS-2246)" },
-      { "friendReactionsOptions": "Pending review (IOS-2246)" },
-      { "idAround": "Pending review (IOS-2246)" },
-      { "overwriteInterestWeights": "Pending review (IOS-2246)" },
-      { "viewerLocation": "Pending review (IOS-2246)" }
+      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
     ],
     "GetOrCreateFeedResponse": [
-      { "degradedSelectors": "Pending review (IOS-2246)" },
-      { "requestId": "Pending review (IOS-2246)" }
+      { "degradedSelectors": "Unused (not exposed)" },
+      { "requestId": "Unused (not exposed), only trackActivityMetrics takes it" }
     ],
     "HealthCheckEvent": [
       { "custom": "Webhooks only, not sent over WebSocket" },
@@ -648,17 +640,8 @@
       { "deliveryReceipts": "Chat only" },
       { "typingIndicators": "Chat only" }
     ],
-    "QueryActivitiesRequest": [
-      { "enrichOwnFields": "Pending review (IOS-2246)" }
-    ],
-    "QueryBookmarksRequest": [
-      { "enrichOwnFields": "Pending review (IOS-2246)" }
-    ],
     "QueryCommentsRequest": [
-      { "idAround": "Pending review (IOS-2246)" }
-    ],
-    "QueryFeedsRequest": [
-      { "enrichOwnFields": "Pending review (IOS-2246)" }
+      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
     ],
     "QueryFollowsRequest": [
       { "includeGroupCounts": "Server-side only" }

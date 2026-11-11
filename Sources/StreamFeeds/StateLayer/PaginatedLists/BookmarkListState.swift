@@ -66,7 +66,12 @@ extension BookmarkListState {
                 let matches = matchesQuery(bookmark)
                 await self?.access { state in
                     if matches {
-                        state.bookmarks.sortedReplace(bookmark, nesting: nil, sorting: state.bookmarkFoldersSorting)
+                        state.bookmarks.sortedUpdate(
+                            ofId: bookmark.id,
+                            nesting: nil,
+                            sorting: state.bookmarkFoldersSorting.areInIncreasingOrder(),
+                            changes: { $0.merge(with: bookmark) }
+                        )
                     } else {
                         state.bookmarks.remove(byId: bookmark.id)
                     }

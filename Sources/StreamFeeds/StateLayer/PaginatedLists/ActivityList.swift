@@ -77,7 +77,8 @@ public final class ActivityList: Sendable {
                 sort: state.queryConfig?.sort,
                 limit: limit,
                 next: next,
-                previous: nil
+                previous: nil,
+                enrichOwnFields: query.enrichOwnFields
             )
         }
         guard let nextQuery else { return [] }

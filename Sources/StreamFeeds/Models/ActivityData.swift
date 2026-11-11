@@ -11,6 +11,7 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var bookmarkCount: Int
     /// Collections referenced by the activity, keyed by collection reference (`name:id`).
     ///
+    /// - Important: Empty when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/skipActivityCollections``, ``EnrichmentOptions/skipActivity`` or ``EnrichmentOptions/skipAll`` set to true.
     /// - Important: Leaves out references to collections that don't exist.
     public let collections: [String: CollectionData]
     public private(set) var commentCount: Int
@@ -23,6 +24,14 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public let expiresAt: Date?
     public let feeds: [String]
     public let filterTags: [String]
+    /// The number of reactions from users the current user follows, or only from mutual follows when ``FriendReactionsOptions/type`` is ``FriendReactionType/mutual``.
+    ///
+    /// - Important: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
+    public private(set) var friendReactionCount: Int?
+    /// Reactions from users the current user follows, or only from mutual follows when ``FriendReactionsOptions/type`` is ``FriendReactionType/mutual``.
+    ///
+    /// - Important: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
+    public private(set) var friendReactions: [FeedsReactionData]?
     public let hidden: Bool
     public let id: String
     public let interestTags: [String]
@@ -36,10 +45,26 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public var parent: ActivityData? { _parent?.getValue() }
     public internal(set) var poll: PollData?
     public let popularity: Int
+    /// The 1-based position of the activity in the feed. Ranked feeds continue counting across pages. Other feeds restart at 1 on each page.
+    ///
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. Not set for aggregated feeds. No request property turns it on.
+    public private(set) var position: Int?
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
+    /// Codes explaining why the activity was shown, for example `following` or `popular`.
+    ///
+    /// - Important: Only set on For You feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeReasons`` set to true.
+    public private(set) var reasons: [String]?
     public let score: Double
+    /// Variable values used for ranking the activity.
+    ///
+    /// - Important: Only set on ranked feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeScoreVars`` set to true.
+    public private(set) var scoreVariables: [String: RawJSON]?
     public let searchData: [String: RawJSON]
+    /// The activity selector that provided the activity, for example `following` or `popular`.
+    ///
+    /// - Important: Only set on feed reads, and only by some activity selectors, such as `following` and `popular`.
+    public private(set) var selectorSource: String?
     public let shareCount: Int
     public let text: String?
     public let type: String
@@ -55,15 +80,36 @@ public typealias ActivityDataVisibility = ActivityVisibility
 
 // MARK: - Mutating the Data
 
+extension Array where Element == ActivityData {
+    func mergingExisting(_ incomingData: ActivityData) -> ActivityData {
+        guard var existing = first(where: { $0.id == incomingData.id }) else { return incomingData }
+        existing.merge(with: incomingData)
+        return existing
+    }
+}
+
 extension ActivityData {
     // MARK: - Activity and Its Reactions
 
     mutating func merge(with incomingData: ActivityData) {
         let ownBookmarks = ownBookmarks
         let ownReactions = ownReactions
+        let friendReactionCount = friendReactionCount
+        let friendReactions = friendReactions
+        let position = position
+        let reasons = reasons
+        let scoreVariables = scoreVariables
+        let selectorSource = selectorSource
         self = incomingData
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
+        // Feed reads add these, and web-socket events don't carry them
+        self.friendReactionCount = incomingData.friendReactionCount ?? friendReactionCount
+        self.friendReactions = incomingData.friendReactions ?? friendReactions
+        self.position = incomingData.position ?? position
+        self.reasons = incomingData.reasons ?? reasons
+        self.scoreVariables = incomingData.scoreVariables ?? scoreVariables
+        self.selectorSource = incomingData.selectorSource ?? selectorSource
     }
     
     mutating func merge(with incomingData: ActivityData, add reaction: FeedsReactionData, currentUserId: String) {
@@ -180,6 +226,8 @@ extension ActivityResponse {
             expiresAt: expiresAt,
             feeds: feeds,
             filterTags: filterTags,
+            friendReactionCount: friendReactionCount,
+            friendReactions: friendReactions?.map { $0.toModel() },
             hidden: hidden,
             id: id,
             interestTags: interestTags,
@@ -192,10 +240,14 @@ extension ActivityResponse {
             ownReactions: ownReactions.map { $0.toModel() },
             poll: poll?.toModel(),
             popularity: popularity,
+            position: position,
             reactionCount: reactionCount,
             reactionGroups: reactionGroups.mapValues { $0.toModel() },
+            reasons: reasons,
             score: score,
+            scoreVariables: scoreVars,
             searchData: searchData,
+            selectorSource: selectorSource,
             shareCount: shareCount,
             text: text,
             type: type,

@@ -167,6 +167,37 @@ struct BookmarkList_Tests {
         #expect(updatedState.first { $0.id == "user-1-activity-2" }?.activity.text == "Test activity content")
     }
 
+    @Test func bookmarkUpdatedEventKeepsActivityOwnReactions() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                QueryBookmarksResponse.dummy(
+                    bookmarks: [
+                        .dummy(
+                            activity: .dummy(id: "activity-1", ownReactions: [.dummy(type: "like")]),
+                            user: .dummy(id: "user-1")
+                        )
+                    ]
+                )
+            ])
+        )
+        let bookmarkList = client.bookmarkList(for: BookmarksQuery())
+        try await bookmarkList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkUpdatedEvent.dummy(
+                bookmark: .dummy(
+                    activity: .dummy(id: "activity-1", text: "Updated activity content"),
+                    user: .dummy(id: "user-1")
+                ),
+                fid: "user:test"
+            )
+        )
+
+        let bookmark = try #require(await bookmarkList.state.bookmarks.first)
+        #expect(bookmark.activity.text == "Updated activity content")
+        #expect(bookmark.activity.ownReactions.map(\.type) == ["like"])
+    }
+
     @Test func bookmarkFolderUpdatedEventUpdatesState() async throws {
         let client = defaultClientWithBookmarkResponses()
         let bookmarkList = client.bookmarkList(for: BookmarksQuery())

@@ -21,6 +21,10 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let name: String
     public private(set) var ownCapabilities: Set<FeedOwnCapability>?
     public private(set) var ownFollows: [FollowData]?
+    /// Follows from the feed owner's feeds to the current user's feeds.
+    ///
+    /// - Important: Only set when the request asks for own fields: ``EnrichmentOptions/enrichOwnFollowings`` in ``FeedQuery/enrichmentOptions``, or `enrichOwnFields` in ``FeedsQuery``, ``ActivitiesQuery``, ``BookmarksQuery``, ``FeedAddActivityRequest`` or ``Feed/follow(_:activityCopyLimit:createNotificationActivity:custom:enrichOwnFields:pushPreference:skipPush:)``. ``Activity/get()`` includes it by default.
+    public private(set) var ownFollowings: [FollowData]?
     public private(set) var ownMembership: FeedMemberData?
     public let pinCount: Int
     public let updatedAt: Date
@@ -33,10 +37,12 @@ extension FeedData {
     mutating func merge(with incomingData: FeedData) {
         let ownCapabilities = ownCapabilities
         let ownFollows = ownFollows
+        let ownFollowings = ownFollowings
         let ownMembership = ownMembership
         self = incomingData
         self.ownCapabilities = incomingData.ownCapabilities ?? ownCapabilities
         self.ownFollows = incomingData.ownFollows ?? ownFollows
+        self.ownFollowings = incomingData.ownFollowings ?? ownFollowings
         self.ownMembership = incomingData.ownMembership ?? ownMembership
     }
     
@@ -76,6 +82,7 @@ extension FeedResponse {
             name: name,
             ownCapabilities: ownCapabilities.map(Set.init),
             ownFollows: ownFollows?.map { $0.toModel() },
+            ownFollowings: ownFollowings?.map { $0.toModel() },
             ownMembership: ownMembership?.toModel(),
             pinCount: pinCount,
             updatedAt: updatedAt,

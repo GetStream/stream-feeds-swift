@@ -26,6 +26,13 @@ extension BookmarkData {
     mutating func merge(with incomingData: ActivityData) {
         activity.merge(with: incomingData)
     }
+
+    mutating func merge(with incomingData: BookmarkData) {
+        let activity = activity
+        self = incomingData
+        self.activity = activity
+        self.activity.merge(with: incomingData.activity)
+    }
     
     // MARK: - Current Feed Capabilities
     
