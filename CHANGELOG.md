@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `user` to `BookmarkFolderData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `enrichOwnFields` to `BookmarksQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `language` to `BookmarksQuery` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
+- Add `reference` to `CollectionData` [#107](https://github.com/GetStream/stream-feeds-swift/pull/107)
+- Add `CollectionsQuery` and `CollectionList` for querying collections with `FeedsClient.collectionList(for:)` [#107](https://github.com/GetStream/stream-feeds-swift/pull/107)
 - Add `bookmarkCount`, `editedAt` and `hidden` to `CommentData` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `originalLanguage`, `translations` and `translatedText(for:)` to `CommentData` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `language` to `CommentRepliesQuery` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
@@ -58,6 +60,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `Feed.translateActivity(id:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `Feed.translateComment(commentId:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `language` to `FeedsClient.activity(for:in:data:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
+- Add `FeedsClient.createCollections(request:)`, `FeedsClient.updateCollections(request:)` and `FeedsClient.deleteCollections(references:)` [#107](https://github.com/GetStream/stream-feeds-swift/pull/107)
 - Add `FeedsClient.readCollections(references:)` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
 
 ### 🐞 Fixed
