@@ -12,14 +12,16 @@ public final class AppResponseFields: Sendable, Decodable {
     /// A boolean value determining if auto translation is enabled.
     public let autoTranslationEnabled: Bool
     public let fileUploadConfig: FileUploadConfig
+    public let id: Int
     public let imageUploadConfig: FileUploadConfig
     /// The name of the app.
     public let name: String
 
-    public init(asyncUrlEnrichEnabled: Bool, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig, imageUploadConfig: FileUploadConfig, name: String) {
+    public init(asyncUrlEnrichEnabled: Bool, autoTranslationEnabled: Bool, fileUploadConfig: FileUploadConfig, id: Int, imageUploadConfig: FileUploadConfig, name: String) {
         self.asyncUrlEnrichEnabled = asyncUrlEnrichEnabled
         self.autoTranslationEnabled = autoTranslationEnabled
         self.fileUploadConfig = fileUploadConfig
+        self.id = id
         self.imageUploadConfig = imageUploadConfig
         self.name = name
     }
@@ -29,6 +31,7 @@ public final class AppResponseFields: Sendable, Decodable {
         self.asyncUrlEnrichEnabled = try container.decode(Bool.self, forKey: .asyncUrlEnrichEnabled)
         self.autoTranslationEnabled = try container.decode(Bool.self, forKey: .autoTranslationEnabled)
         self.fileUploadConfig = try container.decode(FileUploadConfig.self, forKey: .fileUploadConfig)
+        self.id = try container.decode(Int.self, forKey: .id)
         self.imageUploadConfig = try container.decode(FileUploadConfig.self, forKey: .imageUploadConfig)
         self.name = try container.decode(String.self, forKey: .name)
     }
@@ -39,6 +42,7 @@ extension AppResponseFields: Hashable {
         lhs.asyncUrlEnrichEnabled == rhs.asyncUrlEnrichEnabled &&
             lhs.autoTranslationEnabled == rhs.autoTranslationEnabled &&
             lhs.fileUploadConfig == rhs.fileUploadConfig &&
+            lhs.id == rhs.id &&
             lhs.imageUploadConfig == rhs.imageUploadConfig &&
             lhs.name == rhs.name
     }
@@ -47,6 +51,7 @@ extension AppResponseFields: Hashable {
         hasher.combine(asyncUrlEnrichEnabled)
         hasher.combine(autoTranslationEnabled)
         hasher.combine(fileUploadConfig)
+        hasher.combine(id)
         hasher.combine(imageUploadConfig)
         hasher.combine(name)
     }

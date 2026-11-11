@@ -32,13 +32,35 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     ///
     /// - Important: Only set on feed reads when ``FeedQuery/friendReactionsOptions`` has `enabled` set to true.
     public private(set) var friendReactions: [FeedsReactionData]?
-    public let hidden: Bool
+    public private(set) var hidden: Bool
     public let id: String
     public let interestTags: [String]
+    /// Whether the activity has been read.
+    ///
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    public private(set) var isRead: Bool?
+    /// Whether the activity has been seen.
+    ///
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    public private(set) var isSeen: Bool?
+    /// Whether the activity has been read or seen.
+    ///
+    /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)`` for feed groups that track seen and read state. No request property turns it on.
+    public private(set) var isWatched: Bool?
     public private(set) var latestReactions: [FeedsReactionData]
+    /// The most recent shares of the activity.
+    ///
+    /// - Important: Only set when activity shares are enabled for the organization.
+    public let latestShares: [ShareData]?
     public let location: CLLocationCoordinate2D?
     public let mentionedUsers: [UserData]
+    /// Metric counts of the activity, keyed by metric name.
+    ///
+    /// - Important: Only set when metrics were tracked for the activity.
+    public let metrics: [String: Int]?
     public let moderation: ModerationV2Response?
+    /// The latest moderation action taken on the activity.
+    public let moderationAction: String?
     public let notificationContext: NotificationContext?
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
@@ -49,12 +71,16 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     ///
     /// - Important: Only set by ``Feed/getOrCreate()`` and ``Feed/queryMoreActivities(limit:)``, and only when the app's plan includes activity metrics and a feed group uses exploration or ranks For You by `impressions_bucket`. Not set for aggregated feeds. No request property turns it on.
     public private(set) var position: Int?
+    /// Whether the activity is a shortened preview of premium content the current user can't access.
+    public private(set) var preview: Bool
     public private(set) var reactionCount: Int
     public private(set) var reactionGroups: [String: ReactionGroupData]
     /// Codes explaining why the activity was shown, for example `following` or `popular`.
     ///
     /// - Important: Only set on For You feed reads when ``FeedQuery/enrichmentOptions`` has ``EnrichmentOptions/includeReasons`` set to true.
     public private(set) var reasons: [String]?
+    /// Who can comment on the activity.
+    public let restrictReplies: RestrictReplies
     public let score: Double
     /// Variable values used for ranking the activity.
     ///
@@ -67,6 +93,10 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     public private(set) var selectorSource: String?
     public let shareCount: Int
     public let text: String?
+    /// The number of comments on the activity, excluding replies.
+    ///
+    /// - Important: Only set by ``Activity/get()``.
+    public private(set) var topLevelCommentCount: Int?
     public let type: String
     public let updatedAt: Date
     public let user: UserData
@@ -95,21 +125,34 @@ extension ActivityData {
         let ownBookmarks = ownBookmarks
         let ownReactions = ownReactions
         let friendReactionCount = friendReactionCount
+        let isRead = isRead
+        let isSeen = isSeen
+        let isWatched = isWatched
         let friendReactions = friendReactions
+        let hidden = hidden
         let position = position
+        let preview = preview
         let reasons = reasons
         let scoreVariables = scoreVariables
         let selectorSource = selectorSource
+        let topLevelCommentCount = topLevelCommentCount
         self = incomingData
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
+        // Per-viewer, web-socket events always send false
+        self.hidden = hidden
+        self.preview = preview
         // Feed reads add these, and web-socket events don't carry them
         self.friendReactionCount = incomingData.friendReactionCount ?? friendReactionCount
         self.friendReactions = incomingData.friendReactions ?? friendReactions
+        self.isRead = incomingData.isRead ?? isRead
+        self.isSeen = incomingData.isSeen ?? isSeen
+        self.isWatched = incomingData.isWatched ?? isWatched
         self.position = incomingData.position ?? position
         self.reasons = incomingData.reasons ?? reasons
         self.scoreVariables = incomingData.scoreVariables ?? scoreVariables
         self.selectorSource = incomingData.selectorSource ?? selectorSource
+        self.topLevelCommentCount = incomingData.topLevelCommentCount ?? topLevelCommentCount
     }
     
     mutating func merge(with incomingData: ActivityData, add reaction: FeedsReactionData, currentUserId: String) {
@@ -231,25 +274,34 @@ extension ActivityResponse {
             hidden: hidden,
             id: id,
             interestTags: interestTags,
+            isRead: isRead,
+            isSeen: isSeen,
+            isWatched: isWatched,
             latestReactions: latestReactions.map { $0.toModel() },
+            latestShares: latestShares?.map { $0.toModel() },
             location: location.flatMap { CLLocationCoordinate2D(latitude: CLLocationDegrees($0.lat), longitude: CLLocationDegrees($0.lng)) },
             mentionedUsers: mentionedUsers.map { $0.toModel() },
+            metrics: metrics,
             moderation: moderation,
+            moderationAction: moderationAction,
             notificationContext: notificationContext,
             ownBookmarks: ownBookmarks.map { $0.toModel() },
             ownReactions: ownReactions.map { $0.toModel() },
             poll: poll?.toModel(),
             popularity: popularity,
             position: position,
+            preview: preview,
             reactionCount: reactionCount,
             reactionGroups: reactionGroups.mapValues { $0.toModel() },
             reasons: reasons,
+            restrictReplies: restrictReplies,
             score: score,
             scoreVariables: scoreVars,
             searchData: searchData,
             selectorSource: selectorSource,
             shareCount: shareCount,
             text: text,
+            topLevelCommentCount: topLevelCommentCount,
             type: type,
             updatedAt: updatedAt,
             user: user.toModel(),

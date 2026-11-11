@@ -115,6 +115,11 @@ extension CommentsFilterField {
     /// **Supported operators:** `.equal`, `.in`
     public static let status = Self("status", localValue: \.status.rawValue)
     
+    /// Filter by whether the current user hid the comment. Comments the user hid are only returned with this filter.
+    ///
+    /// **Supported operators:** `.equal`
+    public static let hidden = Self("hidden", localValue: \.hidden)
+    
     /// Filter by the number of upvotes the comment has received.
     ///
     /// **Supported operators:** `.greaterThan`, `.lessThan`, `.greaterThanOrEqual`, `.lessThanOrEqual`
@@ -173,6 +178,9 @@ extension CommentsFilterField {
 /// **Status fields** (`status`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
+///
+/// **Boolean fields** (`hidden`):
+/// - `.equal` - Exact match
 ///
 /// **Number fields** (`upvoteCount`, `downvoteCount`, `replyCount`, `score`, `confidenceScore`, `controversyScore`):
 /// - `.greaterThan` - Greater than the specified value

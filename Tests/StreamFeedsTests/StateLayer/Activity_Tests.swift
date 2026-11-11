@@ -574,6 +574,35 @@ struct Activity_Tests {
         #expect(stateActivity.ownReactions.map(\.type) == ["like"])
     }
     
+    @Test func activityUpdatedEventKeepsTopLevelCommentCount() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses([
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/activities/"),
+                    payload: GetActivityResponse.dummy(activity: .dummy(id: "activity-123", topLevelCommentCount: 4))
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/comments"),
+                    payload: GetCommentsResponse.dummy(comments: [])
+                )
+            ])
+        )
+        let activity = client.activity(for: "activity-123", in: feedId)
+        try await activity.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-123", text: "NEW TEXT"),
+                fid: feedId.rawValue
+            )
+        )
+
+        let stateActivity = try #require(await activity.state.activity)
+        #expect(stateActivity.text == "NEW TEXT")
+        #expect(stateActivity.topLevelCommentCount == 4)
+    }
+    
     @Test func activityBatchUpdateEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivityAndCommentsResponses(

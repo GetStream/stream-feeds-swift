@@ -8,7 +8,10 @@ import StreamCore
 
 extension CommentResponse {
     static func dummy(
+        bookmarkCount: Int = 0,
         createdAt: Date = .fixed(),
+        editedAt: Date? = nil,
+        hidden: Bool = false,
         id: String = "comment-123",
         latestReactions: [FeedsReactionResponse]? = nil,
         objectId: String,
@@ -22,12 +25,15 @@ extension CommentResponse {
     ) -> CommentResponse {
         CommentResponse(
             attachments: nil,
+            bookmarkCount: bookmarkCount,
             confidenceScore: 0.95,
             controversyScore: nil,
             createdAt: createdAt,
             custom: nil,
             deletedAt: nil,
             downvoteCount: 0,
+            editedAt: editedAt,
+            hidden: hidden,
             id: id,
             latestReactions: latestReactions,
             mentionedUsers: [UserResponse.dummy()],

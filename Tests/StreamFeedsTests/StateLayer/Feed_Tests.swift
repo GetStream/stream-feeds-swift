@@ -643,7 +643,7 @@ struct Feed_Tests {
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
             GetFollowSuggestionsResponse.dummy(
                 suggestions: [
-                    .dummy(feed: "user:suggestion1"),
+                    .dummy(feed: "user:suggestion1", reason: "popular", recommendationScore: 0.9),
                     .dummy(feed: "user:suggestion2")
                 ]
             )
@@ -655,7 +655,9 @@ struct Feed_Tests {
         let suggestions = try await feed.queryFollowSuggestions(limit: 10)
 
         #expect(suggestions.count == 2)
-        #expect(suggestions.map(\.feed.rawValue) == ["user:suggestion1", "user:suggestion2"])
+        #expect(suggestions.map(\.feed.feed.rawValue) == ["user:suggestion1", "user:suggestion2"])
+        #expect(suggestions.map(\.reason) == ["popular", nil])
+        #expect(suggestions.map(\.recommendationScore) == [0.9, nil])
     }
 
     @Test func followUpdatesState() async throws {
@@ -1238,6 +1240,34 @@ struct Feed_Tests {
         let activity = try #require(await feed.state.activities.first)
         #expect(activity.text == "UPDATED TEXT")
         #expect(activity.position == 3)
+    }
+
+    @Test func activityUpdatedEventKeepsHiddenAndPreview() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(currentFeed: .dummy(feed: feedId.rawValue), feeds: [feedId.rawValue], hidden: true, id: "1", preview: true)
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(feeds: [feedId.rawValue], id: "1", text: "NEW TEXT"),
+                fid: feedId.rawValue
+            )
+        )
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.text == "NEW TEXT")
+        #expect(activity.hidden)
+        #expect(activity.preview)
     }
 
     @Test func activityBatchUpdateEventUpdatesState() async throws {

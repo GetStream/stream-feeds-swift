@@ -103,6 +103,7 @@
     "OCRRule",
     "PrivacySettingsResponse",
     "ReadReceiptsResponse",
+    "RestrictReplies",
     "VelocityFilterConfig",
     "VelocityFilterConfigRule",
     "VotingVisibility"
@@ -191,6 +192,7 @@
     "FeedSuggestionResponse",
     "FeedUpdatedEvent",
     "FeedsEvent",
+    "FeedsPreferencesResponse",
     "FeedsReactionGroupResponse",
     "FeedsReactionResponse",
     "FileUploadConfig",
@@ -220,8 +222,10 @@
     "ModerationPayloadResponse",
     "ModerationV2Response",
     "MuteResponse",
+    "NotificationComment",
     "NotificationContext",
     "NotificationFeedUpdatedEvent",
+    "NotificationParentActivity",
     "NotificationStatusResponse",
     "NotificationTarget",
     "NotificationTrigger",
@@ -242,6 +246,8 @@
     "PollVoteResponse",
     "PollVoteResponseData",
     "PollVotesResponse",
+    "PushPreferencesResponse",
+    "PushScheduleResponse",
     "QueryActivitiesResponse",
     "QueryActivityReactionsResponse",
     "QueryBookmarkFoldersResponse",
@@ -254,12 +260,14 @@
     "QueryModerationConfigsResponse",
     "QueryPollsResponse",
     "QueryReviewQueueResponse",
+    "QuietHoursRuleResponse",
     "ReadCollectionsResponse",
     "RejectFeedMemberInviteResponse",
     "RejectFollowResponse",
     "RepliesMeta",
     "Response",
     "ReviewQueueItemResponse",
+    "ShareResponse",
     "SingleFollowResponse",
     "StoriesFeedUpdatedEvent",
     "StreamData",
@@ -343,7 +351,6 @@
     "QueryPollsRequest",
     "QueryReviewQueueRequest",
     "RejectFollowRequest",
-    "RestrictReplies",
     "RuleBuilderAction",
     "RuleBuilderCondition",
     "RuleBuilderConditionGroup",
@@ -373,13 +380,13 @@
   ],
   "removedProperties": {
     "AIImageConfig": [
-      { "ocrSeverityRules": "Pending review (IOS-2246)" }
+      { "ocrSeverityRules": "Unused (not exposed)" }
     ],
     "AITextConfig": [
-      { "profile": "Pending review (IOS-2246)" }
+      { "profile": "Unused (not exposed)" }
     ],
     "AWSRekognitionRule": [
-      { "subclassifications": "Pending review (IOS-2246)" }
+      { "subclassifications": "Unused (not exposed)" }
     ],
     "AcceptFollowRequest": [
       { "followerRole": "Server-side only" }
@@ -391,16 +398,7 @@
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "ActivityResponse": [
-      { "i18n": "Pending review (IOS-2246)" },
-      { "isRead": "Pending review (IOS-2246)" },
-      { "isSeen": "Pending review (IOS-2246)" },
-      { "isWatched": "Pending review (IOS-2246)" },
-      { "latestShares": "Pending review (IOS-2246)" },
-      { "metrics": "Pending review (IOS-2246)" },
-      { "moderationAction": "Pending review (IOS-2246)" },
-      { "preview": "Pending review (IOS-2246)" },
-      { "restrictReplies": "Pending review (IOS-2246)" },
-      { "topLevelCommentCount": "Pending review (IOS-2246)" }
+      { "i18n": "Pending review (IOS-2246)" }
     ],
     "AddActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
@@ -439,13 +437,8 @@
       { "previousReactionType": "Unused (not exposed)" },
       { "referenceActivity": "Unused (not exposed)" }
     ],
-    "AggregatedActivityResponse": [
-      { "isRead": "Pending review (IOS-2246)" },
-      { "isSeen": "Pending review (IOS-2246)" }
-    ],
     "AppResponseFields": [
-      { "id": "Pending review (IOS-2246)" },
-      { "placement": "Pending review (IOS-2246)" }
+      { "placement": "Unused (not exposed)" }
     ],
     "BanInfoResponse": [
       { "channel": "Chat only" },
@@ -462,22 +455,13 @@
       { "deleteReactions": "Chat only" }
     ],
     "BlockListConfig": [
-      { "explicitUrlsOnly": "Pending review (IOS-2246)" },
-      { "matchSubstring": "Pending review (IOS-2246)" }
-    ],
-    "BookmarkFolderResponse": [
-      { "user": "Pending review (IOS-2246)" }
+      { "explicitUrlsOnly": "Unused (not exposed)" },
+      { "matchSubstring": "Unused (not exposed)" }
     ],
     "BookmarkResponse": [
-      { "activityId": "Deprecated, use objectId" },
-      { "comment": "Pending review (IOS-2246)" },
-      { "objectId": "Pending review (IOS-2246)" },
-      { "objectType": "Pending review (IOS-2246)" }
+      { "activityId": "Deprecated, use objectId" }
     ],
     "CommentResponse": [
-      { "bookmarkCount": "Pending review (IOS-2246)" },
-      { "editedAt": "Pending review (IOS-2246)" },
-      { "hidden": "Pending review (IOS-2246)" },
       { "i18n": "Pending review (IOS-2246)" }
     ],
     "ConfigResponse": [
@@ -519,10 +503,6 @@
       { "membershipLevel": "Server-side only, rejected for client tokens" },
       { "role": "Server-side only, rejected for client tokens" }
     ],
-    "FeedResponse": [
-      { "activityCount": "Pending review (IOS-2246)" },
-      { "location": "Pending review (IOS-2246)" }
-    ],
     "FlagRequest": [
       { "entityCreatorId": "Server-side only, backend sets it from the flagged entity" }
     ],
@@ -530,15 +510,15 @@
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "GetCommentRepliesResponse": [
-      { "sort": "Pending review (IOS-2246)" }
+      { "sort": "Unused (not exposed)" }
     ],
     "GetCommentsResponse": [
-      { "commentCount": "Pending review (IOS-2246)" },
-      { "sort": "Pending review (IOS-2246)" },
-      { "topLevelCommentCount": "Pending review (IOS-2246)" }
+      { "commentCount": "Unused (not exposed)" },
+      { "sort": "Unused (not exposed)" },
+      { "topLevelCommentCount": "Unused (not exposed)" }
     ],
     "GetFollowSuggestionsResponse": [
-      { "algorithmUsed": "Pending review (IOS-2246)" }
+      { "algorithmUsed": "Unused (not exposed)" }
     ],
     "GetOrCreateFeedRequest": [
       { "discardActors": "Gated to a single organization" },
@@ -550,7 +530,7 @@
     ],
     "HealthCheckEvent": [
       { "custom": "Webhooks only, not sent over WebSocket" },
-      { "me": "Pending review (IOS-2246)" }
+      { "me": "Unused (not exposed)" }
     ],
     "ImageContentParameters": [
       { "labelOperator": "Moderation tooling" },
@@ -598,25 +578,11 @@
       { "textIds": "Moderation tooling" },
       { "textOrderedKeys": "Moderation tooling" }
     ],
-    "ModerationV2Response": [
-      { "blocklistsMatched": "Pending review (IOS-2246)" }
-    ],
-    "NotificationTarget": [
-      { "comment": "Pending review (IOS-2246)" },
-      { "custom": "Pending review (IOS-2246)" },
-      { "parentActivity": "Pending review (IOS-2246)" }
-    ],
-    "NotificationTrigger": [
-      { "comment": "Pending review (IOS-2246)" },
-      { "custom": "Pending review (IOS-2246)" }
-    ],
     "OwnUserResponse": [
       { "channelMutes": "Chat only" },
       { "invisible": "Chat only" },
       { "latestHiddenChannels": "Chat only" },
-      { "mutes": "Pending review (IOS-2246)" },
       { "privacySettings": "Chat only" },
-      { "pushPreferences": "Pending review (IOS-2246)" },
       { "totalUnreadCount": "Chat only" },
       { "totalUnreadCountByTeam": "Chat only" },
       { "unreadChannels": "Chat only" },
@@ -631,7 +597,7 @@
       { "nameI18n": "Pending review (IOS-2246)" }
     ],
     "PollVoteResponse": [
-      { "poll": "Pending review (IOS-2246)" }
+      { "poll": "Unused (not exposed)" }
     ],
     "PollVoteResponseData": [
       { "answerTextI18n": "Pending review (IOS-2246)" }
@@ -639,6 +605,10 @@
     "PrivacySettingsResponse": [
       { "deliveryReceipts": "Chat only" },
       { "typingIndicators": "Chat only" }
+    ],
+    "PushPreferencesResponse": [
+      { "chatLevel": "Chat only" },
+      { "chatPreferences": "Chat only" }
     ],
     "QueryCommentsRequest": [
       { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
@@ -794,7 +764,6 @@
       { "markMessagesDeleted": "Chat only" }
     ],
     "UserReactivatedEvent": [
-      { "createdBy": "Pending review (IOS-2246)" },
       { "custom": "Webhooks only, not sent over WebSocket" },
       { "receivedAt": "Never set by the backend" }
     ],
@@ -807,9 +776,9 @@
       { "cid": "Chat only" }
     ],
     "VelocityFilterConfig": [
-      { "cascadingActions": "Pending review (IOS-2246)" },
-      { "cidsPerUser": "Pending review (IOS-2246)" },
-      { "firstMessageOnly": "Pending review (IOS-2246)" }
+      { "cascadingActions": "Unused (not exposed)" },
+      { "cidsPerUser": "Unused (not exposed)" },
+      { "firstMessageOnly": "Unused (not exposed)" }
     ],
     "VideoContentParameters": [
       { "labelOperator": "Moderation tooling" }

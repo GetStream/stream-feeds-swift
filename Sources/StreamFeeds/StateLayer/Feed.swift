@@ -366,9 +366,9 @@ public final class Feed: Sendable {
     /// Queries for feed suggestions that the current user might want to follow.
     ///
     /// - Parameter limit: Optional limit for the number of suggestions to return. If `nil`, uses the default limit.
-    /// - Returns: An array of feed data representing follow suggestions
+    /// - Returns: The suggested feeds with the reason and scores for each suggestion.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedData] {
+    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedSuggestionData] {
         try await feedsRepository.queryFollowSuggestions(feedGroupId: group, limit: limit)
     }
     

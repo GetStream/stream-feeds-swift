@@ -2,10 +2,13 @@
 // Copyright © 2026 Stream.io Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import StreamCore
 
 public struct FeedData: Identifiable, Equatable, Sendable {
+    /// The number of activities in the feed.
+    public let activityCount: Int
     public let createdAt: Date
     public let createdBy: UserData
     public let custom: [String: RawJSON]?
@@ -17,6 +20,8 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let followingCount: Int
     public let groupId: String
     public let id: String
+    /// The geographic location of the feed.
+    public let location: CLLocationCoordinate2D?
     public let memberCount: Int
     public let name: String
     public private(set) var ownCapabilities: Set<FeedOwnCapability>?
@@ -67,6 +72,7 @@ extension FeedData {
 extension FeedResponse {
     func toModel() -> FeedData {
         FeedData(
+            activityCount: activityCount,
             createdAt: createdAt,
             createdBy: createdBy.toModel(),
             custom: custom,
@@ -78,6 +84,7 @@ extension FeedResponse {
             followingCount: followingCount,
             groupId: groupId,
             id: id,
+            location: location.flatMap { CLLocationCoordinate2D(latitude: CLLocationDegrees($0.lat), longitude: CLLocationDegrees($0.lng)) },
             memberCount: memberCount,
             name: name,
             ownCapabilities: ownCapabilities.map(Set.init),
@@ -88,11 +95,5 @@ extension FeedResponse {
             updatedAt: updatedAt,
             visibility: visibility
         )
-    }
-}
-
-extension FeedSuggestionResponse {
-    func toModel() -> FeedData {
-        feed.toModel()
     }
 }

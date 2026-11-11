@@ -41,7 +41,7 @@ final class ActivitiesRepository: Sendable {
             skipOwnFollowings: nil,
             language: nil,
             translateText: nil,
-            includeTopLevelCommentCount: nil
+            includeTopLevelCommentCount: true
         )
         return response.activity.toModel()
     }

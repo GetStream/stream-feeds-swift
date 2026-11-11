@@ -223,6 +223,33 @@ struct CommentList_Tests {
         #expect(comment.ownReactions.map(\.type) == ["like"])
     }
     
+    @Test func commentUpdatedEventKeepsCommentInHiddenQuery() async throws {
+        let client = defaultClient(
+            comments: [.dummy(hidden: true, id: "comment-1", objectId: Self.activityId, objectType: "activity")]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity"),
+                    .equal(.hidden, true)
+                ])
+            )
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, text: "Updated text"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.text == "Updated text")
+        #expect(comment.hidden)
+    }
+    
     @Test func commentDeletedEventRemovesFromState() async throws {
         let client = defaultClient()
         let commentList = client.commentList(

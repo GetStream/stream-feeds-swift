@@ -11,6 +11,8 @@ public struct BookmarkFolderData: Identifiable, Equatable, Sendable {
     public let id: String
     public let name: String
     public let updatedAt: Date
+    /// The user who created the folder.
+    public let user: UserData
 }
 
 // MARK: - Model Conversions
@@ -22,7 +24,8 @@ extension BookmarkFolderResponse {
             custom: custom,
             id: id,
             name: name,
-            updatedAt: updatedAt
+            updatedAt: updatedAt,
+            user: user.toModel()
         )
     }
 }

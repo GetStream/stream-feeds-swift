@@ -51,6 +51,15 @@ extension Feed {
     public func acceptFollow(_ sourceFid: FeedId, role: String?) async throws -> FollowData {
         try await acceptFollow(sourceFid)
     }
+
+    // Disfavored so that calls without a type context resolve to the overload returning `FeedSuggestionData`.
+    /// Queries for feed suggestions that the current user might want to follow.
+    @_disfavoredOverload
+    @available(*, deprecated, message: "Use the overload returning FeedSuggestionData, which also has the reason and scores for each suggestion.")
+    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedData] {
+        let suggestions: [FeedSuggestionData] = try await queryFollowSuggestions(limit: limit)
+        return suggestions.map(\.feed)
+    }
 }
 
 // MARK: - FeedQuery
