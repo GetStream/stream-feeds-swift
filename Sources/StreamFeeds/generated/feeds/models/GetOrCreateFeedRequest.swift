@@ -15,6 +15,7 @@ public final class GetOrCreateFeedRequest: Sendable, Encodable, JSONEncodable {
     public let followingPagination: PagerRequest?
     /// Options to control fetching reactions from friends (users you follow or have mutual follows with).
     public let friendReactionsOptions: FriendReactionsOptions?
+    public let idAround: String?
     public let interestWeights: [String: Double]?
     public let limit: Int?
     public let memberPagination: PagerRequest?
@@ -25,7 +26,7 @@ public final class GetOrCreateFeedRequest: Sendable, Encodable, JSONEncodable {
     public let viewerLocation: Location?
     public let watch: Bool?
 
-    public init(data: FeedInput? = nil, enrichmentOptions: EnrichmentOptions? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, friendReactionsOptions: FriendReactionsOptions? = nil, interestWeights: [String: Double]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, overwriteInterestWeights: Bool? = nil, prev: String? = nil, view: String? = nil, viewerLocation: Location? = nil, watch: Bool? = nil) {
+    public init(data: FeedInput? = nil, enrichmentOptions: EnrichmentOptions? = nil, externalRanking: [String: RawJSON]? = nil, filter: [String: RawJSON]? = nil, followersPagination: PagerRequest? = nil, followingPagination: PagerRequest? = nil, friendReactionsOptions: FriendReactionsOptions? = nil, idAround: String? = nil, interestWeights: [String: Double]? = nil, limit: Int? = nil, memberPagination: PagerRequest? = nil, next: String? = nil, overwriteInterestWeights: Bool? = nil, prev: String? = nil, view: String? = nil, viewerLocation: Location? = nil, watch: Bool? = nil) {
         self.data = data
         self.enrichmentOptions = enrichmentOptions
         self.externalRanking = externalRanking
@@ -33,6 +34,7 @@ public final class GetOrCreateFeedRequest: Sendable, Encodable, JSONEncodable {
         self.followersPagination = followersPagination
         self.followingPagination = followingPagination
         self.friendReactionsOptions = friendReactionsOptions
+        self.idAround = idAround
         self.interestWeights = interestWeights
         self.limit = limit
         self.memberPagination = memberPagination
@@ -53,6 +55,7 @@ public final class GetOrCreateFeedRequest: Sendable, Encodable, JSONEncodable {
         try container.encodeIfPresent(followersPagination, forKey: .followersPagination)
         try container.encodeIfPresent(followingPagination, forKey: .followingPagination)
         try container.encodeIfPresent(friendReactionsOptions, forKey: .friendReactionsOptions)
+        try container.encodeIfPresent(idAround, forKey: .idAround)
         try container.encodeIfPresent(interestWeights, forKey: .interestWeights)
         try container.encodeIfPresent(limit, forKey: .limit)
         try container.encodeIfPresent(memberPagination, forKey: .memberPagination)
@@ -74,6 +77,7 @@ extension GetOrCreateFeedRequest: Hashable {
             lhs.followersPagination == rhs.followersPagination &&
             lhs.followingPagination == rhs.followingPagination &&
             lhs.friendReactionsOptions == rhs.friendReactionsOptions &&
+            lhs.idAround == rhs.idAround &&
             lhs.interestWeights == rhs.interestWeights &&
             lhs.limit == rhs.limit &&
             lhs.memberPagination == rhs.memberPagination &&
@@ -93,6 +97,7 @@ extension GetOrCreateFeedRequest: Hashable {
         hasher.combine(followersPagination)
         hasher.combine(followingPagination)
         hasher.combine(friendReactionsOptions)
+        hasher.combine(idAround)
         hasher.combine(interestWeights)
         hasher.combine(limit)
         hasher.combine(memberPagination)
