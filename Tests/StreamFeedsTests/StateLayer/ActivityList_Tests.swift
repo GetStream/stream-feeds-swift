@@ -183,6 +183,27 @@ struct ActivityList_Tests {
         #expect(activity.ownReactions.map(\.type) == ["like"])
     }
     
+    @Test func activityUpdatedEventKeepsTranslations() async throws {
+        let client = defaultClient(
+            activities: [.dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "activity-1", text: "Hello", user: .dummy(id: "current-user-id"))]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(filter: .equal(.userId, "current-user-id"), language: "fr")
+        )
+        try await activityList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-1", reactionCount: 1, text: "Hello", user: .dummy(id: "current-user-id")),
+                fid: Self.feedId.rawValue
+            )
+        )
+
+        let activity = try #require(await activityList.state.activities.first)
+        #expect(activity.reactionCount == 1)
+        #expect(activity.translatedText(for: "fr") == "Bonjour")
+    }
+    
     @Test func upsertActivitiesKeepsOwnReactions() async throws {
         let client = defaultClient(
             activities: [

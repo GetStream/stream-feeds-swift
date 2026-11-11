@@ -39,6 +39,9 @@ public struct CommentsQuery: Sendable {
     /// This is typically provided in the response of a previous request.
     public var previous: String?
     
+    /// Includes the translations to this language code, for example `fr`, in ``CommentData/translations``. Backend default includes no translations.
+    public var language: String?
+    
     /// Creates a new comments query with the specified parameters.
     ///
     /// - Parameters:
@@ -47,18 +50,21 @@ public struct CommentsQuery: Sendable {
     ///   - limit: Optional maximum number of comments to return in a single request.
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``CommentData/translations``. Backend default includes no translations.
     public init(
         filter: CommentsFilter?,
         sort: CommentsSort? = nil,
         limit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil
+        previous: String? = nil,
+        language: String? = nil
     ) {
         self.filter = filter
         self.sort = sort
         self.limit = limit
         self.next = next
         self.previous = previous
+        self.language = language
     }
 }
 

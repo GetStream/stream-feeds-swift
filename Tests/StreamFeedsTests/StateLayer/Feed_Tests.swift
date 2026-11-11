@@ -365,6 +365,27 @@ struct Feed_Tests {
         #expect(updatedActivity.text == "Updated activity content")
     }
 
+    @Test func translateActivityUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            TranslateActivityResponse.dummy(
+                activity: .dummy(
+                    currentFeed: .dummy(feed: feedId.rawValue),
+                    i18n: ["fr_text": "Bonjour", "language": "en"],
+                    id: "1",
+                    text: "Test activity content"
+                )
+            )
+        ])
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        try await feed.translateActivity(id: "1", to: "fr")
+
+        let stateActivity = try #require(await feed.state.activities.first)
+        #expect(stateActivity.translatedText(for: "fr") == "Bonjour")
+    }
+
     @Test func markActivityUpdatesStateWhenMarkAllRead() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
@@ -453,6 +474,17 @@ struct Feed_Tests {
         #expect(finalActivities.count == 3)
         #expect(finalActivities.map(\.id) == ["3", "2", "1"])
         #expect(finalActivities.map(\.text) == ["Third", "Second", "Test activity content"])
+    }
+
+    @Test func getOrCreateAndPaginationSendLanguage() async throws {
+        let apiTransport = APITransportMock.withPayloads([GetOrCreateFeedResponse.dummy(), GetOrCreateFeedResponse.dummy()])
+        let feed = FeedsClient.mock(apiTransport: apiTransport).feed(for: FeedQuery(group: "user", id: "jane", language: "fr"))
+
+        try await feed.getOrCreate()
+        try await feed.queryMoreActivities()
+
+        let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
+        #expect(languages == ["fr", "fr"])
     }
 
     @Test func addBookmarkUpdatesState() async throws {
@@ -636,6 +668,28 @@ struct Feed_Tests {
         #expect(finalActivities.map(\.id) == ["1"])
         #expect(updatedComment.id == "comment-1")
         #expect(updatedComment.text == "Updated comment content")
+    }
+
+    @Test func translateCommentReturnsTranslation() async throws {
+        let apiTransport = APITransportMock.withPayloads([
+            TranslateCommentResponse.dummy(
+                comment: .dummy(
+                    i18n: ["fr_text": "Bonjour", "language": "en"],
+                    id: "comment-1",
+                    objectId: "1",
+                    text: "Hello"
+                )
+            )
+        ])
+        let feed = FeedsClient.mock(apiTransport: apiTransport).feed(for: FeedId(group: "user", id: "jane"))
+
+        let comment = try await feed.translateComment(commentId: "comment-1", to: "fr")
+
+        #expect(comment.translatedText(for: "fr") == "Bonjour")
+        let request = try #require(apiTransport.requests.value.last)
+        #expect(request.url.path == "/api/v2/feeds/comments/comment-1/translate")
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(request.body))
+        #expect(body["language"] == .string("fr"))
     }
 
     @Test func queryFollowSuggestionsUpdatesState() async throws {

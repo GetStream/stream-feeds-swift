@@ -61,6 +61,8 @@
     "rejectFollow",
     "stopWatchingFeed",
     "submitAction",
+    "translateActivity",
+    "translateComment",
     "unblockUsers",
     "unfollow",
     "unpinActivity",
@@ -273,6 +275,8 @@
     "StreamData",
     "SubmitActionResponse",
     "ThreadedCommentResponse",
+    "TranslateActivityResponse",
+    "TranslateCommentResponse",
     "UnblockUsersResponse",
     "UnfollowResponse",
     "UnpinActivityResponse",
@@ -360,6 +364,8 @@
     "SubmitActionRequest",
     "TextContentParameters",
     "TextRuleParameters",
+    "TranslateActivityRequest",
+    "TranslateCommentRequest",
     "UnblockUsersRequest",
     "UpdateActivityRequest",
     "UpdateBookmarkRequest",
@@ -396,9 +402,6 @@
     ],
     "ActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
-    ],
-    "ActivityResponse": [
-      { "i18n": "Pending review (IOS-2246)" }
     ],
     "AddActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
@@ -460,9 +463,6 @@
     ],
     "BookmarkResponse": [
       { "activityId": "Deprecated, use objectId" }
-    ],
-    "CommentResponse": [
-      { "i18n": "Pending review (IOS-2246)" }
     ],
     "ConfigResponse": [
       { "aiAudioConfig": "Moderation tooling" },
@@ -590,17 +590,17 @@
       { "unreadThreads": "Chat only" }
     ],
     "PollOptionResponseData": [
-      { "textI18n": "Pending review (IOS-2246)" }
+      { "textI18n": "Chat only" }
     ],
     "PollResponseData": [
-      { "descriptionI18n": "Pending review (IOS-2246)" },
-      { "nameI18n": "Pending review (IOS-2246)" }
+      { "descriptionI18n": "Chat only" },
+      { "nameI18n": "Chat only" }
     ],
     "PollVoteResponse": [
       { "poll": "Unused (not exposed)" }
     ],
     "PollVoteResponseData": [
-      { "answerTextI18n": "Pending review (IOS-2246)" }
+      { "answerTextI18n": "Chat only" }
     ],
     "PrivacySettingsResponse": [
       { "deliveryReceipts": "Chat only" },

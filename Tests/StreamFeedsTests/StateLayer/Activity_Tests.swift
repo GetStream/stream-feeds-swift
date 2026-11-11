@@ -55,6 +55,27 @@ struct Activity_Tests {
         #expect(activityData.collections.keys.sorted() == ["products:1"])
     }
     
+    @Test func getSendsLanguage() async throws {
+        let apiTransport = APITransportMock.withMatchedResponses([
+            .init(
+                matching: .pathPrefix("/api/v2/feeds/activities/"),
+                payload: GetActivityResponse.dummy(activity: .dummy(i18n: ["fr_text": "Bonjour", "language": "en"], text: "Hello"))
+            ),
+            .init(
+                matching: .pathPrefix("/api/v2/feeds/comments"),
+                payload: GetCommentsResponse.dummy(comments: [])
+            )
+        ])
+        let activity = FeedsClient.mock(apiTransport: apiTransport)
+            .activity(for: "activity-123", in: FeedId(group: "user", id: "jane"), language: "fr")
+
+        let activityData = try await activity.get()
+
+        #expect(activityData.translatedText(for: "fr") == "Bonjour")
+        let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
+        #expect(languages == ["fr", "fr"])
+    }
+    
     @Test func reconnectionRefetchesActivityAndComments() async throws {
         let client = FeedsClient.mock(
             apiTransport: .withMatchedResponses([
@@ -130,7 +151,47 @@ struct Activity_Tests {
         #expect(stateActivity.id == "activity-123")
         #expect(stateActivity.text == "Unpinned activity")
     }
-    
+
+    @Test func translateUpdatesState() async throws {
+        let apiTransport = APITransportMock.withPayloads([
+            TranslateActivityResponse.dummy(
+                activity: .dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "activity-123", text: "Hello")
+            )
+        ])
+        let client = FeedsClient.mock(apiTransport: apiTransport)
+        let activity = client.activity(for: "activity-123", in: FeedId(group: "user", id: "jane"))
+        await #expect(activity.state.activity == nil)
+
+        try await activity.translate(to: "fr")
+
+        let stateActivity = try #require(await activity.state.activity)
+        #expect(stateActivity.translatedText(for: "fr") == "Bonjour")
+        let request = try #require(apiTransport.requests.value.last)
+        #expect(request.url.path == "/api/v2/feeds/activities/activity-123/translate")
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(request.body))
+        #expect(body["language"] == .string("fr"))
+    }
+
+    @Test func translateCommentUpdatesState() async throws {
+        let client = defaultClientWithActivityAndCommentsResponses([
+            TranslateCommentResponse.dummy(
+                comment: .dummy(
+                    i18n: ["fr_text": "Premier commentaire", "language": "en"],
+                    id: "comment-1",
+                    objectId: "activity-123",
+                    text: "First comment"
+                )
+            )
+        ])
+        let activity = client.activity(for: "activity-123", in: FeedId(group: "user", id: "jane"))
+        try await activity.get()
+
+        try await activity.translateComment(commentId: "comment-1", to: "fr")
+
+        let stateComment = try #require(await activity.state.comments.first { $0.id == "comment-1" })
+        #expect(stateComment.translatedText(for: "fr") == "Premier commentaire")
+    }
+
     @Test func addReactionUpdatesState() async throws {
         let client = defaultClientWithActivityAndCommentsResponses([
             AddReactionResponse.dummy(
@@ -601,6 +662,35 @@ struct Activity_Tests {
         let stateActivity = try #require(await activity.state.activity)
         #expect(stateActivity.text == "NEW TEXT")
         #expect(stateActivity.topLevelCommentCount == 4)
+    }
+    
+    @Test func activityUpdatedEventKeepsTranslations() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses([
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/activities/"),
+                    payload: GetActivityResponse.dummy(activity: .dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "activity-123", text: "Hello"))
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/comments"),
+                    payload: GetCommentsResponse.dummy(comments: [])
+                )
+            ])
+        )
+        let activity = client.activity(for: "activity-123", in: feedId, language: "fr")
+        try await activity.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-123", reactionCount: 1, text: "Hello"),
+                fid: feedId.rawValue
+            )
+        )
+
+        let stateActivity = try #require(await activity.state.activity)
+        #expect(stateActivity.reactionCount == 1)
+        #expect(stateActivity.translatedText(for: "fr") == "Bonjour")
     }
     
     @Test func activityBatchUpdateEventUpdatesState() async throws {

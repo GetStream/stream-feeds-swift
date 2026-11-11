@@ -102,6 +102,11 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     /// The type of object this comment belongs to (e.g., "activity").
     public let objectType: String
     
+    /// The language code of the original ``text``.
+    ///
+    /// - Important: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Loading with a language doesn't translate the comment. It returns a translation only when the comment was translated to that language with ``Activity/translateComment(commentId:to:)``, ``Feed/translateComment(commentId:to:)`` or from your server.
+    public private(set) var originalLanguage: String?
+    
     /// All the reactions from the current user.
     public private(set) var ownReactions: [FeedsReactionData]
     
@@ -150,6 +155,11 @@ public struct ThreadedCommentData: Identifiable, Equatable, Sendable {
     /// `nil` for comments that only contain attachments or other media.
     public let text: String?
     
+    /// Automatic translations of ``text``, keyed by language code.
+    ///
+    /// - Important: Only set when the comment is loaded with a language, such as ``ActivityCommentsQuery/language``, and the comment has translations. Loading with a language doesn't translate the comment. It returns a translation only when the comment was translated to that language with ``Activity/translateComment(commentId:to:)``, ``Feed/translateComment(commentId:to:)`` or from your server. Holds the translation to that language and the original text.
+    public private(set) var translations: [String: String]?
+    
     /// The date and time when the comment was last updated.
     public let updatedAt: Date
     
@@ -188,6 +198,7 @@ extension ThreadedCommentData {
             moderation: comment.moderation,
             objectId: comment.objectId,
             objectType: comment.objectType,
+            originalLanguage: comment.originalLanguage,
             ownReactions: comment.ownReactions,
             parentId: comment.parentId,
             reactionCount: comment.reactionCount,
@@ -197,10 +208,20 @@ extension ThreadedCommentData {
             score: comment.score,
             status: comment.status,
             text: comment.text,
+            translations: comment.translations,
             updatedAt: comment.updatedAt,
             upvoteCount: comment.upvoteCount,
             user: comment.user
         )
+    }
+}
+
+// MARK: - Translations
+
+extension ThreadedCommentData {
+    /// The translation of ``text`` to the given language code, or `nil` when there is none, or it is the same as the original text.
+    public func translatedText(for language: String) -> String? {
+        I18n.validTranslation(of: text, in: translations, for: language, originalLanguage: originalLanguage)
     }
 }
 
@@ -210,6 +231,9 @@ extension ThreadedCommentData {
     mutating func merge(with incomingData: CommentData) {
         // Web-socket events to not have own reactions
         let ownReactions = ownReactions
+        let originalLanguage = originalLanguage
+        let text = text
+        let translations = translations
         self = ThreadedCommentData(
             attachments: incomingData.attachments,
             bookmarkCount: incomingData.bookmarkCount,
@@ -228,6 +252,7 @@ extension ThreadedCommentData {
             moderation: incomingData.moderation,
             objectId: incomingData.objectId,
             objectType: incomingData.objectType,
+            originalLanguage: incomingData.originalLanguage,
             ownReactions: ownReactions,
             parentId: incomingData.parentId,
             reactionCount: incomingData.reactionCount,
@@ -237,10 +262,16 @@ extension ThreadedCommentData {
             score: incomingData.score,
             status: incomingData.status,
             text: incomingData.text,
+            translations: incomingData.translations,
             updatedAt: incomingData.updatedAt,
             upvoteCount: incomingData.upvoteCount,
             user: incomingData.user
         )
+        // Web-socket events don't carry translations, and the backend clears them when the text changes
+        if incomingData.translations == nil, incomingData.originalLanguage == nil, incomingData.text == text {
+            self.originalLanguage = originalLanguage
+            self.translations = translations
+        }
     }
     
     mutating func merge(with incomingData: CommentData, add reaction: FeedsReactionData, currentUserId: String) {

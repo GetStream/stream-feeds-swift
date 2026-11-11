@@ -62,6 +62,10 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     /// The latest moderation action taken on the activity.
     public let moderationAction: String?
     public let notificationContext: NotificationContext?
+    /// The language code of the original ``text``.
+    ///
+    /// - Important: Only set when the activity is loaded with a language, such as ``FeedQuery/language``, and the activity has translations. Loading with a language doesn't translate the activity. It returns a translation only when the activity was translated to that language with ``Activity/translate(to:)``, ``Feed/translateActivity(id:to:)`` or from your server.
+    public private(set) var originalLanguage: String?
     public private(set) var ownBookmarks: [BookmarkData]
     public private(set) var ownReactions: [FeedsReactionData]
     public var parent: ActivityData? { _parent?.getValue() }
@@ -97,6 +101,10 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
     ///
     /// - Important: Only set by ``Activity/get()``.
     public private(set) var topLevelCommentCount: Int?
+    /// Automatic translations of ``text``, keyed by language code.
+    ///
+    /// - Important: Only set when the activity is loaded with a language, such as ``FeedQuery/language``, and the activity has translations. Loading with a language doesn't translate the activity. It returns a translation only when the activity was translated to that language with ``Activity/translate(to:)``, ``Feed/translateActivity(id:to:)`` or from your server. Holds the translation to that language and the original text.
+    public private(set) var translations: [String: String]?
     public let type: String
     public let updatedAt: Date
     public let user: UserData
@@ -107,6 +115,15 @@ public struct ActivityData: Identifiable, Equatable, Sendable {
 }
 
 public typealias ActivityDataVisibility = ActivityVisibility
+
+// MARK: - Translations
+
+extension ActivityData {
+    /// The translation of ``text`` to the given language code, or `nil` when there is none, or it is the same as the original text.
+    public func translatedText(for language: String) -> String? {
+        I18n.validTranslation(of: text, in: translations, for: language, originalLanguage: originalLanguage)
+    }
+}
 
 // MARK: - Mutating the Data
 
@@ -135,7 +152,10 @@ extension ActivityData {
         let reasons = reasons
         let scoreVariables = scoreVariables
         let selectorSource = selectorSource
+        let text = text
         let topLevelCommentCount = topLevelCommentCount
+        let translations = translations
+        let originalLanguage = originalLanguage
         self = incomingData
         self.ownBookmarks = ownBookmarks
         self.ownReactions = ownReactions
@@ -153,6 +173,11 @@ extension ActivityData {
         self.scoreVariables = incomingData.scoreVariables ?? scoreVariables
         self.selectorSource = incomingData.selectorSource ?? selectorSource
         self.topLevelCommentCount = incomingData.topLevelCommentCount ?? topLevelCommentCount
+        // Web-socket events don't carry translations, and the backend clears them when the text changes
+        if incomingData.translations == nil, incomingData.originalLanguage == nil, incomingData.text == text {
+            self.originalLanguage = originalLanguage
+            self.translations = translations
+        }
     }
     
     mutating func merge(with incomingData: ActivityData, add reaction: FeedsReactionData, currentUserId: String) {
@@ -285,6 +310,7 @@ extension ActivityResponse {
             moderation: moderation,
             moderationAction: moderationAction,
             notificationContext: notificationContext,
+            originalLanguage: I18n.originalLanguage(from: i18n),
             ownBookmarks: ownBookmarks.map { $0.toModel() },
             ownReactions: ownReactions.map { $0.toModel() },
             poll: poll?.toModel(),
@@ -302,6 +328,7 @@ extension ActivityResponse {
             shareCount: shareCount,
             text: text,
             topLevelCommentCount: topLevelCommentCount,
+            translations: I18n.translations(from: i18n),
             type: type,
             updatedAt: updatedAt,
             user: user.toModel(),

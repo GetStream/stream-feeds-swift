@@ -220,6 +220,7 @@ extension StringCodingKey {
     static let height: StringCodingKey = "height"
     static let hidden: StringCodingKey = "hidden"
     static let hide: StringCodingKey = "hide"
+    static let i18n: StringCodingKey = "i18n"
     static let icon: StringCodingKey = "icon"
     static let id: StringCodingKey = "id"
     static let ids: StringCodingKey = "ids"

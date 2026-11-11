@@ -33,13 +33,13 @@ final class ActivitiesRepository: Sendable {
         _ = try await apiClient.deleteActivity(id: activityId, hardDelete: hardDelete, deleteNotificationActivity: deleteNotificationActivity)
     }
     
-    func getActivity(activityId: String) async throws -> ActivityData {
+    func getActivity(activityId: String, language: String?) async throws -> ActivityData {
         let response = try await apiClient.getActivity(
             id: activityId,
             commentSort: nil,
             commentLimit: nil,
             skipOwnFollowings: nil,
-            language: nil,
+            language: language,
             translateText: nil,
             includeTopLevelCommentCount: true
         )
@@ -116,6 +116,11 @@ final class ActivitiesRepository: Sendable {
         }
     }
     
+    func translateActivity(activityId: String, language: String) async throws -> ActivityData {
+        let response = try await apiClient.translateActivity(id: activityId, translateActivityRequest: TranslateActivityRequest(language: language))
+        return response.activity.toModel()
+    }
+
     func markActivity(feedGroupId: String, feedId: String, request: MarkActivityRequest) async throws -> ActivityMarkData {
         _ = try await apiClient.markActivity(feedGroupId: feedGroupId, feedId: feedId, markActivityRequest: request)
         return request.toModel(feed: FeedId(group: feedGroupId, id: feedId))
@@ -124,7 +129,7 @@ final class ActivitiesRepository: Sendable {
     // MARK: - Activity Pagination
     
     func queryActivities(with query: ActivitiesQuery) async throws -> PaginationResult<ActivityData> {
-        let response = try await apiClient.queryActivities(language: nil, translateText: nil, queryActivitiesRequest: query.toRequest())
+        let response = try await apiClient.queryActivities(language: query.language, translateText: nil, queryActivitiesRequest: query.toRequest())
         return PaginationResult(
             models: response.activities.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)

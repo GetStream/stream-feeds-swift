@@ -32,6 +32,9 @@ public struct ActivitiesQuery: Sendable {
     
     /// If true, enriches the current feed of each activity with the current user's own fields, such as `ownFollows` and `ownCapabilities`. Backend default is false.
     public let enrichOwnFields: Bool?
+
+    /// Includes the translations to this language code, for example `fr`, in ``ActivityData/translations``. Backend default includes no translations.
+    public let language: String?
     
     /// Creates a new activities query with the specified parameters.
     ///
@@ -42,15 +45,18 @@ public struct ActivitiesQuery: Sendable {
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
     ///   - enrichOwnFields: If true, enriches the current feed of each activity with the current user's own fields, such as `ownFollows` and `ownCapabilities`. Backend default is false.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ActivityData/translations``. Backend default includes no translations.
     public init(
         filter: ActivitiesFilter?,
         sort: [Sort<ActivitiesSortField>]? = nil,
         limit: Int? = nil,
         next: String? = nil,
         previous: String? = nil,
-        enrichOwnFields: Bool? = nil
+        enrichOwnFields: Bool? = nil,
+        language: String? = nil
     ) {
         self.enrichOwnFields = enrichOwnFields
+        self.language = language
         self.filter = filter
         self.sort = sort
         self.next = next

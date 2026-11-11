@@ -46,7 +46,8 @@ public final class CommentList: Sendable {
                 sort: state.queryConfig?.sort,
                 limit: limit,
                 next: next,
-                previous: nil
+                previous: nil,
+                language: query.language
             )
         }
         guard let nextQuery else { return [] }
@@ -56,7 +57,7 @@ public final class CommentList: Sendable {
     // MARK: - Private
     
     private func queryComments(with query: CommentsQuery) async throws -> [CommentData] {
-        let result = try await commentsRepository.queryComments(request: query.toRequest())
+        let result = try await commentsRepository.queryComments(with: query)
         await state.didPaginate(
             with: result,
             filter: query.filter,
@@ -70,7 +71,7 @@ public final class CommentList: Sendable {
 
 extension CommentList: PaginatedListRefetching {
     func fetchPage(with query: CommentsQuery) async throws -> PaginationResult<CommentData> {
-        try await commentsRepository.queryComments(request: query.toRequest())
+        try await commentsRepository.queryComments(with: query)
     }
 }
 
