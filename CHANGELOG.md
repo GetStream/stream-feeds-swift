@@ -5,8 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### ✅ Added
+- Add `id`, `skipEnrichUrl` and `skipPush` to `ActivityAddCommentRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `collections` to `ActivityData` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
+- Add `createNotificationActivity`, `restrictReplies`, `skipEnrichUrl` and `skipPush` to `ActivityRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `enrichOwnFields` to `AddActivityRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `targetFeeds` to `AddCommentReactionRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `id` and `skipEnrichUrl` to `AddCommentRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `targetFeeds` to `AddReactionRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `collectionReferences` and `collections` to `FeedAddActivityRequest` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
+- Add `createNotificationActivity`, `enrichOwnFields`, `restrictReplies`, `skipEnrichUrl` and `skipPush` to `FeedAddActivityRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `location` to `FeedInput` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `enrichOwnFields`, `handleMentionNotifications`, `mentionedUserIds`, `restrictReplies`, `runActivityProcessors`, `searchData`, `skipEnrichUrl` and `visibilityTag` to `UpdateActivityRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `attachments`, `handleMentionNotifications`, `mentionedUserIds` and `skipEnrichUrl` to `UpdateCommentRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `clearLocation`, `description`, `enrichOwnFields`, `filterTags`, `location` and `name` to `UpdateFeedRequest` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `activityCopyLimit`, `enrichOwnFields` and `skipPush` to `Feed.follow(...)` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `FeedsClient.readCollections(references:)` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
 
 ### 🚨 Breaking Changes

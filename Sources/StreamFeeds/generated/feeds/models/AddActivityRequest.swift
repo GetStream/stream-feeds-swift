@@ -16,6 +16,7 @@ public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
     public let createNotificationActivity: Bool?
     /// Custom data for the activity
     public let custom: [String: RawJSON]?
+    public let enrichOwnFields: Bool?
     /// Expiration time for the activity
     public let expiresAt: String?
     /// List of feeds to add the activity to with a default max limit of 25 feeds
@@ -50,12 +51,13 @@ public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
     /// If visibility is 'tag', this is the tag name and is required
     public let visibilityTag: String?
 
-    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, collections: [CollectionRequest]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: RestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, collections: [CollectionRequest]? = nil, createNotificationActivity: Bool? = nil, custom: [String: RawJSON]? = nil, enrichOwnFields: Bool? = nil, expiresAt: String? = nil, feeds: [String], filterTags: [String]? = nil, id: String? = nil, interestTags: [String]? = nil, location: Location? = nil, mentionedUserIds: [String]? = nil, parentId: String? = nil, pollId: String? = nil, restrictReplies: RestrictReplies? = nil, searchData: [String: RawJSON]? = nil, skipEnrichUrl: Bool? = nil, skipPush: Bool? = nil, text: String? = nil, type: String, visibility: ActivityVisibility? = nil, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.collectionRefs = collectionRefs
         self.collections = collections
         self.createNotificationActivity = createNotificationActivity
         self.custom = custom
+        self.enrichOwnFields = enrichOwnFields
         self.expiresAt = expiresAt
         self.feeds = feeds
         self.filterTags = filterTags
@@ -82,6 +84,7 @@ public final class AddActivityRequest: Sendable, Encodable, JSONEncodable {
         try container.encodeIfPresent(collections, forKey: .collections)
         try container.encodeIfPresent(createNotificationActivity, forKey: .createNotificationActivity)
         try container.encodeIfPresent(custom, forKey: .custom)
+        try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
         try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
         try container.encode(feeds, forKey: .feeds)
         try container.encodeIfPresent(filterTags, forKey: .filterTags)
@@ -109,6 +112,7 @@ extension AddActivityRequest: Hashable {
             lhs.collections == rhs.collections &&
             lhs.createNotificationActivity == rhs.createNotificationActivity &&
             lhs.custom == rhs.custom &&
+            lhs.enrichOwnFields == rhs.enrichOwnFields &&
             lhs.expiresAt == rhs.expiresAt &&
             lhs.feeds == rhs.feeds &&
             lhs.filterTags == rhs.filterTags &&
@@ -134,6 +138,7 @@ extension AddActivityRequest: Hashable {
         hasher.combine(collections)
         hasher.combine(createNotificationActivity)
         hasher.combine(custom)
+        hasher.combine(enrichOwnFields)
         hasher.combine(expiresAt)
         hasher.combine(feeds)
         hasher.combine(filterTags)

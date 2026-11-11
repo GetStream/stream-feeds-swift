@@ -373,22 +373,31 @@ public final class Feed: Sendable {
     ///
     /// - Parameters:
     ///   - targetFid: The target feed id.
-    ///   - createNotificationActivity: Whether the action is added to the notification feed.
+    ///   - activityCopyLimit: The maximum number of the target feed's existing activities to copy into this feed (0 to 1000). Backend default copies all of them.
+    ///   - createNotificationActivity: Whether the action is added to the notification feed. Backend default is false.
     ///   - custom: Additional data for the request.
+    ///   - enrichOwnFields: If true, enriches the source and target feeds with the current user's own fields. Backend default is false.
     ///   - pushPreference: Push notification preferences for the follow request.
+    ///   - skipPush: If true, no push notification is sent for the follow. Backend default is false.
     /// - Throws: `APIError` if the network request fails or the server returns an error
     /// - Returns: The data of the follow request.
     @discardableResult
     public func follow(
         _ targetFid: FeedId,
+        activityCopyLimit: Int? = nil,
         createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
-        pushPreference: FollowPushPreference? = nil
+        enrichOwnFields: Bool? = nil,
+        pushPreference: FollowPushPreference? = nil,
+        skipPush: Bool? = nil
     ) async throws -> FollowData {
         let request = FollowRequest(
+            activityCopyLimit: activityCopyLimit,
             createNotificationActivity: createNotificationActivity,
             custom: custom,
+            enrichOwnFields: enrichOwnFields,
             pushPreference: pushPreference,
+            skipPush: skipPush,
             source: feed.rawValue,
             target: targetFid.rawValue
         )
