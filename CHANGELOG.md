@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `location` to `FeedInput` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `enrichmentOptions`, `friendReactionsOptions`, `overwriteInterestWeights` and `viewerLocation` to `FeedQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `language` to `FeedQuery` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
+- Add activities restored on another client to `FeedState.activities` [#108](https://github.com/GetStream/stream-feeds-swift/pull/108)
 - Add `FeedSuggestionData` with the reason and scores for each follow suggestion [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `enrichOwnFields` to `FeedsQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `FriendReactionType` for choosing between followed and mutual users in `FriendReactionsOptions.type` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
@@ -55,8 +56,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `Activity.translate(to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `Activity.translateComment(commentId:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `activityCopyLimit`, `enrichOwnFields` and `skipPush` to `Feed.follow(...)` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
+- Add `Feed.restoreActivity(id:)` [#108](https://github.com/GetStream/stream-feeds-swift/pull/108)
 - Add `Feed.translateActivity(id:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `Feed.translateComment(commentId:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
+- Add `Feed.updateActivityPartial(id:request:)` [#108](https://github.com/GetStream/stream-feeds-swift/pull/108)
 - Add `language` to `FeedsClient.activity(for:in:data:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `FeedsClient.readCollections(references:)` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
 
