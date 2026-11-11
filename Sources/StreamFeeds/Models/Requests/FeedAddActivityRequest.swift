@@ -9,6 +9,8 @@ import StreamCore
 public struct FeedAddActivityRequest: Sendable {
     private let attachments: [Attachment]?
     let attachmentUploads: [AnyAttachmentPayload]?
+    private let collectionReferences: [String]?
+    private let collections: [CollectionRequest]?
     private let custom: [String: RawJSON]?
     private let expiresAt: String?
     private let filterTags: [String]?
@@ -24,9 +26,32 @@ public struct FeedAddActivityRequest: Sendable {
     private let visibility: ActivityVisibility?
     private let visibilityTag: String?
 
+    /// Creates a request for adding an activity to the feed.
+    ///
+    /// - Parameters:
+    ///   - attachments: Media attachments that are already uploaded.
+    ///   - attachmentUploads: Local attachments to upload before the activity is added.
+    ///   - collectionReferences: References to existing collections, in the `name:id` format.
+    ///   - collections: Collections to create or update together with the activity. Their references are added to `collectionReferences`.
+    ///   - custom: Custom data for the activity.
+    ///   - expiresAt: When the activity expires, as an RFC 3339 date-time, for example `2026-01-01T00:00:00Z`.
+    ///   - filterTags: Tags for filtering activities.
+    ///   - id: A custom ID for the activity.
+    ///   - interestTags: Tags for interest-based ranking.
+    ///   - location: The geographic location of the activity.
+    ///   - mentionedUserIds: IDs of the users mentioned in the activity.
+    ///   - parentId: The ID of the parent activity.
+    ///   - pollId: The ID of a poll to attach.
+    ///   - searchData: Additional data for search indexing.
+    ///   - text: The text of the activity.
+    ///   - type: The type of the activity, for example `post`.
+    ///   - visibility: Who can see the activity.
+    ///   - visibilityTag: The tag name when `visibility` is `.tag`.
     public init(
         attachments: [Attachment]? = nil,
         attachmentUploads: [AnyAttachmentPayload]? = nil,
+        collectionReferences: [String]? = nil,
+        collections: [CollectionRequest]? = nil,
         custom: [String: RawJSON]? = nil,
         expiresAt: String? = nil,
         filterTags: [String]? = nil,
@@ -44,6 +69,8 @@ public struct FeedAddActivityRequest: Sendable {
     ) {
         self.attachments = attachments
         self.attachmentUploads = attachmentUploads
+        self.collectionReferences = collectionReferences
+        self.collections = collections
         self.custom = custom
         self.expiresAt = expiresAt
         self.filterTags = filterTags
@@ -64,6 +91,8 @@ public struct FeedAddActivityRequest: Sendable {
         let attachments = (attachments ?? []) + uploadedAttachments
         return AddActivityRequest(
             attachments: attachments.isEmpty ? nil : attachments,
+            collectionRefs: collectionReferences,
+            collections: collections,
             custom: custom,
             expiresAt: expiresAt,
             feeds: [feed.rawValue],

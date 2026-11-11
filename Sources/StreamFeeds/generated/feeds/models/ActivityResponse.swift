@@ -10,6 +10,8 @@ public final class ActivityResponse: Sendable, Decodable {
     public let attachments: [Attachment]
     /// Number of bookmarks on the activity
     public let bookmarkCount: Int
+    /// Enriched collection data referenced by this activity
+    public let collections: [String: EnrichedCollectionResponse]
     /// Number of comments on the activity
     public let commentCount: Int
     /// Latest 5 comments of this activity (comment replies excluded)
@@ -73,9 +75,10 @@ public final class ActivityResponse: Sendable, Decodable {
     /// If visibility is 'tag', this is the tag name
     public let visibilityTag: String?
 
-    public init(attachments: [Attachment], bookmarkCount: Int, commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], score: Double, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
+    public init(attachments: [Attachment], bookmarkCount: Int, collections: [String: EnrichedCollectionResponse], commentCount: Int, comments: [CommentResponse], createdAt: Date, currentFeed: FeedResponse? = nil, custom: [String: RawJSON], deletedAt: Date? = nil, editedAt: Date? = nil, expiresAt: Date? = nil, feeds: [String], filterTags: [String], hidden: Bool, id: String, interestTags: [String], latestReactions: [FeedsReactionResponse], location: Location? = nil, mentionedUsers: [UserResponse], moderation: ModerationV2Response? = nil, notificationContext: NotificationContext? = nil, ownBookmarks: [BookmarkResponse], ownReactions: [FeedsReactionResponse], parent: ActivityResponse? = nil, poll: PollResponseData? = nil, popularity: Int, reactionCount: Int, reactionGroups: [String: FeedsReactionGroupResponse], score: Double, searchData: [String: RawJSON], shareCount: Int, text: String? = nil, type: String, updatedAt: Date, user: UserResponse, visibility: ActivityVisibility, visibilityTag: String? = nil) {
         self.attachments = attachments
         self.bookmarkCount = bookmarkCount
+        self.collections = collections
         self.commentCount = commentCount
         self.comments = comments
         self.createdAt = createdAt
@@ -116,6 +119,7 @@ public final class ActivityResponse: Sendable, Decodable {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.attachments = try container.decode([Attachment].self, forKey: .attachments)
         self.bookmarkCount = try container.decode(Int.self, forKey: .bookmarkCount)
+        self.collections = try container.decode([String: EnrichedCollectionResponse].self, forKey: .collections)
         self.commentCount = try container.decode(Int.self, forKey: .commentCount)
         self.comments = try container.decode([CommentResponse].self, forKey: .comments)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
@@ -157,6 +161,7 @@ extension ActivityResponse: Hashable {
     public static func == (lhs: ActivityResponse, rhs: ActivityResponse) -> Bool {
         lhs.attachments == rhs.attachments &&
             lhs.bookmarkCount == rhs.bookmarkCount &&
+            lhs.collections == rhs.collections &&
             lhs.commentCount == rhs.commentCount &&
             lhs.comments == rhs.comments &&
             lhs.createdAt == rhs.createdAt &&
@@ -196,6 +201,7 @@ extension ActivityResponse: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
         hasher.combine(bookmarkCount)
+        hasher.combine(collections)
         hasher.combine(commentCount)
         hasher.combine(comments)
         hasher.combine(createdAt)

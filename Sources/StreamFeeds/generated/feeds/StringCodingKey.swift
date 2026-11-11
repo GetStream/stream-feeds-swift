@@ -93,6 +93,7 @@ extension StringCodingKey {
     static let childrenCounts: StringCodingKey = "children_counts"
     static let cid: StringCodingKey = "cid"
     static let collectionRefs: StringCodingKey = "collection_refs"
+    static let collections: StringCodingKey = "collections"
     static let color: StringCodingKey = "color"
     static let comment: StringCodingKey = "comment"
     static let commentCount: StringCodingKey = "comment_count"

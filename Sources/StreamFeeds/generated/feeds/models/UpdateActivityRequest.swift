@@ -8,6 +8,8 @@ import StreamCore
 public final class UpdateActivityRequest: Sendable, Encodable, JSONEncodable {
     /// List of attachments for the activity
     public let attachments: [Attachment]?
+    /// Collections that this activity references
+    public let collectionRefs: [String]?
     /// Custom data for the activity
     public let custom: [String: RawJSON]?
     /// Time when the activity will expire
@@ -26,8 +28,9 @@ public final class UpdateActivityRequest: Sendable, Encodable, JSONEncodable {
     /// Visibility setting for the activity
     public let visibility: ActivityVisibility?
 
-    public init(attachments: [Attachment]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: Location? = nil, pollId: String? = nil, text: String? = nil, visibility: ActivityVisibility? = nil) {
+    public init(attachments: [Attachment]? = nil, collectionRefs: [String]? = nil, custom: [String: RawJSON]? = nil, expiresAt: Date? = nil, feeds: [String]? = nil, filterTags: [String]? = nil, interestTags: [String]? = nil, location: Location? = nil, pollId: String? = nil, text: String? = nil, visibility: ActivityVisibility? = nil) {
         self.attachments = attachments
+        self.collectionRefs = collectionRefs
         self.custom = custom
         self.expiresAt = expiresAt
         self.feeds = feeds
@@ -42,6 +45,7 @@ public final class UpdateActivityRequest: Sendable, Encodable, JSONEncodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
         try container.encodeIfPresent(attachments, forKey: .attachments)
+        try container.encodeIfPresent(collectionRefs, forKey: .collectionRefs)
         try container.encodeIfPresent(custom, forKey: .custom)
         try container.encodeIfPresent(expiresAt, forKey: .expiresAt)
         try container.encodeIfPresent(feeds, forKey: .feeds)
@@ -57,6 +61,7 @@ public final class UpdateActivityRequest: Sendable, Encodable, JSONEncodable {
 extension UpdateActivityRequest: Hashable {
     public static func == (lhs: UpdateActivityRequest, rhs: UpdateActivityRequest) -> Bool {
         lhs.attachments == rhs.attachments &&
+            lhs.collectionRefs == rhs.collectionRefs &&
             lhs.custom == rhs.custom &&
             lhs.expiresAt == rhs.expiresAt &&
             lhs.feeds == rhs.feeds &&
@@ -70,6 +75,7 @@ extension UpdateActivityRequest: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(attachments)
+        hasher.combine(collectionRefs)
         hasher.combine(custom)
         hasher.combine(expiresAt)
         hasher.combine(feeds)

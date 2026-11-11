@@ -27,6 +27,34 @@ struct Activity_Tests {
         #expect(statePoll.options.map(\.id) == ["option-1", "option-2"])
     }
     
+    @Test func getLeavesOutCollectionsThatDontExist() async throws {
+        let client = FeedsClient.mock(
+            apiTransport: .withMatchedResponses([
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/activities/"),
+                    payload: GetActivityResponse.dummy(
+                        activity: .dummy(
+                            collections: [
+                                "products:1": EnrichedCollectionResponse(collection: CollectionResponse(id: "1", name: "products"), status: .ok),
+                                "products:2": EnrichedCollectionResponse(collection: CollectionResponse(id: "2", name: "products"), status: .notfound)
+                            ],
+                            id: "activity-123"
+                        )
+                    )
+                ),
+                .init(
+                    matching: .pathPrefix("/api/v2/feeds/comments"),
+                    payload: GetCommentsResponse.dummy(comments: [])
+                )
+            ])
+        )
+        let activity = client.activity(for: "activity-123", in: FeedId(group: "user", id: "jane"))
+
+        let activityData = try await activity.get()
+
+        #expect(activityData.collections.keys.sorted() == ["products:1"])
+    }
+    
     @Test func reconnectionRefetchesActivityAndComments() async throws {
         let client = FeedsClient.mock(
             apiTransport: .withMatchedResponses([

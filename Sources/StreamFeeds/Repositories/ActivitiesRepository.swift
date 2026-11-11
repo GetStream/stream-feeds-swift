@@ -97,6 +97,13 @@ final class ActivitiesRepository: Sendable {
         return response.activities.map { $0.toModel() }
     }
     
+    // MARK: - Collections
+    
+    func readCollections(references: [String]) async throws -> [CollectionData] {
+        let response = try await apiClient.readCollections(collectionRefs: references)
+        return response.collections.map { $0.toModel() }
+    }
+    
     // MARK: - Activity Interactions
     
     func pin(_ flag: Bool, activityId: String, in feed: FeedId) async throws -> ActivityData {
