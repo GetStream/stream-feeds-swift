@@ -24,16 +24,6 @@ import StreamFeeds
         suppressUnusedWarning(reaction)
     }
     
-    func overview2() async throws {
-        let feedData = try await feed.getOrCreate()
-        // Last 15 reactions on the first activity
-        print(feed.state.activities[0].latestReactions)
-        // Count of reactions by type
-        print(feed.state.activities[0].reactionGroups)
-        
-        suppressUnusedWarning(feedData)
-    }
-
     func overviewWithFriendReactions() async throws {
         let feed = client.feed(
             for: FeedQuery(
