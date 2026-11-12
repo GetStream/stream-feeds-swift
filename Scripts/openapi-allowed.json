@@ -11,6 +11,7 @@
     "ban",
     "blockUsers",
     "castPollVote",
+    "createCollections",
     "createPoll",
     "createPollOption",
     "deleteActivities",
@@ -18,6 +19,7 @@
     "deleteActivityReaction",
     "deleteBookmark",
     "deleteBookmarkFolder",
+    "deleteCollections",
     "deleteComment",
     "deleteCommentReaction",
     "deleteConfig",
@@ -48,6 +50,7 @@
     "queryActivityReactions",
     "queryBookmarkFolders",
     "queryBookmarks",
+    "queryCollections",
     "queryCommentReactions",
     "queryComments",
     "queryFeedMembers",
@@ -70,6 +73,7 @@
     "updateActivity",
     "updateBookmark",
     "updateBookmarkFolder",
+    "updateCollections",
     "updateComment",
     "updateFeed",
     "updateFeedMembers",
@@ -168,11 +172,13 @@
     "ConfigResponse",
     "ConnectedEvent",
     "ConnectionErrorEvent",
+    "CreateCollectionsResponse",
     "DeleteActivitiesResponse",
     "DeleteActivityReactionResponse",
     "DeleteActivityResponse",
     "DeleteBookmarkFolderResponse",
     "DeleteBookmarkResponse",
+    "DeleteCollectionsResponse",
     "DeleteCommentReactionResponse",
     "DeleteCommentResponse",
     "DeleteFeedResponse",
@@ -257,6 +263,7 @@
     "QueryActivityReactionsResponse",
     "QueryBookmarkFoldersResponse",
     "QueryBookmarksResponse",
+    "QueryCollectionsResponse",
     "QueryCommentReactionsResponse",
     "QueryCommentsResponse",
     "QueryFeedMembersResponse",
@@ -286,6 +293,7 @@
     "UpdateActivityResponse",
     "UpdateBookmarkFolderResponse",
     "UpdateBookmarkResponse",
+    "UpdateCollectionsResponse",
     "UpdateCommentResponse",
     "UpdateFeedMembersResponse",
     "UpdateFeedResponse",
@@ -318,6 +326,7 @@
     "CastPollVoteRequest",
     "CollectionRequest",
     "ContentCountRuleParameters",
+    "CreateCollectionsRequest",
     "CreatePollOptionRequest",
     "CreatePollRequest",
     "CustomActionRequestPayload",
@@ -349,6 +358,7 @@
     "QueryActivityReactionsRequest",
     "QueryBookmarkFoldersRequest",
     "QueryBookmarksRequest",
+    "QueryCollectionsRequest",
     "QueryCommentReactionsRequest",
     "QueryCommentsRequest",
     "QueryFeedMembersRequest",
@@ -374,6 +384,8 @@
     "UpdateActivityRequest",
     "UpdateBookmarkFolderRequest",
     "UpdateBookmarkRequest",
+    "UpdateCollectionRequest",
+    "UpdateCollectionsRequest",
     "UpdateCommentRequest",
     "UpdateFeedMembersRequest",
     "UpdateFeedRequest",
@@ -526,8 +538,7 @@
       { "algorithmUsed": "Unused (not exposed)" }
     ],
     "GetOrCreateFeedRequest": [
-      { "discardActors": "Gated to a single organization" },
-      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
+      { "discardActors": "Gated to a single organization" }
     ],
     "GetOrCreateFeedResponse": [
       { "degradedSelectors": "Unused (not exposed)" },
@@ -616,7 +627,7 @@
       { "chatPreferences": "Chat only" }
     ],
     "QueryCommentsRequest": [
-      { "idAround": "Unused (not exposed), state layer cannot load pages before an idAround page yet" }
+      { "idAround": "Unused (not exposed), backend returns no next or prev cursors on id_around pages" }
     ],
     "QueryFollowsRequest": [
       { "includeGroupCounts": "Server-side only" }

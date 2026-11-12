@@ -19,6 +19,23 @@ public struct CollectionData: Equatable, Sendable {
     public let updatedAt: Date?
     /// The identifier of the user who owns the collection.
     public let userId: String?
+
+    /// The reference of the collection in the `name:id` format.
+    public var reference: String { "\(name):\(id)" }
+}
+
+extension CollectionData {
+    /// Update responses are built from the request and their creation date is not the stored one.
+    func keepingCreatedAt(of existing: CollectionData) -> CollectionData {
+        CollectionData(
+            createdAt: existing.createdAt,
+            custom: custom,
+            id: id,
+            name: name,
+            updatedAt: updatedAt,
+            userId: userId
+        )
+    }
 }
 
 // MARK: - Model Conversions

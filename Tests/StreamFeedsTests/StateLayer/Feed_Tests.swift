@@ -81,6 +81,56 @@ struct Feed_Tests {
         #expect(await feed.state.canLoadMoreActivities == false)
     }
 
+    @Test func reconnectionAfterActivitiesAroundRefetchesNewestActivities() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
+        let transport = APITransportMock.withMatchedResponses([
+            .init(
+                matching: .pathPrefix(feedPath + "/members"),
+                payload: QueryFeedMembersResponse.dummy(members: [])
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(createdAt: .fixed(offset: 4), id: "4"),
+                        .dummy(createdAt: .fixed(offset: 5), id: "5")
+                    ],
+                    prev: "newer-cursor"
+                )
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(createdAt: .fixed(offset: 9), id: "9")],
+                    next: "page-2-cursor"
+                )
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(
+                    activities: [.dummy(createdAt: .fixed(offset: 8), id: "8")],
+                    next: nil,
+                    prev: "page-1-cursor"
+                )
+            )
+        ])
+        let client = FeedsClient.mock(apiTransport: transport)
+        var query = FeedQuery(feed: feedId, watch: false)
+        query.activityIdAround = "5"
+        let feed = client.feed(for: query)
+        try await feed.getOrCreate()
+
+        client.simulateReconnection()
+
+        try await waitUntil { feed.state.activities.map(\.id) == ["9", "8"] }
+        #expect(await feed.state.canLoadPreviousActivities == false)
+        let feedRequests = transport.requests.value.filter { !$0.url.path.hasSuffix("/members") }
+        let refetchRequest = try #require(feedRequests.dropFirst().first)
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(refetchRequest.body))
+        #expect(body["id_around"] == nil)
+    }
+
     @Test func reconnectionRefetchesMembersWithConfiguredLimit() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
@@ -485,6 +535,95 @@ struct Feed_Tests {
 
         let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
         #expect(languages == ["fr", "fr"])
+    }
+
+    @Test func getOrCreateSendsActivityIdAround() async throws {
+        let transport = APITransportMock.withPayloads([GetOrCreateFeedResponse.dummy()])
+        var query = FeedQuery(group: "user", id: "jane", watch: false)
+        query.activityIdAround = "5"
+
+        try await FeedsClient.mock(apiTransport: transport).feed(for: query).getOrCreate()
+
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(transport.requests.value.first?.body))
+        #expect(body["id_around"] == .string("5"))
+    }
+
+    @Test func queryActivitiesAroundReplacesActivitiesAndPagination() async throws {
+        let transport = APITransportMock.withPayloads([
+            GetOrCreateFeedResponse.dummy(activities: [.dummy(createdAt: .fixed(offset: 10), id: "10")]),
+            GetOrCreateFeedResponse.dummy(
+                activities: [
+                    .dummy(createdAt: .fixed(offset: 4), id: "4"),
+                    .dummy(createdAt: .fixed(offset: 5), id: "5"),
+                    .dummy(createdAt: .fixed(offset: 6), id: "6")
+                ],
+                next: "older-cursor",
+                prev: "newer-cursor"
+            )
+        ])
+        let feed = FeedsClient.mock(apiTransport: transport).feed(for: FeedQuery(group: "user", id: "jane", watch: false))
+        try await feed.getOrCreate()
+
+        let activities = try await feed.queryActivities(around: "5", limit: 3)
+
+        #expect(activities.map(\.id) == ["6", "5", "4"])
+        #expect(await feed.state.activities.map(\.id) == ["6", "5", "4"])
+        #expect(await feed.state.activitiesPagination == PaginationData(next: "older-cursor", previous: "newer-cursor"))
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(transport.requests.value.last?.body))
+        #expect(body["id_around"] == .string("5"))
+        #expect(body["limit"] == .number(3))
+        #expect(body["next"] == nil)
+        #expect(body["prev"] == nil)
+    }
+
+    @Test func queryPreviousActivitiesMergesAndKeepsNextCursor() async throws {
+        let transport = APITransportMock.withPayloads([
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(createdAt: .fixed(offset: 5), id: "5")],
+                next: "older-cursor",
+                prev: "newer-cursor"
+            ),
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(createdAt: .fixed(offset: 6), id: "6")],
+                next: "page-cursor",
+                prev: nil
+            )
+        ])
+        let feed = FeedsClient.mock(apiTransport: transport).feed(for: FeedQuery(group: "user", id: "jane", watch: false))
+        try await feed.queryActivities(around: "5")
+        #expect(await feed.state.canLoadPreviousActivities)
+
+        let activities = try await feed.queryPreviousActivities()
+
+        #expect(activities.map(\.id) == ["6"])
+        #expect(await feed.state.activities.map(\.id) == ["6", "5"])
+        #expect(await feed.state.activitiesPagination == PaginationData(next: "older-cursor", previous: nil))
+        #expect(await feed.state.canLoadPreviousActivities == false)
+        let body = try CodableHelper.jsonDecoder.decode([String: RawJSON].self, from: #require(transport.requests.value.last?.body))
+        #expect(body["prev"] == .string("newer-cursor"))
+        #expect(body["next"] == nil)
+    }
+
+    @Test func queryMoreActivitiesKeepsPreviousCursor() async throws {
+        let transport = APITransportMock.withPayloads([
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(createdAt: .fixed(offset: 5), id: "5")],
+                next: "older-cursor",
+                prev: "newer-cursor"
+            ),
+            GetOrCreateFeedResponse.dummy(
+                activities: [.dummy(createdAt: .fixed(offset: 4), id: "4")],
+                next: nil,
+                prev: "page-cursor"
+            )
+        ])
+        let feed = FeedsClient.mock(apiTransport: transport).feed(for: FeedQuery(group: "user", id: "jane", watch: false))
+        try await feed.queryActivities(around: "5")
+
+        try await feed.queryMoreActivities()
+
+        #expect(await feed.state.activities.map(\.id) == ["5", "4"])
+        #expect(await feed.state.activitiesPagination == PaginationData(next: nil, previous: "newer-cursor"))
     }
 
     @Test func addBookmarkUpdatesState() async throws {
@@ -1049,6 +1188,57 @@ struct Feed_Tests {
         #expect(finalActivities.count == 2)
         #expect(finalActivities.map(\.id) == ["new-activity", "1"])
         #expect(finalActivities.first?.text == "New activity content")
+    }
+
+    @Test func activityAddedEventIsSkippedWhileNewerActivitiesRemain() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let feedPath = "/api/v2/feeds/feed_groups/user/feeds/jane"
+        let client = FeedsClient.mock(apiTransport: .withMatchedResponses([
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(activities: [.dummy(createdAt: .fixed(offset: 5), id: "5")], prev: "newer-cursor")
+            ),
+            .init(
+                matching: .pathPrefix(feedPath),
+                payload: GetOrCreateFeedResponse.dummy(activities: [.dummy(createdAt: .fixed(offset: 6), id: "6")], prev: nil)
+            )
+        ]))
+        let feed = client.feed(for: FeedQuery(feed: feedId, watch: false))
+        try await feed.queryActivities(around: "5")
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityAddedEvent.dummy(activity: .dummy(createdAt: .fixed(offset: 7), id: "7"), fid: feedId.rawValue)
+        )
+        #expect(await feed.state.activities.map(\.id) == ["5"])
+
+        try await feed.queryPreviousActivities()
+        await client.eventsMiddleware.sendEvent(
+            ActivityAddedEvent.dummy(activity: .dummy(createdAt: .fixed(offset: 8), id: "8"), fid: feedId.rawValue)
+        )
+        #expect(await feed.state.activities.map(\.id) == ["8", "6", "5"])
+    }
+
+    @Test func activityBatchUpdateSkipsAddedActivitiesWhileNewerActivitiesRemain() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(apiTransport: .withPayloads([
+            GetOrCreateFeedResponse.dummy(
+                activities: [
+                    .dummy(createdAt: .fixed(offset: 4), feeds: [feedId.rawValue], id: "4"),
+                    .dummy(createdAt: .fixed(offset: 5), feeds: [feedId.rawValue], id: "5")
+                ],
+                prev: "newer-cursor"
+            )
+        ]))
+        let feed = client.feed(for: FeedQuery(feed: feedId, watch: false))
+        try await feed.queryActivities(around: "5")
+
+        let updates = ModelUpdates<ActivityData>(
+            added: [ActivityResponse.dummy(createdAt: .fixed(offset: 7), feeds: [feedId.rawValue], id: "7").toModel()],
+            removedIds: ["4"]
+        )
+        await client.stateLayerEventPublisher.sendEvent(.activityBatchUpdate(updates), source: .local)
+
+        #expect(await feed.state.activities.map(\.id) == ["5"])
     }
 
     @Test func activityAddedEventWithMatchingActivitiesFilterIsInserted() async throws {

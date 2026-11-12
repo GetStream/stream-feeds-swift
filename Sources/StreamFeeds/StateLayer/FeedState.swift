@@ -86,6 +86,13 @@ import StreamCore
     /// Indicates whether there are more activities available to load.
     public var canLoadMoreActivities: Bool { activitiesPagination?.next != nil }
     
+    /// Indicates whether there are activities to load before the first loaded activity.
+    ///
+    /// It becomes true after ``Feed/queryActivities(around:limit:)``. ``Feed/queryPreviousActivities(limit:)`` loads the previous activities.
+    ///
+    /// - Note: While it is true, activities added through web-socket events are not inserted. The previous pages include them.
+    public var canLoadPreviousActivities: Bool { activitiesPagination?.previous != nil }
+    
     /// The configuration used for the last activities query.
     private(set) var activitiesQueryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>?
     
@@ -110,7 +117,10 @@ extension FeedState {
             case .activityAdded(let activityData, let eventFeedId):
                 guard feed == eventFeedId else { return }
                 guard matchesActivityQuery(activityData) else { return }
-                await self?.access { $0.activities.sortedInsert(activityData, sorting: $0.activitiesSorting) }
+                await self?.access { state in
+                    guard !state.canLoadPreviousActivities else { return }
+                    state.activities.sortedInsert(activityData, sorting: state.activitiesSorting)
+                }
             case .activityDeleted(let activityId, let eventFeedId):
                 guard feed == eventFeedId else { return }
                 await self?.access { state in
@@ -127,7 +137,7 @@ extension FeedState {
                 guard !added.isEmpty || !updated.isEmpty || !removedIds.isEmpty else { return }
                 await self?.access { state in
                     let sorting = state.activitiesSorting
-                    if !added.isEmpty {
+                    if !added.isEmpty, !state.canLoadPreviousActivities {
                         state.activities = state.activities.sortedMerge(added.sorted(by: sorting.areInIncreasingOrder()), sorting: sorting)
                     }
                     if !updated.isEmpty {
@@ -498,15 +508,34 @@ extension FeedState {
     
     func didRefetchActivities(_ response: PaginationResult<ActivityData>) {
         activities = response.models
-        activitiesPagination = response.pagination
+        // Refetching starts from the newest page
+        activitiesPagination = PaginationData(next: response.pagination.next, previous: nil)
     }
     
     func didPaginateActivities(
         with response: PaginationResult<ActivityData>,
         for queryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
     ) {
-        activitiesPagination = response.pagination
+        activitiesPagination = PaginationData(next: response.pagination.next, previous: activitiesPagination?.previous)
         activitiesQueryConfig = queryConfig
         activities = activities.sortedMerge(response.models, sorting: activitiesSorting)
+    }
+    
+    func didPaginatePreviousActivities(
+        with response: PaginationResult<ActivityData>,
+        for queryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
+    ) {
+        activitiesPagination = PaginationData(next: activitiesPagination?.next, previous: response.pagination.previous)
+        activitiesQueryConfig = queryConfig
+        activities = activities.sortedMerge(response.models, sorting: activitiesSorting)
+    }
+    
+    func didQueryActivitiesAround(
+        with response: PaginationResult<ActivityData>,
+        for queryConfig: QueryConfiguration<ActivitiesFilter, ActivitiesSortField>
+    ) {
+        activitiesPagination = response.pagination
+        activitiesQueryConfig = queryConfig
+        activities = response.models
     }
 }

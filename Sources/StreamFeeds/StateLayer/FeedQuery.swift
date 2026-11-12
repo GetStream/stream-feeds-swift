@@ -26,6 +26,11 @@ public struct FeedQuery: Sendable {
     /// Maximum number of activities to retrieve.
     public var activityLimit: Int?
     
+    /// Loads the page of activities around the activity with this ID instead of the newest activities.
+    ///
+    /// - Important: Can't be combined with `activityNext` or `activityPrevious`. Aggregated feeds reject it.
+    public var activityIdAround: String?
+    
     /// Pagination cursor for fetching the next page of activities.
     public var activityNext: String?
     
@@ -203,6 +208,7 @@ extension FeedQuery {
             followersPagination: followerLimit.flatMap { PagerRequest(limit: $0) },
             followingPagination: followingLimit.flatMap { PagerRequest(limit: $0) },
             friendReactionsOptions: friendReactionsOptions,
+            idAround: activityIdAround,
             interestWeights: interestWeights,
             limit: activityLimit,
             memberPagination: memberLimit.flatMap { PagerRequest(limit: $0) },
