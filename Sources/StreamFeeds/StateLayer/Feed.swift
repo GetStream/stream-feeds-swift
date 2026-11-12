@@ -254,32 +254,69 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func queryMoreActivities(limit: Int? = nil) async throws -> [ActivityData] {
-        let nextQuery: FeedQuery? = await state.access { _ in
-            guard let next = state.activitiesPagination?.next else { return nil }
-            var query = FeedQuery(
-                feed: feedQuery.feed,
-                activityFilter: state.activitiesQueryConfig?.filter,
-                activityLimit: limit ?? feedQuery.activityLimit,
-                data: nil,
-                enrichmentOptions: feedQuery.enrichmentOptions,
-                externalRanking: nil,
-                followerLimit: 0,
-                followingLimit: 0,
-                friendReactionsOptions: feedQuery.friendReactionsOptions,
-                interestWeights: nil,
-                language: feedQuery.language,
-                memberLimit: 0,
-                view: nil,
-                viewerLocation: feedQuery.viewerLocation,
-                watch: feedQuery.watch
-            )
-            query.activityNext = next
-            return query
-        }
-        guard let nextQuery else { return [] }
-        let response = try await feedsRepository.getOrCreateFeed(with: nextQuery)
+        guard let next = await state.access({ $0.activitiesPagination?.next }) else { return [] }
+        var query = activitiesPageQuery(limit: limit)
+        query.activityNext = next
+        let response = try await feedsRepository.getOrCreateFeed(with: query)
         await state.didPaginateActivities(with: response.activities, for: response.activitiesQueryConfig)
         return response.activities.models
+    }
+    
+    /// Loads the activities before the first loaded activity using the previous page token.
+    ///
+    /// The previous page token is set after ``queryActivities(around:limit:)`` or a query with ``FeedQuery/activityIdAround``.
+    ///
+    /// - Parameter limit: Optional limit for the number of activities to load. If `nil`, uses the default limit.
+    /// - Returns: An array of the loaded activity data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func queryPreviousActivities(limit: Int? = nil) async throws -> [ActivityData] {
+        guard let previous = await state.access({ $0.activitiesPagination?.previous }) else { return [] }
+        var query = activitiesPageQuery(limit: limit)
+        query.activityPrevious = previous
+        let response = try await feedsRepository.getOrCreateFeed(with: query)
+        await state.didPaginatePreviousActivities(with: response.activities, for: response.activitiesQueryConfig)
+        return response.activities.models
+    }
+    
+    /// Replaces the loaded activities with a page centered on the activity with the given ID.
+    ///
+    /// Use ``queryPreviousActivities(limit:)`` and ``queryMoreActivities(limit:)`` to load the activities on either side.
+    ///
+    /// - Important: Ranked feeds and feeds with several activity selectors return the page without page tokens. Aggregated feeds reject the request.
+    ///
+    /// - Parameters:
+    ///   - activityId: The ID of the activity to center the page on.
+    ///   - limit: Optional limit for the number of activities to load. If `nil`, uses the default limit.
+    /// - Returns: An array of the loaded activity data
+    /// - Throws: `APIError` if the activity is not in the feed, the network request fails or the server returns an error
+    @discardableResult
+    public func queryActivities(around activityId: String, limit: Int? = nil) async throws -> [ActivityData] {
+        var query = activitiesPageQuery(limit: limit)
+        query.activityIdAround = activityId
+        let response = try await feedsRepository.getOrCreateFeed(with: query)
+        await state.didQueryActivitiesAround(with: response.activities, for: response.activitiesQueryConfig)
+        return response.activities.models
+    }
+    
+    private func activitiesPageQuery(limit: Int?) -> FeedQuery {
+        FeedQuery(
+            feed: feedQuery.feed,
+            activityFilter: feedQuery.activityFilter,
+            activityLimit: limit ?? feedQuery.activityLimit,
+            data: nil,
+            enrichmentOptions: feedQuery.enrichmentOptions,
+            externalRanking: nil,
+            followerLimit: 0,
+            followingLimit: 0,
+            friendReactionsOptions: feedQuery.friendReactionsOptions,
+            interestWeights: nil,
+            language: feedQuery.language,
+            memberLimit: 0,
+            view: nil,
+            viewerLocation: feedQuery.viewerLocation,
+            watch: feedQuery.watch
+        )
     }
     
     // MARK: - Bookmarks
@@ -687,6 +724,7 @@ extension Feed: StateRefetching {
     
     func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
         var query = feedQuery
+        query.activityIdAround = nil
         // Members are refetched by the member list
         query.memberLimit = 0
         if let next {

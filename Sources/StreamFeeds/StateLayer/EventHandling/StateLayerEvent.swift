@@ -76,6 +76,12 @@ enum StateLayerEvent: Sendable {
     /// when activities are added. For this particular case we have bookkeeping and we make
     /// sure state-layer updates `ownCapabilities` for already fetched models as well.
     case feedOwnCapabilitiesUpdated([FeedId: Set<FeedOwnCapability>])
+
+    // Collections have no web-socket events, so the client sends these after its own requests.
+    case collectionsAdded([CollectionData])
+    /// Collection references in the `name:id` format.
+    case collectionsDeleted(Set<String>)
+    case collectionsUpdated([CollectionData])
 }
 
 extension StateLayerEvent {

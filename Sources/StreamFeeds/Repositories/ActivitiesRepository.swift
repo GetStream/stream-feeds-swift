@@ -109,8 +109,30 @@ final class ActivitiesRepository: Sendable {
     
     // MARK: - Collections
     
+    func createCollections(request: CreateCollectionsRequest) async throws -> [CollectionData] {
+        let response = try await apiClient.createCollections(createCollectionsRequest: request)
+        return response.collections.map { $0.toModel() }
+    }
+    
+    func deleteCollections(references: [String]) async throws {
+        _ = try await apiClient.deleteCollections(collectionRefs: references)
+    }
+    
+    func queryCollections(with query: CollectionsQuery) async throws -> PaginationResult<CollectionData> {
+        let response = try await apiClient.queryCollections(queryCollectionsRequest: query.toRequest())
+        return PaginationResult(
+            models: response.collections.map { $0.toModel() },
+            pagination: PaginationData(next: response.next, previous: response.prev)
+        )
+    }
+    
     func readCollections(references: [String]) async throws -> [CollectionData] {
         let response = try await apiClient.readCollections(collectionRefs: references)
+        return response.collections.map { $0.toModel() }
+    }
+    
+    func updateCollections(request: UpdateCollectionsRequest) async throws -> [CollectionData] {
+        let response = try await apiClient.updateCollections(updateCollectionsRequest: request)
         return response.collections.map { $0.toModel() }
     }
     
