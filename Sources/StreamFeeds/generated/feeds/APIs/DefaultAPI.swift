@@ -435,6 +435,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func deleteCollections(collectionRefs: [String]) async throws -> DeleteCollectionsResponse {
+        let path = "/api/v2/feeds/collections"
+
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "collection_refs": (wrappedValue: collectionRefs.encodeToJSON(), isExplode: true)
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteCollectionsResponse.self, from: $0)
+        }
+    }
+
     open func readCollections(collectionRefs: [String]?) async throws -> ReadCollectionsResponse {
         let path = "/api/v2/feeds/collections"
 
@@ -449,6 +466,45 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(ReadCollectionsResponse.self, from: $0)
+        }
+    }
+
+    open func updateCollections(updateCollectionsRequest: UpdateCollectionsRequest) async throws -> UpdateCollectionsResponse {
+        let path = "/api/v2/feeds/collections"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateCollectionsRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateCollectionsResponse.self, from: $0)
+        }
+    }
+
+    open func createCollections(createCollectionsRequest: CreateCollectionsRequest) async throws -> CreateCollectionsResponse {
+        let path = "/api/v2/feeds/collections"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: createCollectionsRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(CreateCollectionsResponse.self, from: $0)
+        }
+    }
+
+    open func queryCollections(queryCollectionsRequest: QueryCollectionsRequest) async throws -> QueryCollectionsResponse {
+        let path = "/api/v2/feeds/collections/query"
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "POST",
+            request: queryCollectionsRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(QueryCollectionsResponse.self, from: $0)
         }
     }
 
@@ -1464,7 +1520,15 @@ protocol DefaultAPIEndpoints {
 
     func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
 
+    func deleteCollections(collectionRefs: [String]) async throws -> DeleteCollectionsResponse
+
     func readCollections(collectionRefs: [String]?) async throws -> ReadCollectionsResponse
+
+    func updateCollections(updateCollectionsRequest: UpdateCollectionsRequest) async throws -> UpdateCollectionsResponse
+
+    func createCollections(createCollectionsRequest: CreateCollectionsRequest) async throws -> CreateCollectionsResponse
+
+    func queryCollections(queryCollectionsRequest: QueryCollectionsRequest) async throws -> QueryCollectionsResponse
 
     func getComments(objectId: String, objectType: String, depth: Int?, sort: String?, repliesLimit: Int?, idAround: String?, language: String?, translateText: Bool?, limit: Int?, prev: String?, next: String?, includeTopLevelCommentCount: Bool?) async throws -> GetCommentsResponse
 

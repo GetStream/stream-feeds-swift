@@ -223,6 +223,7 @@ extension StringCodingKey {
     static let i18n: StringCodingKey = "i18n"
     static let icon: StringCodingKey = "icon"
     static let id: StringCodingKey = "id"
+    static let idAround: StringCodingKey = "id_around"
     static let ids: StringCodingKey = "ids"
     static let image: StringCodingKey = "image"
     static let imageContentParams: StringCodingKey = "image_content_params"

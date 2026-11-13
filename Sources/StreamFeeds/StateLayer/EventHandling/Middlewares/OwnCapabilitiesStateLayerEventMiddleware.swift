@@ -140,6 +140,7 @@ private extension StateLayerEvent {
             return [followData.sourceFeed, followData.targetFeed]
         case .activityMarked, .activityDeleted,
              .bookmarkFolderDeleted, .bookmarkFolderUpdated,
+             .collectionsAdded, .collectionsDeleted, .collectionsUpdated,
              .commentDeleted, .commentUpdated, .commentsAddedBatch,
              .commentReactionAdded, .commentReactionDeleted, .commentReactionUpdated,
              .pollDeleted, .pollUpdated, .pollVoteCasted, .pollVoteChanged, .pollVoteDeleted,
