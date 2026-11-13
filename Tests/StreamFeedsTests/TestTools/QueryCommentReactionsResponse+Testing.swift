@@ -10,11 +10,9 @@ extension QueryCommentReactionsResponse {
     static func dummy(
         reactions: [FeedsReactionResponse] = [],
         next: String? = nil,
-        prev: String? = nil,
-        duration: String = "1.23ms"
+        prev: String? = nil
     ) -> QueryCommentReactionsResponse {
         QueryCommentReactionsResponse(
-            duration: duration,
             next: next,
             prev: prev,
             reactions: reactions

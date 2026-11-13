@@ -7,28 +7,23 @@ import StreamCore
 
 public final class GetCommentResponse: Sendable, Decodable {
     public let comment: CommentResponse
-    public let duration: String
 
-    public init(comment: CommentResponse, duration: String) {
+    public init(comment: CommentResponse) {
         self.comment = comment
-        self.duration = duration
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.comment = try container.decode(CommentResponse.self, forKey: .comment)
-        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 
 extension GetCommentResponse: Hashable {
     public static func == (lhs: GetCommentResponse, rhs: GetCommentResponse) -> Bool {
-        lhs.comment == rhs.comment &&
-            lhs.duration == rhs.duration
+        lhs.comment == rhs.comment
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(comment)
-        hasher.combine(duration)
     }
 }

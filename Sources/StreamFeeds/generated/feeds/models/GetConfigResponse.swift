@@ -7,28 +7,23 @@ import StreamCore
 
 public final class GetConfigResponse: Sendable, Decodable {
     public let config: ConfigResponse?
-    public let duration: String
 
-    public init(config: ConfigResponse? = nil, duration: String) {
+    public init(config: ConfigResponse? = nil) {
         self.config = config
-        self.duration = duration
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.config = try container.decodeIfPresent(ConfigResponse.self, forKey: .config)
-        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 
 extension GetConfigResponse: Hashable {
     public static func == (lhs: GetConfigResponse, rhs: GetConfigResponse) -> Bool {
-        lhs.config == rhs.config &&
-            lhs.duration == rhs.duration
+        lhs.config == rhs.config
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(config)
-        hasher.combine(duration)
     }
 }

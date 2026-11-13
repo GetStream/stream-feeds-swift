@@ -8,12 +8,10 @@ import StreamCore
 
 extension DeleteBookmarkResponse {
     static func dummy(
-        bookmark: BookmarkResponse = .dummy(),
-        duration: String = "1.23ms"
+        bookmark: BookmarkResponse = .dummy()
     ) -> DeleteBookmarkResponse {
         DeleteBookmarkResponse(
-            bookmark: bookmark,
-            duration: duration
+            bookmark: bookmark
         )
     }
 }

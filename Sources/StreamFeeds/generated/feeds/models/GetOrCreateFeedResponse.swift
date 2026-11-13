@@ -9,8 +9,6 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
     public let activities: [ActivityResponse]
     public let aggregatedActivities: [AggregatedActivityResponse]
     public let created: Bool
-    /// Duration of the request in milliseconds
-    public let duration: String
     public let feed: FeedResponse
     public let followers: [FollowResponse]
     public let followersPagination: PagerResponse?
@@ -23,11 +21,10 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
     public let pinnedActivities: [ActivityPinResponse]
     public let prev: String?
 
-    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, duration: String, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
+    public init(activities: [ActivityResponse], aggregatedActivities: [AggregatedActivityResponse], created: Bool, feed: FeedResponse, followers: [FollowResponse], followersPagination: PagerResponse? = nil, following: [FollowResponse], followingPagination: PagerResponse? = nil, memberPagination: PagerResponse? = nil, members: [FeedMemberResponse], next: String? = nil, notificationStatus: NotificationStatusResponse? = nil, pinnedActivities: [ActivityPinResponse], prev: String? = nil) {
         self.activities = activities
         self.aggregatedActivities = aggregatedActivities
         self.created = created
-        self.duration = duration
         self.feed = feed
         self.followers = followers
         self.followersPagination = followersPagination
@@ -46,7 +43,6 @@ public final class GetOrCreateFeedResponse: Sendable, Decodable {
         self.activities = try container.decode([ActivityResponse].self, forKey: .activities)
         self.aggregatedActivities = try container.decode([AggregatedActivityResponse].self, forKey: .aggregatedActivities)
         self.created = try container.decode(Bool.self, forKey: .created)
-        self.duration = try container.decode(String.self, forKey: .duration)
         self.feed = try container.decode(FeedResponse.self, forKey: .feed)
         self.followers = try container.decode([FollowResponse].self, forKey: .followers)
         self.followersPagination = try container.decodeIfPresent(PagerResponse.self, forKey: .followersPagination)
@@ -66,7 +62,6 @@ extension GetOrCreateFeedResponse: Hashable {
         lhs.activities == rhs.activities &&
             lhs.aggregatedActivities == rhs.aggregatedActivities &&
             lhs.created == rhs.created &&
-            lhs.duration == rhs.duration &&
             lhs.feed == rhs.feed &&
             lhs.followers == rhs.followers &&
             lhs.followersPagination == rhs.followersPagination &&
@@ -84,7 +79,6 @@ extension GetOrCreateFeedResponse: Hashable {
         hasher.combine(activities)
         hasher.combine(aggregatedActivities)
         hasher.combine(created)
-        hasher.combine(duration)
         hasher.combine(feed)
         hasher.combine(followers)
         hasher.combine(followersPagination)

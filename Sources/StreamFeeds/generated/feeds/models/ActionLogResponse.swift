@@ -9,7 +9,7 @@ public final class ActionLogResponse: Sendable, Decodable {
     public let aiProviders: [String]
     /// Timestamp when the action was taken
     public let createdAt: Date
-    /// Additional metadata about the action
+    /// Additional metadata about the action. An agent_recommendation log keeps the suggested action under recommended_action
     public let custom: [String: RawJSON]
     /// Unique identifier of the action log
     public let id: String

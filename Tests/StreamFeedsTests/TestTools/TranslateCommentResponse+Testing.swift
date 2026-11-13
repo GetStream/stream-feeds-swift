@@ -8,12 +8,10 @@ import StreamCore
 
 extension TranslateCommentResponse {
     static func dummy(
-        comment: CommentResponse,
-        duration: String = "0.123s"
+        comment: CommentResponse
     ) -> TranslateCommentResponse {
         TranslateCommentResponse(
-            comment: comment,
-            duration: duration
+            comment: comment
         )
     }
 }

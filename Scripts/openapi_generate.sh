@@ -40,6 +40,7 @@ sed -i '' 's/[[:<:]]WSEvent[[:>:]]/FeedsEvent/g' "$OUTPUT_DIR_FEEDS/models/Feeds
 
 remove_unused_endpoints
 remove_properties
+remove_properties_from_all_models
 
 # CHA-6288: Moderation uses duplicate models for feeds data, backend has tests to keep them in sync.
 sed -i '' -E 's/[[:<:]]FeedsV3(Activity|Comment)Response[[:>:]]/\1Response/g' \

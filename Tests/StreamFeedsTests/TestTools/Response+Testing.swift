@@ -7,11 +7,7 @@ import StreamCore
 @testable import StreamFeeds
 
 extension StreamFeeds.Response {
-    static func dummy(
-        duration: String = "0.123s"
-    ) -> StreamFeeds.Response {
-        StreamFeeds.Response(
-            duration: duration
-        )
+    static func dummy() -> StreamFeeds.Response {
+        StreamFeeds.Response()
     }
 }

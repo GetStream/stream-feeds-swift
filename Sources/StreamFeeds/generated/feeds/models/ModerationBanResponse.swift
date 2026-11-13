@@ -6,24 +6,13 @@ import Foundation
 import StreamCore
 
 public final class ModerationBanResponse: Sendable, Decodable {
-    public let duration: String
-
-    public init(duration: String) {
-        self.duration = duration
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.duration = try container.decode(String.self, forKey: .duration)
-    }
+    public init() {}
 }
 
 extension ModerationBanResponse: Hashable {
     public static func == (lhs: ModerationBanResponse, rhs: ModerationBanResponse) -> Bool {
-        lhs.duration == rhs.duration
+        true
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(duration)
-    }
+    public func hash(into hasher: inout Hasher) {}
 }

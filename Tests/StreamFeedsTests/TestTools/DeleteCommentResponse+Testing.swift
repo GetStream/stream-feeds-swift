@@ -9,13 +9,11 @@ import StreamCore
 extension DeleteCommentResponse {
     static func dummy(
         activity: ActivityResponse,
-        comment: CommentResponse,
-        duration: String = "1.23ms"
+        comment: CommentResponse
     ) -> DeleteCommentResponse {
         DeleteCommentResponse(
             activity: activity,
-            comment: comment,
-            duration: duration
+            comment: comment
         )
     }
 }

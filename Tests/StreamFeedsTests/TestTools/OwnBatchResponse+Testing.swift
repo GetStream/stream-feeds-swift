@@ -11,8 +11,7 @@ extension OwnBatchResponse {
         capabilities: [String: [FeedOwnCapability]]
     ) -> OwnBatchResponse {
         OwnBatchResponse(
-            data: capabilities.mapValues { FeedOwnData(ownCapabilities: $0) },
-            duration: "1.23ms"
+            data: capabilities.mapValues { FeedOwnData(ownCapabilities: $0) }
         )
     }
 }

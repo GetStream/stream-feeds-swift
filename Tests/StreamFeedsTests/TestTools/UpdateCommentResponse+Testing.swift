@@ -8,12 +8,10 @@ import StreamCore
 
 extension UpdateCommentResponse {
     static func dummy(
-        comment: CommentResponse,
-        duration: String = "1.23ms"
+        comment: CommentResponse
     ) -> UpdateCommentResponse {
         UpdateCommentResponse(
-            comment: comment,
-            duration: duration
+            comment: comment
         )
     }
 }

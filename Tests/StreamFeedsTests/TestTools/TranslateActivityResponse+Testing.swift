@@ -8,12 +8,10 @@ import StreamCore
 
 extension TranslateActivityResponse {
     static func dummy(
-        activity: ActivityResponse = .dummy(),
-        duration: String = "0.123s"
+        activity: ActivityResponse = .dummy()
     ) -> TranslateActivityResponse {
         TranslateActivityResponse(
-            activity: activity,
-            duration: duration
+            activity: activity
         )
     }
 }

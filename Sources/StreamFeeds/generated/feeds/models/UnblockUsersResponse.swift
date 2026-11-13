@@ -6,25 +6,13 @@ import Foundation
 import StreamCore
 
 public final class UnblockUsersResponse: Sendable, Decodable {
-    /// Duration of the request in milliseconds
-    public let duration: String
-
-    public init(duration: String) {
-        self.duration = duration
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringCodingKey.self)
-        self.duration = try container.decode(String.self, forKey: .duration)
-    }
+    public init() {}
 }
 
 extension UnblockUsersResponse: Hashable {
     public static func == (lhs: UnblockUsersResponse, rhs: UnblockUsersResponse) -> Bool {
-        lhs.duration == rhs.duration
+        true
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(duration)
-    }
+    public func hash(into hasher: inout Hasher) {}
 }
