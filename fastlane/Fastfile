@@ -33,6 +33,9 @@ lane :release do |options|
     current_version = old_content[/version: String = "([^"]+)"/, 1]
     new_content = old_content.gsub(current_version, release_version)
     File.open(swift_environment_path, 'w') { |f| f.puts(new_content) }
+
+    # Update sdk sizes
+    Dir.chdir('fastlane') { update_img_shields_sdk_sizes }
   end
 
   lint_swift_package
