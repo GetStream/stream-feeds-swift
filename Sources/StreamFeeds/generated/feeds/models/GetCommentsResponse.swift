@@ -8,13 +8,11 @@ import StreamCore
 public final class GetCommentsResponse: Sendable, Decodable {
     /// Threaded listing for the activity
     public let comments: [ThreadedCommentResponse]
-    public let duration: String
     public let next: String?
     public let prev: String?
 
-    public init(comments: [ThreadedCommentResponse], duration: String, next: String? = nil, prev: String? = nil) {
+    public init(comments: [ThreadedCommentResponse], next: String? = nil, prev: String? = nil) {
         self.comments = comments
-        self.duration = duration
         self.next = next
         self.prev = prev
     }
@@ -22,7 +20,6 @@ public final class GetCommentsResponse: Sendable, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.comments = try container.decode([ThreadedCommentResponse].self, forKey: .comments)
-        self.duration = try container.decode(String.self, forKey: .duration)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
@@ -31,14 +28,12 @@ public final class GetCommentsResponse: Sendable, Decodable {
 extension GetCommentsResponse: Hashable {
     public static func == (lhs: GetCommentsResponse, rhs: GetCommentsResponse) -> Bool {
         lhs.comments == rhs.comments &&
-            lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(comments)
-        hasher.combine(duration)
         hasher.combine(next)
         hasher.combine(prev)
     }

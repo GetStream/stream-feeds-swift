@@ -410,6 +410,7 @@
       { "followerRole": "Server-side only" }
     ],
     "ActionLogResponse": [
+      { "agentRecommendation": "Moderation tooling" },
       { "reporterType": "Moderation tooling" }
     ],
     "ActivityRequest": [
@@ -638,6 +639,7 @@
       { "filterConfig": "Moderation tooling" }
     ],
     "ReviewQueueItemResponse": [
+      { "agentReview": "Moderation tooling" },
       { "appeal": "Moderation tooling" },
       { "call": "Video only" },
       { "confidenceScore": "Moderation tooling" },
@@ -700,6 +702,7 @@
       { "type": "Moderation queries only" }
     ],
     "SubmitActionRequest": [
+      { "agentRecommendation": "Moderation tooling" },
       { "appealId": "Moderation tooling" },
       { "ban": "Moderation tooling" },
       { "block": "Moderation tooling" },
@@ -725,12 +728,14 @@
     ],
     "TextContentParameters": [
       { "labelOperator": "Moderation tooling" },
+      { "severities": "Moderation tooling" },
       { "textLength": "Moderation tooling" },
       { "textLengthOperator": "Moderation tooling" }
     ],
     "TextRuleParameters": [
       { "semanticFilterMinThreshold": "Moderation tooling" },
-      { "semanticFilterNames": "Moderation tooling" }
+      { "semanticFilterNames": "Moderation tooling" },
+      { "severities": "Moderation tooling" }
     ],
     "UpdateActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
@@ -765,6 +770,9 @@
       { "reviewQueueItemId": "Moderation review queue" },
       { "totalBans": "Webhooks only, not sent over WebSocket" }
     ],
+    "UserCustomPropertyParameters": [
+      { "expectedValue": "Moderation tooling" }
+    ],
     "UserDeactivatedEvent": [
       { "custom": "Webhooks only, not sent over WebSocket" },
       { "receivedAt": "Never set by the backend" }
@@ -794,5 +802,8 @@
     "VideoContentParameters": [
       { "labelOperator": "Moderation tooling" }
     ]
-  }
+  },
+  "removedPropertiesFromAllModels": [
+    { "duration: String": "Server-side only, request processing time" }
+  ]
 }

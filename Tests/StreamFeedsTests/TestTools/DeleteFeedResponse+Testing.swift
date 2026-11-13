@@ -8,11 +8,9 @@ import StreamCore
 
 extension DeleteFeedResponse {
     static func dummy(
-        duration: String = "1.23ms",
         taskId: String = "delete-task-123"
     ) -> DeleteFeedResponse {
         DeleteFeedResponse(
-            duration: duration,
             taskId: taskId
         )
     }

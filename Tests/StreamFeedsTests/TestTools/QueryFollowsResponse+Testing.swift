@@ -8,13 +8,11 @@ import StreamCore
 
 extension QueryFollowsResponse {
     static func dummy(
-        duration: String = "0.123s",
         follows: [FollowResponse],
         next: String? = nil,
         prev: String? = nil
     ) -> QueryFollowsResponse {
         QueryFollowsResponse(
-            duration: duration,
             follows: follows,
             next: next,
             prev: prev

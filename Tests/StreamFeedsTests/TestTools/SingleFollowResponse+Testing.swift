@@ -8,11 +8,9 @@ import StreamCore
 
 extension SingleFollowResponse {
     static func dummy(
-        duration: String = "1.23ms",
         follow: FollowResponse = .dummy()
     ) -> SingleFollowResponse {
         SingleFollowResponse(
-            duration: duration,
             follow: follow
         )
     }

@@ -1469,8 +1469,7 @@ struct Feed_Tests {
                 UpsertActivitiesResponse(
                     activities: [
                         .dummy(createdAt: .fixed(), editedAt: .fixed(), feeds: [feedId.rawValue], id: "1", text: "UPDATED TEXT")
-                    ],
-                    duration: "1.23ms"
+                    ]
                 )
             ])
         )
@@ -1525,8 +1524,7 @@ struct Feed_Tests {
                             feeds: [feedId.rawValue],
                             id: "2"
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 ),
                 UpsertActivitiesResponse(
                     activities: [
@@ -1537,8 +1535,7 @@ struct Feed_Tests {
                             id: "1",
                             text: "UPDATED TEXT"
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 ),
                 DeleteActivitiesResponse.dummy(
                     deletedIds: ["1"]
@@ -1551,8 +1548,7 @@ struct Feed_Tests {
                             feeds: ["user:someoneelse"],
                             id: "unrelated-activity"
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 )
             ]
         )

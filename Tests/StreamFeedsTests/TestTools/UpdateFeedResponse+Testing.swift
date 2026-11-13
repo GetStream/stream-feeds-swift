@@ -8,11 +8,9 @@ import StreamCore
 
 extension UpdateFeedResponse {
     static func dummy(
-        duration: String = "1.23ms",
         feed: FeedResponse = .dummy()
     ) -> UpdateFeedResponse {
         UpdateFeedResponse(
-            duration: duration,
             feed: feed
         )
     }

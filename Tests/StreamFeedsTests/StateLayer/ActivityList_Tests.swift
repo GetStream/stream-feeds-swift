@@ -223,8 +223,7 @@ struct ActivityList_Tests {
                             text: "Updated text",
                             user: .dummy(id: "current-user-id")
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 )
             ]
         )
@@ -629,8 +628,7 @@ struct ActivityList_Tests {
                             id: "activity-3",
                             user: .dummy(id: "current-user-id")
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 ),
                 UpsertActivitiesResponse(
                     activities: [
@@ -641,8 +639,7 @@ struct ActivityList_Tests {
                             text: "UPDATED TEXT",
                             user: .dummy(id: "current-user-id")
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 ),
                 DeleteActivitiesResponse.dummy(
                     deletedIds: ["activity-1"]
@@ -655,8 +652,7 @@ struct ActivityList_Tests {
                             id: "unrelated-activity",
                             user: .dummy(id: "different-user")
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 )
             ]
         )

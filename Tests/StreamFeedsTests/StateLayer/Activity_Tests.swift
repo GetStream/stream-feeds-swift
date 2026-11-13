@@ -705,8 +705,7 @@ struct Activity_Tests {
                             id: "activity-123",
                             text: "UPDATED TEXT"
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 ),
                 UpsertActivitiesResponse(
                     activities: [
@@ -716,8 +715,7 @@ struct Activity_Tests {
                             id: "different-activity",
                             text: "SHOULD NOT CHANGE"
                         )
-                    ],
-                    duration: "1.23ms"
+                    ]
                 ),
                 DeleteActivitiesResponse.dummy(
                     deletedIds: ["activity-123"]

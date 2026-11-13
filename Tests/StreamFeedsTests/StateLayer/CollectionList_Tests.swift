@@ -23,7 +23,7 @@ struct CollectionList_Tests {
 
     @Test func queryMoreCollectionsAppendsNextPage() async throws {
         let client = clientWithFirstPage([
-            QueryCollectionsResponse(collections: [Self.collection("item-0", createdAt: 0)], duration: "1ms", next: nil)
+            QueryCollectionsResponse(collections: [Self.collection("item-0", createdAt: 0)], next: nil)
         ])
         let collectionList = client.collectionList(for: CollectionsQuery(filter: .equal(.name, "movies")))
         try await collectionList.get()
@@ -38,7 +38,7 @@ struct CollectionList_Tests {
 
     @Test func reconnectionRefetchesLoadedCollections() async throws {
         let client = clientWithFirstPage([
-            QueryCollectionsResponse(collections: [Self.collection("item-3", createdAt: 3)], duration: "1ms", next: nil)
+            QueryCollectionsResponse(collections: [Self.collection("item-3", createdAt: 3)], next: nil)
         ])
         let collectionList = client.collectionList(for: CollectionsQuery(filter: .equal(.name, "movies")))
         try await collectionList.get()
@@ -54,8 +54,7 @@ struct CollectionList_Tests {
     @Test func createCollectionsInsertsMatchingCollections() async throws {
         let client = clientWithFirstPage([
             CreateCollectionsResponse(
-                collections: [Self.collection("item-3", createdAt: 3), Self.collection("item-3", name: "books", createdAt: 3)],
-                duration: "1ms"
+                collections: [Self.collection("item-3", createdAt: 3), Self.collection("item-3", name: "books", createdAt: 3)]
             )
         ])
         let collectionList = client.collectionList(for: CollectionsQuery(filter: .equal(.name, "movies")))
@@ -73,8 +72,7 @@ struct CollectionList_Tests {
         // Update responses don't carry the creation date
         let client = clientWithFirstPage([
             UpdateCollectionsResponse(
-                collections: [CollectionResponse(custom: ["title": .string("Updated")], id: "item-2", name: "movies", userId: "user-1")],
-                duration: "1ms"
+                collections: [CollectionResponse(custom: ["title": .string("Updated")], id: "item-2", name: "movies", userId: "user-1")]
             )
         ])
         let collectionList = client.collectionList(for: CollectionsQuery(filter: .equal(.name, "movies")))
@@ -90,7 +88,7 @@ struct CollectionList_Tests {
     }
 
     @Test func deleteCollectionsRemovesLoadedCollections() async throws {
-        let client = clientWithFirstPage([DeleteCollectionsResponse(duration: "1ms")])
+        let client = clientWithFirstPage([DeleteCollectionsResponse()])
         let collectionList = client.collectionList(for: CollectionsQuery(filter: .equal(.name, "movies")))
         try await collectionList.get()
 
@@ -107,7 +105,6 @@ struct CollectionList_Tests {
                 [
                     QueryCollectionsResponse(
                         collections: [Self.collection("item-2", createdAt: 2), Self.collection("item-1", createdAt: 1)],
-                        duration: "1ms",
                         next: "next-cursor"
                     )
                 ] + additionalPayloads
