@@ -453,6 +453,39 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse {
+        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
+
+        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
+        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteBookmarkFolderResponse.self, from: $0)
+        }
+    }
+
+    open func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse {
+        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
+
+        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
+        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateBookmarkFolderRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateBookmarkFolderResponse.self, from: $0)
+        }
+    }
+
     open func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse {
         let path = "/api/v2/feeds/bookmarks/query"
 
@@ -1558,6 +1591,10 @@ protocol DefaultAPIEndpoints {
     func translateActivity(id: String, translateActivityRequest: TranslateActivityRequest) async throws -> TranslateActivityResponse
 
     func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse
+
+    func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse
+
+    func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse
 
     func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
 

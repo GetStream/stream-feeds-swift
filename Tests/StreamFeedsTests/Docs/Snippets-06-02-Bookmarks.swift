@@ -99,4 +99,21 @@ import StreamFeeds
         
         suppressUnusedWarning(page1, page2, projectFolders)
     }
+
+    func updatingAndDeletingBookmarkFolders(activity: ActivityData) async throws {
+        // Add a bookmark with a new folder
+        let bookmark = try await feed.addBookmark(
+            activityId: activity.id,
+            request: AddBookmarkRequest(newFolder: AddFolderRequest(custom: ["icon": "🍳"], name: "Breakfast recipes"))
+        )
+
+        // Update the folder
+        let updatedFolder = try await client.updateBookmarkFolder(
+            folderId: bookmark.folder!.id,
+            request: UpdateBookmarkFolderRequest(custom: ["icon": "🥞"], name: "Sweet Breakfast Recipes")
+        )
+
+        // Delete the folder (and all bookmarks in it)
+        try await client.deleteBookmarkFolder(folderId: updatedFolder.id)
+    }
 }

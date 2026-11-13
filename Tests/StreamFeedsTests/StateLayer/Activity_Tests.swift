@@ -1092,6 +1092,40 @@ struct Activity_Tests {
         await #expect(activity.state.activity?.currentFeed?.ownCapabilities == newCapabilities)
     }
     
+    @Test func bookmarkFolderDeletedEventRemovesOwnBookmarksInFolder() async throws {
+        let client = FeedsClient.mock(apiTransport: .withPayloads([]))
+        let data = ActivityResponse.dummy(
+            bookmarkCount: 1,
+            ownBookmarks: [.dummy(folder: .dummy(id: "folder-1", name: "Deleted"), user: .dummy(id: "current-user-id"))]
+        ).toModel()
+        let activity = client.activity(for: data.id, in: FeedId(group: "user", id: "jane"), data: data)
+        await #expect(activity.state.activity?.ownBookmarks.count == 1)
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderDeletedEvent.dummy(bookmarkFolder: .dummy(id: "folder-1", name: "Deleted"))
+        )
+
+        await #expect(activity.state.activity?.ownBookmarks.isEmpty == true)
+        await #expect(activity.state.activity?.bookmarkCount == 0)
+    }
+
+    @Test func bookmarkFolderUpdatedEventUpdatesOwnBookmarksFolder() async throws {
+        let client = FeedsClient.mock(apiTransport: .withPayloads([]))
+        let data = ActivityResponse.dummy(
+            bookmarkCount: 1,
+            ownBookmarks: [.dummy(folder: .dummy(id: "folder-1", name: "Old"), user: .dummy(id: "current-user-id"))]
+        ).toModel()
+        let activity = client.activity(for: data.id, in: FeedId(group: "user", id: "jane"), data: data)
+        await #expect(activity.state.activity?.ownBookmarks.first?.folder?.name == "Old")
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderUpdatedEvent.dummy(bookmarkFolder: .dummy(id: "folder-1", name: "New"))
+        )
+
+        await #expect(activity.state.activity?.ownBookmarks.map(\.folder?.name) == ["New"])
+        await #expect(activity.state.activity?.bookmarkCount == 1)
+    }
+
     // MARK: -
     
     private func defaultClientWithActivityAndCommentsResponses(

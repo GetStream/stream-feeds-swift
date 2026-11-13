@@ -218,6 +218,17 @@ extension ActivityData {
         ownBookmarks.replace(byId: bookmark)
     }
     
+    /// Deleting a folder deletes its bookmarks, and the event only carries the folder.
+    mutating func removeOwnBookmarks(inFolder folderId: String) {
+        let count = ownBookmarks.count
+        ownBookmarks.removeAll { $0.folder?.id == folderId }
+        bookmarkCount = max(0, bookmarkCount - (count - ownBookmarks.count))
+    }
+
+    mutating func updateOwnBookmarks(folder: BookmarkFolderData) {
+        ownBookmarks.updateAll(where: { $0.folder?.id == folder.id }, changes: { $0.folder = folder })
+    }
+
     // MARK: - Activity Comments and Comment Reactions
     
     mutating func addComment(_ incomingData: CommentData) {

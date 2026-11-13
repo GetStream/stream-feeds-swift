@@ -48,12 +48,10 @@ extension BookmarkListState {
         }
         eventSubscription = publisher.subscribe { [weak self] event in
             switch event {
-            case .bookmarkFolderDeleted(let folder):
+            case .bookmarkFolderDeleted(let folderId):
+                // Deleting a folder deletes its bookmarks
                 await self?.access { state in
-                    state.bookmarks.updateAll(
-                        where: { $0.folder?.id == folder.id },
-                        changes: { $0.folder = nil }
-                    )
+                    state.bookmarks.removeAll { $0.folder?.id == folderId }
                 }
             case .bookmarkFolderUpdated(let folder):
                 await self?.access { state in

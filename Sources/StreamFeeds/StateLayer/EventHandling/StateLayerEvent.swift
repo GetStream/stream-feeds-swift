@@ -24,7 +24,8 @@ enum StateLayerEvent: Sendable {
     case bookmarkDeleted(BookmarkData)
     case bookmarkUpdated(BookmarkData)
     
-    case bookmarkFolderDeleted(BookmarkFolderData)
+    /// The identifier of the deleted folder.
+    case bookmarkFolderDeleted(String)
     case bookmarkFolderUpdated(BookmarkFolderData)
 
     case commentAdded(CommentData, ActivityData, FeedId)
@@ -124,7 +125,7 @@ extension StateLayerEvent {
             self = .bookmarkUpdated(event.bookmark.toModel())
         // Bookmark folder deleted, updated
         case let event as BookmarkFolderDeletedEvent:
-            self = .bookmarkFolderDeleted(event.bookmarkFolder.toModel())
+            self = .bookmarkFolderDeleted(event.bookmarkFolder.id)
         case let event as BookmarkFolderUpdatedEvent:
             self = .bookmarkFolderUpdated(event.bookmarkFolder.toModel())
         // Comment added, deleted, updated
