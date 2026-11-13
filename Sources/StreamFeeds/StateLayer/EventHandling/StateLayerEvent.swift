@@ -114,6 +114,8 @@ extension StateLayerEvent {
             self = .activityMarked(event.toModel(), FeedId(rawValue: event.fid))
         case let event as ActivityRemovedFromFeedEvent:
             self = .activityDeleted(event.activity.id, FeedId(rawValue: event.fid))
+        case let event as ActivityRestoredEvent:
+            self = .activityAdded(event.activity.toModel(), FeedId(rawValue: event.fid))
         // Bookmark added, deleted, updated
         case let event as BookmarkAddedEvent:
             self = .bookmarkAdded(event.bookmark.toModel())

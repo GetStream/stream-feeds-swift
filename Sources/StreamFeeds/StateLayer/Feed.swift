@@ -176,6 +176,34 @@ public final class Feed: Sendable {
         return activity
     }
 
+    /// Updates only the given fields of an activity and leaves the others as they are.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the activity to update
+    ///   - request: The fields to set and the fields to unset, for example `custom.color`
+    /// - Returns: The updated activity data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updateActivityPartial(id: String, request: UpdateActivityPartialRequest) async throws -> ActivityData {
+        let activity = try await activitiesRepository.updateActivityPartial(activityId: id, request: request)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
+        return activity
+    }
+
+    /// Restores a soft-deleted activity.
+    ///
+    /// Users can only restore their own activities, and not the ones that moderation removed.
+    ///
+    /// - Parameter id: The unique identifier of the activity to restore
+    /// - Returns: The restored activity data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func restoreActivity(id: String) async throws -> ActivityData {
+        let activity = try await activitiesRepository.restoreActivity(activityId: id)
+        await eventPublisher.sendEvent(.activityAdded(activity, feed))
+        return activity
+    }
+
     /// Translates the text of an activity and stores the translation.
     ///
     /// - Parameters:

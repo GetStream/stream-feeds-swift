@@ -63,6 +63,7 @@
     "readCollections",
     "rejectFeedMemberInvite",
     "rejectFollow",
+    "restoreActivity",
     "stopWatchingFeed",
     "submitAction",
     "translateActivity",
@@ -71,6 +72,7 @@
     "unfollow",
     "unpinActivity",
     "updateActivity",
+    "updateActivityPartial",
     "updateBookmark",
     "updateBookmarkFolder",
     "updateCollections",
@@ -278,6 +280,7 @@
     "RejectFollowResponse",
     "RepliesMeta",
     "Response",
+    "RestoreActivityResponse",
     "ReviewQueueItemResponse",
     "ShareResponse",
     "SingleFollowResponse",
@@ -290,6 +293,7 @@
     "UnblockUsersResponse",
     "UnfollowResponse",
     "UnpinActivityResponse",
+    "UpdateActivityPartialResponse",
     "UpdateActivityResponse",
     "UpdateBookmarkFolderResponse",
     "UpdateBookmarkResponse",
@@ -381,6 +385,7 @@
     "TranslateActivityRequest",
     "TranslateCommentRequest",
     "UnblockUsersRequest",
+    "UpdateActivityPartialRequest",
     "UpdateActivityRequest",
     "UpdateBookmarkFolderRequest",
     "UpdateBookmarkRequest",
@@ -736,6 +741,9 @@
     "TextRuleParameters": [
       { "semanticFilterMinThreshold": "Moderation tooling" },
       { "semanticFilterNames": "Moderation tooling" }
+    ],
+    "UpdateActivityPartialRequest": [
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpdateActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
