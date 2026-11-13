@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
+### 🔄 Changed
+
+# [0.7.0](https://github.com/GetStream/stream-feeds-swift/releases/tag/0.7.0)
+_November 13, 2026_
+
 ### ✅ Added
 - Add `enrichOwnFields` to `ActivitiesQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `language` to `ActivitiesQuery` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
