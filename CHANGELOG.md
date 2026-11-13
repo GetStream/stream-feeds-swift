@@ -72,6 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### 🐞 Fixed
 - Fix comment bookmarks sharing the same `BookmarkData.id` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Fix bookmarks of a deleted bookmark folder staying in `BookmarkList` and in `ActivityData.ownBookmarks` [#109](https://github.com/GetStream/stream-feeds-swift/pull/109)
+- Fix `ActivityData.ownBookmarks` keeping the old folder after a bookmark folder update [#109](https://github.com/GetStream/stream-feeds-swift/pull/109)
 
 ### 🔄 Changed
 - `Feed.queryFollowSuggestions(limit:)` returns `FeedSuggestionData`. The overload returning `[FeedData]` is deprecated [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)

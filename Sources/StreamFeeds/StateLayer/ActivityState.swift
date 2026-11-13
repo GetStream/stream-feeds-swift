@@ -89,6 +89,10 @@ extension ActivityState {
                 await self?.access { state in
                     state.activity?.removeOwnBookmarks(inFolder: folderId)
                 }
+            case .bookmarkFolderUpdated(let folder):
+                await self?.access { state in
+                    state.activity?.updateOwnBookmarks(folder: folder)
+                }
             case .bookmarkUpdated(let bookmarkData):
                 guard bookmarkData.activity.id == activityId else { return }
                 await self?.access { state in

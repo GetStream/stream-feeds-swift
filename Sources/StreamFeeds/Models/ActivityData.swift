@@ -224,7 +224,11 @@ extension ActivityData {
         ownBookmarks.removeAll { $0.folder?.id == folderId }
         bookmarkCount = max(0, bookmarkCount - (count - ownBookmarks.count))
     }
-    
+
+    mutating func updateOwnBookmarks(folder: BookmarkFolderData) {
+        ownBookmarks.updateAll(where: { $0.folder?.id == folder.id }, changes: { $0.folder = folder })
+    }
+
     // MARK: - Activity Comments and Comment Reactions
     
     mutating func addComment(_ incomingData: CommentData) {

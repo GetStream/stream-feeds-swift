@@ -165,6 +165,13 @@ extension ActivityListState {
                         changes: { $0.removeOwnBookmarks(inFolder: folderId) }
                     )
                 }
+            case .bookmarkFolderUpdated(let folder):
+                await self?.access { state in
+                    state.activities.updateAll(
+                        where: { $0.ownBookmarks.contains { $0.folder?.id == folder.id } },
+                        changes: { $0.updateOwnBookmarks(folder: folder) }
+                    )
+                }
             case .bookmarkUpdated(let bookmarkData):
                 guard matchesQuery(bookmarkData.activity) else { return }
                 await self?.access { state in

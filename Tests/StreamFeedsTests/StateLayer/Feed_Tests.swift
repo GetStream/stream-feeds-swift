@@ -1788,6 +1788,37 @@ struct Feed_Tests {
         #expect(activity.bookmarkCount == 1)
     }
 
+    @Test func bookmarkFolderUpdatedEventUpdatesOwnBookmarksFolder() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(
+                            bookmarkCount: 2,
+                            id: "1",
+                            ownBookmarks: [
+                                .dummy(folder: .dummy(id: "folder-1", name: "Old"), user: .dummy(id: "current-user-id")),
+                                .dummy(folder: .dummy(id: "folder-2", name: "Kept"), user: .dummy(id: "current-user-id"))
+                            ]
+                        )
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderUpdatedEvent.dummy(bookmarkFolder: .dummy(id: "folder-1", name: "New"))
+        )
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.ownBookmarks.map(\.folder?.name) == ["New", "Kept"])
+        #expect(activity.bookmarkCount == 2)
+    }
+
     @Test func bookmarkUpdatedEventUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(feed: feedId.rawValue)
