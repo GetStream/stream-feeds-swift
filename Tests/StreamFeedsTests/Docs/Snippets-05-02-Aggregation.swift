@@ -21,4 +21,20 @@ import StreamFeeds
             )
         )
     }
+
+    func flatActivitiesInAggregatedFeeds() async throws {
+        // An aggregated feed returns groups. Ask for the flat list alongside them
+        // when you need both.
+        let feed = client.feed(
+            for: FeedQuery(
+                group: "notification",
+                id: "john",
+                enrichmentOptions: EnrichmentOptions(includeFlatActivities: true)
+            )
+        )
+        try await feed.getOrCreate()
+
+        print("\(feed.state.aggregatedActivities.count) groups")
+        print("\(feed.state.activities.count) flat activities")
+    }
 }
