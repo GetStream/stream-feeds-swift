@@ -415,6 +415,45 @@ struct Feed_Tests {
         #expect(updatedActivity.text == "Updated activity content")
     }
 
+    @Test func updateActivityPartialUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            UpdateActivityPartialResponse.dummy(
+                activity: .dummy(
+                    id: "1",
+                    text: "Updated activity content"
+                )
+            )
+        ])
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let updatedActivity = try await feed.updateActivityPartial(
+            id: "1",
+            request: UpdateActivityPartialRequest(set: ["text": .string("Updated activity content")])
+        )
+        let finalActivities = await feed.state.activities
+
+        #expect(finalActivities.map(\.id) == ["1"])
+        #expect(finalActivities.map(\.text) == ["Updated activity content"])
+        #expect(updatedActivity.text == "Updated activity content")
+    }
+
+    @Test func restoreActivityUpdatesState() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = defaultClientWithActivities(feed: feedId.rawValue, [
+            RestoreActivityResponse.dummy(activity: .dummy(id: "2"))
+        ])
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        let restoredActivity = try await feed.restoreActivity(id: "2")
+        let finalActivities = await feed.state.activities
+
+        #expect(restoredActivity.id == "2")
+        #expect(Set(finalActivities.map(\.id)) == ["1", "2"])
+    }
+
     @Test func translateActivityUpdatesState() async throws {
         let feedId = FeedId(group: "user", id: "jane")
         let client = defaultClientWithActivities(feed: feedId.rawValue, [
@@ -1755,6 +1794,68 @@ struct Feed_Tests {
         )
 
         await #expect(feed.state.activities.map(\.id) == ["1"])
+    }
+
+    @Test func bookmarkFolderDeletedEventRemovesOwnBookmarksInFolder() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(
+                            bookmarkCount: 2,
+                            id: "1",
+                            ownBookmarks: [
+                                .dummy(folder: .dummy(id: "folder-1", name: "Deleted"), user: .dummy(id: "current-user-id")),
+                                .dummy(folder: .dummy(id: "folder-2", name: "Kept"), user: .dummy(id: "current-user-id"))
+                            ]
+                        )
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderDeletedEvent.dummy(bookmarkFolder: .dummy(id: "folder-1", name: "Deleted"))
+        )
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.ownBookmarks.map(\.folder?.id) == ["folder-2"])
+        #expect(activity.bookmarkCount == 1)
+    }
+
+    @Test func bookmarkFolderUpdatedEventUpdatesOwnBookmarksFolder() async throws {
+        let feedId = FeedId(group: "user", id: "jane")
+        let client = FeedsClient.mock(
+            apiTransport: .withPayloads([
+                GetOrCreateFeedResponse.dummy(
+                    activities: [
+                        .dummy(
+                            bookmarkCount: 2,
+                            id: "1",
+                            ownBookmarks: [
+                                .dummy(folder: .dummy(id: "folder-1", name: "Old"), user: .dummy(id: "current-user-id")),
+                                .dummy(folder: .dummy(id: "folder-2", name: "Kept"), user: .dummy(id: "current-user-id"))
+                            ]
+                        )
+                    ],
+                    feed: .dummy(feed: feedId.rawValue)
+                )
+            ])
+        )
+        let feed = client.feed(for: feedId)
+        try await feed.getOrCreate()
+
+        await client.eventsMiddleware.sendEvent(
+            BookmarkFolderUpdatedEvent.dummy(bookmarkFolder: .dummy(id: "folder-1", name: "New"))
+        )
+
+        let activity = try #require(await feed.state.activities.first)
+        #expect(activity.ownBookmarks.map(\.folder?.name) == ["New", "Kept"])
+        #expect(activity.bookmarkCount == 2)
     }
 
     @Test func bookmarkUpdatedEventUpdatesState() async throws {

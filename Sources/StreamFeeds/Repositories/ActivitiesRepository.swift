@@ -51,6 +51,16 @@ final class ActivitiesRepository: Sendable {
         return response.activity.toModel()
     }
     
+    func updateActivityPartial(activityId: String, request: UpdateActivityPartialRequest) async throws -> ActivityData {
+        let response = try await apiClient.updateActivityPartial(id: activityId, updateActivityPartialRequest: request)
+        return response.activity.toModel()
+    }
+    
+    func restoreActivity(activityId: String) async throws -> ActivityData {
+        let response = try await apiClient.restoreActivity(id: activityId, enrichOwnFields: nil)
+        return response.activity.toModel()
+    }
+    
     // MARK: - Activity Attachment Uploading
     
     func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in feed: FeedId) async throws -> [Attachment] {

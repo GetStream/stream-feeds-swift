@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `language` to `FeedQuery` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `activityIdAround` to `FeedQuery` [#105](https://github.com/GetStream/stream-feeds-swift/pull/105)
 - Add `canLoadPreviousActivities` to `FeedState` [#105](https://github.com/GetStream/stream-feeds-swift/pull/105)
+- Add activities restored on another client to `FeedState.activities` [#108](https://github.com/GetStream/stream-feeds-swift/pull/108)
 - Add `FeedSuggestionData` with the reason and scores for each follow suggestion [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
 - Add `enrichOwnFields` to `FeedsQuery` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
 - Add `FriendReactionType` for choosing between followed and mutual users in `FriendReactionsOptions.type` [#102](https://github.com/GetStream/stream-feeds-swift/pull/102)
@@ -62,14 +63,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `activityCopyLimit`, `enrichOwnFields` and `skipPush` to `Feed.follow(...)` [#101](https://github.com/GetStream/stream-feeds-swift/pull/101)
 - Add `Feed.queryActivities(around:limit:)` [#105](https://github.com/GetStream/stream-feeds-swift/pull/105)
 - Add `Feed.queryPreviousActivities(limit:)` [#105](https://github.com/GetStream/stream-feeds-swift/pull/105)
+- Add `Feed.restoreActivity(id:)` [#108](https://github.com/GetStream/stream-feeds-swift/pull/108)
 - Add `Feed.translateActivity(id:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
 - Add `Feed.translateComment(commentId:to:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
+- Add `Feed.updateActivityPartial(id:request:)` [#108](https://github.com/GetStream/stream-feeds-swift/pull/108)
 - Add `language` to `FeedsClient.activity(for:in:data:)` [#104](https://github.com/GetStream/stream-feeds-swift/pull/104)
+- Add `FeedsClient.updateBookmarkFolder(folderId:request:)` and `FeedsClient.deleteBookmarkFolder(folderId:)` [#109](https://github.com/GetStream/stream-feeds-swift/pull/109)
 - Add `FeedsClient.createCollections(request:)`, `FeedsClient.updateCollections(request:)` and `FeedsClient.deleteCollections(references:)` [#107](https://github.com/GetStream/stream-feeds-swift/pull/107)
 - Add `FeedsClient.readCollections(references:)` [#99](https://github.com/GetStream/stream-feeds-swift/pull/99)
 
 ### 🐞 Fixed
 - Fix comment bookmarks sharing the same `BookmarkData.id` [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)
+- Fix bookmarks of a deleted bookmark folder staying in `BookmarkList` and in `ActivityData.ownBookmarks` [#109](https://github.com/GetStream/stream-feeds-swift/pull/109)
+- Fix `ActivityData.ownBookmarks` keeping the old folder after a bookmark folder update [#109](https://github.com/GetStream/stream-feeds-swift/pull/109)
 
 ### 🔄 Changed
 - `Feed.queryFollowSuggestions(limit:)` returns `FeedSuggestionData`. The overload returning `[FeedData]` is deprecated [#103](https://github.com/GetStream/stream-feeds-swift/pull/103)

@@ -159,4 +159,31 @@ struct Snippets_03_01_Activities {
 
         suppressUnusedWarning(activityData, activityState)
     }
+
+    func partialActivityUpdates() async throws {
+        // Partially set some fields
+        var activity = try await feed.updateActivityPartial(
+            id: "123",
+            request: UpdateActivityPartialRequest(
+                set: ["text": "Japan has over 6,800 islands."]
+            )
+        )
+        print("Activity edited at: \(activity.editedAt.map { "\($0)" } ?? "never")")
+
+        // Partially unset some fields
+        activity = try await feed.updateActivityPartial(
+            id: "123",
+            request: UpdateActivityPartialRequest(
+                unset: ["custom.color"]
+            )
+        )
+        print("Activity edited at: \(activity.editedAt.map { "\($0)" } ?? "never")")
+    }
+
+    func restoreActivity() async throws {
+        // Restore a soft-deleted activity
+        let restoredActivity = try await feed.restoreActivity(id: "123")
+
+        suppressUnusedWarning(restoredActivity)
+    }
 }

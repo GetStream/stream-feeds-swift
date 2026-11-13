@@ -18,6 +18,7 @@
     "deleteActivity",
     "deleteActivityReaction",
     "deleteBookmark",
+    "deleteBookmarkFolder",
     "deleteCollections",
     "deleteComment",
     "deleteCommentReaction",
@@ -62,6 +63,7 @@
     "readCollections",
     "rejectFeedMemberInvite",
     "rejectFollow",
+    "restoreActivity",
     "stopWatchingFeed",
     "submitAction",
     "translateActivity",
@@ -70,7 +72,9 @@
     "unfollow",
     "unpinActivity",
     "updateActivity",
+    "updateActivityPartial",
     "updateBookmark",
+    "updateBookmarkFolder",
     "updateCollections",
     "updateComment",
     "updateFeed",
@@ -174,6 +178,7 @@
     "DeleteActivitiesResponse",
     "DeleteActivityReactionResponse",
     "DeleteActivityResponse",
+    "DeleteBookmarkFolderResponse",
     "DeleteBookmarkResponse",
     "DeleteCollectionsResponse",
     "DeleteCommentReactionResponse",
@@ -275,6 +280,7 @@
     "RejectFollowResponse",
     "RepliesMeta",
     "Response",
+    "RestoreActivityResponse",
     "ReviewQueueItemResponse",
     "ShareResponse",
     "SingleFollowResponse",
@@ -287,7 +293,9 @@
     "UnblockUsersResponse",
     "UnfollowResponse",
     "UnpinActivityResponse",
+    "UpdateActivityPartialResponse",
     "UpdateActivityResponse",
+    "UpdateBookmarkFolderResponse",
     "UpdateBookmarkResponse",
     "UpdateCollectionsResponse",
     "UpdateCommentResponse",
@@ -377,7 +385,9 @@
     "TranslateActivityRequest",
     "TranslateCommentRequest",
     "UnblockUsersRequest",
+    "UpdateActivityPartialRequest",
     "UpdateActivityRequest",
+    "UpdateBookmarkFolderRequest",
     "UpdateBookmarkRequest",
     "UpdateCollectionRequest",
     "UpdateCollectionsRequest",
@@ -731,6 +741,9 @@
     "TextRuleParameters": [
       { "semanticFilterMinThreshold": "Moderation tooling" },
       { "semanticFilterNames": "Moderation tooling" }
+    ],
+    "UpdateActivityPartialRequest": [
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpdateActivityRequest": [
       { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
