@@ -156,6 +156,92 @@ struct ActivityList_Tests {
         #expect(activities.first?.text == "Updated text")
     }
     
+    @Test func activityUpdatedEventKeepsOwnReactions() async throws {
+        let client = defaultClient(
+            activities: [
+                .dummy(
+                    id: "activity-1",
+                    ownReactions: [.dummy(type: "like")],
+                    user: .dummy(id: "current-user-id")
+                )
+            ]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(filter: .equal(.userId, "current-user-id"))
+        )
+        try await activityList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-1", text: "Updated text", user: .dummy(id: "current-user-id")),
+                fid: Self.feedId.rawValue
+            )
+        )
+
+        let activity = try #require(await activityList.state.activities.first)
+        #expect(activity.text == "Updated text")
+        #expect(activity.ownReactions.map(\.type) == ["like"])
+    }
+    
+    @Test func activityUpdatedEventKeepsTranslations() async throws {
+        let client = defaultClient(
+            activities: [.dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "activity-1", text: "Hello", user: .dummy(id: "current-user-id"))]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(filter: .equal(.userId, "current-user-id"), language: "fr")
+        )
+        try await activityList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            ActivityUpdatedEvent.dummy(
+                activity: .dummy(id: "activity-1", reactionCount: 1, text: "Hello", user: .dummy(id: "current-user-id")),
+                fid: Self.feedId.rawValue
+            )
+        )
+
+        let activity = try #require(await activityList.state.activities.first)
+        #expect(activity.reactionCount == 1)
+        #expect(activity.translatedText(for: "fr") == "Bonjour")
+    }
+    
+    @Test func upsertActivitiesKeepsOwnReactions() async throws {
+        let client = defaultClient(
+            activities: [
+                .dummy(
+                    id: "activity-1",
+                    ownReactions: [.dummy(type: "like")],
+                    user: .dummy(id: "current-user-id")
+                )
+            ],
+            additionalPayloads: [
+                UpsertActivitiesResponse(
+                    activities: [
+                        .dummy(
+                            createdAt: .fixed(),
+                            editedAt: .fixed(),
+                            id: "activity-1",
+                            text: "Updated text",
+                            user: .dummy(id: "current-user-id")
+                        )
+                    ],
+                    duration: "1.23ms"
+                )
+            ]
+        )
+        let activityList = client.activityList(
+            for: ActivitiesQuery(filter: .equal(.userId, "current-user-id"))
+        )
+        try await activityList.get()
+
+        try await client.upsertActivities([
+            ActivityRequest(feeds: [Self.feedId.rawValue], id: "activity-1", text: "Updated text", type: "post")
+        ])
+
+        let activity = try #require(await activityList.state.activities.first)
+        #expect(activity.text == "Updated text")
+        #expect(activity.ownReactions.map(\.type) == ["like"])
+    }
+    
     @Test func activityUpdatedEventRemovesActivityWhenNoLongerMatchingQuery() async throws {
         let client = defaultClient()
         let activityList = client.activityList(

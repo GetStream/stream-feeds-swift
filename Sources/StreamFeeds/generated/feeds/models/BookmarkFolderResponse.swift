@@ -16,13 +16,16 @@ public final class BookmarkFolderResponse: Sendable, Decodable {
     public let name: String
     /// When the folder was last updated
     public let updatedAt: Date
+    /// User response object
+    public let user: UserResponse
 
-    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date) {
+    public init(createdAt: Date, custom: [String: RawJSON]? = nil, id: String, name: String, updatedAt: Date, user: UserResponse) {
         self.createdAt = createdAt
         self.custom = custom
         self.id = id
         self.name = name
         self.updatedAt = updatedAt
+        self.user = user
     }
 
     public init(from decoder: Decoder) throws {
@@ -32,6 +35,7 @@ public final class BookmarkFolderResponse: Sendable, Decodable {
         self.id = try container.decode(String.self, forKey: .id)
         self.name = try container.decode(String.self, forKey: .name)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+        self.user = try container.decode(UserResponse.self, forKey: .user)
     }
 }
 
@@ -41,7 +45,8 @@ extension BookmarkFolderResponse: Hashable {
             lhs.custom == rhs.custom &&
             lhs.id == rhs.id &&
             lhs.name == rhs.name &&
-            lhs.updatedAt == rhs.updatedAt
+            lhs.updatedAt == rhs.updatedAt &&
+            lhs.user == rhs.user
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -50,5 +55,6 @@ extension BookmarkFolderResponse: Hashable {
         hasher.combine(id)
         hasher.combine(name)
         hasher.combine(updatedAt)
+        hasher.combine(user)
     }
 }

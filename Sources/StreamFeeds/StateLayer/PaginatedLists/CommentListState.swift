@@ -62,13 +62,15 @@ extension CommentListState {
                 guard matchesQuery(commentData) else { return }
                 await self?.access { $0.comments.remove(byId: commentData.id) }
             case .commentUpdated(let commentData, _, _):
-                let matches = matchesQuery(commentData)
                 await self?.access { state in
-                    if matches {
-                        state.comments.sortedReplace(
-                            commentData,
+                    guard var merged = state.comments.first(where: { $0.id == commentData.id }) else { return }
+                    merged.merge(with: commentData)
+                    if matchesQuery(merged) {
+                        state.comments.sortedUpdate(
+                            ofId: commentData.id,
                             nesting: nil,
-                            sorting: CommentsSort.areInIncreasingOrder(state.sortingKey)
+                            sorting: CommentsSort.areInIncreasingOrder(state.sortingKey),
+                            changes: { $0 = merged }
                         )
                     } else {
                         state.comments.remove(byId: commentData.id)

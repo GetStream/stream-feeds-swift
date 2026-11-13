@@ -51,6 +51,7 @@ public final class FeedList: Sendable {
                 limit: limit,
                 next: next,
                 previous: nil,
+                enrichOwnFields: query.enrichOwnFields,
                 watch: query.watch
             )
         }
@@ -96,6 +97,7 @@ public final class FeedList: Sendable {
                                     limit: batch,
                                     next: next,
                                     previous: nil,
+                                    enrichOwnFields: query.enrichOwnFields,
                                     watch: query.watch
                                 )
                             )

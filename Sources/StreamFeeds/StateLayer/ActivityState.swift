@@ -53,10 +53,10 @@ extension ActivityState {
                 await self?.setActivity(nil)
             case .activityUpdated(let activityData, let eventFeedId):
                 guard activityData.id == activityId, eventFeedId == feed else { return }
-                await self?.setActivity(activityData)
+                await self?.mergeActivity(activityData)
             case .activityBatchUpdate(let updates):
                 if let updated = updates.updated.first(where: { $0.id == activityId }) {
-                    await self?.setActivity(updated)
+                    await self?.mergeActivity(updated)
                 } else if updates.removedIds.contains(activityId) {
                     await self?.setActivity(nil)
                 }
@@ -84,6 +84,14 @@ extension ActivityState {
                 guard bookmarkData.activity.id == activityId else { return }
                 await self?.access { state in
                     state.activity?.merge(with: bookmarkData.activity, remove: bookmarkData, currentUserId: currentUserId)
+                }
+            case .bookmarkFolderDeleted(let folderId):
+                await self?.access { state in
+                    state.activity?.removeOwnBookmarks(inFolder: folderId)
+                }
+            case .bookmarkFolderUpdated(let folder):
+                await self?.access { state in
+                    state.activity?.updateOwnBookmarks(folder: folder)
                 }
             case .bookmarkUpdated(let bookmarkData):
                 guard bookmarkData.activity.id == activityId else { return }
@@ -157,5 +165,11 @@ extension ActivityState {
     func setActivity(_ activity: ActivityData?) {
         self.activity = activity
         poll = activity?.poll
+    }
+
+    private func mergeActivity(_ incomingData: ActivityData) {
+        guard var merged = activity else { return setActivity(incomingData) }
+        merged.merge(with: incomingData)
+        setActivity(merged)
     }
 }

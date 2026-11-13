@@ -204,6 +204,58 @@ struct FeedsClient_Test {
         #expect(response == Set(mockResponse.deletedIds))
     }
 
+    @Test func createCollections() async throws {
+        let mockResponse = CreateCollectionsResponse(
+            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")],
+            duration: "1.23ms"
+        )
+        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
+
+        let collections = try await client.createCollections(
+            request: CreateCollectionsRequest(collections: [CollectionRequest(custom: ["title": .string("Item")], id: "item-1", name: "products")])
+        )
+
+        #expect(collections == [
+            CollectionData(createdAt: nil, custom: ["title": .string("Item")], id: "item-1", name: "products", updatedAt: nil, userId: "user-1")
+        ])
+    }
+
+    @Test func deleteCollections() async throws {
+        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([DeleteCollectionsResponse(duration: "1.23ms")]))
+
+        try await client.deleteCollections(references: ["products:item-1"])
+    }
+
+    @Test func readCollections() async throws {
+        let mockResponse = ReadCollectionsResponse(
+            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")],
+            duration: "1.23ms"
+        )
+        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
+
+        let collections = try await client.readCollections(references: ["products:item-1"])
+
+        #expect(collections == [
+            CollectionData(createdAt: nil, custom: ["title": .string("Item")], id: "item-1", name: "products", updatedAt: nil, userId: "user-1")
+        ])
+    }
+
+    @Test func updateCollections() async throws {
+        let mockResponse = UpdateCollectionsResponse(
+            collections: [CollectionResponse(custom: ["title": .string("Updated")], id: "item-1", name: "products", userId: "user-1")],
+            duration: "1.23ms"
+        )
+        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
+
+        let collections = try await client.updateCollections(
+            request: UpdateCollectionsRequest(collections: [UpdateCollectionRequest(custom: ["title": .string("Updated")], id: "item-1", name: "products")])
+        )
+
+        #expect(collections == [
+            CollectionData(createdAt: nil, custom: ["title": .string("Updated")], id: "item-1", name: "products", updatedAt: nil, userId: "user-1")
+        ])
+    }
+
     // MARK: - Properties Tests
 
     @Test func clientProperties() {

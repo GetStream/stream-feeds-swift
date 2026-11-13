@@ -34,6 +34,9 @@ public struct CommentRepliesQuery: Sendable {
     /// - `3`: Replies, replies to replies, and replies to replies to replies
     public var depth: Int?
     
+    /// Includes the translations to this language code, for example `fr`, in ``ThreadedCommentData/translations``. Backend default includes no translations.
+    public var language: String?
+    
     /// The maximum number of replies to fetch per request.
     ///
     /// This parameter controls the page size for pagination. Larger values
@@ -74,6 +77,7 @@ public struct CommentRepliesQuery: Sendable {
     ///   - repliesLimit: Optional maximum number of nested replies per reply
     ///   - next: Optional pagination cursor for next page
     ///   - previous: Optional pagination cursor for previous page
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ThreadedCommentData/translations``. Backend default includes no translations.
     public init(
         commentId: String,
         sort: CommentsSort? = nil,
@@ -81,7 +85,8 @@ public struct CommentRepliesQuery: Sendable {
         limit: Int? = nil,
         repliesLimit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil
+        previous: String? = nil,
+        language: String? = nil
     ) {
         self.commentId = commentId
         self.depth = depth
@@ -90,5 +95,6 @@ public struct CommentRepliesQuery: Sendable {
         self.limit = limit
         self.next = next
         self.previous = previous
+        self.language = language
     }
 }

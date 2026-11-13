@@ -160,6 +160,27 @@ struct ActivityCommentList_Tests {
         #expect(comments.first?.text == "Updated text")
     }
     
+    @Test func commentUpdatedEventKeepsHidden() async throws {
+        let client = defaultClient(
+            comments: [.dummy(hidden: true, id: "comment-1", objectId: Self.activityId, objectType: "activity")]
+        )
+        let commentList = client.activityCommentList(
+            for: .init(objectId: Self.activityId, objectType: "activity")
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, text: "Updated text"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.text == "Updated text")
+        #expect(comment.hidden)
+    }
+    
     @Test func commentDeletedEventRemovesFromState() async throws {
         let client = defaultClient()
         let commentList = client.activityCommentList(

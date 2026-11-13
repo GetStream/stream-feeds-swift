@@ -2,10 +2,13 @@
 // Copyright © 2026 Stream.io Inc. All rights reserved.
 //
 
+import CoreLocation
 import Foundation
 import StreamCore
 
 public struct FeedData: Identifiable, Equatable, Sendable {
+    /// The number of activities in the feed.
+    public let activityCount: Int
     public let createdAt: Date
     public let createdBy: UserData
     public let custom: [String: RawJSON]?
@@ -17,10 +20,16 @@ public struct FeedData: Identifiable, Equatable, Sendable {
     public let followingCount: Int
     public let groupId: String
     public let id: String
+    /// The geographic location of the feed.
+    public let location: CLLocationCoordinate2D?
     public let memberCount: Int
     public let name: String
     public private(set) var ownCapabilities: Set<FeedOwnCapability>?
     public private(set) var ownFollows: [FollowData]?
+    /// Follows from the feed owner's feeds to the current user's feeds.
+    ///
+    /// - Important: Only set when the request asks for own fields: ``EnrichmentOptions/enrichOwnFollowings`` in ``FeedQuery/enrichmentOptions``, or `enrichOwnFields` in ``FeedsQuery``, ``ActivitiesQuery``, ``BookmarksQuery``, ``FeedAddActivityRequest`` or ``Feed/follow(_:activityCopyLimit:createNotificationActivity:custom:enrichOwnFields:pushPreference:skipPush:)``. ``Activity/get()`` includes it by default.
+    public private(set) var ownFollowings: [FollowData]?
     public private(set) var ownMembership: FeedMemberData?
     public let pinCount: Int
     public let updatedAt: Date
@@ -33,10 +42,12 @@ extension FeedData {
     mutating func merge(with incomingData: FeedData) {
         let ownCapabilities = ownCapabilities
         let ownFollows = ownFollows
+        let ownFollowings = ownFollowings
         let ownMembership = ownMembership
         self = incomingData
         self.ownCapabilities = incomingData.ownCapabilities ?? ownCapabilities
         self.ownFollows = incomingData.ownFollows ?? ownFollows
+        self.ownFollowings = incomingData.ownFollowings ?? ownFollowings
         self.ownMembership = incomingData.ownMembership ?? ownMembership
     }
     
@@ -61,6 +72,7 @@ extension FeedData {
 extension FeedResponse {
     func toModel() -> FeedData {
         FeedData(
+            activityCount: activityCount,
             createdAt: createdAt,
             createdBy: createdBy.toModel(),
             custom: custom,
@@ -72,20 +84,16 @@ extension FeedResponse {
             followingCount: followingCount,
             groupId: groupId,
             id: id,
+            location: location.flatMap { CLLocationCoordinate2D(latitude: CLLocationDegrees($0.lat), longitude: CLLocationDegrees($0.lng)) },
             memberCount: memberCount,
             name: name,
             ownCapabilities: ownCapabilities.map(Set.init),
             ownFollows: ownFollows?.map { $0.toModel() },
+            ownFollowings: ownFollowings?.map { $0.toModel() },
             ownMembership: ownMembership?.toModel(),
             pinCount: pinCount,
             updatedAt: updatedAt,
             visibility: visibility
         )
-    }
-}
-
-extension FeedSuggestionResponse {
-    func toModel() -> FeedData {
-        feed.toModel()
     }
 }

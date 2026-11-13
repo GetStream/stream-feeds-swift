@@ -30,6 +30,12 @@ public struct BookmarksQuery: Sendable {
     /// If not specified, the API will use its default sorting.
     public var sort: [Sort<BookmarksSortField>]?
 
+    /// If true, enriches the current feed of each bookmarked activity with the current user's own fields, such as `ownFollows` and `ownCapabilities`. Backend default is false.
+    public var enrichOwnFields: Bool?
+
+    /// Includes the translations to this language code, for example `fr`, in the ``ActivityData/translations`` of bookmarked activities. Backend default includes no translations.
+    public var language: String?
+    
     /// Creates a new bookmarks query with the specified parameters.
     ///
     /// - Parameters:
@@ -38,13 +44,19 @@ public struct BookmarksQuery: Sendable {
     ///   - limit: Optional maximum number of bookmarks to return in a single request.
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
+    ///   - enrichOwnFields: If true, enriches the current feed of each bookmarked activity with the current user's own fields, such as `ownFollows` and `ownCapabilities`. Backend default is false.
+    ///   - language: Includes the translations to this language code, for example `fr`, in the ``ActivityData/translations`` of bookmarked activities. Backend default includes no translations.
     public init(
         filter: BookmarksFilter? = nil,
         sort: [Sort<BookmarksSortField>]? = nil,
         limit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil
+        previous: String? = nil,
+        enrichOwnFields: Bool? = nil,
+        language: String? = nil
     ) {
+        self.enrichOwnFields = enrichOwnFields
+        self.language = language
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -193,6 +205,7 @@ extension Sort where Field == BookmarksSortField {
 extension BookmarksQuery {
     func toRequest() -> QueryBookmarksRequest {
         QueryBookmarksRequest(
+            enrichOwnFields: enrichOwnFields,
             filter: filter.flatMap { $0.toRawJSONDictionary() },
             limit: limit,
             next: next,

@@ -175,7 +175,49 @@ public final class Feed: Sendable {
         await eventPublisher.sendEvent(.activityUpdated(activity, feed))
         return activity
     }
-    
+
+    /// Updates only the given fields of an activity and leaves the others as they are.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the activity to update
+    ///   - request: The fields to set and the fields to unset, for example `custom.color`
+    /// - Returns: The updated activity data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updateActivityPartial(id: String, request: UpdateActivityPartialRequest) async throws -> ActivityData {
+        let activity = try await activitiesRepository.updateActivityPartial(activityId: id, request: request)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
+        return activity
+    }
+
+    /// Restores a soft-deleted activity.
+    ///
+    /// Users can only restore their own activities, and not the ones that moderation removed.
+    ///
+    /// - Parameter id: The unique identifier of the activity to restore
+    /// - Returns: The restored activity data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func restoreActivity(id: String) async throws -> ActivityData {
+        let activity = try await activitiesRepository.restoreActivity(activityId: id)
+        await eventPublisher.sendEvent(.activityAdded(activity, feed))
+        return activity
+    }
+
+    /// Translates the text of an activity and stores the translation.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the activity to translate
+    ///   - language: An ISO 639-1 language code, for example `fr`
+    /// - Returns: The activity with the translation in ``ActivityData/translations``
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func translateActivity(id: String, to language: String) async throws -> ActivityData {
+        let activity = try await activitiesRepository.translateActivity(activityId: id, language: language)
+        await eventPublisher.sendEvent(.activityUpdated(activity, feed))
+        return activity
+    }
+
     // MARK: - Activity Interactions
     
     /// Marks an activity as read or unread.
@@ -212,28 +254,69 @@ public final class Feed: Sendable {
     /// - Throws: `APIError` if the network request fails or the server returns an error
     @discardableResult
     public func queryMoreActivities(limit: Int? = nil) async throws -> [ActivityData] {
-        let nextQuery: FeedQuery? = await state.access { _ in
-            guard let next = state.activitiesPagination?.next else { return nil }
-            var query = FeedQuery(
-                feed: feedQuery.feed,
-                activityFilter: state.activitiesQueryConfig?.filter,
-                activityLimit: limit ?? feedQuery.activityLimit,
-                data: nil,
-                externalRanking: nil,
-                followerLimit: 0,
-                followingLimit: 0,
-                interestWeights: nil,
-                memberLimit: 0,
-                view: nil,
-                watch: feedQuery.watch
-            )
-            query.activityNext = next
-            return query
-        }
-        guard let nextQuery else { return [] }
-        let response = try await feedsRepository.getOrCreateFeed(with: nextQuery)
+        guard let next = await state.access({ $0.activitiesPagination?.next }) else { return [] }
+        var query = activitiesPageQuery(limit: limit)
+        query.activityNext = next
+        let response = try await feedsRepository.getOrCreateFeed(with: query)
         await state.didPaginateActivities(with: response.activities, for: response.activitiesQueryConfig)
         return response.activities.models
+    }
+    
+    /// Loads the activities before the first loaded activity using the previous page token.
+    ///
+    /// The previous page token is set after ``queryActivities(around:limit:)`` or a query with ``FeedQuery/activityIdAround``.
+    ///
+    /// - Parameter limit: Optional limit for the number of activities to load. If `nil`, uses the default limit.
+    /// - Returns: An array of the loaded activity data
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func queryPreviousActivities(limit: Int? = nil) async throws -> [ActivityData] {
+        guard let previous = await state.access({ $0.activitiesPagination?.previous }) else { return [] }
+        var query = activitiesPageQuery(limit: limit)
+        query.activityPrevious = previous
+        let response = try await feedsRepository.getOrCreateFeed(with: query)
+        await state.didPaginatePreviousActivities(with: response.activities, for: response.activitiesQueryConfig)
+        return response.activities.models
+    }
+    
+    /// Replaces the loaded activities with a page centered on the activity with the given ID.
+    ///
+    /// Use ``queryPreviousActivities(limit:)`` and ``queryMoreActivities(limit:)`` to load the activities on either side.
+    ///
+    /// - Important: Ranked feeds and feeds with several activity selectors return the page without page tokens. Aggregated feeds reject the request.
+    ///
+    /// - Parameters:
+    ///   - activityId: The ID of the activity to center the page on.
+    ///   - limit: Optional limit for the number of activities to load. If `nil`, uses the default limit.
+    /// - Returns: An array of the loaded activity data
+    /// - Throws: `APIError` if the activity is not in the feed, the network request fails or the server returns an error
+    @discardableResult
+    public func queryActivities(around activityId: String, limit: Int? = nil) async throws -> [ActivityData] {
+        var query = activitiesPageQuery(limit: limit)
+        query.activityIdAround = activityId
+        let response = try await feedsRepository.getOrCreateFeed(with: query)
+        await state.didQueryActivitiesAround(with: response.activities, for: response.activitiesQueryConfig)
+        return response.activities.models
+    }
+    
+    private func activitiesPageQuery(limit: Int?) -> FeedQuery {
+        FeedQuery(
+            feed: feedQuery.feed,
+            activityFilter: feedQuery.activityFilter,
+            activityLimit: limit ?? feedQuery.activityLimit,
+            data: nil,
+            enrichmentOptions: feedQuery.enrichmentOptions,
+            externalRanking: nil,
+            followerLimit: 0,
+            followingLimit: 0,
+            friendReactionsOptions: feedQuery.friendReactionsOptions,
+            interestWeights: nil,
+            language: feedQuery.language,
+            memberLimit: 0,
+            view: nil,
+            viewerLocation: feedQuery.viewerLocation,
+            watch: feedQuery.watch
+        )
     }
     
     // MARK: - Bookmarks
@@ -311,7 +394,7 @@ public final class Feed: Sendable {
     /// - Returns: The comment data
     /// - Throws: `APIError` if the network request fails or the server returns an error
     public func getComment(commentId: String) async throws -> CommentData {
-        let comment = try await commentsRepository.getComment(commentId: commentId)
+        let comment = try await commentsRepository.getComment(commentId: commentId, language: feedQuery.language)
         await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
         return comment
     }
@@ -357,15 +440,29 @@ public final class Feed: Sendable {
         await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
         return comment
     }
-    
+
+    /// Translates the text of a comment and stores the translation.
+    ///
+    /// - Parameters:
+    ///   - commentId: The unique identifier of the comment to translate
+    ///   - language: An ISO 639-1 language code, for example `fr`
+    /// - Returns: The comment with the translation in ``CommentData/translations``
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func translateComment(commentId: String, to language: String) async throws -> CommentData {
+        let comment = try await commentsRepository.translateComment(commentId: commentId, language: language)
+        await eventPublisher.sendEvent(.commentUpdated(comment, comment.objectId, feed))
+        return comment
+    }
+
     // MARK: - Follows
     
     /// Queries for feed suggestions that the current user might want to follow.
     ///
     /// - Parameter limit: Optional limit for the number of suggestions to return. If `nil`, uses the default limit.
-    /// - Returns: An array of feed data representing follow suggestions
+    /// - Returns: The suggested feeds with the reason and scores for each suggestion.
     /// - Throws: `APIError` if the network request fails or the server returns an error
-    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedData] {
+    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedSuggestionData] {
         try await feedsRepository.queryFollowSuggestions(feedGroupId: group, limit: limit)
     }
     
@@ -373,22 +470,31 @@ public final class Feed: Sendable {
     ///
     /// - Parameters:
     ///   - targetFid: The target feed id.
-    ///   - createNotificationActivity: Whether the action is added to the notification feed.
+    ///   - activityCopyLimit: The maximum number of the target feed's existing activities to copy into this feed (0 to 1000). Backend default copies all of them.
+    ///   - createNotificationActivity: Whether the action is added to the notification feed. Backend default is false.
     ///   - custom: Additional data for the request.
+    ///   - enrichOwnFields: If true, enriches the source and target feeds with the current user's own fields. Backend default is false.
     ///   - pushPreference: Push notification preferences for the follow request.
+    ///   - skipPush: If true, no push notification is sent for the follow. Backend default is false.
     /// - Throws: `APIError` if the network request fails or the server returns an error
     /// - Returns: The data of the follow request.
     @discardableResult
     public func follow(
         _ targetFid: FeedId,
+        activityCopyLimit: Int? = nil,
         createNotificationActivity: Bool? = nil,
         custom: [String: RawJSON]? = nil,
-        pushPreference: FollowPushPreference? = nil
+        enrichOwnFields: Bool? = nil,
+        pushPreference: FollowPushPreference? = nil,
+        skipPush: Bool? = nil
     ) async throws -> FollowData {
         let request = FollowRequest(
+            activityCopyLimit: activityCopyLimit,
             createNotificationActivity: createNotificationActivity,
             custom: custom,
+            enrichOwnFields: enrichOwnFields,
             pushPreference: pushPreference,
+            skipPush: skipPush,
             source: feed.rawValue,
             target: targetFid.rawValue
         )
@@ -618,6 +724,7 @@ extension Feed: StateRefetching {
     
     func fetchPage(next: String?) async throws -> PaginationResult<ActivityData> {
         var query = feedQuery
+        query.activityIdAround = nil
         // Members are refetched by the member list
         query.memberLimit = 0
         if let next {

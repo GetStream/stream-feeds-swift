@@ -24,7 +24,8 @@ enum StateLayerEvent: Sendable {
     case bookmarkDeleted(BookmarkData)
     case bookmarkUpdated(BookmarkData)
     
-    case bookmarkFolderDeleted(BookmarkFolderData)
+    /// The identifier of the deleted folder.
+    case bookmarkFolderDeleted(String)
     case bookmarkFolderUpdated(BookmarkFolderData)
 
     case commentAdded(CommentData, ActivityData, FeedId)
@@ -76,6 +77,12 @@ enum StateLayerEvent: Sendable {
     /// when activities are added. For this particular case we have bookkeeping and we make
     /// sure state-layer updates `ownCapabilities` for already fetched models as well.
     case feedOwnCapabilitiesUpdated([FeedId: Set<FeedOwnCapability>])
+
+    // Collections have no web-socket events, so the client sends these after its own requests.
+    case collectionsAdded([CollectionData])
+    /// Collection references in the `name:id` format.
+    case collectionsDeleted(Set<String>)
+    case collectionsUpdated([CollectionData])
 }
 
 extension StateLayerEvent {
@@ -107,6 +114,8 @@ extension StateLayerEvent {
             self = .activityMarked(event.toModel(), FeedId(rawValue: event.fid))
         case let event as ActivityRemovedFromFeedEvent:
             self = .activityDeleted(event.activity.id, FeedId(rawValue: event.fid))
+        case let event as ActivityRestoredEvent:
+            self = .activityAdded(event.activity.toModel(), FeedId(rawValue: event.fid))
         // Bookmark added, deleted, updated
         case let event as BookmarkAddedEvent:
             self = .bookmarkAdded(event.bookmark.toModel())
@@ -116,7 +125,7 @@ extension StateLayerEvent {
             self = .bookmarkUpdated(event.bookmark.toModel())
         // Bookmark folder deleted, updated
         case let event as BookmarkFolderDeletedEvent:
-            self = .bookmarkFolderDeleted(event.bookmarkFolder.toModel())
+            self = .bookmarkFolderDeleted(event.bookmarkFolder.id)
         case let event as BookmarkFolderUpdatedEvent:
             self = .bookmarkFolderUpdated(event.bookmarkFolder.toModel())
         // Comment added, deleted, updated

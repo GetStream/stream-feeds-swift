@@ -1,0 +1,29 @@
+//
+// Copyright © 2026 Stream.io Inc. All rights reserved.
+//
+
+import Foundation
+import StreamCore
+
+public final class DeleteCollectionsResponse: Sendable, Decodable {
+    public let duration: String
+
+    public init(duration: String) {
+        self.duration = duration
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.duration = try container.decode(String.self, forKey: .duration)
+    }
+}
+
+extension DeleteCollectionsResponse: Hashable {
+    public static func == (lhs: DeleteCollectionsResponse, rhs: DeleteCollectionsResponse) -> Bool {
+        lhs.duration == rhs.duration
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(duration)
+    }
+}

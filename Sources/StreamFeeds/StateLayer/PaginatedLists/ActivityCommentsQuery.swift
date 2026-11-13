@@ -37,6 +37,9 @@ public struct ActivityCommentsQuery: Sendable {
     /// - `3`: Comments, replies, and replies to replies
     public var depth: Int?
     
+    /// Includes the translations to this language code, for example `fr`, in ``ThreadedCommentData/translations``. Backend default includes no translations.
+    public var language: String?
+    
     /// The maximum number of comments to fetch per request.
     ///
     /// This parameter controls the page size for pagination. Larger values
@@ -83,6 +86,7 @@ public struct ActivityCommentsQuery: Sendable {
     ///   - repliesLimit: Optional maximum number of replies per comment
     ///   - next: Optional pagination cursor for next page
     ///   - previous: Optional pagination cursor for previous page
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ThreadedCommentData/translations``. Backend default includes no translations.
     public init(
         objectId: String,
         objectType: String,
@@ -91,7 +95,8 @@ public struct ActivityCommentsQuery: Sendable {
         limit: Int? = nil,
         repliesLimit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil
+        previous: String? = nil,
+        language: String? = nil
     ) {
         self.objectId = objectId
         self.objectType = objectType
@@ -101,5 +106,6 @@ public struct ActivityCommentsQuery: Sendable {
         self.limit = limit
         self.next = next
         self.previous = previous
+        self.language = language
     }
 }

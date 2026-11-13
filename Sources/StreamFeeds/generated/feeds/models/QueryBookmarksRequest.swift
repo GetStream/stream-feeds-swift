@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class QueryBookmarksRequest: Sendable, Encodable, JSONEncodable {
+    public let enrichOwnFields: Bool?
     /// Filters to apply to the query
     public let filter: [String: RawJSON]?
     public let limit: Int?
@@ -14,7 +15,8 @@ public final class QueryBookmarksRequest: Sendable, Encodable, JSONEncodable {
     /// Sorting parameters for the query
     public let sort: [SortParamRequest]?
 
-    public init(filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
+    public init(enrichOwnFields: Bool? = nil, filter: [String: RawJSON]? = nil, limit: Int? = nil, next: String? = nil, prev: String? = nil, sort: [SortParamRequest]? = nil) {
+        self.enrichOwnFields = enrichOwnFields
         self.filter = filter
         self.limit = limit
         self.next = next
@@ -24,6 +26,7 @@ public final class QueryBookmarksRequest: Sendable, Encodable, JSONEncodable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringCodingKey.self)
+        try container.encodeIfPresent(enrichOwnFields, forKey: .enrichOwnFields)
         try container.encodeIfPresent(filter, forKey: .filter)
         try container.encodeIfPresent(limit, forKey: .limit)
         try container.encodeIfPresent(next, forKey: .next)
@@ -34,7 +37,8 @@ public final class QueryBookmarksRequest: Sendable, Encodable, JSONEncodable {
 
 extension QueryBookmarksRequest: Hashable {
     public static func == (lhs: QueryBookmarksRequest, rhs: QueryBookmarksRequest) -> Bool {
-        lhs.filter == rhs.filter &&
+        lhs.enrichOwnFields == rhs.enrichOwnFields &&
+            lhs.filter == rhs.filter &&
             lhs.limit == rhs.limit &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev &&
@@ -42,6 +46,7 @@ extension QueryBookmarksRequest: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(enrichOwnFields)
         hasher.combine(filter)
         hasher.combine(limit)
         hasher.combine(next)

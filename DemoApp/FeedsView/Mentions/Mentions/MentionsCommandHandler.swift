@@ -95,7 +95,7 @@ public class MentionsCommandHandler: CommandHandler, @unchecked Sendable {
         }
         if suggestions.isEmpty {
             if followSuggestions.isEmpty {
-                suggestions = try await feed.queryFollowSuggestions(limit: 20).map(\.createdBy)
+                suggestions = try await feed.queryFollowSuggestions(limit: 20).map(\.feed.createdBy)
                 followSuggestions = suggestions
             } else {
                 suggestions = followSuggestions

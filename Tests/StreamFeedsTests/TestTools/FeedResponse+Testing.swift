@@ -23,10 +23,12 @@ extension FeedResponse {
         groupId: String = "user",
         memberCount: Int = 0,
         ownCapabilities: [FeedOwnCapability]? = [.readFeed, .readActivities],
+        ownFollowings: [FollowResponse]? = nil,
         pinCount: Int = 0,
         visibility: FeedVisibility? = nil
     ) -> FeedResponse {
         FeedResponse(
+            activityCount: 0,
             createdAt: createdAt,
             createdBy: createdBy,
             custom: custom,
@@ -41,6 +43,7 @@ extension FeedResponse {
             memberCount: memberCount,
             name: name,
             ownCapabilities: ownCapabilities,
+            ownFollowings: ownFollowings,
             ownFollows: nil,
             ownMembership: nil,
             pinCount: pinCount,

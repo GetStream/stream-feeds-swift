@@ -16,8 +16,8 @@ final class CommentsRepository: Sendable {
     
     // MARK: - Querying Comments
     
-    func queryComments(request: QueryCommentsRequest) async throws -> PaginationResult<CommentData> {
-        let response = try await apiClient.queryComments(queryCommentsRequest: request, language: nil, translateText: nil)
+    func queryComments(with query: CommentsQuery) async throws -> PaginationResult<CommentData> {
+        let response = try await apiClient.queryComments(queryCommentsRequest: query.toRequest(), language: query.language, translateText: nil)
         return PaginationResult(
             models: response.comments.map { $0.toModel() },
             pagination: PaginationData(next: response.next, previous: response.prev)
@@ -32,7 +32,7 @@ final class CommentsRepository: Sendable {
             sort: query.sort?.rawValue,
             repliesLimit: query.repliesLimit,
             idAround: nil,
-            language: nil,
+            language: query.language,
             translateText: nil,
             limit: query.limit,
             prev: query.previous,
@@ -62,8 +62,8 @@ final class CommentsRepository: Sendable {
         return (response.comment.toModel(), response.activity.id)
     }
     
-    func getComment(commentId: String) async throws -> CommentData {
-        let response = try await apiClient.getComment(id: commentId, language: nil, translateText: nil)
+    func getComment(commentId: String, language: String?) async throws -> CommentData {
+        let response = try await apiClient.getComment(id: commentId, language: language, translateText: nil)
         return response.comment.toModel()
     }
     
@@ -71,7 +71,12 @@ final class CommentsRepository: Sendable {
         let response = try await apiClient.updateComment(id: commentId, updateCommentRequest: request)
         return response.comment.toModel()
     }
-    
+
+    func translateComment(commentId: String, language: String) async throws -> CommentData {
+        let response = try await apiClient.translateComment(id: commentId, translateCommentRequest: TranslateCommentRequest(language: language))
+        return response.comment.toModel()
+    }
+
     // MARK: - Comment Reactions
     
     func addCommentReaction(commentId: String, request: AddCommentReactionRequest) async throws -> (reaction: FeedsReactionData, comment: CommentData) {
@@ -103,7 +108,7 @@ final class CommentsRepository: Sendable {
             sort: query.sort?.rawValue,
             repliesLimit: query.repliesLimit,
             idAround: nil,
-            language: nil,
+            language: query.language,
             translateText: nil,
             limit: query.limit,
             prev: query.previous,

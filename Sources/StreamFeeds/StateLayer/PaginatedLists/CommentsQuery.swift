@@ -39,6 +39,9 @@ public struct CommentsQuery: Sendable {
     /// This is typically provided in the response of a previous request.
     public var previous: String?
     
+    /// Includes the translations to this language code, for example `fr`, in ``CommentData/translations``. Backend default includes no translations.
+    public var language: String?
+    
     /// Creates a new comments query with the specified parameters.
     ///
     /// - Parameters:
@@ -47,18 +50,21 @@ public struct CommentsQuery: Sendable {
     ///   - limit: Optional maximum number of comments to return in a single request.
     ///   - next: Optional pagination cursor for fetching the next page of results.
     ///   - previous: Optional pagination cursor for fetching the previous page of results.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``CommentData/translations``. Backend default includes no translations.
     public init(
         filter: CommentsFilter?,
         sort: CommentsSort? = nil,
         limit: Int? = nil,
         next: String? = nil,
-        previous: String? = nil
+        previous: String? = nil,
+        language: String? = nil
     ) {
         self.filter = filter
         self.sort = sort
         self.limit = limit
         self.next = next
         self.previous = previous
+        self.language = language
     }
 }
 
@@ -114,6 +120,11 @@ extension CommentsFilterField {
     ///
     /// **Supported operators:** `.equal`, `.in`
     public static let status = Self("status", localValue: \.status.rawValue)
+    
+    /// Filter by whether the current user hid the comment. Comments the user hid are only returned with this filter.
+    ///
+    /// **Supported operators:** `.equal`
+    public static let hidden = Self("hidden", localValue: \.hidden)
     
     /// Filter by the number of upvotes the comment has received.
     ///
@@ -173,6 +184,9 @@ extension CommentsFilterField {
 /// **Status fields** (`status`):
 /// - `.equal` - Exact match
 /// - `.in` - Match any value in a list
+///
+/// **Boolean fields** (`hidden`):
+/// - `.equal` - Exact match
 ///
 /// **Number fields** (`upvoteCount`, `downvoteCount`, `replyCount`, `score`, `confidenceScore`, `controversyScore`):
 /// - `.greaterThan` - Greater than the specified value

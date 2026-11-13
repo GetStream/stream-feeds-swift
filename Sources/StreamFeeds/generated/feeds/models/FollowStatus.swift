@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// Status of a follow request.
-public final class FollowStatus: RawRepresentable, Decodable, Hashable, Sendable {
+public final class FollowStatus: RawRepresentable, Decodable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue

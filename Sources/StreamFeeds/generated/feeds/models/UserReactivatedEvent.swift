@@ -9,12 +9,14 @@ import StreamCore
 public final class UserReactivatedEvent: Sendable, Event, Decodable {
     /// Date/time of creation
     public let createdAt: Date
+    public let createdBy: UserResponseCommonFields?
     /// The type of event: "user.reactivated" in this case
     public let type: String
     public let user: UserResponseCommonFields
 
-    public init(createdAt: Date, type: String = "user.reactivated", user: UserResponseCommonFields) {
+    public init(createdAt: Date, createdBy: UserResponseCommonFields? = nil, type: String = "user.reactivated", user: UserResponseCommonFields) {
         self.createdAt = createdAt
+        self.createdBy = createdBy
         self.type = type
         self.user = user
     }
@@ -22,6 +24,7 @@ public final class UserReactivatedEvent: Sendable, Event, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
+        self.createdBy = try container.decodeIfPresent(UserResponseCommonFields.self, forKey: .createdBy)
         self.type = try container.decode(String.self, forKey: .type)
         self.user = try container.decode(UserResponseCommonFields.self, forKey: .user)
     }
@@ -30,12 +33,14 @@ public final class UserReactivatedEvent: Sendable, Event, Decodable {
 extension UserReactivatedEvent: Hashable {
     public static func == (lhs: UserReactivatedEvent, rhs: UserReactivatedEvent) -> Bool {
         lhs.createdAt == rhs.createdAt &&
+            lhs.createdBy == rhs.createdBy &&
             lhs.type == rhs.type &&
             lhs.user == rhs.user
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(createdAt)
+        hasher.combine(createdBy)
         hasher.combine(type)
         hasher.combine(user)
     }

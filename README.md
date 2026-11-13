@@ -8,7 +8,7 @@
   <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0%2B-orange.svg" /></a>
 </p>
 <p align="center">
-  <img id="stream-feeds-label" alt="StreamFeeds" src="https://img.shields.io/badge/StreamFeeds-6.73%20MB-blue"/>
+  <img id="stream-feeds-label" alt="StreamFeeds" src="https://img.shields.io/badge/StreamFeeds-4.75%20MB-blue"/>
 </p>
 
 This is the official iOS SDK for StreamFeeds, a platform for building apps with activity feeds support. The repository includes a low-level SDK that communicates with Stream's backend, as well as a demo app that showcases how to use it.

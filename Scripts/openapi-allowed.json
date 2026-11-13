@@ -11,12 +11,15 @@
     "ban",
     "blockUsers",
     "castPollVote",
+    "createCollections",
     "createPoll",
     "createPollOption",
     "deleteActivities",
     "deleteActivity",
     "deleteActivityReaction",
     "deleteBookmark",
+    "deleteBookmarkFolder",
+    "deleteCollections",
     "deleteComment",
     "deleteCommentReaction",
     "deleteConfig",
@@ -47,6 +50,7 @@
     "queryActivityReactions",
     "queryBookmarkFolders",
     "queryBookmarks",
+    "queryCollections",
     "queryCommentReactions",
     "queryComments",
     "queryFeedMembers",
@@ -56,15 +60,22 @@
     "queryPollVotes",
     "queryPolls",
     "queryReviewQueue",
+    "readCollections",
     "rejectFeedMemberInvite",
     "rejectFollow",
+    "restoreActivity",
     "stopWatchingFeed",
     "submitAction",
+    "translateActivity",
+    "translateComment",
     "unblockUsers",
     "unfollow",
     "unpinActivity",
     "updateActivity",
+    "updateActivityPartial",
     "updateBookmark",
+    "updateBookmarkFolder",
+    "updateCollections",
     "updateComment",
     "updateFeed",
     "updateFeedMembers",
@@ -102,6 +113,7 @@
     "OCRRule",
     "PrivacySettingsResponse",
     "ReadReceiptsResponse",
+    "RestrictReplies",
     "VelocityFilterConfig",
     "VelocityFilterConfigRule",
     "VotingVisibility"
@@ -146,6 +158,8 @@
     "BookmarkFolderUpdatedEvent",
     "BookmarkResponse",
     "BookmarkUpdatedEvent",
+    "CollectionResponse",
+    "CollectionStatus",
     "CommentAddedEvent",
     "CommentDeletedEvent",
     "CommentFeedbackEvent",
@@ -160,15 +174,19 @@
     "ConfigResponse",
     "ConnectedEvent",
     "ConnectionErrorEvent",
+    "CreateCollectionsResponse",
     "DeleteActivitiesResponse",
     "DeleteActivityReactionResponse",
     "DeleteActivityResponse",
+    "DeleteBookmarkFolderResponse",
     "DeleteBookmarkResponse",
+    "DeleteCollectionsResponse",
     "DeleteCommentReactionResponse",
     "DeleteCommentResponse",
     "DeleteFeedResponse",
     "DeleteModerationConfigResponse",
     "EnrichedActivity",
+    "EnrichedCollectionResponse",
     "EnrichedReaction",
     "EntityCreatorResponse",
     "FeedCreatedEvent",
@@ -187,6 +205,7 @@
     "FeedSuggestionResponse",
     "FeedUpdatedEvent",
     "FeedsEvent",
+    "FeedsPreferencesResponse",
     "FeedsReactionGroupResponse",
     "FeedsReactionResponse",
     "FileUploadConfig",
@@ -216,8 +235,10 @@
     "ModerationPayloadResponse",
     "ModerationV2Response",
     "MuteResponse",
+    "NotificationComment",
     "NotificationContext",
     "NotificationFeedUpdatedEvent",
+    "NotificationParentActivity",
     "NotificationStatusResponse",
     "NotificationTarget",
     "NotificationTrigger",
@@ -238,10 +259,13 @@
     "PollVoteResponse",
     "PollVoteResponseData",
     "PollVotesResponse",
+    "PushPreferencesResponse",
+    "PushScheduleResponse",
     "QueryActivitiesResponse",
     "QueryActivityReactionsResponse",
     "QueryBookmarkFoldersResponse",
     "QueryBookmarksResponse",
+    "QueryCollectionsResponse",
     "QueryCommentReactionsResponse",
     "QueryCommentsResponse",
     "QueryFeedMembersResponse",
@@ -250,21 +274,30 @@
     "QueryModerationConfigsResponse",
     "QueryPollsResponse",
     "QueryReviewQueueResponse",
+    "QuietHoursRuleResponse",
+    "ReadCollectionsResponse",
     "RejectFeedMemberInviteResponse",
     "RejectFollowResponse",
     "RepliesMeta",
     "Response",
+    "RestoreActivityResponse",
     "ReviewQueueItemResponse",
+    "ShareResponse",
     "SingleFollowResponse",
     "StoriesFeedUpdatedEvent",
     "StreamData",
     "SubmitActionResponse",
     "ThreadedCommentResponse",
+    "TranslateActivityResponse",
+    "TranslateCommentResponse",
     "UnblockUsersResponse",
     "UnfollowResponse",
     "UnpinActivityResponse",
+    "UpdateActivityPartialResponse",
     "UpdateActivityResponse",
+    "UpdateBookmarkFolderResponse",
     "UpdateBookmarkResponse",
+    "UpdateCollectionsResponse",
     "UpdateCommentResponse",
     "UpdateFeedMembersResponse",
     "UpdateFeedResponse",
@@ -295,18 +328,23 @@
     "BanRequest",
     "BlockUsersRequest",
     "CastPollVoteRequest",
+    "CollectionRequest",
     "ContentCountRuleParameters",
+    "CreateCollectionsRequest",
     "CreatePollOptionRequest",
     "CreatePollRequest",
     "CustomActionRequestPayload",
     "DeleteActivitiesRequest",
     "DeleteActivityRequestPayload",
     "DeleteReactionRequestPayload",
+    "EnrichmentOptions",
     "FeedInput",
     "FeedMemberRequest",
     "FlagRequest",
     "FlagUserOptions",
     "FollowRequest",
+    "FriendReactionType",
+    "FriendReactionsOptions",
     "GetOrCreateFeedRequest",
     "GoogleVisionConfig",
     "ImageContentParameters",
@@ -324,6 +362,7 @@
     "QueryActivityReactionsRequest",
     "QueryBookmarkFoldersRequest",
     "QueryBookmarksRequest",
+    "QueryCollectionsRequest",
     "QueryCommentReactionsRequest",
     "QueryCommentsRequest",
     "QueryFeedMembersRequest",
@@ -334,7 +373,6 @@
     "QueryPollsRequest",
     "QueryReviewQueueRequest",
     "RejectFollowRequest",
-    "RestrictReplies",
     "RuleBuilderAction",
     "RuleBuilderCondition",
     "RuleBuilderConditionGroup",
@@ -344,9 +382,15 @@
     "SubmitActionRequest",
     "TextContentParameters",
     "TextRuleParameters",
+    "TranslateActivityRequest",
+    "TranslateCommentRequest",
     "UnblockUsersRequest",
+    "UpdateActivityPartialRequest",
     "UpdateActivityRequest",
+    "UpdateBookmarkFolderRequest",
     "UpdateBookmarkRequest",
+    "UpdateCollectionRequest",
+    "UpdateCollectionsRequest",
     "UpdateCommentRequest",
     "UpdateFeedMembersRequest",
     "UpdateFeedRequest",
@@ -363,499 +407,405 @@
     "VoteData"
   ],
   "removedProperties": {
+    "AIImageConfig": [
+      { "ocrSeverityRules": "Unused (not exposed)" }
+    ],
     "AITextConfig": [
-      "profile"
+      { "profile": "Unused (not exposed)" }
     ],
     "AWSRekognitionRule": [
-      "subclassifications"
+      { "subclassifications": "Unused (not exposed)" }
     ],
     "AcceptFollowRequest": [
-      "followerRole"
+      { "followerRole": "Server-side only" }
     ],
     "ActionLogResponse": [
-      "reporterType"
+      { "reporterType": "Moderation tooling" }
     ],
     "ActivityRequest": [
-      "collectionRefs",
-      "collections",
-      "copyCustomToNotification",
-      "createNotificationActivity",
-      "restrictReplies",
-      "skipEnrichUrl",
-      "skipPush"
-    ],
-    "ActivityResponse": [
-      "collections",
-      "friendReactionCount",
-      "friendReactions",
-      "i18n",
-      "isRead",
-      "isSeen",
-      "isWatched",
-      "latestShares",
-      "metrics",
-      "moderationAction",
-      "preview",
-      "restrictReplies",
-      "scoreVars",
-      "selectorSource",
-      "topLevelCommentCount"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddActivityRequest": [
-      "collections",
-      "copyCustomToNotification",
-      "enrichOwnFields"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddActivityResponse": [
-      "skippedExisting"
+      { "skippedExisting": "Server-side only, backend ignores skip_existing for client tokens" }
     ],
     "AddCommentReactionRequest": [
-      "copyCustomToNotification",
-      "targetFeeds"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddCommentReactionResponse": [
-      "counterDelta",
-      "notificationAccepted",
-      "notificationCreated",
-      "notificationTaskId",
-      "outcome",
-      "previousReactionType",
-      "referenceActivity"
+      { "counterDelta": "Unused (not exposed)" },
+      { "notificationAccepted": "Unused (not exposed)" },
+      { "notificationCreated": "Deprecated, use notificationAccepted" },
+      { "notificationTaskId": "Server-side only, GET /tasks/{id} rejects client tokens" },
+      { "outcome": "Unused (not exposed)" },
+      { "previousReactionType": "Unused (not exposed)" },
+      { "referenceActivity": "Unused (not exposed)" }
     ],
     "AddCommentRequest": [
-      "copyCustomToNotification",
-      "id",
-      "skipEnrichUrl"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddCommentResponse": [
-      "mentionNotificationsCreated",
-      "notificationCreated"
+      { "mentionNotificationsCreated": "Unused (not exposed)" },
+      { "notificationCreated": "Unused (not exposed)" }
     ],
     "AddReactionRequest": [
-      "copyCustomToNotification",
-      "targetFeeds"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "AddReactionResponse": [
-      "counterDelta",
-      "notificationAccepted",
-      "notificationCreated",
-      "notificationTaskId",
-      "outcome",
-      "previousReactionType",
-      "referenceActivity"
-    ],
-    "AggregatedActivityResponse": [
-      "isRead",
-      "isSeen"
+      { "counterDelta": "Unused (not exposed)" },
+      { "notificationAccepted": "Unused (not exposed)" },
+      { "notificationCreated": "Deprecated, use notificationAccepted" },
+      { "notificationTaskId": "Server-side only, GET /tasks/{id} rejects client tokens" },
+      { "outcome": "Unused (not exposed)" },
+      { "previousReactionType": "Unused (not exposed)" },
+      { "referenceActivity": "Unused (not exposed)" }
     ],
     "AppResponseFields": [
-      "id",
-      "placement"
+      { "placement": "Unused (not exposed)" }
     ],
     "BanInfoResponse": [
-      "channel",
-      "channelCid",
-      "user"
+      { "channel": "Chat only" },
+      { "channelCid": "Chat only" },
+      { "user": "Moderation review queue" }
     ],
     "BanOptions": [
-      "deleteMessages"
+      { "deleteMessages": "Chat only" }
     ],
     "BanRequest": [
-      "banFromFutureChannels",
-      "channelCid",
-      "deleteMessages",
-      "deleteReactions"
+      { "banFromFutureChannels": "Chat only" },
+      { "channelCid": "Chat only" },
+      { "deleteMessages": "Chat only" },
+      { "deleteReactions": "Chat only" }
     ],
     "BlockListConfig": [
-      "matchSubstring"
-    ],
-    "BookmarkFolderResponse": [
-      "user"
+      { "explicitUrlsOnly": "Unused (not exposed)" },
+      { "matchSubstring": "Unused (not exposed)" }
     ],
     "BookmarkResponse": [
-      "activityId",
-      "comment",
-      "objectId",
-      "objectType"
-    ],
-    "CommentResponse": [
-      "bookmarkCount",
-      "editedAt",
-      "hidden",
-      "i18n"
+      { "activityId": "Deprecated, use objectId" }
     ],
     "ConfigResponse": [
-      "aiAudioConfig",
-      "aiImageLabelDefinitions",
-      "aiImageSubclassifications",
-      "availableBodyguardProfiles",
-      "floodConfig",
-      "intentConfig",
-      "supportedVideoCallHarmTypes",
-      "videoCallRuleConfig"
+      { "aiAudioConfig": "Moderation tooling" },
+      { "aiImageLabelDefinitions": "Moderation dashboard" },
+      { "aiImageSubclassifications": "Moderation dashboard" },
+      { "availableBodyguardProfiles": "Moderation dashboard" },
+      { "engine": "Moderation config" },
+      { "floodConfig": "Moderation tooling" },
+      { "intentConfig": "Chat only, conversation intent" },
+      { "publishedVersion": "Moderation config" },
+      { "supportedVideoCallHarmTypes": "Video only" },
+      { "videoCallRuleConfig": "Video only" }
     ],
     "CreatePollRequest": [
-      "team"
+      { "team": "Chat only, multi-tenant teams" }
     ],
     "DeleteActivityRequestPayload": [
-      "entityId",
-      "entityType",
-      "reason"
+      { "entityId": "Moderation tooling" },
+      { "entityType": "Moderation tooling" },
+      { "reason": "Moderation tooling" }
     ],
     "DeleteReactionRequestPayload": [
-      "entityId",
-      "entityType",
-      "reason"
+      { "entityId": "Moderation tooling" },
+      { "entityType": "Moderation tooling" },
+      { "reason": "Moderation tooling" }
     ],
     "EnrichedActivity": [
-      "time"
+      { "time": "Legacy Feeds v2 model" }
     ],
     "EnrichedReaction": [
-      "createdAt",
-      "updatedAt"
+      { "createdAt": "Legacy Feeds v2 model" },
+      { "updatedAt": "Legacy Feeds v2 model" }
     ],
     "FeedGroupChangedEvent": [
-      "feedGroup"
-    ],
-    "FeedInput": [
-      "location"
+      { "feedGroup": "Server-side feed group config, event never emitted" }
     ],
     "FeedMemberRequest": [
-      "membershipLevel",
-      "role"
-    ],
-    "FeedResponse": [
-      "activityCount",
-      "location",
-      "ownFollowings"
+      { "membershipLevel": "Server-side only, rejected for client tokens" },
+      { "role": "Server-side only, rejected for client tokens" }
     ],
     "FlagRequest": [
-      "entityCreatorId"
+      { "entityCreatorId": "Server-side only, backend sets it from the flagged entity" }
     ],
     "FollowRequest": [
-      "activityCopyLimit",
-      "copyCustomToNotification",
-      "enrichOwnFields"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "GetCommentRepliesResponse": [
-      "sort"
+      { "sort": "Unused (not exposed)" }
     ],
     "GetCommentsResponse": [
-      "commentCount",
-      "sort",
-      "topLevelCommentCount"
+      { "commentCount": "Unused (not exposed)" },
+      { "sort": "Unused (not exposed)" },
+      { "topLevelCommentCount": "Unused (not exposed)" }
     ],
     "GetFollowSuggestionsResponse": [
-      "algorithmUsed"
+      { "algorithmUsed": "Unused (not exposed)" }
     ],
     "GetOrCreateFeedRequest": [
-      "discardActors",
-      "enrichmentOptions",
-      "friendReactionsOptions",
-      "idAround",
-      "overwriteInterestWeights",
-      "viewerLocation"
+      { "discardActors": "Gated to a single organization" }
     ],
     "GetOrCreateFeedResponse": [
-      "degradedSelectors"
+      { "degradedSelectors": "Unused (not exposed)" },
+      { "requestId": "Unused (not exposed), only trackActivityMetrics takes it" }
     ],
     "HealthCheckEvent": [
-      "custom",
-      "me"
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "me": "Unused (not exposed)" }
     ],
     "ImageContentParameters": [
-      "labelOperator",
-      "minConfidence"
+      { "labelOperator": "Moderation tooling" },
+      { "minConfidence": "Moderation tooling" }
     ],
     "ImageRuleParameters": [
-      "minConfidence"
+      { "minConfidence": "Moderation tooling" }
     ],
     "LLMConfig": [
-      "contextCustomKeys",
-      "customKeysContextDescription"
+      { "contextCustomKeys": "Moderation tooling" },
+      { "customKeysContextDescription": "Moderation tooling" }
     ],
     "MarkReviewedRequestPayload": [
-      "decisionReason",
-      "reason"
+      { "decisionReason": "Moderation tooling" },
+      { "reason": "Moderation tooling" }
     ],
     "ModerationActionConfigResponse": [
-      "id",
-      "queueType"
+      { "id": "Moderation tooling" },
+      { "queueType": "Moderation tooling" }
     ],
     "ModerationCustomActionEvent": [
-      "message"
+      { "message": "Chat only" }
     ],
     "ModerationFlagResponse": [
-      "contentPublishedAt",
-      "id"
+      { "contentPublishedAt": "Moderation tooling" },
+      { "id": "Moderation tooling" }
     ],
     "ModerationFlaggedEvent": [
-      "contentType",
-      "custom",
-      "receivedAt"
+      { "contentType": "Moderation tooling" },
+      { "custom": "Moderation tooling" },
+      { "receivedAt": "Moderation tooling" }
     ],
     "ModerationMarkReviewedEvent": [
-      "custom",
-      "message",
-      "receivedAt"
+      { "custom": "Moderation tooling" },
+      { "message": "Chat only" },
+      { "receivedAt": "Moderation tooling" }
     ],
     "ModerationPayload": [
-      "audios",
-      "countryCode",
-      "countryCodes",
-      "imageIds",
-      "imageOrderedKeys",
-      "otherMedia",
-      "textIds",
-      "textOrderedKeys"
-    ],
-    "ModerationV2Response": [
-      "blocklistsMatched"
-    ],
-    "NotificationTarget": [
-      "comment",
-      "custom",
-      "parentActivity"
-    ],
-    "NotificationTrigger": [
-      "comment",
-      "custom"
+      { "audios": "Moderation tooling" },
+      { "countryCode": "Moderation tooling" },
+      { "countryCodes": "Moderation tooling" },
+      { "imageIds": "Moderation tooling" },
+      { "imageOrderedKeys": "Moderation tooling" },
+      { "otherMedia": "Moderation tooling" },
+      { "textIds": "Moderation tooling" },
+      { "textOrderedKeys": "Moderation tooling" }
     ],
     "OwnUserResponse": [
-      "avgResponseTime",
-      "banned",
-      "channelMutes",
-      "invisible",
-      "latestHiddenChannels",
-      "mutes",
-      "online",
-      "privacySettings",
-      "pushPreferences",
-      "teamsRole",
-      "totalUnreadCount",
-      "totalUnreadCountByTeam",
-      "unreadChannels",
-      "unreadCount",
-      "unreadThreads"
+      { "channelMutes": "Chat only" },
+      { "invisible": "Chat only" },
+      { "latestHiddenChannels": "Chat only" },
+      { "privacySettings": "Chat only" },
+      { "totalUnreadCount": "Chat only" },
+      { "totalUnreadCountByTeam": "Chat only" },
+      { "unreadChannels": "Chat only" },
+      { "unreadCount": "Chat only" },
+      { "unreadThreads": "Chat only" }
     ],
     "PollOptionResponseData": [
-      "textI18n"
+      { "textI18n": "Chat only" }
     ],
     "PollResponseData": [
-      "descriptionI18n",
-      "nameI18n"
+      { "descriptionI18n": "Chat only" },
+      { "nameI18n": "Chat only" }
     ],
     "PollVoteResponse": [
-      "poll"
+      { "poll": "Unused (not exposed)" }
     ],
     "PollVoteResponseData": [
-      "answerTextI18n"
+      { "answerTextI18n": "Chat only" }
     ],
     "PrivacySettingsResponse": [
-      "deliveryReceipts",
-      "typingIndicators"
+      { "deliveryReceipts": "Chat only" },
+      { "typingIndicators": "Chat only" }
     ],
-    "QueryActivitiesRequest": [
-      "enrichOwnFields"
-    ],
-    "QueryBookmarksRequest": [
-      "enrichOwnFields"
+    "PushPreferencesResponse": [
+      { "chatLevel": "Chat only" },
+      { "chatPreferences": "Chat only" }
     ],
     "QueryCommentsRequest": [
-      "idAround"
-    ],
-    "QueryFeedsRequest": [
-      "enrichOwnFields"
+      { "idAround": "Unused (not exposed), backend returns no next or prev cursors on id_around pages" }
     ],
     "QueryFollowsRequest": [
-      "includeGroupCounts"
+      { "includeGroupCounts": "Server-side only" }
     ],
     "QueryFollowsResponse": [
-      "groupCounts"
+      { "groupCounts": "Server-side only, needs includeGroupCounts" }
     ],
     "QueryReviewQueueRequest": [
-      "excludeDefaultActionConfig"
+      { "excludeDefaultActionConfig": "Moderation tooling" }
     ],
     "QueryReviewQueueResponse": [
-      "defaultActionConfig",
-      "filterConfig"
+      { "defaultActionConfig": "Moderation tooling" },
+      { "filterConfig": "Moderation tooling" }
     ],
     "ReviewQueueItemResponse": [
-      "appeal",
-      "call",
-      "confidenceScore",
-      "countryCode",
-      "countryCodes",
-      "escalated",
-      "escalatedAt",
-      "escalatedBy",
-      "escalationMetadata",
-      "falsePositiveFlags",
-      "feedsV2Reaction",
-      "feedsV3Activity",
-      "feedsV3Comment",
-      "latestModeratorAction",
-      "mediaDisplay",
-      "message",
-      "poll",
-      "reaction"
+      { "appeal": "Moderation tooling" },
+      { "call": "Video only" },
+      { "confidenceScore": "Moderation tooling" },
+      { "countryCode": "Moderation tooling" },
+      { "countryCodes": "Moderation tooling" },
+      { "escalated": "Moderation tooling" },
+      { "escalatedAt": "Moderation tooling" },
+      { "escalatedBy": "Moderation tooling" },
+      { "escalationMetadata": "Moderation tooling" },
+      { "falsePositiveFlags": "Moderation tooling" },
+      { "feedsV2Reaction": "Legacy Feeds v2 model" },
+      { "feedsV3Activity": "Moderation tooling" },
+      { "feedsV3Comment": "Moderation tooling" },
+      { "latestModeratorAction": "Moderation tooling" },
+      { "mediaDisplay": "Moderation dashboard" },
+      { "message": "Chat only" },
+      { "poll": "Moderation tooling" },
+      { "reaction": "Moderation tooling" }
     ],
     "RuleBuilderAction": [
-      "callOptions",
-      "reason",
-      "skipInbox"
+      { "callOptions": "Video only" },
+      { "reason": "Moderation tooling" },
+      { "skipInbox": "Moderation tooling" }
     ],
     "RuleBuilderCondition": [
-      "appChannelCountParams",
-      "appMessageCountParams",
-      "callCustomPropertyParams",
-      "callTypeRuleParams",
-      "callViolationCountParams",
-      "channelMessageCountRuleParams",
-      "closedCaptionRuleParams",
-      "contentCountryCodeParams",
-      "contentCustomPropertyCountParams",
-      "contentCustomPropertyParams",
-      "contentFlagCountRuleParams",
-      "floodIdenticalParams",
-      "floodSimilarParams",
-      "intentRuleParams",
-      "ipContentCountRuleParams",
-      "ipFlagCountRuleParams",
-      "keyframeOcrRuleParams",
-      "keyframeRuleParams",
-      "ocrContentParams",
-      "userChannelBanCountParams",
-      "userChannelCountParams",
-      "userFlagCountRuleParams",
-      "userIdenticalContentCountParams",
-      "userIdenticalImageCountParams",
-      "userReactionCountParams",
-      "userRoleParams"
+      { "appChannelCountParams": "Chat only" },
+      { "appMessageCountParams": "Chat only" },
+      { "callCustomPropertyParams": "Video only" },
+      { "callTypeRuleParams": "Video only" },
+      { "callViolationCountParams": "Video only" },
+      { "channelMessageCountRuleParams": "Chat only" },
+      { "closedCaptionRuleParams": "Video only" },
+      { "contentCountryCodeParams": "Moderation tooling" },
+      { "contentCustomPropertyCountParams": "Moderation tooling" },
+      { "contentCustomPropertyParams": "Moderation tooling" },
+      { "contentFlagCountRuleParams": "Moderation tooling" },
+      { "floodIdenticalParams": "Moderation tooling" },
+      { "floodSimilarParams": "Moderation tooling" },
+      { "intentRuleParams": "Chat only" },
+      { "ipContentCountRuleParams": "Moderation tooling" },
+      { "ipFlagCountRuleParams": "Moderation tooling" },
+      { "keyframeOcrRuleParams": "Video only" },
+      { "keyframeRuleParams": "Video only" },
+      { "ocrContentParams": "Moderation tooling" },
+      { "userChannelBanCountParams": "Chat only" },
+      { "userChannelCountParams": "Chat only" },
+      { "userFlagCountRuleParams": "Moderation tooling" },
+      { "userIdenticalContentCountParams": "Moderation tooling" },
+      { "userIdenticalImageCountParams": "Moderation tooling" },
+      { "userReactionCountParams": "Moderation tooling" },
+      { "userRoleParams": "Moderation tooling" }
     ],
     "RuleBuilderRule": [
-      "actionSequences"
+      { "actionSequences": "Video only" }
     ],
     "SingleFollowResponse": [
-      "notificationCreated"
+      { "notificationCreated": "Unused (not exposed)" }
     ],
     "SortParamRequest": [
-      "type"
+      { "type": "Moderation queries only" }
     ],
     "SubmitActionRequest": [
-      "appealId",
-      "ban",
-      "block",
-      "bypass",
-      "deleteComment",
-      "deleteMessage",
-      "deletePoll",
-      "deletePollAnswer",
-      "deletePollOption",
-      "deleteUser",
-      "deleteUserMessages",
-      "escalate",
-      "flag",
-      "rejectAppeal",
-      "restore",
-      "shadowBlock",
-      "unban",
-      "unblock"
+      { "appealId": "Moderation tooling" },
+      { "ban": "Moderation tooling" },
+      { "block": "Moderation tooling" },
+      { "bypass": "Moderation tooling" },
+      { "deleteComment": "Moderation tooling" },
+      { "deleteMessage": "Chat only" },
+      { "deletePoll": "Moderation tooling" },
+      { "deletePollAnswer": "Moderation tooling" },
+      { "deletePollOption": "Moderation tooling" },
+      { "deleteUser": "Moderation tooling" },
+      { "deleteUserMessages": "Chat only" },
+      { "escalate": "Moderation tooling" },
+      { "flag": "Moderation tooling" },
+      { "rejectAppeal": "Moderation tooling" },
+      { "restore": "Moderation tooling" },
+      { "shadowBlock": "Moderation tooling" },
+      { "unban": "Moderation tooling" },
+      { "unblock": "Deprecated, use restore" }
     ],
     "SubmitActionResponse": [
-      "appealItem",
-      "autoRestoreWarning"
+      { "appealItem": "Moderation tooling" },
+      { "autoRestoreWarning": "Moderation tooling" }
     ],
     "TextContentParameters": [
-      "labelOperator",
-      "textLength",
-      "textLengthOperator"
+      { "labelOperator": "Moderation tooling" },
+      { "textLength": "Moderation tooling" },
+      { "textLengthOperator": "Moderation tooling" }
     ],
     "TextRuleParameters": [
-      "semanticFilterMinThreshold",
-      "semanticFilterNames"
+      { "semanticFilterMinThreshold": "Moderation tooling" },
+      { "semanticFilterNames": "Moderation tooling" }
+    ],
+    "UpdateActivityPartialRequest": [
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpdateActivityRequest": [
-      "collectionRefs",
-      "copyCustomToNotification",
-      "enrichOwnFields",
-      "handleMentionNotifications",
-      "mentionedUserIds",
-      "restrictReplies",
-      "runActivityProcessors",
-      "searchData",
-      "skipEnrichUrl",
-      "visibilityTag"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpdateCommentRequest": [
-      "attachments",
-      "copyCustomToNotification",
-      "handleMentionNotifications",
-      "mentionedUserIds",
-      "skipEnrichUrl"
-    ],
-    "UpdateFeedRequest": [
-      "clearLocation",
-      "description",
-      "enrichOwnFields",
-      "filterTags",
-      "location",
-      "name"
+      { "copyCustomToNotification": "Deprecated, use notificationContext custom" }
     ],
     "UpsertActivitiesRequest": [
-      "enrichOwnFields"
+      { "enrichOwnFields": "Only applies to single-activity upserts, addActivity covers it" }
     ],
     "UpsertActivitiesResponse": [
-      "mentionNotificationsCreated",
-      "skippedExisting"
+      { "mentionNotificationsCreated": "Unused (not exposed)" },
+      { "skippedExisting": "Server-side only, backend ignores skip_existing for client tokens" }
     ],
     "UpsertConfigRequest": [
-      "aiAudioConfig",
-      "floodConfig",
-      "intentConfig",
-      "videoCallRuleConfig"
+      { "aiAudioConfig": "Moderation tooling" },
+      { "engine": "Moderation config" },
+      { "floodConfig": "Moderation tooling" },
+      { "intentConfig": "Chat only, conversation intent" },
+      { "videoCallRuleConfig": "Video only" }
     ],
     "UserBannedEvent": [
-      "channelCustom",
-      "channelId",
-      "channelMemberCount",
-      "channelMessageCount",
-      "channelType",
-      "cid",
-      "custom",
-      "receivedAt",
-      "reviewQueueItemId",
-      "totalBans"
+      { "banFromFutureChannels": "Chat only" },
+      { "channelCustom": "Chat only" },
+      { "channelId": "Chat only" },
+      { "channelMemberCount": "Chat only" },
+      { "channelMessageCount": "Chat only" },
+      { "channelType": "Chat only" },
+      { "cid": "Chat only" },
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "receivedAt": "Never set by the backend" },
+      { "reviewQueueItemId": "Moderation review queue" },
+      { "totalBans": "Webhooks only, not sent over WebSocket" }
     ],
     "UserDeactivatedEvent": [
-      "custom",
-      "receivedAt"
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "receivedAt": "Never set by the backend" }
     ],
     "UserDeletedEvent": [
-      "deleteConversationChannels",
-      "deleteMessages",
-      "markMessagesDeleted"
+      { "deleteConversationChannels": "Chat only" },
+      { "deleteMessages": "Chat only" },
+      { "markMessagesDeleted": "Chat only" }
     ],
     "UserReactivatedEvent": [
-      "createdBy",
-      "custom",
-      "receivedAt"
+      { "custom": "Webhooks only, not sent over WebSocket" },
+      { "receivedAt": "Never set by the backend" }
     ],
     "UserUnbannedEvent": [
-      "channelCustom",
-      "channelId",
-      "channelMemberCount",
-      "channelMessageCount",
-      "channelType",
-      "cid"
+      { "channelCustom": "Chat only" },
+      { "channelId": "Chat only" },
+      { "channelMemberCount": "Chat only" },
+      { "channelMessageCount": "Chat only" },
+      { "channelType": "Chat only" },
+      { "cid": "Chat only" }
     ],
     "VelocityFilterConfig": [
-      "cascadingActions",
-      "cidsPerUser",
-      "firstMessageOnly"
+      { "cascadingActions": "Unused (not exposed)" },
+      { "cidsPerUser": "Unused (not exposed)" },
+      { "firstMessageOnly": "Unused (not exposed)" }
     ],
     "VideoContentParameters": [
-      "labelOperator"
+      { "labelOperator": "Moderation tooling" }
     ]
   }
 }

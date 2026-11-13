@@ -25,6 +25,22 @@ struct CommentList_Tests {
         #expect(stateComments.map(\.id) == ["comment-1"])
     }
     
+    @Test func getAndPaginationSendLanguage() async throws {
+        let apiTransport = APITransportMock.withPayloads([
+            QueryCommentsResponse.dummy(comments: [.dummy(id: "comment-1", objectId: Self.activityId)], next: "next-cursor"),
+            QueryCommentsResponse.dummy(comments: [], next: nil)
+        ])
+        let commentList = FeedsClient.mock(apiTransport: apiTransport).commentList(
+            for: CommentsQuery(filter: .equal(.objectId, Self.activityId), language: "fr")
+        )
+
+        try await commentList.get()
+        try await commentList.queryMoreComments()
+
+        let languages = apiTransport.requests.value.map { $0.queryParams.first { $0.name == "language" }?.value }
+        #expect(languages == ["fr", "fr"])
+    }
+    
     @Test func reconnectionRefetchesLoadedComments() async throws {
         let client = defaultClient(
             additionalPayloads: [
@@ -188,6 +204,93 @@ struct CommentList_Tests {
         let comments = await commentList.state.comments
         #expect(comments.count == 1)
         #expect(comments.first?.text == "Updated text")
+    }
+    
+    @Test func commentUpdatedEventKeepsOwnReactions() async throws {
+        let client = defaultClient(
+            comments: [
+                .dummy(
+                    id: "comment-1",
+                    objectId: Self.activityId,
+                    objectType: "activity",
+                    ownReactions: [.dummy(type: "like")]
+                )
+            ]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity")
+                ])
+            )
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, text: "Updated text"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.text == "Updated text")
+        #expect(comment.ownReactions.map(\.type) == ["like"])
+    }
+    
+    @Test func commentUpdatedEventKeepsTranslations() async throws {
+        let client = defaultClient(
+            comments: [.dummy(i18n: ["fr_text": "Bonjour", "language": "en"], id: "comment-1", objectId: Self.activityId, objectType: "activity", text: "Hello")]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity")
+                ]),
+                language: "fr"
+            )
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, reactionCount: 1, text: "Hello"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.reactionCount == 1)
+        #expect(comment.translatedText(for: "fr") == "Bonjour")
+    }
+    
+    @Test func commentUpdatedEventKeepsCommentInHiddenQuery() async throws {
+        let client = defaultClient(
+            comments: [.dummy(hidden: true, id: "comment-1", objectId: Self.activityId, objectType: "activity")]
+        )
+        let commentList = client.commentList(
+            for: CommentsQuery(
+                filter: .and([
+                    .equal(.objectId, Self.activityId),
+                    .equal(.objectType, "activity"),
+                    .equal(.hidden, true)
+                ])
+            )
+        )
+        try await commentList.get()
+
+        await client.eventsMiddleware.sendEvent(
+            CommentUpdatedEvent.dummy(
+                comment: .dummy(id: "comment-1", objectId: Self.activityId, text: "Updated text"),
+                fid: "user:test"
+            )
+        )
+
+        let comment = try #require(await commentList.state.comments.first)
+        #expect(comment.text == "Updated text")
+        #expect(comment.hidden)
     }
     
     @Test func commentDeletedEventRemovesFromState() async throws {

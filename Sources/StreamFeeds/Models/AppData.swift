@@ -9,6 +9,8 @@ public struct AppData: Equatable, Sendable {
     public let asyncUrlEnrichEnabled: Bool
     public let autoTranslationEnabled: Bool
     public let fileUploadConfig: FileUploadConfigData
+    /// The numeric identifier of the app.
+    public let id: Int
     public let imageUploadConfig: FileUploadConfigData
     public let name: String
 }
@@ -21,6 +23,7 @@ extension AppResponseFields {
             asyncUrlEnrichEnabled: asyncUrlEnrichEnabled,
             autoTranslationEnabled: autoTranslationEnabled,
             fileUploadConfig: fileUploadConfig.toModel(),
+            id: id,
             imageUploadConfig: imageUploadConfig.toModel(),
             name: name
         )

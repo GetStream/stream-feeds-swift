@@ -51,6 +51,15 @@ extension Feed {
     public func acceptFollow(_ sourceFid: FeedId, role: String?) async throws -> FollowData {
         try await acceptFollow(sourceFid)
     }
+
+    // Disfavored so that calls without a type context resolve to the overload returning `FeedSuggestionData`.
+    /// Queries for feed suggestions that the current user might want to follow.
+    @_disfavoredOverload
+    @available(*, deprecated, message: "Use the overload returning FeedSuggestionData, which also has the reason and scores for each suggestion.")
+    public func queryFollowSuggestions(limit: Int?) async throws -> [FeedData] {
+        let suggestions: [FeedSuggestionData] = try await queryFollowSuggestions(limit: limit)
+        return suggestions.map(\.feed)
+    }
 }
 
 // MARK: - FeedQuery
@@ -64,7 +73,7 @@ extension FeedQuery {
     }
 
     /// Creates a new feed query with the specified group and ID.
-    @available(*, deprecated, renamed: "init(group:id:activityFilter:activityLimit:data:externalRanking:followerLimit:followingLimit:interestWeights:memberLimit:view:watch:)", message: "The API no longer accepts activitySelectorOptions.")
+    @available(*, deprecated, renamed: "init(group:id:activityFilter:activityLimit:data:enrichmentOptions:externalRanking:followerLimit:followingLimit:friendReactionsOptions:interestWeights:memberLimit:overwriteInterestWeights:view:viewerLocation:watch:)", message: "The API no longer accepts activitySelectorOptions.")
     public init(
         group: String,
         id: String,
@@ -97,7 +106,7 @@ extension FeedQuery {
     }
 
     /// Creates a new feed query with the specified feed ID.
-    @available(*, deprecated, renamed: "init(feed:activityFilter:activityLimit:data:externalRanking:followerLimit:followingLimit:interestWeights:memberLimit:view:watch:)", message: "The API no longer accepts activitySelectorOptions.")
+    @available(*, deprecated, renamed: "init(feed:activityFilter:activityLimit:data:enrichmentOptions:externalRanking:followerLimit:followingLimit:friendReactionsOptions:interestWeights:memberLimit:overwriteInterestWeights:view:viewerLocation:watch:)", message: "The API no longer accepts activitySelectorOptions.")
     public init(
         feed: FeedId,
         activityFilter: ActivitiesFilter? = nil,

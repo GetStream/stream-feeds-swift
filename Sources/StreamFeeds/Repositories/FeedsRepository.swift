@@ -23,7 +23,7 @@ final class FeedsRepository: Sendable {
         let response = try await apiClient.getOrCreateFeed(
             feedGroupId: feed.group,
             feedId: feed.id,
-            language: nil,
+            language: query.language,
             translateText: nil,
             getOrCreateFeedRequest: request
         )
@@ -102,7 +102,7 @@ final class FeedsRepository: Sendable {
     
     // MARK: - Follows
     
-    func queryFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> [FeedData] {
+    func queryFollowSuggestions(feedGroupId: String, limit: Int?) async throws -> [FeedSuggestionData] {
         let response = try await apiClient.getFollowSuggestions(feedGroupId: feedGroupId, limit: limit)
         return response.suggestions.map { $0.toModel() }
     }

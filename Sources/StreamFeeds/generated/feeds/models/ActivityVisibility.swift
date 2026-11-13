@@ -6,8 +6,10 @@ import Foundation
 import StreamCore
 
 /// Who can see an activity.
-public final class ActivityVisibility: RawRepresentable, Codable, Hashable, Sendable {
+public final class ActivityVisibility: RawRepresentable, Codable, CustomStringConvertible, Hashable, Sendable {
     public let rawValue: String
+
+    public var description: String { rawValue }
 
     public init(rawValue: String) {
         self.rawValue = rawValue

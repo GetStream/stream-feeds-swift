@@ -352,6 +352,7 @@ public final class FeedsClient: Sendable {
     ///   - activityId: The unique identifier of the activity
     ///   - feed: The feed identifier where the activity belongs
     ///   - data: The activity data already available for injecting to the state.
+    ///   - language: Includes the translations to this language code, for example `fr`, in ``ActivityData/translations`` and ``ThreadedCommentData/translations``. Backend default includes no translations.
     /// - Returns: An `Activity` instance that can be used to interact with the specified activity
     ///
     /// - Example:
@@ -359,8 +360,8 @@ public final class FeedsClient: Sendable {
     ///   let feedId = FeedId(groupId: "user", id: "john")
     ///   let activity = client.activity(for: "activity-123", in: feedId)
     ///   ```
-    public func activity(for activityId: String, in feed: FeedId, data: ActivityData? = nil) -> Activity {
-        Activity(id: activityId, feed: feed, data: data, client: self)
+    public func activity(for activityId: String, in feed: FeedId, data: ActivityData? = nil, language: String? = nil) -> Activity {
+        Activity(id: activityId, feed: feed, data: data, language: language, client: self)
     }
     
     /// Creates an activity list instance based on the provided query.
@@ -434,6 +435,58 @@ public final class FeedsClient: Sendable {
         return Set(response.deletedIds)
     }
     
+    // MARK: - Collections
+    
+    /// Creates a collection list instance based on the provided query.
+    ///
+    /// - Parameter query: The collections query containing filtering, sorting, and pagination parameters
+    /// - Returns: A `CollectionList` instance for paginating the collections that match the query
+    public func collectionList(for query: CollectionsQuery) -> CollectionList {
+        CollectionList(query: query, client: self)
+    }
+    
+    /// Creates collections that activities can reference.
+    ///
+    /// - Parameter request: The collections to create, at most 100.
+    /// - Returns: The created collections.
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func createCollections(request: CreateCollectionsRequest) async throws -> [CollectionData] {
+        let collections = try await activitiesRepository.createCollections(request: request)
+        await stateLayerEventPublisher.sendEvent(.collectionsAdded(collections))
+        return collections
+    }
+    
+    /// Deletes collections by their references. Users can only delete their own collections.
+    ///
+    /// - Parameter references: Collection references in the `name:id` format, at most 100.
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func deleteCollections(references: [String]) async throws {
+        try await activitiesRepository.deleteCollections(references: references)
+        await stateLayerEventPublisher.sendEvent(.collectionsDeleted(Set(references)))
+    }
+    
+    /// Reads collections by their references. By default, users can only read their own collections.
+    ///
+    /// - Parameter references: Collection references in the `name:id` format, at most 100.
+    /// - Returns: The collections that match the references.
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func readCollections(references: [String]) async throws -> [CollectionData] {
+        try await activitiesRepository.readCollections(references: references)
+    }
+    
+    /// Updates the custom data of collections. Users can only update their own collections.
+    ///
+    /// - Parameter request: The collections to update, at most 100.
+    /// - Returns: The updated collections.
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updateCollections(request: UpdateCollectionsRequest) async throws -> [CollectionData] {
+        let collections = try await activitiesRepository.updateCollections(request: request)
+        await stateLayerEventPublisher.sendEvent(.collectionsUpdated(collections))
+        return collections
+    }
+    
     // MARK: - Bookmark Lists
     
     /// Creates a bookmark list instance based on the provided query.
@@ -458,6 +511,29 @@ public final class FeedsClient: Sendable {
     /// - Returns: A `BookmarkFolderList` instance that can be used to interact with the collection of bookmark folders
     public func bookmarkFolderList(for query: BookmarkFoldersQuery) -> BookmarkFolderList {
         BookmarkFolderList(query: query, client: self)
+    }
+    
+    /// Deletes a bookmark folder and the bookmarks in it.
+    ///
+    /// - Parameter folderId: The unique identifier of the folder to delete
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    public func deleteBookmarkFolder(folderId: String) async throws {
+        try await bookmarksRepository.deleteBookmarkFolder(folderId: folderId)
+        await stateLayerEventPublisher.sendEvent(.bookmarkFolderDeleted(folderId))
+    }
+    
+    /// Updates the name or custom data of a bookmark folder.
+    ///
+    /// - Parameters:
+    ///   - folderId: The unique identifier of the folder to update
+    ///   - request: The new name or custom data of the folder
+    /// - Returns: The updated folder
+    /// - Throws: `APIError` if the network request fails or the server returns an error
+    @discardableResult
+    public func updateBookmarkFolder(folderId: String, request: UpdateBookmarkFolderRequest) async throws -> BookmarkFolderData {
+        let folder = try await bookmarksRepository.updateBookmarkFolder(folderId: folderId, request: request)
+        await stateLayerEventPublisher.sendEvent(.bookmarkFolderUpdated(folder))
+        return folder
     }
     
     // MARK: - Comment Lists

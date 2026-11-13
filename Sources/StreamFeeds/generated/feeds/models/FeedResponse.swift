@@ -6,6 +6,7 @@ import Foundation
 import StreamCore
 
 public final class FeedResponse: Sendable, Decodable {
+    public let activityCount: Int
     /// When the feed was created
     public let createdAt: Date
     /// User response object
@@ -28,12 +29,15 @@ public final class FeedResponse: Sendable, Decodable {
     public let groupId: String
     /// Unique identifier for the feed
     public let id: String
+    public let location: Location?
     /// Number of members in this feed
     public let memberCount: Int
     /// Name of the feed
     public let name: String
     /// Capabilities the current user has for this feed
     public let ownCapabilities: [FeedOwnCapability]?
+    /// Follow relationships where the feed owner’s feeds are following the current user's feeds
+    public let ownFollowings: [FollowResponse]?
     /// Follow relationships where the current user's feeds are following this feed
     public let ownFollows: [FollowResponse]?
     public let ownMembership: FeedMemberResponse?
@@ -44,7 +48,8 @@ public final class FeedResponse: Sendable, Decodable {
     /// Visibility setting for the feed
     public let visibility: FeedVisibility?
 
-    public init(createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedVisibility? = nil) {
+    public init(activityCount: Int, createdAt: Date, createdBy: UserResponse, custom: [String: RawJSON]? = nil, deletedAt: Date? = nil, description: String, feed: String, filterTags: [String]? = nil, followerCount: Int, followingCount: Int, groupId: String, id: String, location: Location? = nil, memberCount: Int, name: String, ownCapabilities: [FeedOwnCapability]? = nil, ownFollowings: [FollowResponse]? = nil, ownFollows: [FollowResponse]? = nil, ownMembership: FeedMemberResponse? = nil, pinCount: Int, updatedAt: Date, visibility: FeedVisibility? = nil) {
+        self.activityCount = activityCount
         self.createdAt = createdAt
         self.createdBy = createdBy
         self.custom = custom
@@ -56,9 +61,11 @@ public final class FeedResponse: Sendable, Decodable {
         self.followingCount = followingCount
         self.groupId = groupId
         self.id = id
+        self.location = location
         self.memberCount = memberCount
         self.name = name
         self.ownCapabilities = ownCapabilities
+        self.ownFollowings = ownFollowings
         self.ownFollows = ownFollows
         self.ownMembership = ownMembership
         self.pinCount = pinCount
@@ -68,6 +75,7 @@ public final class FeedResponse: Sendable, Decodable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
+        self.activityCount = try container.decode(Int.self, forKey: .activityCount)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
         self.createdBy = try container.decode(UserResponse.self, forKey: .createdBy)
         self.custom = try container.decodeIfPresent([String: RawJSON].self, forKey: .custom)
@@ -79,9 +87,11 @@ public final class FeedResponse: Sendable, Decodable {
         self.followingCount = try container.decode(Int.self, forKey: .followingCount)
         self.groupId = try container.decode(String.self, forKey: .groupId)
         self.id = try container.decode(String.self, forKey: .id)
+        self.location = try container.decodeIfPresent(Location.self, forKey: .location)
         self.memberCount = try container.decode(Int.self, forKey: .memberCount)
         self.name = try container.decode(String.self, forKey: .name)
         self.ownCapabilities = try container.decodeIfPresent([FeedOwnCapability].self, forKey: .ownCapabilities)
+        self.ownFollowings = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollowings)
         self.ownFollows = try container.decodeIfPresent([FollowResponse].self, forKey: .ownFollows)
         self.ownMembership = try container.decodeIfPresent(FeedMemberResponse.self, forKey: .ownMembership)
         self.pinCount = try container.decode(Int.self, forKey: .pinCount)
@@ -92,7 +102,8 @@ public final class FeedResponse: Sendable, Decodable {
 
 extension FeedResponse: Hashable {
     public static func == (lhs: FeedResponse, rhs: FeedResponse) -> Bool {
-        lhs.createdAt == rhs.createdAt &&
+        lhs.activityCount == rhs.activityCount &&
+            lhs.createdAt == rhs.createdAt &&
             lhs.createdBy == rhs.createdBy &&
             lhs.custom == rhs.custom &&
             lhs.deletedAt == rhs.deletedAt &&
@@ -103,9 +114,11 @@ extension FeedResponse: Hashable {
             lhs.followingCount == rhs.followingCount &&
             lhs.groupId == rhs.groupId &&
             lhs.id == rhs.id &&
+            lhs.location == rhs.location &&
             lhs.memberCount == rhs.memberCount &&
             lhs.name == rhs.name &&
             lhs.ownCapabilities == rhs.ownCapabilities &&
+            lhs.ownFollowings == rhs.ownFollowings &&
             lhs.ownFollows == rhs.ownFollows &&
             lhs.ownMembership == rhs.ownMembership &&
             lhs.pinCount == rhs.pinCount &&
@@ -114,6 +127,7 @@ extension FeedResponse: Hashable {
     }
 
     public func hash(into hasher: inout Hasher) {
+        hasher.combine(activityCount)
         hasher.combine(createdAt)
         hasher.combine(createdBy)
         hasher.combine(custom)
@@ -125,9 +139,11 @@ extension FeedResponse: Hashable {
         hasher.combine(followingCount)
         hasher.combine(groupId)
         hasher.combine(id)
+        hasher.combine(location)
         hasher.combine(memberCount)
         hasher.combine(name)
         hasher.combine(ownCapabilities)
+        hasher.combine(ownFollowings)
         hasher.combine(ownFollows)
         hasher.combine(ownMembership)
         hasher.combine(pinCount)

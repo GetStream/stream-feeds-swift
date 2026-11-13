@@ -152,7 +152,7 @@ struct ProfileView: View {
             .onAppear {
                 Task {
                     do {
-                        followSuggestions = try await feed.queryFollowSuggestions(limit: 10)
+                        followSuggestions = try await feed.queryFollowSuggestions(limit: 10).map(\.feed)
                     } catch {
                         log.error("Error querying follow suggestions \(error)")
                     }
