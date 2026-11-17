@@ -78,4 +78,43 @@ import StreamFeeds
         // or rejecting the request
         try await saraFeed.rejectFollow(adamTimeline.feed) // timeline:adam
     }
+
+    func limitingCopiedActivities() async throws {
+        let timeline = client.feed(group: "timeline", id: "alice")
+
+        // Follow without adding existing activities
+        try await timeline.follow(FeedId(group: "user", id: "bob"), activityCopyLimit: 0)
+
+        // Add only the 20 most recent activities
+        try await timeline.follow(FeedId(group: "user", id: "charlie"), activityCopyLimit: 20)
+    }
+
+    func pushPreferencesOnFollow() async throws {
+        let timeline = client.feed(group: "timeline", id: "john")
+
+        // Scenario 1: Follow a user and receive notifications for their future activities
+        try await timeline.follow(FeedId(group: "user", id: "alice"), pushPreference: .all)
+
+        // Scenario 2: Follow a user but don't get notifications for their activities
+        try await timeline.follow(FeedId(group: "user", id: "bob"), pushPreference: FollowPushPreference.none)
+
+        // Scenario 3: Follow a user silently
+        try await timeline.follow(
+            FeedId(group: "user", id: "charlie"),
+            pushPreference: .all, // But you'll still get notifications for Charlie's future posts
+            skipPush: true // Charlie won't get a "you have a new follower" notification
+        )
+    }
+
+    func followSuggestions() async throws {
+        // Get follow suggestions for a user
+        let feed = client.feed(group: "user", id: "john")
+        let suggestions = try await feed.queryFollowSuggestions(limit: 10)
+
+        for suggestion in suggestions {
+            print("Suggested feed: \(suggestion.feed.feed)")
+            print("Recommendation score: \(suggestion.recommendationScore ?? 0)")
+            print("Reason: \(suggestion.reason ?? "")")
+        }
+    }
 }

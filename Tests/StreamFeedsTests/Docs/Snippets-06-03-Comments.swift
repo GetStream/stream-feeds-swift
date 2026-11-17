@@ -60,6 +60,11 @@ import StreamFeeds
         )
         try await activity.get()
         print(activity.state.comments)
+
+        // Reading a single comment
+        let comment = try await feed.getComment(commentId: "123")
+
+        suppressUnusedWarning(comment)
     }
     
     func queryingComments() async throws {
@@ -135,5 +140,37 @@ import StreamFeeds
         let replies = try await replyList.get()
         
         suppressUnusedWarning(comments, replies)
+    }
+
+    func showHideCommentInput() async throws {
+        try await feed.getOrCreate()
+        guard let activity = feed.state.activities.first else { return }
+
+        switch activity.restrictReplies {
+        case .everyone:
+            print("Anyone can comment")
+        case .nobody:
+            print("Comments are disabled")
+        case .peopleIFollow:
+            // ownFollowings lists follows from the activity author's feeds to the current user's feeds.
+            // A non-empty list means the activity author follows the current user, so they may comment.
+            let ownFollowings = activity.currentFeed?.ownFollowings ?? []
+            print("Can current user comment? \(!ownFollowings.isEmpty)")
+        default: // Values added to the API later
+            print("Unknown restriction: \(activity.restrictReplies.rawValue)")
+        }
+    }
+
+    func showHideCommentInputFeed() async throws {
+        // ownFollowings is set by default when fetching a single activity.
+        // When reading a feed you have to ask for it.
+        let enrichedFeed = client.feed(
+            for: FeedQuery(
+                group: "user",
+                id: "john",
+                enrichmentOptions: EnrichmentOptions(enrichOwnFollowings: true)
+            )
+        )
+        try await enrichedFeed.getOrCreate()
     }
 }

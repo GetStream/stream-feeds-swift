@@ -112,14 +112,13 @@ struct BookmarkListState_Tests {
 
         // Send bookmark folder deleted event
         let deletedFolder = BookmarkFolderResponse.dummy(id: "folder-1", name: "Test Folder").toModel()
-        await client.stateLayerEventPublisher.sendEvent(.bookmarkFolderDeleted(deletedFolder))
+        await client.stateLayerEventPublisher.sendEvent(.bookmarkFolderDeleted(deletedFolder.id))
 
         // Wait a bit for the event to be processed
         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
 
         let updatedState = await bookmarkList.state.bookmarks
-        #expect(updatedState.count == 2)
-        #expect(updatedState.first { $0.id == "user-1-activity-1" }?.folder == nil)
+        #expect(updatedState.isEmpty, "Deleting a folder deletes its bookmarks")
     }
 
     // MARK: - Helper Methods

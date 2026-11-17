@@ -178,6 +178,31 @@ struct BookmarkFolderList_Tests {
         #expect(updatedState.first?.name == "Second Folder")
     }
 
+    @Test func updateBookmarkFolderUpdatesState() async throws {
+        let client = defaultClientWithBookmarkFolderResponses([
+            UpdateBookmarkFolderResponse(bookmarkFolder: .dummy(id: "folder-1", name: "Renamed Folder"), duration: "1.23ms")
+        ])
+        let bookmarkFolderList = client.bookmarkFolderList(for: BookmarkFoldersQuery())
+        try await bookmarkFolderList.get()
+
+        let folder = try await client.updateBookmarkFolder(folderId: "folder-1", request: UpdateBookmarkFolderRequest(name: "Renamed Folder"))
+
+        #expect(folder.name == "Renamed Folder")
+        try await waitUntil { bookmarkFolderList.state.folders.first { $0.id == "folder-1" }?.name == "Renamed Folder" }
+    }
+
+    @Test func deleteBookmarkFolderUpdatesState() async throws {
+        let client = defaultClientWithBookmarkFolderResponses([
+            DeleteBookmarkFolderResponse(duration: "1.23ms")
+        ])
+        let bookmarkFolderList = client.bookmarkFolderList(for: BookmarkFoldersQuery())
+        try await bookmarkFolderList.get()
+
+        try await client.deleteBookmarkFolder(folderId: "folder-1")
+
+        try await waitUntil { bookmarkFolderList.state.folders.map(\.id) == ["folder-2"] }
+    }
+
     @Test func bookmarkFolderUpdatedEventForUnrelatedFolderDoesNotUpdateState() async throws {
         let client = defaultClientWithBookmarkFolderResponses()
         let bookmarkFolderList = client.bookmarkFolderList(for: BookmarkFoldersQuery())

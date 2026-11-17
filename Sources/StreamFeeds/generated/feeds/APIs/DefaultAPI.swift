@@ -369,6 +369,23 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         }
     }
 
+    open func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse {
+        var path = "/api/v2/feeds/activities/{id}"
+
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateActivityPartialRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateActivityPartialResponse.self, from: $0)
+        }
+    }
+
     open func updateActivity(id: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse {
         var path = "/api/v2/feeds/activities/{id}"
 
@@ -383,6 +400,26 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(UpdateActivityResponse.self, from: $0)
+        }
+    }
+
+    open func restoreActivity(id: String, enrichOwnFields: Bool?) async throws -> RestoreActivityResponse {
+        var path = "/api/v2/feeds/activities/{id}/restore"
+
+        let idPreEscape = "\(APIHelper.mapValueToPathItem(id))"
+        let idPostEscape = idPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "id"), with: idPostEscape, options: .literal, range: nil)
+        let queryParams = APIHelper.mapValuesToQueryItems([
+            "enrich_own_fields": (wrappedValue: enrichOwnFields?.encodeToJSON(), isExplode: true)
+        ])
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            queryParams: queryParams ?? [],
+            httpMethod: "POST"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(RestoreActivityResponse.self, from: $0)
         }
     }
 
@@ -413,6 +450,39 @@ open class DefaultAPI: DefaultAPIEndpoints, @unchecked Sendable {
         )
         return try await send(request: urlRequest) {
             try self.jsonDecoder.decode(QueryBookmarkFoldersResponse.self, from: $0)
+        }
+    }
+
+    open func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse {
+        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
+
+        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
+        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "DELETE"
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(DeleteBookmarkFolderResponse.self, from: $0)
+        }
+    }
+
+    open func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse {
+        var path = "/api/v2/feeds/bookmark_folders/{folder_id}"
+
+        let folderIdPreEscape = "\(APIHelper.mapValueToPathItem(folderId))"
+        let folderIdPostEscape = folderIdPreEscape.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        path = path.replacingOccurrences(of: String(format: "{%@}", "folder_id"), with: folderIdPostEscape, options: .literal, range: nil)
+
+        let urlRequest = try makeRequest(
+            uriPath: path,
+            httpMethod: "PATCH",
+            request: updateBookmarkFolderRequest
+        )
+        return try await send(request: urlRequest) {
+            try self.jsonDecoder.decode(UpdateBookmarkFolderResponse.self, from: $0)
         }
     }
 
@@ -1512,11 +1582,19 @@ protocol DefaultAPIEndpoints {
 
     func getActivity(id: String, commentSort: String?, commentLimit: Int?, skipOwnFollowings: Bool?, language: String?, translateText: Bool?, includeTopLevelCommentCount: Bool?) async throws -> GetActivityResponse
 
+    func updateActivityPartial(id: String, updateActivityPartialRequest: UpdateActivityPartialRequest) async throws -> UpdateActivityPartialResponse
+
     func updateActivity(id: String, updateActivityRequest: UpdateActivityRequest) async throws -> UpdateActivityResponse
+
+    func restoreActivity(id: String, enrichOwnFields: Bool?) async throws -> RestoreActivityResponse
 
     func translateActivity(id: String, translateActivityRequest: TranslateActivityRequest) async throws -> TranslateActivityResponse
 
     func queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest) async throws -> QueryBookmarkFoldersResponse
+
+    func deleteBookmarkFolder(folderId: String) async throws -> DeleteBookmarkFolderResponse
+
+    func updateBookmarkFolder(folderId: String, updateBookmarkFolderRequest: UpdateBookmarkFolderRequest) async throws -> UpdateBookmarkFolderResponse
 
     func queryBookmarks(language: String?, translateText: Bool?, queryBookmarksRequest: QueryBookmarksRequest) async throws -> QueryBookmarksResponse
 

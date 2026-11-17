@@ -20,6 +20,7 @@ import StreamFeeds
             id: "jack",
             data: .init(
                 description: "My personal feed",
+                filterTags: ["tech", "hiking", "cooking"],
                 name: "jack",
                 visibility: .public
             )
@@ -227,5 +228,61 @@ import StreamFeeds
         let feeds = try await feedList.get()
         
         suppressUnusedWarning(feeds)
+    }
+
+    func enrichmentOptions() async throws {
+        // Skip the enrichment steps you do not need, so the response stays small
+        let query = FeedQuery(
+            group: "user",
+            id: "jack",
+            enrichmentOptions: EnrichmentOptions(
+                // Populates `ownFollowings` on each activity's current feed, which is what tells you
+                // whether the current user may comment when an activity restricts replies
+                // to people the author follows.
+                enrichOwnFollowings: true,
+                skipActivityComments: true,
+                skipActivityReactions: true,
+                skipFollowers: true,
+                skipFollowing: true
+            )
+        )
+        let feed = client.feed(for: query)
+        try await feed.getOrCreate()
+    }
+
+    func updatingAFeed() async throws {
+        try await feed.updateFeed(
+            request: UpdateFeedRequest(
+                custom: ["color": "blue"],
+                filterTags: ["tech", "hiking", "cooking"],
+                name: "Updated feed name"
+            )
+        )
+    }
+
+    func clearingAFeedLocation() async throws {
+        let feed = client.feed(group: "user", id: "john")
+        try await feed.updateFeed(request: UpdateFeedRequest(clearLocation: true))
+    }
+
+    func deletingAFeed() async throws {
+        // Soft delete a feed
+        try await feed.deleteFeed(hardDelete: false)
+
+        // Hard delete a feed
+        try await feed.deleteFeed(hardDelete: true)
+    }
+
+    func visibility() async throws {
+        // More options
+        let query = FeedQuery(
+            group: "user",
+            id: "jack",
+            data: .init(
+                visibility: .public
+            )
+        )
+        let feed = client.feed(for: query)
+        try await feed.getOrCreate()
     }
 }

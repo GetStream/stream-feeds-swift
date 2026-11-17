@@ -121,4 +121,69 @@ struct Snippets_03_01_Activities {
         
         suppressUnusedWarning(updatedActivity)
     }
+
+    func restrictingCommentReplies() async throws {
+        // Post an activity that restricts who can reply or comment.
+        // Options: .everyone (default), .nobody, .peopleIFollow.
+        // The activity author can always comment regardless of this setting.
+        let activity = try await feed.addActivity(
+            request: FeedAddActivityRequest(
+                restrictReplies: .peopleIFollow,
+                text: "Only my followers can reply to this.",
+                type: "post"
+            )
+        )
+
+        // And change it on an activity that already exists
+        try await feed.updateActivity(
+            id: activity.id,
+            request: UpdateActivityRequest(restrictReplies: .nobody)
+        )
+    }
+
+    @MainActor func getActivity() async throws {
+        // Create an activity instance
+        let activity = client.activity(
+            for: "activity123",
+            in: FeedId(group: "user", id: "john")
+        )
+
+        // Get the latest data
+        let activityData = try await activity.get()
+
+        // Optionally query comments
+        try await activity.queryComments()
+
+        // Access the state for reactive updates
+        let activityState = activity.state
+
+        suppressUnusedWarning(activityData, activityState)
+    }
+
+    func partialActivityUpdates() async throws {
+        // Partially set some fields
+        var activity = try await feed.updateActivityPartial(
+            id: "123",
+            request: UpdateActivityPartialRequest(
+                set: ["text": "Japan has over 6,800 islands."]
+            )
+        )
+        print("Activity edited at: \(activity.editedAt.map { "\($0)" } ?? "never")")
+
+        // Partially unset some fields
+        activity = try await feed.updateActivityPartial(
+            id: "123",
+            request: UpdateActivityPartialRequest(
+                unset: ["custom.color"]
+            )
+        )
+        print("Activity edited at: \(activity.editedAt.map { "\($0)" } ?? "never")")
+    }
+
+    func restoreActivity() async throws {
+        // Restore a soft-deleted activity
+        let restoredActivity = try await feed.restoreActivity(id: "123")
+
+        suppressUnusedWarning(restoredActivity)
+    }
 }

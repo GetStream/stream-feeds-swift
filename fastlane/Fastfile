@@ -33,6 +33,9 @@ lane :release do |options|
     current_version = old_content[/version: String = "([^"]+)"/, 1]
     new_content = old_content.gsub(current_version, release_version)
     File.open(swift_environment_path, 'w') { |f| f.puts(new_content) }
+
+    # Update sdk sizes
+    Dir.chdir('fastlane') { update_img_shields_sdk_sizes }
   end
 
   lint_swift_package
@@ -84,7 +87,7 @@ end
 
 private_lane :appstore_api_key do
   @appstore_api_key ||= app_store_connect_api_key(
-    key_id: 'MT3PRT8TB7',
+    key_id: '8KCMZF773S',
     issuer_id: '69a6de96-0738-47e3-e053-5b8c7c11a4d1',
     key_content: ENV.fetch('APPSTORE_API_KEY', nil),
     in_house: false
