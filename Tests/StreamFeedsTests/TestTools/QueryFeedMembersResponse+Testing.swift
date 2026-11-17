@@ -8,13 +8,11 @@ import StreamCore
 
 extension QueryFeedMembersResponse {
     static func dummy(
-        duration: String = "1.23ms",
         members: [FeedMemberResponse] = [],
         next: String? = nil,
         prev: String? = nil
     ) -> QueryFeedMembersResponse {
         QueryFeedMembersResponse(
-            duration: duration,
             members: members,
             next: next,
             prev: prev

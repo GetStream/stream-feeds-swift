@@ -7,28 +7,23 @@ import StreamCore
 
 public final class DeleteBookmarkResponse: Sendable, Decodable {
     public let bookmark: BookmarkResponse
-    public let duration: String
 
-    public init(bookmark: BookmarkResponse, duration: String) {
+    public init(bookmark: BookmarkResponse) {
         self.bookmark = bookmark
-        self.duration = duration
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.bookmark = try container.decode(BookmarkResponse.self, forKey: .bookmark)
-        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 
 extension DeleteBookmarkResponse: Hashable {
     public static func == (lhs: DeleteBookmarkResponse, rhs: DeleteBookmarkResponse) -> Bool {
-        lhs.bookmark == rhs.bookmark &&
-            lhs.duration == rhs.duration
+        lhs.bookmark == rhs.bookmark
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(bookmark)
-        hasher.combine(duration)
     }
 }

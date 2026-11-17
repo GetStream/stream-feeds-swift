@@ -35,6 +35,8 @@ remove_property() {
     # A model left without properties has no wire keys, so synthesis can replace coders whose
     # container would go unused.
     perl -0777 -pi -e 's/\n\h*public (?:init\(from decoder: Decoder\) throws|func encode\(to encoder: Encoder\) throws) \{\n\h*(?:let|var) container = [^\n]+\n\h*\}\n//g' "$file"
+    # An == left without compared fields still needs a result.
+    perl -0777 -pi -e 's/(-> Bool \{\n)(\h*)\}/$1$2    true\n$2}/g' "$file"
   done
 }
 
@@ -47,6 +49,27 @@ remove_properties() {
   for model in $(jq -r '.removedProperties | keys[]' "$ALLOWED_FILE"); do
     remove_property "$model" $(jq -r --arg m "$model" '.removedProperties[$m][] | keys[]' "$ALLOWED_FILE")
   done
+}
+
+# Drops properties listed in removedPropertiesFromAllModels from every model declaring them with
+# that exact type. Each entry is { "<property>: <type>": "<reason>" }.
+remove_properties_from_all_models() {
+  local declaration file models
+  jq -e '[.removedPropertiesFromAllModels[] | to_entries
+      | select(length != 1 or (.[0].key | test("^[A-Za-z0-9_]+: .+$") | not)
+        or (.[0].value | type) != "string" or .[0].value == "")]
+    | length == 0' "$ALLOWED_FILE" > /dev/null \
+    || { echo "removedPropertiesFromAllModels entries need exactly one \"<property>: <type>\" with a reason" >&2; exit 1; }
+  while IFS= read -r declaration; do
+    models="$(grep -lxF "    public let $declaration" "$OUTPUT_DIR_FEEDS"/models/*.swift || true)"
+    if [ -z "$models" ]; then
+      echo "No model declares: $declaration" >&2
+      exit 1
+    fi
+    for file in $models; do
+      remove_property "$(basename "$file" .swift)" "${declaration%%: *}"
+    done
+  done < <(jq -r '.removedPropertiesFromAllModels[] | keys[]' "$ALLOWED_FILE")
 }
 
 # Drops DefaultAPI endpoints which are not in allowedEndpoints.

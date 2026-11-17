@@ -8,12 +8,10 @@ import StreamCore
 
 extension AddActivityResponse {
     static func dummy(
-        activity: ActivityResponse = .dummy(),
-        duration: String = "1.23ms"
+        activity: ActivityResponse = .dummy()
     ) -> AddActivityResponse {
         AddActivityResponse(
-            activity: activity,
-            duration: duration
+            activity: activity
         )
     }
 }

@@ -8,11 +8,9 @@ import StreamCore
 
 extension AcceptFeedMemberInviteResponse {
     static func dummy(
-        duration: String = "1.23ms",
         member: FeedMemberResponse
     ) -> AcceptFeedMemberInviteResponse {
         AcceptFeedMemberInviteResponse(
-            duration: duration,
             member: member
         )
     }

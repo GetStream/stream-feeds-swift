@@ -9,29 +9,23 @@ import StreamCore
 public final class GetApplicationResponse: Sendable, Decodable {
     /// A type representing the app settings.
     public let app: AppResponseFields
-    /// Duration of the request in milliseconds
-    public let duration: String
 
-    public init(app: AppResponseFields, duration: String) {
+    public init(app: AppResponseFields) {
         self.app = app
-        self.duration = duration
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.app = try container.decode(AppResponseFields.self, forKey: .app)
-        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 
 extension GetApplicationResponse: Hashable {
     public static func == (lhs: GetApplicationResponse, rhs: GetApplicationResponse) -> Bool {
-        lhs.app == rhs.app &&
-            lhs.duration == rhs.duration
+        lhs.app == rhs.app
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(app)
-        hasher.combine(duration)
     }
 }

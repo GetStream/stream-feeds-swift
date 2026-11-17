@@ -7,28 +7,23 @@ import StreamCore
 
 public final class UpdateActivityResponse: Sendable, Decodable {
     public let activity: ActivityResponse
-    public let duration: String
 
-    public init(activity: ActivityResponse, duration: String) {
+    public init(activity: ActivityResponse) {
         self.activity = activity
-        self.duration = duration
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.activity = try container.decode(ActivityResponse.self, forKey: .activity)
-        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 
 extension UpdateActivityResponse: Hashable {
     public static func == (lhs: UpdateActivityResponse, rhs: UpdateActivityResponse) -> Bool {
-        lhs.activity == rhs.activity &&
-            lhs.duration == rhs.duration
+        lhs.activity == rhs.activity
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activity)
-        hasher.combine(duration)
     }
 }

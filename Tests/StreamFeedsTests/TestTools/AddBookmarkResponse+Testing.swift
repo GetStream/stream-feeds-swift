@@ -8,12 +8,10 @@ import StreamCore
 
 extension AddBookmarkResponse {
     static func dummy(
-        bookmark: BookmarkResponse = .dummy(),
-        duration: String = "1.23ms"
+        bookmark: BookmarkResponse = .dummy()
     ) -> AddBookmarkResponse {
         AddBookmarkResponse(
-            bookmark: bookmark,
-            duration: duration
+            bookmark: bookmark
         )
     }
 }

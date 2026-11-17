@@ -8,15 +8,13 @@ import StreamCore
 public final class QueryActivitiesResponse: Sendable, Decodable {
     /// List of activities matching the query
     public let activities: [ActivityResponse]
-    public let duration: String
     /// Cursor for next page
     public let next: String?
     /// Cursor for previous page
     public let prev: String?
 
-    public init(activities: [ActivityResponse], duration: String, next: String? = nil, prev: String? = nil) {
+    public init(activities: [ActivityResponse], next: String? = nil, prev: String? = nil) {
         self.activities = activities
-        self.duration = duration
         self.next = next
         self.prev = prev
     }
@@ -24,7 +22,6 @@ public final class QueryActivitiesResponse: Sendable, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringCodingKey.self)
         self.activities = try container.decode([ActivityResponse].self, forKey: .activities)
-        self.duration = try container.decode(String.self, forKey: .duration)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
         self.prev = try container.decodeIfPresent(String.self, forKey: .prev)
     }
@@ -33,14 +30,12 @@ public final class QueryActivitiesResponse: Sendable, Decodable {
 extension QueryActivitiesResponse: Hashable {
     public static func == (lhs: QueryActivitiesResponse, rhs: QueryActivitiesResponse) -> Bool {
         lhs.activities == rhs.activities &&
-            lhs.duration == rhs.duration &&
             lhs.next == rhs.next &&
             lhs.prev == rhs.prev
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(activities)
-        hasher.combine(duration)
         hasher.combine(next)
         hasher.combine(prev)
     }

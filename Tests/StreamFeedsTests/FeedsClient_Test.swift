@@ -173,8 +173,7 @@ struct FeedsClient_Test {
 
     @Test func upsertActivities() async throws {
         let mockResponse = UpsertActivitiesResponse(
-            activities: [ActivityResponse.dummy()],
-            duration: "1.23ms"
+            activities: [ActivityResponse.dummy()]
         )
         let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
 
@@ -191,8 +190,7 @@ struct FeedsClient_Test {
 
     @Test func deleteActivities() async throws {
         let mockResponse = DeleteActivitiesResponse(
-            deletedIds: ["activity:123"],
-            duration: "1.23ms"
+            deletedIds: ["activity:123"]
         )
         let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
 
@@ -206,8 +204,7 @@ struct FeedsClient_Test {
 
     @Test func createCollections() async throws {
         let mockResponse = CreateCollectionsResponse(
-            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")],
-            duration: "1.23ms"
+            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")]
         )
         let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
 
@@ -221,15 +218,14 @@ struct FeedsClient_Test {
     }
 
     @Test func deleteCollections() async throws {
-        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([DeleteCollectionsResponse(duration: "1.23ms")]))
+        let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([DeleteCollectionsResponse()]))
 
         try await client.deleteCollections(references: ["products:item-1"])
     }
 
     @Test func readCollections() async throws {
         let mockResponse = ReadCollectionsResponse(
-            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")],
-            duration: "1.23ms"
+            collections: [CollectionResponse(custom: ["title": .string("Item")], id: "item-1", name: "products", userId: "user-1")]
         )
         let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
 
@@ -242,8 +238,7 @@ struct FeedsClient_Test {
 
     @Test func updateCollections() async throws {
         let mockResponse = UpdateCollectionsResponse(
-            collections: [CollectionResponse(custom: ["title": .string("Updated")], id: "item-1", name: "products", userId: "user-1")],
-            duration: "1.23ms"
+            collections: [CollectionResponse(custom: ["title": .string("Updated")], id: "item-1", name: "products", userId: "user-1")]
         )
         let client = FeedsClient.mock(apiTransport: APITransportMock.withPayloads([mockResponse]))
 

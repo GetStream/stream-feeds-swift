@@ -14,6 +14,7 @@ public final class SubmitActionRequestActionType: RawRepresentable, Codable, Cus
         self.rawValue = rawValue
     }
 
+    public static let agentRecommendation = SubmitActionRequestActionType(rawValue: "agent_recommendation")
     public static let ban = SubmitActionRequestActionType(rawValue: "ban")
     public static let block = SubmitActionRequestActionType(rawValue: "block")
     public static let bypass = SubmitActionRequestActionType(rawValue: "bypass")
@@ -42,7 +43,7 @@ public final class SubmitActionRequestActionType: RawRepresentable, Codable, Cus
 }
 
 public final class SubmitActionRequest: Sendable, Encodable, JSONEncodable {
-    /// Type of moderation action to perform. One of: mark_reviewed, delete_message, delete_activity, delete_comment, delete_reaction, delete_poll, delete_poll_option, delete_poll_answer, ban, custom, unban, restore, delete_user, delete_user_messages, unblock, block, shadow_block, unmask, kick_user, end_call, escalate, de_escalate
+    /// Type of moderation action to perform. One of: mark_reviewed, delete_message, delete_activity, delete_comment, delete_reaction, delete_poll, delete_poll_option, delete_poll_answer, ban, custom, unban, restore, delete_user, delete_user_messages, unblock, block, shadow_block, unmask, kick_user, end_call, escalate, de_escalate, agent_recommendation
     public let actionType: SubmitActionRequestActionType
     /// Configuration for custom moderation action
     public let custom: CustomActionRequestPayload?

@@ -8,11 +8,9 @@ import StreamCore
 
 extension PollResponse {
     static func dummy(
-        duration: String = "0.123s",
         poll: PollResponseData = .dummy()
     ) -> PollResponse {
         PollResponse(
-            duration: duration,
             poll: poll
         )
     }

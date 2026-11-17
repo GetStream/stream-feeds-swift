@@ -9,13 +9,11 @@ import StreamCore
 extension UnpinActivityResponse {
     static func dummy(
         activity: ActivityResponse = .dummy(),
-        duration: String = "0.123s",
         feed: String = "user:jane",
         userId: String = "user-123"
     ) -> UnpinActivityResponse {
         UnpinActivityResponse(
             activity: activity,
-            duration: duration,
             feed: feed,
             userId: userId
         )

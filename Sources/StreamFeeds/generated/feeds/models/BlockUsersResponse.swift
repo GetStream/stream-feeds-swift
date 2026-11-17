@@ -12,14 +12,11 @@ public final class BlockUsersResponse: Sendable, Decodable {
     public let blockedUserId: String
     /// Timestamp when the user was blocked
     public let createdAt: Date
-    /// Duration of the request in milliseconds
-    public let duration: String
 
-    public init(blockedByUserId: String, blockedUserId: String, createdAt: Date, duration: String) {
+    public init(blockedByUserId: String, blockedUserId: String, createdAt: Date) {
         self.blockedByUserId = blockedByUserId
         self.blockedUserId = blockedUserId
         self.createdAt = createdAt
-        self.duration = duration
     }
 
     public init(from decoder: Decoder) throws {
@@ -27,7 +24,6 @@ public final class BlockUsersResponse: Sendable, Decodable {
         self.blockedByUserId = try container.decode(String.self, forKey: .blockedByUserId)
         self.blockedUserId = try container.decode(String.self, forKey: .blockedUserId)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
-        self.duration = try container.decode(String.self, forKey: .duration)
     }
 }
 
@@ -35,14 +31,12 @@ extension BlockUsersResponse: Hashable {
     public static func == (lhs: BlockUsersResponse, rhs: BlockUsersResponse) -> Bool {
         lhs.blockedByUserId == rhs.blockedByUserId &&
             lhs.blockedUserId == rhs.blockedUserId &&
-            lhs.createdAt == rhs.createdAt &&
-            lhs.duration == rhs.duration
+            lhs.createdAt == rhs.createdAt
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(blockedByUserId)
         hasher.combine(blockedUserId)
         hasher.combine(createdAt)
-        hasher.combine(duration)
     }
 }

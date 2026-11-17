@@ -8,11 +8,9 @@ import StreamCore
 
 extension UnfollowResponse {
     static func dummy(
-        duration: String = "1.23ms",
         follow: FollowResponse = .dummy()
     ) -> UnfollowResponse {
         UnfollowResponse(
-            duration: duration,
             follow: follow
         )
     }

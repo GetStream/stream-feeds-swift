@@ -8,13 +8,11 @@ import StreamCore
 
 extension PollVotesResponse {
     static func dummy(
-        duration: String = "0.123s",
         prev: String? = nil,
         next: String? = nil,
         votes: [PollVoteResponseData]
     ) -> PollVotesResponse {
         PollVotesResponse(
-            duration: duration,
             next: next,
             prev: prev,
             votes: votes

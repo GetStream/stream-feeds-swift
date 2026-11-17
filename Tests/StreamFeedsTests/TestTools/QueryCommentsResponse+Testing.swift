@@ -9,13 +9,11 @@ import StreamCore
 extension QueryCommentsResponse {
     static func dummy(
         comments: [CommentResponse],
-        duration: String = "0.123s",
         next: String? = nil,
         prev: String? = nil
     ) -> QueryCommentsResponse {
         QueryCommentsResponse(
             comments: comments,
-            duration: duration,
             next: next,
             prev: prev
         )

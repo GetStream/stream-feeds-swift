@@ -9,12 +9,10 @@ import StreamCore
 extension AddCommentReactionResponse {
     static func dummy(
         comment: CommentResponse,
-        duration: String = "1.23ms",
         reaction: FeedsReactionResponse = .dummy()
     ) -> AddCommentReactionResponse {
         AddCommentReactionResponse(
             comment: comment,
-            duration: duration,
             reaction: reaction
         )
     }

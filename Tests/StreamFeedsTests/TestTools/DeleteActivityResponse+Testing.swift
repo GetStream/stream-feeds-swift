@@ -7,11 +7,7 @@ import StreamCore
 @testable import StreamFeeds
 
 extension DeleteActivityResponse {
-    static func dummy(
-        duration: String = "1.23ms"
-    ) -> DeleteActivityResponse {
-        DeleteActivityResponse(
-            duration: duration
-        )
+    static func dummy() -> DeleteActivityResponse {
+        DeleteActivityResponse()
     }
 }
