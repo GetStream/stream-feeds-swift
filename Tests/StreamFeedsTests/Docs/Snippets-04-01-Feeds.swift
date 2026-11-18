@@ -88,7 +88,7 @@ import StreamFeeds
         try await client.upsertActivities([
             ActivityRequest(feeds: [feedId.rawValue], filterTags: ["green", "blue"], text: "first", type: "post"),
             ActivityRequest(feeds: [feedId.rawValue], filterTags: ["yellow", "blue"], text: "second", type: "post"),
-            ActivityRequest(feeds: [feedId.rawValue], filterTags: ["orange"], text: "third", type: "activity")
+            ActivityRequest(feeds: [feedId.rawValue], filterTags: ["orange"], text: "third", type: "post")
         ])
         // Now read the feed, this will fetch activity 1 and 2
         let query = FeedQuery(feed: feedId, activityFilter: .in(.filterTags, ["blue"]))
@@ -208,7 +208,7 @@ import StreamFeeds
         let techQuery = FeedsQuery(
             filter: .and([
                 .equal(.visibility, "public"),
-                .autocomplete(.description, "tech")
+                .query(.description, "tech")
             ])
         )
         let techFeedList = client.feedList(for: techQuery)
@@ -228,6 +228,40 @@ import StreamFeeds
         let feeds = try await feedList.get()
         
         suppressUnusedWarning(feeds)
+    }
+
+    func searchingFeeds(searchQuery: String) async throws {
+        let query = FeedsQuery(
+            filter: .and([
+                .equal(.groupId, "user"),
+                .or([
+                    .query(.name, searchQuery),
+                    .query(.description, searchQuery),
+                    .query(.createdByName, searchQuery)
+                ])
+            ])
+        )
+        let feedList = client.feedList(for: query)
+        let feeds = try await feedList.get()
+
+        suppressUnusedWarning(feeds)
+    }
+
+    func filterTagsAndOperator() async throws {
+        // Get all the activities where filter tags contain both "green" and "orange"
+        let query = FeedQuery(
+            group: "user",
+            id: "john",
+            activityFilter: .and([
+                .in(.filterTags, ["green"]),
+                .in(.filterTags, ["orange"])
+            ])
+        )
+        let feed = client.feed(for: query)
+        try await feed.getOrCreate()
+        let activities = feed.state.activities
+
+        suppressUnusedWarning(activities)
     }
 
     func enrichmentOptions() async throws {

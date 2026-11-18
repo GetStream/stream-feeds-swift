@@ -12,7 +12,11 @@ struct Snippets_03_03_FileUploads {
     private var attachmentUploader: AttachmentUploader
     private var uploadedAttachments = [Attachment]()
     
-    func howToUploadAFileOrImage_1() async throws {
+    func howToUploadAFileOrImage() async throws {
+        // In order to upload a file or image, you can use the `StreamAttachmentUploader`.
+        // The StreamAttachmentUploader is a thread-safe, asynchronous uploader for `AnyStreamAttachment` objects.
+        // It wraps a lower-level CDNClient implementation to simplify file uploads and provide progress updates and completion callbacks.
+
         func uploadAttachmentPayloads(_ attachments: [AnyAttachmentPayload], in feed: FeedId) async throws -> [Attachment] {
             let dataAttachments: [StreamAttachment<Data>] = try attachments
                 .filter { $0.localFileURL != nil }
@@ -33,7 +37,7 @@ struct Snippets_03_03_FileUploads {
                         downloadingState: nil,
                         uploadingState: .init(
                             localFileURL: localFileURL,
-                            state: .pendingUpload, // will not be used
+                            state: .pendingUpload,
                             file: attachmentFile
                         )
                     )
@@ -47,9 +51,9 @@ struct Snippets_03_03_FileUploads {
                     )
                 }
         }
-    }
-    
-    func howToUploadAFileOrImage_2() async throws {
+
+        // You can then use these uploads as attachments when creating activity:
+
         let activity = try await feed.addActivity(
             request: .init(
                 attachments: uploadedAttachments,
@@ -57,23 +61,26 @@ struct Snippets_03_03_FileUploads {
                 type: "activity"
             )
         )
-        
-        suppressUnusedWarning(activity)
-    }
-    
-    func howToUploadAFileOrImage_3() async throws {
+
+        // Alternatively, you can directly pass local attachments and they will be automatically uploaded:
+
         let payloads: [AnyAttachmentPayload] = [] // set payloads
-        let activity = try await feed.addActivity(
+        let activityWithUploads = try await feed.addActivity(
             request: .init(
                 attachmentUploads: payloads,
                 text: "Hi",
                 type: "activity"
             )
         )
-        
-        suppressUnusedWarning(activity)
+
+        suppressUnusedWarning(activity, activityWithUploads)
     }
     
+    func deletingFiles() async throws {
+        try await client.deleteImage(url: "remote-image-url")
+        try await client.deleteFile(url: "remote-file-url")
+    }
+
     func usingYourOwnCDN() async throws {
         // Your custom implementation of `CDNClient`.
         class CustomCDN: CDNClient, @unchecked Sendable {

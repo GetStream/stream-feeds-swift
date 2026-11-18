@@ -13,12 +13,13 @@ struct Snippets_01_01_Quickstart {
     private func handle<T>(_ variable: T) {}
     
     func gettingStarted() async throws {
-        // Initialize the client
+        // Initialize the client and connect
         let client = FeedsClient(
             apiKey: APIKey("<your_api_key>"),
             user: User(id: "john"),
             token: "<user_token>"
         )
+        try await client.connect()
 
         // Create a feed (or get its data if exists)
         let feed = client.feed(group: "user", id: "john")

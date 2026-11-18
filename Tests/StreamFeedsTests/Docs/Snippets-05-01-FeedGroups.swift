@@ -179,23 +179,19 @@ import StreamFeeds
     }
     
     func notificationFeedExample() async throws {
-        let notificationFeed = client.feed(group: "notification", id: "john")
+        let notificationFeed = client.feed(group: "notification", id: "jane")
         let notifications = try await notificationFeed.getOrCreate()
         
         suppressUnusedWarning(notifications)
     }
     
     func markingNotificationsAsRead() async throws {
-        // Mark specific notifications as read
         try await notificationFeed.markActivity(
-            request: .init(
-                markRead: ["notification_1", "notification_2"]
-            )
-        )
-        // Mark all notifications as read
-        try await notificationFeed.markActivity(
-            request: .init(
-                markAllRead: true
+            request: MarkActivityRequest(
+                // Mark all notifications as read...
+                markAllRead: true,
+                // ...or only selected ones
+                markRead: [ /* group names to mark as read */ ]
             )
         )
     }

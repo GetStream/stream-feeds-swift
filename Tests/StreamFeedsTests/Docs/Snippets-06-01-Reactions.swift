@@ -15,6 +15,8 @@ import StreamFeeds
             activityId: "activity_123",
             request: .init(
                 custom: ["emoji": "❤️"],
+                // Optionally override existing reaction
+                enforceUnique: true,
                 type: "like"
             )
         )

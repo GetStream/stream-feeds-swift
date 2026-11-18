@@ -25,6 +25,11 @@ import StreamFeeds
             custom: ["reason": "investment"]
         )
     }
+
+    func unfollow() async throws {
+        let timeline = client.feed(group: "timeline", id: "john")
+        try await timeline.unfollow(FeedId(group: "user", id: "tom"))
+    }
     
     func queryingFollows() async throws {
         // Do I follow a list of feeds
@@ -93,14 +98,35 @@ import StreamFeeds
         let timeline = client.feed(group: "timeline", id: "john")
 
         // Scenario 1: Follow a user and receive notifications for their future activities
-        try await timeline.follow(FeedId(group: "user", id: "alice"), pushPreference: .all)
+        try await timeline.follow(
+            FeedId(group: "user", id: "alice"),
+            pushPreference: .all // You'll get push notifications for Alice's future posts
+        )
 
         // Scenario 2: Follow a user but don't get notifications for their activities
-        try await timeline.follow(FeedId(group: "user", id: "bob"), pushPreference: FollowPushPreference.none)
+        try await timeline.follow(
+            FeedId(group: "user", id: "bob"),
+            pushPreference: FollowPushPreference.none // You won't get push notifications for Bob's future posts
+        )
 
         // Scenario 3: Follow a user silently
         try await timeline.follow(
             FeedId(group: "user", id: "charlie"),
+            pushPreference: .all, // But you'll still get notifications for Charlie's future posts
+            skipPush: true // Charlie won't get a "you have a new follower" notification
+        )
+
+        // Scenario 4: Silent follow with no future notifications
+        try await timeline.follow(
+            FeedId(group: "user", id: "diana"),
+            pushPreference: FollowPushPreference.none, // And you won't get notifications for her posts
+            skipPush: true // Diana won't know you followed her
+        )
+
+        // Scenario 5: Follow a user and create notification activity for Charlie
+        try await timeline.follow(
+            FeedId(group: "user", id: "charlie"),
+            createNotificationActivity: true, // Charlie's notification feed will have a new activity
             pushPreference: .all, // But you'll still get notifications for Charlie's future posts
             skipPush: true // Charlie won't get a "you have a new follower" notification
         )
