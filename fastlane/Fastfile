@@ -270,7 +270,7 @@ lane :sources_matrix do
     sample_apps: ['Sources', 'DemoApp', '.github/workflows/smoke-checks.yml', xcode_project],
     integration: ['Sources', 'Integration', '.github/workflows/smoke-checks.yml', xcode_project],
     ruby: ['fastlane', 'Gemfile', 'Gemfile.lock', '.github/workflows/smoke-checks.yml'],
-    size: ['Sources', '.github/workflows/smoke-checks.yml', xcode_project],
+    size: ['Sources', '.github/workflows/smoke-checks.yml', '.github/workflows/sdk-size-metrics.yml', xcode_project],
     public_interface: ['Sources', '.github/workflows/smoke-checks.yml']
   }
 end
@@ -278,7 +278,12 @@ end
 desc 'Writes the checks this PR needs to GITHUB_OUTPUT, so CI can skip macOS jobs early'
 lane :required_checks do
   checks = sources_matrix.transform_values do |sources|
-    is_check_required(sources: sources, force_check: @force_check)
+    begin
+      is_check_required(sources: sources, force_check: @force_check)
+    rescue StandardError => e
+      UI.important("Lookup failed, so the check runs: #{e.message}")
+      true
+    end
   end
   UI.important("Required checks: #{checks}")
   File.write(ENV.fetch('GITHUB_OUTPUT'), "checks=#{checks.to_json}\n", mode: 'a')
