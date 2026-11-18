@@ -37,10 +37,17 @@ permissions:
 jobs:
   guard:
     name: Guard
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write # to cancel skip-ci runs
+      contents: read
+      pull-requests: read
+    outputs:
+      checks: ${{ steps.guard.outputs.checks }}
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: ./.github/actions/ci-guard
+      - id: guard
+        uses: ./.github/actions/ci-guard
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -48,6 +55,7 @@ jobs:
     name: Test LLC
     runs-on: macos-15
     needs: guard
+    if: ${{ fromJSON(needs.guard.outputs.checks).llc }}
     steps:
     - uses: actions/checkout@v4.1.1
       with:
@@ -103,13 +111,16 @@ jobs:
         INSTALL_INTERFACE_ANALYZER: true
     - run: bundle exec fastlane lint_pr
     - run: bundle exec fastlane rubocop
+      if: ${{ fromJSON(needs.guard.outputs.checks).ruby }}
     - run: bundle exec fastlane run_swift_format strict:true
     - run: bundle exec fastlane validate_public_interface
+      if: ${{ fromJSON(needs.guard.outputs.checks).public_interface }}
 
   build-apps:
     name: Build Demo App
     runs-on: macos-15
     needs: guard
+    if: ${{ fromJSON(needs.guard.outputs.checks).sample_apps }}
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
@@ -121,6 +132,7 @@ jobs:
     name: Build SPM Integration App
     runs-on: macos-15
     needs: guard
+    if: ${{ fromJSON(needs.guard.outputs.checks).integration }}
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
