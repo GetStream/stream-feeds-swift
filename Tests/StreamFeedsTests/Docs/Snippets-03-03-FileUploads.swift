@@ -10,7 +10,6 @@ struct Snippets_03_03_FileUploads {
     private var client: FeedsClient!
     private var feed: Feed!
     private var attachmentUploader: AttachmentUploader
-    private var uploadedAttachments = [Attachment]()
     
     func howToUploadAFileOrImage() async throws {
         // In order to upload a file or image, you can use the `StreamAttachmentUploader`.
@@ -54,6 +53,8 @@ struct Snippets_03_03_FileUploads {
 
         // You can then use these uploads as attachments when creating activity:
 
+        let localAttachments: [AnyAttachmentPayload] = [] // set payloads
+        let uploadedAttachments = try await uploadAttachmentPayloads(localAttachments, in: feed.feed)
         let activity = try await feed.addActivity(
             request: .init(
                 attachments: uploadedAttachments,

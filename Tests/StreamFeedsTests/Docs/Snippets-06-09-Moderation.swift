@@ -21,7 +21,7 @@ import StreamFeeds
             reason: "Violation of community guidelines",
             shadow: false,
             targetUserId: "user-123",
-            timeout: 3600 // 1 hour in seconds
+            timeout: 60 // 1 hour in minutes
         )
 
         let response = try await client.moderation.ban(banRequest: banRequest)

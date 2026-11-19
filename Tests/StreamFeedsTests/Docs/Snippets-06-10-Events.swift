@@ -30,8 +30,9 @@ enum Snippets_06_10_Events {
 
         private func setupEventListening() {
             feedsClient.eventPublisher
-                .sink { event in
-                    self.handleEvent(event)
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] event in
+                    self?.handleEvent(event)
                 }
                 .store(in: &cancellables)
         }
@@ -91,25 +92,25 @@ enum Snippets_06_10_Events {
         private func setupActivityListeners() {
             // Listen only to activity added events
             feedsClient.eventPublisher(for: ActivityAddedEvent.self)
-                .sink { activityEvent in
+                .sink { [weak self] activityEvent in
                     print("New activity: \(activityEvent.activity.id)")
-                    self.handleNewActivity(activityEvent)
+                    self?.handleNewActivity(activityEvent)
                 }
                 .store(in: &cancellables)
 
             // Listen only to activity updated events
             feedsClient.eventPublisher(for: ActivityUpdatedEvent.self)
-                .sink { activityEvent in
+                .sink { [weak self] activityEvent in
                     print("Activity updated: \(activityEvent.activity.id)")
-                    self.handleActivityUpdate(activityEvent)
+                    self?.handleActivityUpdate(activityEvent)
                 }
                 .store(in: &cancellables)
 
             // Listen only to activity deleted events
             feedsClient.eventPublisher(for: ActivityDeletedEvent.self)
-                .sink { activityEvent in
+                .sink { [weak self] activityEvent in
                     print("Activity deleted: \(activityEvent.activity.id)")
-                    self.handleActivityDeletion(activityEvent)
+                    self?.handleActivityDeletion(activityEvent)
                 }
                 .store(in: &cancellables)
         }
@@ -168,7 +169,7 @@ enum Snippets_06_10_Events {
     }
 
     struct FeedView: View {
-        @StateObject private var viewModel: FeedViewModel
+        @ObservedObject var viewModel: FeedViewModel
         @State private var cancellables = Set<AnyCancellable>()
 
         var body: some View {

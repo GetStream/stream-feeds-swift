@@ -74,6 +74,7 @@ enum Snippets_10_01_PushNotificationsAppDelegate {
             withCompletionHandler completionHandler: @escaping () -> Void
         ) {
             log.debug("push notification received \(response.notification.request.content)")
+            completionHandler()
         }
 
         func setupRemoteNotifications() {
