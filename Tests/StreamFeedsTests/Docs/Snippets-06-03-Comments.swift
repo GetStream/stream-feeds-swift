@@ -16,6 +16,7 @@ import StreamFeeds
             request: .init(
                 comment: "So great!",
                 custom: ["sentiment": "positive"],
+                id: "comment_123", // id is optional, but must be unique. will be auto-generated if not provided
                 objectId: "activity_123",
                 objectType: "activity"
             )
@@ -25,23 +26,60 @@ import StreamFeeds
         let reply = try await feed.addComment(
             request: .init(
                 comment: "I agree!",
-                objectId: "activity_123",
-                objectType: "activity",
                 parentId: "comment_456"
             )
         )
+
+        // Adding a comment without triggering push notifications
+        let silentComment = try await feed.addComment(
+            request: .init(
+                comment: "Silent comment",
+                objectId: "activity_123",
+                objectType: "activity",
+                skipPush: true
+            )
+        )
+
+        // Adding a comment with attachments
+        let commentWithAttachment = try await feed.addComment(
+            request: .init(
+                attachments: [
+                    Attachment(
+                        custom: [:],
+                        imageUrl: "https://example.com/image.jpg",
+                        type: "image"
+                    )
+                ],
+                comment: "Check out this image!",
+                objectId: "activity_123",
+                objectType: "activity"
+            )
+        )
         
-        suppressUnusedWarning(comment, reply)
+        suppressUnusedWarning(comment, reply, silentComment, commentWithAttachment)
     }
     
     func updatingComments() async throws {
-        try await feed.updateComment(
+        let comment = try await feed.updateComment(
             commentId: "comment_123",
-            request: .init(
-                comment: "Not so great",
-                custom: ["edited": true]
-            )
+            request: .init(comment: "Not so great")
         )
+        print("Comment edited at: \(comment.editedAt.map { "\($0)" } ?? "never")")
+    }
+
+    func addingCommentsBatch() async throws {
+        let activity = client.activity(for: "activity_123", in: feed.feed)
+        let comments = try await activity.addCommentsBatch(
+            requests: [
+                ActivityAddCommentRequest(
+                    comment: "So great!",
+                    custom: ["sentiment": "positive"],
+                    id: "comment_123" // id is optional, but must be unique. will be auto-generated if not provided
+                )
+            ]
+        )
+
+        suppressUnusedWarning(comments)
     }
     
     func removingComments() async throws {
@@ -76,41 +114,26 @@ import StreamFeeds
         )
         let comments1 = try await list1.get()
         
-        // All comments for an activity
-        let list2 = client.commentList(
-            for: .init(
-                filter: .and([
-                    .equal(.objectId, "activity_123"),
-                    .equal(.objectType, "activity")
-                ])
-            )
-        )
-        let comments2 = try await list2.get()
-        
-        // Replies to a parent activity
-        let list3 = client.commentList(
-            for: .init(
-                filter: .equal(.parentId, "parent_id")
-            )
-        )
-        let comments3 = try await list3.get()
-        
         // Comments from an user
-        let list4 = client.commentList(
+        let list2 = client.commentList(
             for: .init(
                 filter: .equal(.userId, "jane")
             )
         )
-        let comments4 = try await list4.get()
+        let comments2 = try await list2.get()
         
-        suppressUnusedWarning(comments1, comments2, comments3, comments4)
+        suppressUnusedWarning(comments1, comments2)
     }
     
     func commentReactions() async throws {
         // Add a reaction to a comment
         try await feed.addCommentReaction(
             commentId: "comment_123",
-            request: .init(type: "like")
+            request: .init(
+                // Optionally override existing reaction
+                enforceUnique: true,
+                type: "like"
+            )
         )
 
         // Remove a reaction from a comment
@@ -172,5 +195,15 @@ import StreamFeeds
             )
         )
         try await enrichedFeed.getOrCreate()
+    }
+
+    func commentCounts() async throws {
+        // Top-level count on a single activity
+        let activity = client.activity(
+            for: "activity_123",
+            in: FeedId(group: "user", id: "john")
+        )
+        let activityData = try await activity.get()
+        print(activityData.commentCount, activityData.topLevelCommentCount ?? 0)
     }
 }

@@ -36,7 +36,11 @@ struct Snippets_03_01_Activities {
         let imageActivity = try await feed.addActivity(
             request: .init(
                 attachments: [
-                    Attachment(custom: [:], imageUrl: "https://example.com/image.jpg", type: "image")
+                    Attachment(
+                        custom: [:],
+                        imageUrl: "https://example.com/image.jpg",
+                        type: "image"
+                    )
                 ],
                 text: "look at NYC",
                 type: "post"
@@ -72,7 +76,7 @@ struct Snippets_03_01_Activities {
                 visibilityTag: "premium"
             )
         )
-        // Only users with the permission to read premium activities can read this
+        // Premium users can see full activity, others a preview
         
         suppressUnusedWarning(privateActivity)
     }
@@ -97,18 +101,31 @@ struct Snippets_03_01_Activities {
         suppressUnusedWarning(upsertedActivities)
     }
     
-    func updatingDeletingActivities() async throws {
-        // Update an activity
-        let updatedActivity = try await feed.updateActivity(
-            id: "123",
+    func sharingActivities() async throws {
+        let activity = try await feed.addActivity(
             request: .init(
-                custom: ["custom": "custom"],
-                text: "Updated text"
+                parentId: "<activity to share>",
+                text: "Couldn't agree more",
+                type: "post"
             )
         )
 
+        suppressUnusedWarning(activity)
+    }
+
+    func updatingActivities() async throws {
+        // NOTE: updateActivity does a full replace of the activity.
+        // Use updateActivityPartial if you only want to update specific fields.
+        let activity = try await feed.updateActivity(
+            id: "123",
+            request: UpdateActivityRequest(text: "Updated text")
+        )
+        print("Activity edited at: \(activity.editedAt.map { "\($0)" } ?? "never")")
+    }
+
+    func deletingActivities() async throws {
         // Delete an activity
-        let hardDelete = false // Soft delete sets deleted at but retains the data, hard delete fully removes it
+        let hardDelete = false // Soft delete sets deleted_at but retains the data, hard delete fully removes it
         try await feed.deleteActivity(id: "123", hardDelete: hardDelete)
 
         // Batch delete activities
@@ -118,8 +135,6 @@ struct Snippets_03_01_Activities {
                 ids: ["123", "456"]
             )
         )
-        
-        suppressUnusedWarning(updatedActivity)
     }
 
     func restrictingCommentReplies() async throws {
@@ -156,6 +171,9 @@ struct Snippets_03_01_Activities {
 
         // Access the state for reactive updates
         let activityState = activity.state
+
+        // Comment pagination
+        try await activity.queryMoreComments(limit: 10)
 
         suppressUnusedWarning(activityData, activityState)
     }

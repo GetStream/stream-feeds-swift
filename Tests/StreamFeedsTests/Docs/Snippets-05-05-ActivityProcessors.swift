@@ -41,7 +41,7 @@ struct Snippets_05_04_ActivityProcessors {
                 type: "post"
             )
         )
-        // The activity will now have topics automatically added
+        // Wait for feeds.activity.updated event
         print(activity.interestTags) // ["fitness", "health", "tips"]
     }
 }

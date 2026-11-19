@@ -9,6 +9,7 @@ import StreamFeeds
 @MainActor struct Snippets_05_06_Stories {
     var client: FeedsClient!
     var saraClient: FeedsClient!
+    var johnStoryFeed: Feed!
 
     func postingStories() async throws {
         let johnStoryFeed = client.feed(group: "story", id: "john")
@@ -26,7 +27,7 @@ import StreamFeeds
     func followingStoryFeeds() async throws {
         let saraStoryTimeline = client.feed(group: "stories", id: "sara")
         try await saraStoryTimeline.getOrCreate()
-        try await saraStoryTimeline.follow(FeedId(group: "story", id: "john"))
+        try await saraStoryTimeline.follow(johnStoryFeed.feed)
     }
 
     func readingStoryTimeline() async throws {
