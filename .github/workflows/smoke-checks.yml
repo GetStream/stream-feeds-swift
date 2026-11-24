@@ -37,7 +37,7 @@ permissions:
 jobs:
   guard:
     name: Guard
-    runs-on: ubuntu-24.04
+    runs-on: { group: github-public-amd64 }
     permissions:
       actions: write # to cancel skip-ci runs
       contents: read
@@ -101,7 +101,7 @@ jobs:
 
   automated-code-review:
     name: Automated Code Review
-    runs-on: ubuntu-24.04
+    runs-on: { group: github-public-amd64 }
     needs: guard
     steps:
     - uses: actions/checkout@v4.1.1
