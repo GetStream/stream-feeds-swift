@@ -53,7 +53,7 @@ jobs:
 
   test-llc:
     name: Test LLC
-    runs-on: macos-15
+    runs-on: { group: scaleway-macos }
     needs: guard
     if: ${{ fromJSON(needs.guard.outputs.checks).llc }}
     steps:
@@ -118,7 +118,7 @@ jobs:
 
   build-apps:
     name: Build Demo App
-    runs-on: macos-15
+    runs-on: { group: scaleway-macos }
     needs: guard
     if: ${{ fromJSON(needs.guard.outputs.checks).sample_apps }}
     steps:
@@ -130,7 +130,7 @@ jobs:
 
   build-spm-integration:
     name: Build SPM Integration App
-    runs-on: macos-15
+    runs-on: { group: scaleway-macos }
     needs: guard
     if: ${{ fromJSON(needs.guard.outputs.checks).integration }}
     steps:
